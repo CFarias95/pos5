@@ -311,6 +311,8 @@ use Modules\Document\Helpers\DocumentHelper;
             $client->soap_url = $company->soap_url;
             $client->certificate = $company->certificate;
             $client->number = $company->number;
+            $client->countable = (bool)$company->countable;
+            $client->obligado_contabilidad = (bool) $company->obligado_contabilidad;
 
             return new ClientResource($client);
 
