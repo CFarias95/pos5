@@ -62,8 +62,6 @@
                 'smtp_user' => $this->smtp_user,
                 'smtp_password' => null, // dont show smtp password
                 'smtp_encryption' => $this->smtp_encryption,
-                'countable' => (bool) $this->countable,
-                'obligado_contabilidad' => (bool) $this->obligado_contabilidad,
 
             ];
 
