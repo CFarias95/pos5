@@ -66,7 +66,7 @@
         @if($company->contribuyente_especial)
         <contribuyenteEspecial>{{ $company->contribuyente_especial_num }}</contribuyenteEspecial>
         @endif
-        @if($company->obligado_contabilidad && $company->obligado_contabilidad  > 0){
+        @if($company->obligado_contabilidad && $company->obligado_contabilidad  > 0)
         <obligadoContabilidad>SI</obligadoContabilidad>
         @endif
         @if($customer->identity_document_type_id == 1)
