@@ -1861,13 +1861,6 @@ export default {
             'series',
             'all_series',
         ]),
-        validacionCupo(){
-            if(this.deuda>this.cupo){
-                    return true;
-                }else{
-                    return false;
-                }
-        },
         advance_payment_metod:function(){
             return _.filter(this.payment_method_types, {'is_advance': true})
         },
@@ -2066,6 +2059,13 @@ export default {
                 this.form.worker_full_name_tips = tip.worker_full_name_tips
                 this.form.total_tips = tip.total_tips
             }
+        },
+        validacionCupo(){
+            if(this.deuda>this.cupo){
+                    return true;
+                }else{
+                    return false;
+                }
         },
         onSuccessUploadVoucher(response, file, fileList, index)
         {

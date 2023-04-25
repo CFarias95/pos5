@@ -1239,7 +1239,7 @@ export default {
 
                 if(maxAmount >= event){
                     /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
-                    
+
                 }else{
                     this.form.payments[index].payment = maxAmount
                     let message = 'El monto maximo del anticipo es de '+maxAmount
@@ -1495,8 +1495,8 @@ export default {
 
                 if(this.config.enabled_point_system)
                 {
-                    this.setTotalExchangePoints()
-                    this.recalculateUsedPointsForExchange(row)
+                    //this.setTotalExchangePoints()
+                    //this.recalculateUsedPointsForExchange(row)
                 }
 
             } else {

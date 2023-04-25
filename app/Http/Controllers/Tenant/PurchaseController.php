@@ -138,7 +138,6 @@ use Modules\Sale\Models\SaleOpportunity;
                     break;
             }
 
-
             return $records;
 
         }
@@ -375,9 +374,13 @@ use Modules\Sale\Models\SaleOpportunity;
             //Log::info("REQUEST: ".json_encode($request));
             //Log::info(json_encode($request->ret));
             $data = self::convert($request);
-            //Log::info(json_encode($data));
+            $docIntern = PurchaseDocumentTypes2::where('idType',$request->document_type_intern)->get();
+            $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
+            $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
+
+            Log::info(json_encode($data));
             try {
-                $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                    $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();
                     $data['number'] = $numero + 1;
                     $doc = Purchase::create($data);
@@ -427,6 +430,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                     foreach ($data['items'] as $row) {
                         $p_item = new PurchaseItem();
+                        $row['quantity'] = $row['quantity'] * $signo;
                         $p_item->fill($row);
                         $lots = $row['lots'] ?? null;
                         if ($lots != null) {

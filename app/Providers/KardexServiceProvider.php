@@ -9,9 +9,11 @@ use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\PurchaseSettlementItem;
 use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\Kardex;
+use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseDocumentTypes2;
 use Illuminate\Support\ServiceProvider;
 use App\Traits\KardexTrait;
-
+use Illuminate\Support\Facades\Log;
 
 /**
  * Se debe tener en cuenta este provider para llevar el control de Kardex
@@ -63,9 +65,17 @@ class KardexServiceProvider extends ServiceProvider
     {
         PurchaseItem::created(function (PurchaseItem $purchase_item) {
 
-            $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
+            Log::info("saveKardex: ".json_encode($purchase_item));
+            $purchase = Purchase::find($purchase_item->purchase_id);
+            $docIntern = PurchaseDocumentTypes2::where('idType',$purchase->document_type_intern)->get();
+            $alteraStock = (bool) $docIntern[0]->stock;
 
-            $this->updateStock($purchase_item->item_id, $kardex->quantity, false);
+            if($alteraStock ){
+
+                $kardex = $this->saveKardex('purchase', $purchase_item->item_id, $purchase_item->purchase_id, $purchase_item->quantity, 'purchase');
+                $this->updateStock($purchase_item->item_id, $kardex->quantity, false);
+            }
+
 
         });
     }
