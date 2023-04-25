@@ -6,6 +6,8 @@
           <div class="col">
             <button type="button" data-placement="start" title="Generar PDF" class="btn btn-custom btn-sm  mt-2 mr-2"
               @click.prevent="clickDownload('pdf')"><i class="fa fa-file-pdf"></i> PDF</button>
+            <button type="button" data-placement="start" title="Generar Excel" class="btn btn-custom btn-sm  mt-2 mr-2"
+              @click.prevent="clickDownload('excel')"><i class="fa fa-file-pdf"></i> Excel</button>
           </div>
         </div>
       </div>
@@ -28,7 +30,7 @@
               </slot>
             </tbody>
           </table>
-          <div>            
+          <div>
             <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
               :total="pagination.total" layout="total, prev, pager, next" @current-change="getDatos">
             </el-pagination>
