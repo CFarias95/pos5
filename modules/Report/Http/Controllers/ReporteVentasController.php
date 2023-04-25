@@ -11,7 +11,12 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\SaleNote;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
+use Hyn\Tenancy\Events\Websites\Migrated;
+use Hyn\Tenancy\Listeners\Database\MigratesTenants;
+use Illuminate\Database\Migrations\Migration;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\Category;
 use Modules\Report\Exports\StatusClientExport;
 use Modules\Report\Http\Resources\DocumentCollection;
@@ -273,8 +278,8 @@ class ReporteVentasController extends Controller
                 $aux_categories->push($value);
             }
         }
-        
         return Category::whereIn('id', $aux_categories->unique()->toArray())->get();
     }
+
 
 }
