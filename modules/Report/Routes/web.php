@@ -316,6 +316,29 @@ if ($current_hostname) {
                               ->name('tenant.reports.reporte_ventas.recuperarCategorias');
                     });
 
+                    Route::prefix('plan_cuentas')->group(function () {
+                         Route::get('', 'PlanCuentasController@index')
+                              ->name('tenant.plan_cuentas.index')
+                              ->middleware('tenant.internal.mode');
+                         Route::get('/pdf', 'PlanCuentasController@pdf')
+                              ->name('tenant.plan_cuentas.pdf');
+                         Route::get('/excel', 'PlanCuentasController@excel')
+                              ->name('tenant.plan_cuentas.excel');
+                         Route::get('/records', 'PlanCuentasController@records')
+                              ->name('tenant.plan_cuentas.records');
+                         Route::get('/filter', 'PlanCuentasController@filter')
+                              ->name('tenant.plan_cuentas.filter');
+                         Route::get('/item/tables', 'PlanCuentasController@item_tables')
+                              ->name('tenant.plan_cuentas.item_tables');
+                         Route::get('/tables', 'PlanCuentasController@tables')
+                              ->name('tenant.plan_cuentas.tables');
+                         Route::get('/columns', 'PlanCuentasController@columns');
+                         //Route::get('/records', 'PlanCuentasController@records');
+                         //Route::get('/record/{person}', 'PlanCuentasController@record');
+                         Route::get('/datosSP', 'PlanCuentasController@datosSP');
+
+                    });
+
                     Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')
                          ->name('tenant.reports.order_notes_general.index');
 
