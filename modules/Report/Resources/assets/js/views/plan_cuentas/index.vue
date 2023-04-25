@@ -21,7 +21,7 @@
             <data-table :resource="resource" :visibleColumns="columns">
                 <tr slot="heading">
                     <th class="">Código</th>
-                    <th class="">Nombrer</th>
+                    <th class="">Nombre</th>
                     <th class="">Saldo</th>
                 </tr>
                 <tr slot-scope="{ index, row }">
