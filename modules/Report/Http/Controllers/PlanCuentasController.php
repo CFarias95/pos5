@@ -62,4 +62,121 @@ class PlanCuentasController extends Controller
 
         return $pdf->download($filename . '.pdf');
     }
+
+    public function excel(Request $request)
+    {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+        $documentTypeId = null;
+        if ($request->has('document_type_id')) {
+            $documentTypeId = str_replace('"', '', $request->document_type_id);
+        }
+        $documentType = DocumentType::find($documentTypeId);
+        if ($documentType != null) {
+            $classType = $documentType->getCurrentRelatiomClass();
+            $records = $this->getRecords($request->all(), $classType);
+            $records = $records->get();
+        } else {
+            $records_documents = $this->getRecords($request->all(), Document::class)->select(
+                'id',
+                'document_type_id',
+                'group_id',
+                'soap_type_id',
+                'date_of_issue',
+                'time_of_issue',
+                'currency_type_id',
+                'series',
+                'establishment_id',
+                'number',
+                'purchase_order',
+                'state_type_id',
+                'total_exportation',
+                'total_exonerated',
+                'total_unaffected',
+                'total_free',
+                'total_taxed',
+                'total_igv',
+                'total',
+                'total_isc',
+                'total_charge',
+                'plate_number',
+                'customer_id',
+                'user_id',
+                'seller_id'
+            )->with(['person' => function ($query) {
+                $query->select('id', 'name', 'number');
+            }])->with(['soap_type' => function ($q) {
+                $q->select('id', 'description');
+            }])->with(['state_type' => function ($y) {
+                $y->select('id', 'description');
+            }])->with(['user' => function ($y) {
+                $y->select('id', 'name');
+            }])->get();
+
+            $records_sales = $this->getRecords($request->all(), SaleNote::class)->select(
+                'id',
+                'state_type_id',
+                'soap_type_id',
+                'date_of_issue',
+                'time_of_issue',
+                'due_date',
+                'currency_type_id',
+                'series',
+                'establishment_id',
+                'number',
+                'purchase_order',
+                'total_exportation',
+                'total_exonerated',
+                'total_unaffected',
+                'total_free',
+                'total_taxed',
+                'total_igv',
+                'total',
+                'total_isc',
+                'plate_number',
+                'observation',
+                'document_id',
+                'customer_id',
+                'user_id',
+                'seller_id'
+            )->with(['customer' => function ($query) {
+                $query->select('id', 'name', 'number');
+            }])->with(['soap_type' => function ($q) {
+                $q->select('id', 'description');
+            }])->with(['state_type' => function ($y) {
+                $y->select('id', 'description');
+            }])->with(['user' => function ($y) {
+                $y->select('id', 'name');
+            }])->get();
+
+            //$records_documents = $records_documents->put('class', 'Document');
+            //$records_documents = $records_documents->put('class', 'SaleNote');
+            $records = $records_documents->concat($records_sales);
+        }
+
+
+        $filters = $request->all();
+
+        //get categories
+        $categories = [];
+        $categories_services = [];
+
+        if ($request->include_categories == "true") {
+            $categories = $this->getCategories($records, false);
+            $categories_services = $this->getCategories($records, true);
+        }
+
+        $documentExport = new StatusClientExport();
+        $documentExport
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->categories($categories)
+            ->categories_services($categories_services);
+        // return $documentExport->view();
+        return $documentExport->download('Reporte_estado_de_cuenta' . Carbon::now() . '.xlsx');
+    }
 }

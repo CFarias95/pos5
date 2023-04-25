@@ -188,7 +188,7 @@ Vue.component('tenant-reporte-ventas-excel', require('../../modules/Report/Resou
 
 //Plan de Cuentas
 Vue.component('tenant-plan_cuentas-index', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
-Vue.component('tenant-plan_cuentas-', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
+Vue.component('tenant-plan_cuentas-excel', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
 
 /*PURCHASE QUOTATIONS REPORT */
 Vue.component('tenant-report-purchases-quotation', require('../../modules/Report/Resources/assets/js/views/purchases/quotation.vue'));

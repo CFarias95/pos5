@@ -324,7 +324,7 @@ if ($current_hostname) {
                               ->name('tenant.plan_cuentas.pdf');
                          Route::get('/excel', 'PlanCuentasController@excel')
                               ->name('tenant.plan_cuentas.excel');
-                         Route::get('/records', 'PlanCuentasController@records')
+                         /*Route::get('/records', 'PlanCuentasController@records')
                               ->name('tenant.plan_cuentas.records');
                          Route::get('/filter', 'PlanCuentasController@filter')
                               ->name('tenant.plan_cuentas.filter');
@@ -332,9 +332,7 @@ if ($current_hostname) {
                               ->name('tenant.plan_cuentas.item_tables');
                          Route::get('/tables', 'PlanCuentasController@tables')
                               ->name('tenant.plan_cuentas.tables');
-                         Route::get('/columns', 'PlanCuentasController@columns');
-                         //Route::get('/records', 'PlanCuentasController@records');
-                         //Route::get('/record/{person}', 'PlanCuentasController@record');
+                         Route::get('/columns', 'PlanCuentasController@columns');*/
                          Route::get('/datosSP', 'PlanCuentasController@datosSP');
 
                     });
