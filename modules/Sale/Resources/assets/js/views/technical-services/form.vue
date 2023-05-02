@@ -210,10 +210,18 @@
                             <div class="col-md-3">
                                 <el-checkbox v-model="form.diagnosis">Diagnostico</el-checkbox>
                             </div>
+                            <div class="col-md-3">
+                                <el-checkbox v-model="form.entrega">Entrega de producto</el-checkbox>
+                            </div>
+                            <div class="col-md-3">
+                                <el-checkbox v-model="form.revision">Revisión</el-checkbox>
+                            </div>
+                            <div class="col-md-3">
+                                <el-checkbox v-model="form.otros">Otros</el-checkbox>
+                            </div>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane class="mb-3"
-                                 name="second">
+                    <el-tab-pane class="mb-3" name="second">
                         <span slot="label"><h3>Notas</h3></span>
                         <div class="row">
                             <div class="col-md-12">
