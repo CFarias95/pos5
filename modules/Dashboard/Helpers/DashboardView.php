@@ -284,10 +284,7 @@ class DashboardView
                 $d_end = $date_end;
                 break;
         }
-        // dd($request['customer_id']);
-        /*
-         * Documents
-         */
+
         $document_payments = DB::table('document_payments')
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
@@ -338,9 +335,6 @@ class DashboardView
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
             ->whereIn('document_type_id', ['01', '03', '08'])
             ->select(DB::raw($document_select));
-
-        // dd($documents->get());
-        // dd($documents->toSql());
 
         if($stablishmentUnpaidAll !== 1) {
             $documents-> where('documents.establishment_id', $establishment_id);
