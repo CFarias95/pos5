@@ -47,9 +47,9 @@
                             <th class="text-right" >T.Exonerado</th>
 
                             <th class="text-right">T.Gravado</th>
-                            <th class="text-right">T.Igv</th>
+                            <th class="text-right">T.IVA</th>
                             <th class="text-right">Total</th>
-                            
+
                             <template v-if="configuration.enabled_sales_agents">
                                 <th>Agente</th>
                                 <th>Datos de referencia</th>

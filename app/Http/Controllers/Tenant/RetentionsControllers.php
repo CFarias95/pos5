@@ -196,104 +196,111 @@ class RetentionsControllers extends Controller
         $authSRI = $request->send($url,$clave);
         $retencion = RetentionsEC::find($id);
 
-        if($authSRI != ''){
+        try{
 
-            $mensajeAuth = null;
-            $responseAuth = null;
-            $estateId = null;
-            $fechaAuth = null;
+            if($authSRI != ''){
 
-            $estado = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'];
+                $mensajeAuth = null;
+                $responseAuth = null;
+                $estateId = null;
+                $fechaAuth = null;
 
-            if($estado == 'RECHAZADA'){
+                $estado = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['estado'];
 
-                $estateId =  self::RECHAZADA;
-                $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
-                $mensajeAuth = 'DOCUMENTO RECHAZADO POR EL SRI';
+                if($estado == 'RECHAZADA'){
 
-            }elseif($estado == 'AUTORIZADO'){
+                    $estateId =  self::RECHAZADA;
+                    $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
+                    $mensajeAuth = 'DOCUMENTO RECHAZADO POR EL SRI';
 
-                $fechaAutorizado = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['fechaAutorizacion'];
-                $fechaAutorizado = str_replace('T',' ',$fechaAutorizado);
-                $fechaAuth = $fechaAutorizado;
+                }elseif($estado == 'AUTORIZADO'){
 
-                $estateId = self::AUTORIZADA;
-                $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
-                $documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
+                    $fechaAutorizado = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['fechaAutorizacion'];
+                    $fechaAutorizado = str_replace('T',' ',$fechaAutorizado);
+                    $fechaAuth = substr($fechaAutorizado,0,19);
 
-                Storage::disk('tenant')->put($nombre, $documento);
+                    $estateId = self::AUTORIZADA;
+                    $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
+                    $documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
+                    $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
-                $tipodoc = 'retention';
-                $this->doc_type = '03';
-                $this->actions['format_pdf'] = 'blank';
+                    Storage::disk('tenant')->put($nombre, $documento);
 
-                $this->createPdf($retencion, $tipodoc, 'a4');
+                    $tipodoc = 'retention';
+                    $this->doc_type = '03';
+                    $this->actions['format_pdf'] = 'blank';
 
-                $this->sendEmail2($id);
+                    $this->createPdf($retencion, $tipodoc, 'a4');
 
-            }elseif($estado == 'NO AUTORIZADO'){
+                    $this->sendEmail2($id);
 
-                $valor = array_filter($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes'], function($B,$k){
+                }elseif($estado == 'NO AUTORIZADO'){
 
-                    return array_filter($B,function ($key, $value) use($k){
-                        return preg_replace("/[\r\n|\n|\r]+/", '', $key);
+                    $valor = array_filter($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes'], function($B,$k){
+
+                        return array_filter($B,function ($key, $value) use($k){
+                            return preg_replace("/[\r\n|\n|\r]+/", '', $key);
+
+                        },ARRAY_FILTER_USE_BOTH);
 
                     },ARRAY_FILTER_USE_BOTH);
 
-                },ARRAY_FILTER_USE_BOTH);
-
-                $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
-                $mensajeAuth = 'DOCUMENTO NO AUTORIZADO POR EL SRI';
-                $estateId = self::NOAUTORIZADA;
-                $fechaAuth = null;
-
-            }elseif($estado == 'EN PROCESO'){
-
-                $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
-                $mensajeAuth = 'DOCUEMNTO EN PROCESO DE VALIDACIÓN';
-                $estateId = self::ENPROCESO;
-                $fechaAuth = null;
-
-            }
-            else{
-
-                if($authSRI['RespuestaAutorizacionComprobante']['numeroComprobantes'] > 0){
-
-                    $mensajeAuth = 'SIN ESTADO POR EL SRI';
-                    $responseAuth = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']['mensaje']['mensaje'];
-                    $estateId = self::ENPROCESO;
+                    $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
+                    $mensajeAuth = 'DOCUMENTO NO AUTORIZADO POR EL SRI';
+                    $estateId = self::NOAUTORIZADA;
                     $fechaAuth = null;
 
-                }else{
+                }elseif($estado == 'EN PROCESO'){
 
-                    $mensajeAuth = 'NO SE ENCONTRO EL DOCUMENTO EN EL SISTEMA DEL SRI';
-                    $responseAuth = NULL;
+                    $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
+                    $mensajeAuth = 'DOCUEMNTO EN PROCESO DE VALIDACIÓN';
                     $estateId = self::ENPROCESO;
                     $fechaAuth = null;
 
                 }
+                else{
 
+                    if($authSRI['RespuestaAutorizacionComprobante']['numeroComprobantes'] > 0){
+
+                        $mensajeAuth = 'SIN ESTADO POR EL SRI';
+                        $responseAuth = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']['mensaje']['mensaje'];
+                        $estateId = self::ENPROCESO;
+                        $fechaAuth = null;
+
+                    }else{
+
+                        $mensajeAuth = 'NO SE ENCONTRO EL DOCUMENTO EN EL SISTEMA DEL SRI';
+                        $responseAuth = NULL;
+                        $estateId = self::ENPROCESO;
+                        $fechaAuth = null;
+
+                    }
+
+                }
+
+                $retencion = RetentionsEC::find($id);
+                $retencion->update([
+
+                    'status_id' => $estateId,
+                    'response_verification' => $mensajeAuth,
+                    'DateTimeAutorization' => $fechaAuth,
+                    'response_message_verification' => $responseAuth,
+                    'verificated' => 1,
+                ]);
+
+            }else{
+
+                $retencion->update([
+                    'status_id' => self::DEVUELTA,
+                    'response_verification' => 'NO SE PUDO VERIFICAR EL DOCUMENTO',
+                    'verificated' => 0,
+                ]);
             }
-
-            $retencion = RetentionsEC::find($id);
-            $retencion->update([
-
-                'status_id' => $estateId,
-                'response_verification' => $mensajeAuth,
-                'DateTimeAutorization' => $fechaAuth,
-                'response_message_verification' => $responseAuth,
-                'verificated' => 1,
-            ]);
-
-        }else{
-
-            $retencion->update([
-                'status_id' => self::DEVUELTA,
-                'response_verification' => 'NO SE PUDO VERIFICAR EL DOCUMENTO',
-                'verificated' => 0,
-            ]);
         }
+        catch(Exception $ex){
+            Log::error('Error al porcesar una retencion: '.$ex->getMessage());
+        }
+
 
     }
 

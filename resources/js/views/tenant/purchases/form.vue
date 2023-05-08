@@ -40,7 +40,7 @@
                             <div :class="{'has-danger': errors.codSustento}"
                                  class="form-group">
                                 <label class="control-label">Código Tributario</label>
-                                <el-select v-model="form.codSustento" :required="haveRetentions">
+                                <el-select v-model="form.codSustento" :required="is_countable">
                                     <el-option v-for="option in codSustentos"
                                                :key="option.id"
                                                :label="option.description"
@@ -119,7 +119,7 @@
                                        v-text="errors.currency_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-2" v-if="form.currency_type_id != config.currency_type_id">
+                        <div class="col-lg-2">
                             <div :class="{'has-danger': errors.exchange_rate_sale}"
                                  class="form-group">
                                 <label class="control-label">Tipo de cambio
@@ -213,7 +213,7 @@
                                 :maxlength="maxLength1"
                                 show-word-limit
                                 dusk="sequential_number"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 >
                             </el-input>
                             <small v-if="errors.sequential_number"
@@ -227,7 +227,7 @@
                             <el-input
                                 v-model="form.auth_number"
                                 :maxlength="maxLength2"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 show-word-limit
                                 dusk="auth_number">
                             </el-input>
@@ -267,6 +267,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group col-sm-12 col-md-6 col-lg-2"
+                            :class="{'has-danger': errors.afected_document}"
+                            v-if="is_credit_note">
+                            <label class="control-label">Documento Afectado</label>
+                            <el-input
+                                v-model="form.afected_document"
+                                dusk="afected_document"
+                                :required="is_credit_note"
+                                >
+                            </el-input>
+                            <small v-if="errors.afected_document"
+                                    class="form-control-feedback"
+                                    v-text="errors.afected_document[0]"></small>
+                        </div>
 
                         <div class="col-12">&nbsp;</div>
 
@@ -890,8 +904,12 @@ export default {
             imports:[],
             type_docs:[],
             codSustentos:[],
+            codSustentos_all:[],
             haveRetentions: false,
             advances:[],
+
+            is_countable:false,
+            is_credit_note:false,
         }
     },
     async mounted() {
@@ -906,7 +924,7 @@ export default {
                 this.retention_types_income = data.retention_types_income
                 this.imports = data.imports
                 this.type_docs = data.typeDocs
-                this.codSustentos = data.codSustentos
+                this.codSustentos_all = data.codSustentos
                 this.document_types2 = data.typeDocs2
                 console.log("TIPO DE DOCUMENTOS COMPRAS LOCAL",data.typeDocs2)
                 // this.establishment = data.establishment
@@ -1061,7 +1079,7 @@ export default {
                         // this.changeDocumentType()
 
                     })
-
+                    this.changeSupplier()
             }
         },
         async validate_payments() {
@@ -1342,17 +1360,9 @@ export default {
         },
         filterSuppliers() {
 
-            /*if (this.form.document_type_id === '01') {
-                // this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
-                this.suppliers = _.filter(this.all_suppliers, (item) => {
-                    return ['6', '0'].includes(item.identity_document_type_id)
-                })
-                this.selectSupplier()
+            this.suppliers = this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
+            this.selectSupplier()
 
-            } else {*/
-                this.suppliers = this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
-                this.selectSupplier()
-            //}
         },
         selectSupplier() {
 
@@ -1377,7 +1387,7 @@ export default {
                 payment_method_type_id: '01',
                 currency_type_id: this.config.currency_type_id,
                 purchase_order: null,
-                exchange_rate_sale: 0,
+                exchange_rate_sale: 1,
                 total_prepayment: 0,
                 total_charge: 0,
                 total_discount: 0,
@@ -1471,7 +1481,7 @@ export default {
         async changeDateOfIssue() {
             this.form.date_of_due = this.form.date_of_issue
             await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                this.form.exchange_rate_sale = response
+                //this.form.exchange_rate_sale = response
             })
             await this.getPercentageIgv();
             this.changeCurrencyType();
@@ -1480,11 +1490,16 @@ export default {
             this.filterSuppliers()
         },
         changeDocumentType2() {
+
             var document = _.find(this.document_types2,{'idType': this.form.document_type_intern})
-            console.log('documento seleccionado',document.DocumentTypeID)
+            console.log('documento seleccionado',document)
             this.form.document_type_id = document.DocumentTypeID
             //this.codSustentos = _.find(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
-            this.codSustentos = _.filter(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
+            this.codSustentos = _.filter(this.codSustentos_all,{'idTipoComprobante':document.DocumentTypeID})
+
+            this.is_countable  = (document.accountant > 0)
+            console.log('es contable: ',this.is_countable)
+            this.is_credit_note = (document.DocumentTypeID == '04')
         },
         addRow(row) {
 

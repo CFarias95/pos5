@@ -59,7 +59,7 @@ class StoreController extends Controller
         $rec['payments'] = [];
         $rec['guides'] = [];
         $rec['payment_condition_id'] = '01';
-        $rec['series'] = $series->number;
+        $rec['series'] = ($series)?$series->number:null;
         $rec['ubl_version'] = '2.1';
         $rec['unique_filename'] = '';
         $rec['user_rel_suscription_plan_id'] = 0;
@@ -158,7 +158,7 @@ class StoreController extends Controller
                 return $date_percentage;
             }
         }
-        
+
         return 0.12;
     }
 }

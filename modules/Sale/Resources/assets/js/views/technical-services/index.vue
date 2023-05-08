@@ -7,7 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i
-                    class="fa fa-plus-circle"></i> Nuevo
+                        class="fa fa-plus-circle"></i> Nuevo
                 </button>
             </div>
         </div>
@@ -33,10 +33,10 @@
                         <th>Saldo</th>
                         <th class="text-center">Ver</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.customer_name }}<br/><small v-text="row.customer_number"></small></td>
+                        <td>{{ row.customer_name }}<br /><small v-text="row.customer_number"></small></td>
                         <td class="text-center">{{ row.cellphone }}</td>
                         <td class="text-center">{{ row.id }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
@@ -47,12 +47,9 @@
                         <td class="text-center">{{ row.number_document_sale_note }}</td>
                         <!-- <td class="text-center">{{ row.prepayment }}</td> -->
                         <td class="text-right">
-                            <button
-                                type="button"
-                                style="min-width: 41px"
+                            <button type="button" style="min-width: 41px"
                                 class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                @click.prevent="clickPayment(row.id)"
-                            >Pagos
+                                @click.prevent="clickPayment(row.id)">Pagos
                             </button>
                         </td>
 
@@ -60,25 +57,23 @@
 
                         <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickPrint(row.id)">PDF
+                                @click.prevent="clickPrint(row.id)">PDF
                             </button>
                         </td>
-
                         <td class="text-right">
                             <template v-if="!row.has_document_sale_note">
-                                <button type="button"
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickOptions(row.id)" >
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickOptions(row.id)">
                                     Generar comprobante
                                 </button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                        @click.prevent="clickCreate(row.id)">Editar
+                                    @click.prevent="clickCreate(row.id)">Editar
                                 </button>
                             </template>
 
                             <template v-if="typeUser === 'admin'">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                        @click.prevent="clickDelete(row.id)">Eliminar
+                                    @click.prevent="clickDelete(row.id)">Eliminar
                                 </button>
                             </template>
                         </td>
@@ -86,19 +81,13 @@
                 </data-table>
             </div>
 
-            <technical-service-options :showDialog.sync="showDialogOptions"
-                                       :recordId="recordId"
-                                       :showGenerate="true"
-                                       :showClose="true"></technical-service-options>
+            <technical-service-options :showDialog.sync="showDialogOptions" :recordId="recordId" :showGenerate="true"
+                :showClose="true"></technical-service-options>
 
-            <technical-services-form :showDialog.sync="showDialog"
-                                     :recordId="recordId"></technical-services-form>
+            <technical-services-form :showDialog.sync="showDialog" :recordId="recordId"></technical-services-form>
 
-            <technical-service-payments
-                :showDialog.sync="showDialogPayments"
-                :recordId="recordId"
-                :external="true"
-            ></technical-service-payments>
+            <technical-service-payments :showDialog.sync="showDialogPayments" :recordId="recordId"
+                :external="true"></technical-service-payments>
 
         </div>
     </div>
@@ -108,10 +97,10 @@
 
 import TechnicalServicesForm from './form.vue'
 import DataTable from '@components/DataTable.vue'
-import {deletable} from '@mixins/deletable'
+import { deletable } from '@mixins/deletable'
 import TechnicalServicePayments from './partials/payments.vue'
 import TechnicalServiceOptions from './partials/options'
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import { mapActions, mapState } from "vuex/dist/vuex.mjs";
 
 
 export default {
@@ -178,6 +167,9 @@ export default {
             this.recordId = recordId
             this.showDialogOptions = true
         },
+        clickAdd(recordId) {
+
+        }
     }
 }
 </script>

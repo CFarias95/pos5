@@ -81,6 +81,7 @@
                                 <label class="control-label">Tipo de Impuesto</label>
                                 <el-select v-model="form.affectation_igv_type_id"
                                            :disabled="!change_affectation_igv_type_id"
+                                           @change="cambioCantidad()"
                                            filterable>
                                     <el-option v-for="option in affectation_igv_types"
                                                :key="option.id"
@@ -1144,27 +1145,28 @@ export default {
             if (val && val.type_id == '02') {
 
                 if(item.has_igv){
-                    if (item.sale_affectation_igv_type_id == '10') {
+
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.12)), 3) * this.form.quantity
                         console.log("valor RET: " + (parseFloat(val.percentage) + ' ' + this.iva ))
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.08)), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id == '12') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.14)), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * this.iva, 3) * this.form.quantity
+                    } else if (this.form.affectation_igv_type_id == '30') {
+                        this.form.iva_retention = 0
                     }
 
                 }else{
 
-                    if (item.sale_affectation_igv_type_id == '10') {
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.12) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.08) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id== '12') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.14) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * this.iva, 3) * this.form.quantity
+                    } else if (this.form.affectation_igv_type_id == '30') {
+                        this.form.iva_retention = 0
                     }
                 }
                 //_.round
@@ -1183,13 +1185,13 @@ export default {
             if (val && val.type_id == '01') {
                 if(item.has_igv){
 
-                    if (item.sale_affectation_igv_type_id == '10') {
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.12), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.08), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id == '12') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.14), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
+                    } else if (this.form.affectation_igv_type_id == '30') {
 
                         this.form.income_retention = _.round((val.percentage / 100) * this.income, 2) * this.form.quantity
                     }

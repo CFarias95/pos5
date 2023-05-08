@@ -33,7 +33,7 @@
                         <p><strong>Ruc: </strong></p>
                     </td>
                     <td align="center">{{$company->number}}</td>
-                  
+
                 </tr>
             </table>
         </div>
@@ -54,9 +54,9 @@
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right" >T.Exonerado</th>
                                 <th class="text-right">T.Gravado</th>
-                                <th class="text-right">T.Igv</th>
+                                <th class="text-right">T.IVA</th>
                                 <th class="text-right">Total</th>
-                                <th class="text-center">Comprobantes</th> 
+                                <th class="text-center">Comprobantes</th>
                             </tr>
                         </thead>
                         <tbody>

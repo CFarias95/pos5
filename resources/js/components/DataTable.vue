@@ -42,7 +42,7 @@
                             </el-date-picker>
                         </template>
                         <template v-else>
-                            <el-input
+                            <el-input v-if="search.column != 'facturado'"
                                 placeholder="Buscar"
                                 v-model="search.value"
                                 style="width: 100%;"

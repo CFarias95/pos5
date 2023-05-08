@@ -1333,10 +1333,10 @@ export default {
             if(this.form.item.name_product_pdf && this.config.item_name_pdf_description){
                 this.form.name_product_pdf = this.form.item.name_product_pdf;
             }
-
+            await this.comprobarDescuento();
             this.getLastPriceItem();
             this.calculateTotal();
-            await this.comprobarDescuento();
+
 
         },
         focusTotalItem(change) {
@@ -1799,19 +1799,21 @@ export default {
             await this.$http.get(`/persons/record/${localStorage.customer_id}`).then((response) => {
                     console.log('persona ',response.data);
                     let datos=response.data.data;
+
                     if(datos.person_discount>0){
                         this.$el.querySelector(".el-collapse-item__header").click();
-                        this.form.discounts.push({
-                        discount_type_id: '00',
-                        discount_type: 'discount',
-                        description: datos.person_type,
-                        percentage: datos.person_discount,
-                        factor: 0,
-                        amount: 0,
-                        base: 0,
-                        is_amount: false
-                    })
 
+                        this.form.discounts.push({
+                            discount_type_id: '00',
+                            discount_type:  _.find(this.discount_types, {id: '00'}),
+                            description: datos.person_type,
+                            percentage: datos.person_discount,
+                            factor: 0,
+                            amount: 0,
+                            base: 0,
+                            is_amount: false,
+                            use_input_amount: true,
+                        })
                     }
                 });
         },

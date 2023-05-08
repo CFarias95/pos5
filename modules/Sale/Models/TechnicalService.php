@@ -77,6 +77,10 @@
      * @property bool                                 $warranty
      * @property bool                                 $maintenance
      * @property bool                                 $diagnosis
+     * @property bool                                 $delivered
+     * @property bool                                 $review
+     * @property bool                                 $other
+     * @property bool                                 $solved
      * @property SoapType                             $soap_type
      * @property User                                 $user
      * @property Collection|CashDocument[]            $cash_documents
@@ -143,6 +147,11 @@
             'warranty',
             'maintenance',
             'diagnosis',
+            'delivered',
+            'review',
+            'other',
+            'solved',
+            'upload_filename'
         ];
 
         protected $casts = [
@@ -177,6 +186,10 @@
             'warranty' => 'bool',
             'maintenance' => 'bool',
             'diagnosis' => 'bool',
+            'delivered' => 'bool',
+            'review' => 'bool',
+            'other' => 'bool',
+            'solved' => 'bool',
             'date_of_issue' => 'date',
         ];
 
@@ -434,6 +447,11 @@
                 'warranty' => (bool)$this->warranty,
                 'maintenance' => (bool)$this->maintenance,
                 'diagnosis' => (bool)$this->diagnosis,
+                'delivered' => (bool)$this->delivered,
+                'review' => (bool)$this->review,
+                'other' => (bool)$this->other,
+                'solved' => (bool)$this->solved,
+                'upload_filename' => $this->upload_filename,
                 'items' => $items,
                 'payments' => $this->payments,
 
@@ -1363,6 +1381,101 @@
         public function setRepair(bool $repair): TechnicalService
         {
             $this->repair = $repair;
+            return $this;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isDelivered(): bool
+        {
+            return $this->delivered;
+        }
+
+        /**
+         * @param bool $delivered
+         *
+         * @return TechnicalService
+         */
+        public function setDelivered(bool $delivered): TechnicalService
+        {
+            $this->delivered = $delivered;
+            return $this;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isReview(): bool
+        {
+            return $this->review;
+        }
+
+        /**
+         * @param bool $review
+         *
+         * @return TechnicalService
+         */
+        public function setReview(bool $review): TechnicalService
+        {
+            $this->review = $review;
+            return $this;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isOther(): bool
+        {
+            return $this->other;
+        }
+
+        /**
+         * @param bool $other
+         *
+         * @return TechnicalService
+         */
+        public function setOther(bool $other): TechnicalService
+        {
+            $this->other = $other;
+            return $this;
+        }
+
+        /**
+         * @return bool
+         */
+        public function isSolved(): bool
+        {
+            return $this->solved;
+        }
+
+        /**
+         * @param bool $solved
+         *
+         * @return TechnicalService
+         */
+        public function setSolved(bool $solved): TechnicalService
+        {
+            $this->solved = $solved;
+            return $this;
+        }
+        
+        /**
+         * @return string|null
+         */
+        public function getUploadFilename(): ?string
+        {
+            return $this->upload_filename;
+        }
+
+        /**
+         * @param string|null $upload_filename
+         *
+         * @return TechnicalService
+         */
+        public function setUploadFilename(?string $upload_filename): TechnicalService
+        {
+            $this->upload_filename = $upload_filename;
             return $this;
         }
 

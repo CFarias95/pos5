@@ -131,6 +131,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
         'tipo_doc_id',
         'document_type_intern',
         'is_aproved',
+        'afected_document',
     ];
 
     protected $casts = [

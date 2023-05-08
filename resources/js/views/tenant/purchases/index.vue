@@ -46,7 +46,7 @@
                         <th v-if="columns.total_unaffected.visible" class="text-right">T.Inafecta</th>
                         <th v-if="columns.total_exonerated.visible" class="text-right">T.Exonerado</th>
                         <th v-if="columns.total_taxed.visible" class="text-right">T.Gravado</th>
-                        <th v-if="columns.total_igv.visible" class="text-right">T.Igv</th>
+                        <th v-if="columns.total_igv.visible" class="text-right">T.IVA</th>
                         <th v-if="columns.total_perception.visible" >Percepcion</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->

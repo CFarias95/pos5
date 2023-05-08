@@ -33,7 +33,7 @@
                             <div :class="{'has-danger': errors.codSustento}"
                                  class="form-group">
                                 <label class="control-label">Código Tributario</label>
-                                <el-select v-model="form.codSustento" :required="haveRetentions">
+                                <el-select v-model="form.codSustento" :required="is_countable">
                                     <el-option v-for="option in codSustentos"
                                                :key="option.id"
                                                :label="option.description"
@@ -171,7 +171,7 @@
                             <el-input
                                 v-model="form.sequential_number"
                                 :maxlength="15"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 show-word-limit
                                 dusk="sequential_number">
                             </el-input>
@@ -189,7 +189,7 @@
                             <el-input
                                 v-model="form.auth_number"
                                 :maxlength="49"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 show-word-limit
                                 dusk="auth_number">
                             </el-input>
@@ -229,9 +229,24 @@
                                        v-text="errors.tipo_doc_id[0]"></small>
                             </div>
                         </div>
+                        <div class="form-group col-sm-12 col-md-6 col-lg-2"
+                            :class="{'has-danger': errors.afected_document}"
+                            v-if="is_credit_note">
+                            <label class="control-label">Documento Afectado</label>
+                            <el-input
+                                v-model="form.afected_document"
+                                dusk="afected_document"
+                                :required="is_credit_note"
+                                >
+                            </el-input>
+                            <small v-if="errors.afected_document"
+                                    class="form-control-feedback"
+                                    v-text="errors.afected_document[0]"></small>
+                        </div>
 
                         <div class="col-12">&nbsp;</div>
-                        <div class="col-md-8 mt-2">
+
+                         <div class="col-md-8 mt-2">
                             <div class="form-group">
                                 <el-checkbox v-model="form.is_aproved"
                                             >¿Desea Autorizar las retenciones de esta compra?
@@ -330,14 +345,14 @@
                                                 </el-tooltip>
                                             </th>
                                             <th v-if="form.payments.length>0"
-                                                class="pb-2">Referencia
+                                                class="pb-2">Referencia/Anticipo
                                             </th>
                                             <th v-if="form.payments.length>0"
                                                 class="pb-2">Monto
                                             </th>
                                             <th width="15%"><a class="text-center font-weight-bold text-info"
-                                                               href="#"
-                                                               @click.prevent="clickAddPayment">[+ Agregar]</a>
+                                                            href="#"
+                                                            @click.prevent="clickAddPayment">[+ Agregar]</a>
                                             </th>
                                         </tr>
                                         </thead>
@@ -347,34 +362,43 @@
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
                                                     <el-select v-model="row.payment_method_type_id"
-                                                               @change="changePaymentMethodType(index)">
+                                                            @change="changePaymentMethodType(index)">
                                                         <el-option v-for="option in cashPaymentMethod"
-                                                                   :key="option.id"
-                                                                   :label="option.description"
-                                                                   :value="option.id"></el-option>
+                                                                :key="option.id"
+                                                                :label="option.description"
+                                                                :value="option.id"></el-option>
                                                     </el-select>
                                                 </div>
                                             </td>
                                             <td>
                                                 <div class="form-group mb-2 mr-2">
                                                     <el-select v-model="row.payment_destination_id"
-                                                               filterable>
+                                                            filterable>
                                                         <el-option v-for="option in payment_destinations"
-                                                                   :key="option.id"
-                                                                   :label="option.description"
-                                                                   :value="option.id"></el-option>
+                                                                :key="option.id"
+                                                                :label="option.description"
+                                                                :value="option.id"></el-option>
                                                     </el-select>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input v-model="row.reference"></el-input>
-                                                </div>
+                                            <td v-if="!row.payment_method_type_id_desc">
+                                                <el-input
+                                                    v-model="row.reference"></el-input>
+
+                                            </td>
+                                            <td v-else>
+                                                <el-select
+                                                    v-model="row.reference"
+                                                    @change="changeAdvance(index,$event)">
+                                                    <el-option
+                                                        v-for="option in advances"
+                                                        :key="option.id"
+                                                        :label="option.id"
+                                                        :value="option.id"></el-option>
+                                                </el-select>
                                             </td>
                                             <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input v-model="row.payment"></el-input>
-                                                </div>
+                                                <el-input v-model="row.payment"  @change="changeAdvanceInput(index,$event,row.payment_method_type_id,row.reference)"></el-input>
                                             </td>
                                             <td class="series-table-actions text-center">
                                                 <button class="btn waves-effect waves-light btn-xs btn-danger"
@@ -803,7 +827,12 @@ export default {
             imports:[],
             type_docs:[],
             codSustentos:[],
+            codSustentos_all:[],
             haveRetentions: false,
+            advances:[],
+
+            is_countable:false,
+            is_credit_note:false,
         }
     },
     async created() {
@@ -827,7 +856,7 @@ export default {
                 this.retention_types_income = response.data.retention_types_income
                 this.imports = response.data.imports
                 this.type_docs = response.data.typeDocs
-                this.codSustentos = response.data.codSustentos
+                this.codSustentos_all = response.data.codSustentos
                 this.document_types2 = response.data.typeDocs2
                 //console.log('tipos de documentos Local: ',response.data.typeDocs2)
 
@@ -1128,7 +1157,8 @@ export default {
                     this.form.sequential_number = dato.sequential_number
                     this.form.observation = dato.observation
                     this.form.is_aproved = (dato.is_aproved && dato.is_aproved > 0) ? true:false
-
+                    this.form.import_id = dato.import_id
+                    this.form.tipo_doc_id = dato.tipo_doc_id
                     //this.form.haveRetentions = dato.haveRetentions
                     //this.retencionesActuales = dato.retenciones
 
@@ -1163,6 +1193,57 @@ export default {
             });
 
             return payments
+        },
+        changeAdvanceInput(index,event,methodType, id){
+
+            let selectedAdvance = _.find(this.advances,{'id':id})
+            let payment_method_type = _.find(this.payment_method_types, {'id': methodType});
+            if(payment_method_type.description.includes('Anticipo')){
+
+                let maxAmount = selectedAdvance.valor
+
+                if(maxAmount >= event){
+                    /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+
+                }else{
+                    this.form.payments[index].payment = maxAmount
+                    let message = 'El monto maximo del anticipo es de '+maxAmount
+                    this.$message.warning(message)
+
+                }
+            }
+        },
+        changeAdvance(index, id){
+
+            let selectedAdvance = _.find(this.advances,{'id':id})
+            let maxAmount = selectedAdvance.valor
+
+            let payment_count = this.form.payments.length;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if(maxAmount >= amount ){
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+            }else if(amount > maxAmount ){
+
+                this.form.payments[index].payment = maxAmount
+                let message = 'El monto maximo del anticipo es de '+maxAmount
+                this.$message.warning(message)
+            }
+
+
+        },
+        addAdvancesCustomer(){
+
+            this.$http.get(`/documents/advance/${this.form.supplier_id}`).then(
+                response => {
+
+                    this.advances = response.data
+                }
+            )
         },
         changePaymentMethodType(index) {
 
@@ -1276,6 +1357,7 @@ export default {
                 auth_number: '',
                 sequential_number: '',
                 observation: '',
+                is_aproved:false,
 
             }
 
@@ -1336,7 +1418,10 @@ export default {
             //console.log('documento seleccionado',document.DocumentTypeID)
             this.form.document_type_id = document.DocumentTypeID
             //this.codSustentos = _.find(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
-            this.codSustentos = _.filter(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
+            this.codSustentos = _.filter(this.codSustentos_all,{'idTipoComprobante':this.form.document_type_id})
+
+            this.is_countable  = (document.accountant > 0)
+            this.is_credit_note = (document.DocumentTypeID == '04')
         },
         addRow(row) {
 

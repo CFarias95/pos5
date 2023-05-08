@@ -24,8 +24,8 @@
                                         {{csrf_field()}}
                                         <input type="hidden" value="{{$d}}" name="d">
                                         <input type="hidden" value="{{$a}}" name="a">
-                                    
-                                 
+
+
                                         <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-pdf"></i> Exportar PDF</button>
                                         {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                     </form>
@@ -33,7 +33,7 @@
                                     {{csrf_field()}}
                                     <input type="hidden" value="{{$d}}" name="d">
                                     <input type="hidden" value="{{$a}}" name="a">
-                                
+
                                     <button class="btn btn-custom   mt-2 mr-2" type="submit"><i class="fa fa-file-excel"></i> Exportar Excel</button>
                                     {{-- <label class="pull-right">Se encontraron {{$reports->count()}} registros.</label> --}}
                                 </form>
@@ -53,10 +53,10 @@
                                         <th class="text-right" >T.Exonerado</th>
 
                                         <th class="text-right">T.Gravado</th>
-                                        <th class="text-right">T.Igv</th>
+                                        <th class="text-right">T.IVA</th>
                                         <th class="text-right">Total</th>
-                                        <th class="text-center">Comprobantes</th> 
-                                       
+                                        <th class="text-center">Comprobantes</th>
+
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -75,13 +75,13 @@
                                         <td>{{ $value->total_taxed}}</td>
                                         <td>{{ $value->total_igv}}</td>
                                         <td>{{ $value->total}}</td>
-                                       
+
                                         <td>
                                             @foreach ($value->documents as $doc)
                                                  <label class="d-block">{{$doc->number_full}}</label>
                                             @endforeach
                                         </td>
-                                      
+
                                     </tr>
                                     @endforeach
                                 </tbody>
@@ -89,7 +89,7 @@
                             Total {{$reports->total()}}
                             <label class="pagination-wrapper ml-2">
                                 {{-- {{ $reports->appends(['search' => Session::get('form_document_list')])->render()  }} --}}
-                                {{$reports->appends($_GET)->render()}} 
+                                {{$reports->appends($_GET)->render()}}
                             </label>
                         </div>
                     </div>

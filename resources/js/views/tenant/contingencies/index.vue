@@ -38,7 +38,7 @@
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right">T.Gravado</th>
-                        <th class="text-right">T.Igv</th>
+                        <th class="text-right">T.IVA</th>
                         <th class="text-right">Total</th>
                         <th class="text-center">Descargas</th>
                         <!--<th class="text-center">Anulación</th>-->
@@ -52,7 +52,7 @@
                             <small v-text="row.document_type_description"></small><br/>
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
                         </td>
-                        
+
                         <td>
                             <el-tooltip v-if="tooltip(row, false)" class="item" effect="dark" placement="bottom">
                                 <div slot="content">{{tooltip(row)}}</div>
@@ -210,7 +210,7 @@
                     if (response.data.success) {
                         this.$message.success('Se envio satisfactoriamente el comprobante.');
                         this.$eventHub.$emit('reloadData');
-                        
+
                         this.clickCheckOnline(document_id);
                     }
                     else {
@@ -241,14 +241,14 @@
             tooltip(row, message = true) {
                 if (message) {
                     if (row.shipping_status) return row.shipping_status.message;
-                    
+
                     if (row.sunat_shipping_status) return row.sunat_shipping_status.message;
-                    
+
                     if (row.query_status) return row.query_status.message;
                 }
-                
+
                 if ((row.shipping_status) || (row.sunat_shipping_status) || (row.query_status)) return true;
-                
+
                 return false;
             }
         }

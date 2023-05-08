@@ -115,7 +115,7 @@
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right" >T.Exonerado</th>
                                 <th class="text-right">T.Gravado</th>
-                                <th class="text-right">T.Igv</th>
+                                <th class="text-right">T.IVA</th>
                                 <th class="text-right">Total</th>
                             </tr>
                         </thead>

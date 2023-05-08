@@ -169,6 +169,8 @@ if($current_hostname) {
             Route::get('/search/customer/{id}', 'TechnicalServiceController@searchCustomerById');
             Route::get('/download/{id}/{format?}', 'TechnicalServiceController@download');
             Route::get('/print/{id}/{format?}', 'TechnicalServiceController@toPrint');
+            Route::get('/debeCustomer/{id?}', 'TechnicalServiceController@debeCustomer');
+            Route::post('upload', 'TechnicalServiceController@uploadAttached');
             Route::delete('/{id}', 'TechnicalServiceController@destroy');
 
         });

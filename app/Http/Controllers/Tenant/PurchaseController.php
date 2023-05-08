@@ -1042,7 +1042,11 @@ use Modules\Sale\Models\SaleOpportunity;
         public function update(PurchaseRequest $request)
         {
 
-            $purchase = DB::connection('tenant')->transaction(function () use ($request) {
+            $docIntern = PurchaseDocumentTypes2::where('idType',$request->document_type_intern)->get();
+
+            $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
+
+            $purchase = DB::connection('tenant')->transaction(function () use ($request,$signo) {
 
                 $doc = Purchase::firstOrNew(['id' => $request['id']]);
                 $doc->fill($request->all());
@@ -1109,6 +1113,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                 foreach ($request['items'] as $row) {
                     $p_item = new PurchaseItem();
+                    $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
                     $p_item->purchase_id = $doc->id;
                     $p_item->save();

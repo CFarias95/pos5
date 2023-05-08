@@ -24,9 +24,9 @@
                 <td width="50%">
                     @if($company->logo)
 
-                            <div class="company_logo_box">
-                                <img src="{{ $company->logo }}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 40px; max-width: 150px" >
-                            </div>
+                        <div class="company_logo_box">
+                            <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
+                        </div>
 
                     @endif
                     <table>

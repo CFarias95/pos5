@@ -18,7 +18,7 @@
     use Modules\Sale\Models\QuotationPayment;
     use Modules\Sale\Models\TechnicalServicePayment;
     use App\Models\Tenant\ExchangeRate;
-
+use Illuminate\Support\Facades\Log;
 
     trait FinanceTrait
     {
@@ -131,18 +131,34 @@
 
         public function deleteAllPayments($payments)
         {
+            //Log::info('PAYMENTS',$payments);
+            if(count($payments) > 0 ){
+                foreach ($payments as $payment) {
 
-            foreach ($payments as $payment) {
-                $records = AccountingEntries::where('document_id','CF'.$payment->id)->get();
-                foreach($records as $record){
-                    $record->delete();
+                    Log::info('PAYMENTS: ',$payment);
+
+                    $records2 = AccountingEntries::where('document_id','PC'.$payment['id'])->get();
+                    Log::info('PC: : '.json_encode($records2));
+                    foreach($records2 as $record){
+                        $record->delete();
+                    }
+
+                    if($payment['document_id']){
+
+                        $records = AccountingEntries::where('document_id','CF'.$payment['id'])->get();
+                        Log::info('CF: : '.json_encode($records));
+                        foreach($records as $record){
+                            $record->delete();
+                        }
+
+                        $paymentD = DocumentPayment::find($payment['id']);
+                        $paymentD->delete();
+
+                    }
+
                 }
-                $records2 = AccountingEntries::where('document_id','PC'.$payment->id)->get();
-                foreach($records2 as $record){
-                    $record->delete();
-                }
-                $payment->delete();
             }
+
 
         }
 

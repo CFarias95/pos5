@@ -39,7 +39,7 @@
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right" v-if="columns.total_taxed.visible">T.Gravado</th>
-                        <th class="text-right" v-if="columns.total_igv.visible">T.Igv</th>
+                        <th class="text-right" v-if="columns.total_igv.visible">T.IVA</th>
                         <th class="text-right">Total</th>
                     <tr>
                     <tr slot-scope="{ index, row }" :class="{ anulate_color : row.state_type_id == '11' }">
@@ -61,12 +61,12 @@
                         <td class="text-right" v-if="columns.total_taxed.visible">{{ row.total_taxed }}</td>
                         <td class="text-right" v-if="columns.total_igv.visible">{{ row.total_igv }}</td>
                         <td class="text-right">{{ row.total }}</td>
-                         
+
 
                     </tr>
                 </data-table>
             </div>
- 
+
         </div>
     </div>
 </template>
@@ -113,13 +113,13 @@
                     total_igv: {
                         title: 'T.IGV',
                         visible: false
-                    } 
+                    }
                 }
             }
         },
         async created() {
         },
-        methods: { 
+        methods: {
         }
     }
 </script>

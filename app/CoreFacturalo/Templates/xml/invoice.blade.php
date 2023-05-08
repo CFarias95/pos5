@@ -110,17 +110,17 @@
         <importeTotal>{{ $document->total }}</importeTotal>
         <moneda>DOLAR</moneda>
         <pagos>
-        @if($document->payment_condition_id == '01')
-        @foreach($payments as $pago)
+        @if(count($document->payments) > 0)
+            @if($document->payment_condition_id === '01')
+            @foreach($payments as $pago)
             <pago>
                 <formaPago>{{ $pago->payment_method_type->pago_sri }}</formaPago>
                 <total>{{ $pago->payment }}</total>
                 <plazo>0</plazo>
                 <unidadTiempo>Dias</unidadTiempo>
             </pago>
-        @endforeach
-        @endif
-        @if($document->payment_condition_id === '02')
+            @endforeach
+            @elseif($document->payment_condition_id === '02')
             @foreach($document->fee as $pago)
             <pago>
                 <formaPago>01</formaPago>
@@ -129,6 +129,23 @@
                 <unidadTiempo>Dias</unidadTiempo>
             </pago>
             @endforeach
+            @elseif($document->payment_condition_id === '03')
+            @foreach($document->fee as $pago)
+            <pago>
+                <formaPago>01</formaPago>
+                <total>{{ $pago->amount }}</total>
+                <plazo>{{ date_diff($document->date_of_issue, $pago->date)->format('%a') - 1 }}</plazo>
+                <unidadTiempo>Dias</unidadTiempo>
+            </pago>
+            @endforeach
+            @endif
+        @else
+            <pago>
+                <formaPago>01</formaPago>
+                <total>{{ $document->total }}</total>
+                <plazo>0</plazo>
+                <unidadTiempo>Dias</unidadTiempo>
+            </pago>
         @endif
         </pagos>
     </infoFactura>

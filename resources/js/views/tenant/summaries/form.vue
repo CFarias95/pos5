@@ -68,7 +68,7 @@
                                     <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                                     <th class="text-right" v-if="columns.total_charge.visible">T.Cargos</th>
                                     <th class="text-right">T.Gravado</th>
-                                    <th class="text-right">T.Igv</th>
+                                    <th class="text-right">T.IVA</th>
                                     <th class="text-right">Total</th>
                                     <th></th>
                                 </tr>

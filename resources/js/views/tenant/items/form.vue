@@ -1329,8 +1329,7 @@
                 </el-tab-pane>
                 <el-tab-pane class
                                  v-if="!isService"
-
-                                 name="seven">
+                                 name="eight">
                         <span slot="label">Tarifas</span>
                         <div class="row">
                             <div class="col-md-12">
