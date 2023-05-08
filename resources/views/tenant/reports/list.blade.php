@@ -141,7 +141,12 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.purchases.quotations')}}">
-                                DEtalle de compras
+                                Detalle de compras
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.base_impuestos')}}">
+                                Compras bases e impuestos
                             </a>
                         </li>
                     </ul>

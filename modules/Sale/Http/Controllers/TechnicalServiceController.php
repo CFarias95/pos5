@@ -25,6 +25,7 @@ use App\Models\Tenant\TechnicalServiceItem;
 use App\Models\Tenant\User;
 use App\Traits\OfflineTrait;
 use Exception;
+use Illuminate\Contracts\Cache\Store;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -503,13 +504,23 @@ class TechnicalServiceController extends Controller
                 'Content-Disposition' => 'inline; filename="'.$technical_service->filename.'"'
             ];
             */
-
+        Log::info($technical_service->filename);
         return response()->file($temp, $this->generalPdfResponseFileHeaders($technical_service->filename));
     }
 
-    private function reloadPDF($technical_service, $format, $filename)
+    private function  reloadPDF($technical_service, $format, $filename)
     {
         $this->createPdf($technical_service, $format, $filename);
+    }
+
+    public function download($id){
+
+        $technical_service1 = TechnicalService::where('id', $id)->first();
+    
+        if (!$technical_service1) throw new Exception("El código {$id} es inválido, no se encontro la orden de compra relacionada");
+    
+        return Storage::disk('tenant')->download('technical_service_attached'.DIRECTORY_SEPARATOR.$technical_service1->upload_filename);
+
     }
 
     public function destroy($id)

@@ -69,6 +69,9 @@
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar
                                 </button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickDownload(row.id)">Descargar PDF
+                                </button>
                             </template>
 
                             <template v-if="typeUser === 'admin'">
@@ -167,8 +170,8 @@ export default {
             this.recordId = recordId
             this.showDialogOptions = true
         },
-        clickAdd(recordId) {
-
+        clickDownload(recordId) {
+            window.open(`/${this.resource}/download/${recordId}`);
         }
     }
 }

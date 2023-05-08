@@ -172,7 +172,7 @@ if($current_hostname) {
             Route::get('/debeCustomer/{id?}', 'TechnicalServiceController@debeCustomer');
             Route::post('upload', 'TechnicalServiceController@uploadAttached');
             Route::delete('/{id}', 'TechnicalServiceController@destroy');
-
+            Route::get('/download/{id?}', 'TechnicalServiceController@download');
         });
 
 
