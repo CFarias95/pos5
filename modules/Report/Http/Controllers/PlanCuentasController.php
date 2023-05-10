@@ -14,6 +14,7 @@ use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 use Modules\Report\Exports\PlanCuentasExport;
 use Modules\Report\Http\Resources\PlanCuentasCollection;
 
@@ -45,7 +46,6 @@ class PlanCuentasController extends Controller
         $page = request()->query('page') ?? 1;
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
-
         return new PlanCuentasCollection($paginatedCollection);
     }
 

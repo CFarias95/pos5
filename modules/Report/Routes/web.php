@@ -68,12 +68,11 @@ if ($current_hostname) {
                         });
                         
                          Route::prefix('base_impuestos')->group(function () {
-                              Route::get('/', 'ReportBaseImpuestosController@index')->name('tenant.reports.purchases.base_impuestos');
+                              Route::get('/', 'ReportBaseImpuestosController@index')->name('tenant.reports.purchases.base_impuestos.index');
                               Route::get('records', 'ReportBaseImpuestosController@records');
                               Route::get('excel', 'ReportBaseImpuestosController@excel');
                               Route::get('pdf', 'ReportBaseImpuestosController@pdf');
-                              Route::get('filter', 'ReportBaseImpuestosController@filter');
-
+                              Route::get('datosSP', 'ReportBaseImpuestosController@datosSP');
                          });
 
                     });

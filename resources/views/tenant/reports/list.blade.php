@@ -145,7 +145,7 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('tenant.reports.purchases.base_impuestos')}}">
+                            <a href="{{route('tenant.reports.purchases.base_impuestos.index')}}">
                                 Compras bases e impuestos
                             </a>
                         </li>

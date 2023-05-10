@@ -2,6 +2,9 @@
 
 @section('content')
 
-    <tenant-report-base_impuestos-index></tenant-report-base_impuestos-index>
+    <tenant-base_impuestos-index
+        :configuration="{{\App\Models\Tenant\Configuration::getPublicConfig()}}"
+    >   
+    </tenant-base_impuestos-index>
 
 @endsection
