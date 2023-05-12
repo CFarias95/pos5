@@ -118,7 +118,7 @@
                                     <td class="celda">{{ $row->Serieinterna }}</td>
                                     <td class="celda">{{ $row->Numerointerno }}</td>
                                     <td class="celda">&nbsp;{{ $row->secuencial }}</td>
-                                    <td class="celda">{{ $row->Numautorizacion }}</td>
+                                    <td class="celda">&nbsp;{{ $row->Numautorizacion }}</td>
                                     <td class="celda">{{ $row->Nombreproveedor }}</td>
                                     <td class="celda">&nbsp;{{ $row->CIRUC }}</td>
                                     <td class="celda">{{ $row->Tipo }}</td>

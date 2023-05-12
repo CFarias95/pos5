@@ -200,6 +200,15 @@ if ($current_hostname) {
                      * reports/commissions/filter
                      * reports/commissions/records
                      */
+                    Route::prefix('stock')->group(function (){
+                         Route::get('/', 'ReportStockAlmacenController@index')
+                              ->name('tenant.reports.stock.index');
+                         Route::get('records', 'ReportStockAlmacenController@records');
+                         Route::get('excel', 'ReportStockAlmacenController@excel');
+                         Route::get('pdf', 'ReportStockAlmacenController@pdf');
+                         Route::get('datosSP', 'ReportStockAlmacenController@datosSP');
+                    });
+
                     Route::get('commissions', 'ReportCommissionController@index')
                          ->name('tenant.reports.commissions.index');
                     Route::get('commissions/pdf', 'ReportCommissionController@pdf')

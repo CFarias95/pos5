@@ -190,6 +190,9 @@ Vue.component('tenant-reporte-ventas-excel', require('../../modules/Report/Resou
 Vue.component('tenant-plan_cuentas-index', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
 Vue.component('tenant-plan_cuentas-excel', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
 
+//Stock Almacen
+Vue.component('tenant-stock-index', require('../../modules/Report/Resources/assets/js/views/stock/index.vue'));
+
 //Reporte Compra base e impuestos
 Vue.component('tenant-base_impuestos-index', require('../../modules/Report/Resources/assets/js/views/base_impuestos/index.vue'));
 

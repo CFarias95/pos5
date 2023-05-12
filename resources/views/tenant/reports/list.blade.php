@@ -91,8 +91,11 @@
                                 </a>
                             </li>
                         </ul>
-                        {{-- Actividades del sistema --}}
-
+                        <li>
+                            <a href="{{route('tenant.reports.stock.index')}}">
+                                Stock Actual por Almacen
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
