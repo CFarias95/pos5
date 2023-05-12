@@ -73,7 +73,10 @@
             'number_days',
             'is_credit',
             'is_cash',
+            'is_advance',
             'pago_sri',
+            'countable_acount',
+            'countable_acount_payment',
         ];
 
         public const CASH_PAYMENT_ID = '01';
@@ -103,15 +106,17 @@
             return self::whereNotIn('id', $exclude_method_types_id)
                 ->get()
                 ->transform(function ($row) {
-                    $row->id = (string)$row->id;
-                    $row->number_days = (int)$row->number_days;
-                    $row->has_card = (bool)$row->has_card;
+                    $row->id = (string) $row->id;
+                    $row->number_days = (int) $row->number_days;
+                    $row->has_card = (bool) $row->has_card;
                     $row->is_credit = (bool)$row->is_credit;
                     $row->has_card = (bool)$row->has_card;
                     $row->is_cash = (bool)$row->is_cash;
+                    $row->is_advance = (bool)$row->is_advance;
                     $row->charge = (float)$row->charge;
                     $row->description = (string)$row->description;
                     $row->pago_sri = (string)$row->pago_sri;
+                    $row->countable_acount = (string) $row->countable_acount;
                     return $row;
                 });
         }

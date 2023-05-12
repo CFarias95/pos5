@@ -145,6 +145,7 @@
             'optional_email',
             'seller_id',
             'zone_id',
+            'rate_id',
             'status',
             'parent_id',
             'accumulated_points',
@@ -154,6 +155,8 @@
             'pagoLocExtDoc',
             'parteRel',
             'pagoLocExt',
+            'account',
+            'credit_quota',
         ];
 
         protected $casts = [
@@ -169,6 +172,7 @@
             'accumulated_points' => 'float',
             'has_discount' => 'bool',
             'discount_amount' => 'float',
+            'credit_quota' => 'int',
         ];
 
         // protected static function boot()
@@ -509,6 +513,10 @@
             if ($this->person_type !== null) {
                 $person_type_descripton = $this->person_type->description;
             }
+            $person_discount = '';
+            if ($this->person_type !== null) {
+                $person_discount = $this->person_type->discount;
+            }
             $optional_mail = $this->getOptionalEmailArray();
             $optional_mail_send = [];
             if (!empty($this->email)) {
@@ -579,6 +587,7 @@
                 'zone' => $this->getZone(),
                 'zone_id' => $this->zone_id,
                 'seller_id' => $this->seller_id,
+                'rate_id' => $this->rate_id,
                 'website' => $this->website,
                 'document_type' => $this->identity_document_type->description,
                 'enabled' => (bool)$this->enabled,
@@ -590,7 +599,7 @@
                 'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
-
+                'account' => $this->account,
                 'province_id' => $province['id']??null,
                 'province' => $province,
                 'district_id' => $district['id']??null,
@@ -604,6 +613,7 @@
                 'condition' => $this->condition,
                 'person_type_id' => $this->person_type_id,
                 'person_type' => $person_type_descripton,
+                'person_discount' => floatval($person_discount),
                 'contact' => $this->contact,
                 'comment' => $this->comment,
                 'addresses' => $addresses,
@@ -616,6 +626,7 @@
                 'has_discount' => $this->has_discount,
                 'discount_type' => $this->discount_type,
                 'discount_amount' => $this->discount_amount,
+                'credit_quota' => (int)$this->credit_quota,
 
             ];
             if ($childrens == true) {

@@ -130,7 +130,7 @@
                                 <td class="celda">{{$value->state_type->description}}</td>
 
                                 @if ($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
-                                        
+
                                     <td class="celda">{{$value->currency_type_id}} (Se aplicó conversión a soles)</td>
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_perception}}</td>
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->getConvertTotalExoneratedToPen() }}</td>
@@ -143,7 +143,7 @@
 
 
                                 @else
-                                
+
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_perception}}</td>
 
@@ -155,7 +155,7 @@
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_taxed}}</td>
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total_igv}}</td>
                                     <td class="celda">{{$value->state_type_id == '11' ? 0 : $value->total + $value->total_perception}}</td>
-                                    
+
                                 @endif
 
 

@@ -39,7 +39,7 @@
                         <th class="text-right" v-if="columns.total_unaffected.visible">T.Inafecta</th>
                         <th class="text-right" v-if="columns.total_exonerated.visible">T.Exonerado</th>
                         <th class="text-right">T.Gravado</th>
-                        <th class="text-right">T.Igv</th>
+                        <th class="text-right">T.Iva</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">PDF</th> -->
                         <th class="text-right">Acciones</th>
@@ -152,20 +152,20 @@
 
                 await this.updateStateType(`/${this.resource}/state-type/${row.state_type_id}/${row.id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
-                ) 
+                )
 
             },
             filter(){
                 this.$http.get(`/${this.resource}/filter`)
-                            .then(response => { 
-                                this.state_types = response.data.state_types 
+                            .then(response => {
+                                this.state_types = response.data.state_types
                             })
             },
             clickEdit(id)
             {
                 this.recordId = id
                 this.showDialogFormEdit = true
-            }, 
+            },
             clickOptionsPdf(recordId = null) {
                 this.recordId = recordId
                 this.showDialogOptionsPdf = true

@@ -97,7 +97,7 @@
                         </i>  Exportal Excel</el-button>
                         </template>
                         <template v-if="records.length>0">
-                            
+
                             <el-button class="submit" icon="el-icon-tickets" type="danger"
                                        @click.prevent="clickDownload('pdf')">Exportar PDF
                             </el-button>

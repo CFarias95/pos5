@@ -18,12 +18,14 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th>Descripción</th>
+                        <th>Descuento %</th>
                         <th>Fecha registro</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.description }}</td>
+                        <td>{{ row.discount }}</td>
                         <td>{{ row.created_at }}</td>
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
@@ -37,7 +39,7 @@
 
             <person-types-form :showDialog.sync="showDialog"
                           :recordId="recordId" ></person-types-form>
- 
+
         </div>
     </div>
 </template>

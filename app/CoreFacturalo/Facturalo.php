@@ -2,6 +2,7 @@
 
 //JOINSOFTWARE//
 namespace App\CoreFacturalo;
+use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Mpdf\Mpdf;
@@ -44,6 +45,9 @@ use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
 use App\CoreFacturalo\SRI\FirmarSri;
 use Illuminate\Support\Facades\Log;
 use App\CoreFacturalo\WS\Services\AuthSri;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Person;
 
 /**
  * Class Facturalo
@@ -971,7 +975,7 @@ class Facturalo
         $this->setDataSoapType();
         $this->setSoapCredentials();
 
-        $sender = in_array($this->type, ['summary', 'voided'])?new SummarySender():new BillSender();
+        $sender = new BillSender();
         $sender->setClient($this->wsClient);
         $sender->setCodeProvider(new XmlErrorCodeProvider());
         $this->loadXmlSigned();
@@ -1522,13 +1526,14 @@ class Facturalo
             }
 
             $record = $document->payments()->create($row);
-
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){
                 $this->createGlobalPayment($record, $row);
             }
 
         }
+
+
     }
 
     /**

@@ -35,8 +35,10 @@
     use App\Traits\OfflineTrait;
     use Exception;
     use Illuminate\Http\Request;
-    use Illuminate\Support\Facades\DB;
-    use Illuminate\Support\Str;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Str;
     use Modules\Finance\Traits\FinanceTrait;
     use Modules\Order\Http\Requests\OrderNoteRequest;
     use Modules\Order\Http\Resources\OrderNoteCollection;
@@ -50,7 +52,9 @@
     use Mpdf\HTMLParserMode;
     use Mpdf\Mpdf;
     use Mpdf\MpdfException;
-    use Throwable;
+use Swift_Mailer;
+use Swift_SmtpTransport;
+use Throwable;
 
 
     /**
@@ -250,6 +254,8 @@
                             'identity_document_type_id' => $row->identity_document_type_id,
                             'identity_document_type_code' => $row->identity_document_type->code,
                             'address' => $row->address,
+                            'email' =>$row->email,
+                            'phone' =>$row->telephone,
                         ];
                     });
                     return $customers;
@@ -668,7 +674,7 @@
 
         public function update(OrderNoteRequest $request)
         {
-            
+
             DB::connection('tenant')->transaction(function () use ($request) {
 
 
@@ -705,10 +711,10 @@
             ];
 
         }
-        
+
 
         /**
-         * 
+         *
          * Obtener id de la fila al editar pedido
          *
          * @param  array $row
@@ -868,25 +874,21 @@
             $order_note = OrderNote::find($request->id);
             $customer_email = $request->input('customer_email');
 
-            // $this->reloadPDF($order_note, "a4", $order_note->filename);
+
             $email = $customer_email;
             $mailable = new OrderNoteEmail($client, $order_note);
-            $id = (int)$order_note->id;
-            $model = __FILE__ . ";;" . __LINE__;
-            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
-            /*
+            //$id = (int)$order_note->id;
+            //$model = __FILE__ . ";;" . __LINE__;
+            //$sendIt = EmailController::SendMail($email, $mailable, $id, $model);
             Configuration::setConfigSmtpMail();
-            $array_email = explode(',', $customer_email);
-            if (count($array_email) > 1) {
-                foreach ($array_email as $email_to) {
-                    $email_to = trim($email_to);
-                    if(!empty($email_to)) {
-                        Mail::to($email_to)->send(new OrderNoteEmail($client, $order_note));
-                    }
-                }
-            } else {
-                Mail::to($customer_email)->send(new OrderNoteEmail($client, $order_note));
-            }*/
+            $backup = Mail::getSwiftMailer();
+            $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+            $transport->setUsername(Config::get('mail.username'));
+            $transport->setPassword(Config::get('mail.password'));
+            $mailer = new Swift_Mailer($transport);
+            Mail::setSwiftMailer($mailer);
+            Mail::to($email)->send($mailable);
+
             return [
                 'success' => true
             ];

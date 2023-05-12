@@ -1029,7 +1029,7 @@ export default {
             if (
                 identity_document_types.includes(customer.identity_document_type_id)
             ) {
-                this.document_types = _.filter(this.all_document_types, {id: "03"});
+                this.document_types = _.filter(this.all_document_types, {id: '01'});
             } else {
                 this.document_types = this.all_document_types;
             }

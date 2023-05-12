@@ -160,7 +160,7 @@
                 </table>
             </div>
 
-            
+
             <!-- propinas -->
             <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
                 <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
@@ -202,7 +202,7 @@ export default {
     props: ["showDialog", "recordId", "showClose", "showGenerate", "type", 'typeUser', 'configuration'],
     data() {
         return {
-            customer_email: "",
+            customer_email: null,
             titleDialog: null,
             loading: false,
             resource: "order-notes",
@@ -244,8 +244,8 @@ export default {
         {
             if(tip)
             {
-                this.document.worker_full_name_tips = tip.worker_full_name_tips 
-                this.document.total_tips = tip.total_tips 
+                this.document.worker_full_name_tips = tip.worker_full_name_tips
+                this.document.total_tips = tip.total_tips
             }
         },
         cleanFormTip()
@@ -284,7 +284,7 @@ export default {
             this.form_cash_document = {
                 document_id: null,
                 sale_note_id: null
-            }
+            };
 
         },
         getCustomer() {
@@ -293,6 +293,7 @@ export default {
                     `/${this.resource_documents}/search/customer/${this.form.order_note.customer_id}`
                 )
                 .then(response => {
+                    console.log('customer search: ',response)
                     this.customers = response.data.customers;
                     this.document.customer_id = this.form.order_note.customer_id;
                     this.changeCustomer();
@@ -359,7 +360,7 @@ export default {
                 payments: [],
                 hotel: {},
                 seller_id: 0,
-                
+
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
             };
@@ -522,26 +523,26 @@ export default {
 
             let new_items = items
 
-            if (this.document.document_type_id != '80') 
+            if (this.document.document_type_id != '80')
             {
                 new_items = items.map((row) => {
 
                     // si existe propiedad regularizada en json item
                     if(row.item.IdLoteSelected)
                     {
-                        if (Array.isArray(row.item.IdLoteSelected)) 
+                        if (Array.isArray(row.item.IdLoteSelected))
                         {
                             row.IdLoteSelected = row.item.IdLoteSelected
                         }
                     }
                     else
                     {
-                        if (Array.isArray(row.item.lots_group)) 
+                        if (Array.isArray(row.item.lots_group))
                         {
                             // obtener lotes vendidos, con cantidad mayor a 0
                             let sale_lots_group = this.getSaleLotsGroup(row.item.lots_group)
-    
-                            if (sale_lots_group.length > 0) 
+
+                            if (sale_lots_group.length > 0)
                             {
                                 // generar arreglo de lotes vendidos con la data necesaria para que sea procesado en registro de cpe
                                 row.IdLoteSelected = this.transformSaleLotsGroup(sale_lots_group)
@@ -568,6 +569,7 @@ export default {
             await this.$http
                 .get(`/${this.resource}/record2/${this.recordId}`)
                 .then(response => {
+                    console.log('options',response)
                     this.form = response.data.data;
                     this.form.order_note.seller_id = this.form.order_note.user_id;
                     // this.validateIdentityDocumentType()
@@ -590,7 +592,7 @@ export default {
                 this.is_document_type_invoice = false;
             }
 
-            if(this.configuration.enabled_tips_pos && !this.isInvoiceDocument) this.cleanFormTip()
+            if(this.configuration && this.configuration.enabled_tips_pos && !this.isInvoiceDocument) this.cleanFormTip()
         },
         async validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -602,8 +604,9 @@ export default {
                 id: this.document.customer_id
             });
 
+            this.customer_email = customer.email
             if (identity_document_types.includes(customer.identity_document_type_id)) {
-                this.document_types = _.filter(this.all_document_types,
+                /*this.document_types = _.filter(this.all_document_types,
                     _.overSome(
                         [
                             // {'id': '01'}, // Factura
@@ -613,7 +616,8 @@ export default {
                             ['id', '80'] // Nota de venta
                         ]
                     )
-                );
+                );*/
+                this.document_types = this.all_document_types;
                 // this.document_types = _.filter(this.all_document_types, {id: "03"});
             } else {
                 this.document_types = this.all_document_types;

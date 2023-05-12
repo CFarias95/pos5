@@ -36,9 +36,8 @@
                         <th>Número</th>
                         <th>Productos</th>
                         <th>Retenciones</th>
+                        <th>Estado retencion</th>
                         <th>Pagos</th>
-                        <!-- <th>F. Pago</th> -->
-                        <!-- <th>Estado</th> -->
                         <th class="text-center">Moneda</th>
                         <th class="text-right" v-if="columns.guides.visible">Guía </th>
                         <th class="text-right" v-if="columns.purchase_order.visible">Orden de compra </th>
@@ -47,12 +46,12 @@
                         <th v-if="columns.total_unaffected.visible" class="text-right">T.Inafecta</th>
                         <th v-if="columns.total_exonerated.visible" class="text-right">T.Exonerado</th>
                         <th v-if="columns.total_taxed.visible" class="text-right">T.Gravado</th>
-                        <th v-if="columns.total_igv.visible" class="text-right">T.Igv</th>
+                        <th v-if="columns.total_igv.visible" class="text-right">T.IVA</th>
                         <th v-if="columns.total_perception.visible" >Percepcion</th>
                         <th class="text-right">Total</th>
                         <!-- <th class="text-center">Descargas</th> -->
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.date_of_issue }}</td>
@@ -93,13 +92,8 @@
                             </el-popover>
 
                         </td>
-                        <!-- <td>{{ row.payment_method_type_description }}</td> -->
-                        <!-- <td>
-                            <template v-for="(it,ind) in row.payments">
-                                {{it.payment_method_type_description}} - {{it.payment}}
-                            </template>
-                        </td> -->
-                        <!-- <td>{{ row.state_type_description }}</td> -->
+                        <td>{{row.retenciones_state_name}} </td>
+
                         <td class="text-right">
                             <button
                                 v-if="row.state_type_id != '11'"
@@ -129,7 +123,7 @@
                         <td class="text-right">{{ row.total   }}</td>
                         <td class="text-right">
                             <template v-if="permissions.edit_purchase">
-                                <a v-if="row.state_type_id != '11'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                                <a v-if="row.state_type_id != '11' && row.retenciones_state_id != '05' && row.retenciones_state_id != '03'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             </template>
                             <template v-if="permissions.annular_purchase">
                                 <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
@@ -138,7 +132,7 @@
                                 <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
 
-                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id)">Opciones</button>
+                            <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id, row.supplier_email, row.retenciones_id)">Opciones</button>
                             <button
                                 type="button"
                                 :disabled="disableGuideBtn"
@@ -150,33 +144,9 @@
 
 
                         </td>
-
-                        <!-- <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                    @click.prevent="clickVoided(row.id)"
-                                    v-if="row.btn_voided">Anular</button>
-                            <a :href="`/${resource}/note/${row.id}`" class="btn waves-effect waves-light btn-xs btn-warning"
-                               v-if="row.btn_note">Nota</a>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickResend(row.id)"
-                                    v-if="row.btn_resend">Reenviar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickConsultCdr(row.id)"
-                                    v-if="row.btn_consult_cdr">Consultar CDR</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickOptions(row.id)">Opciones</button>
-                        </td> -->
                     </tr>
                 </data-table>
             </div>
-
-            <!-- <documents-voided :showDialog.sync="showDialogVoided"
-                            :recordId="recordId"></documents-voided>
-
-            <document-options :showDialog.sync="showDialogOptions"
-                              :recordId="recordId"
-                              :showClose="true"></document-options> -->
-
             <purchase-import :showDialog.sync="showImportDialog"></purchase-import>
         </div>
 
@@ -193,6 +163,8 @@
 
         <purchase-options :showDialog.sync="showDialogOptions"
                           :recordId="recordId"
+                          :email = "emailSupp"
+                          :retentionId = "retentionId"
                           :showClose="true"></purchase-options>
     </div>
 </template>
@@ -219,6 +191,8 @@ import {mapActions, mapState} from 'vuex'
         ],
         data() {
             return {
+                emailSupp:null,
+                retentionId:null,
                 disableGuideBtn: true,
                 showModalGuide: false,
                 showDialogVoided: false,
@@ -297,8 +271,10 @@ import {mapActions, mapState} from 'vuex'
             clickDownload(download) {
                 window.open(download, '_blank');
             },
-            clickOptions(recordId = null) {
+            clickOptions(recordId = null, email = null, ret = null) {
                 this.recordId = recordId
+                this.emailSupp = email
+                this.retentionId = ret
                 this.showDialogOptions = true
             },
             clickGuide(recordId = null) {

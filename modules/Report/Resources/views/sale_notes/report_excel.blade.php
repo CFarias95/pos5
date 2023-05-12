@@ -83,7 +83,7 @@
                                 <th class="text-center">Fecha comprobante</th>
                                 <th>Cotización</th>
                                 <th>Caso</th>
-                                
+
                                 <th class="text-center">Productos</th>
                                 <th class="text-right">Descuento</th>
 
@@ -91,7 +91,7 @@
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right" >T.Exonerado</th>
                                 <th class="text-right">T.Gravado</th>
-                                <th class="text-right">T.Igv</th>
+                                <th class="text-right">T.IVA</th>
                                 <th class="text-right">Total</th>
                                 @if ($enabled_sales_agents)
                                     <th>Agente</th>
@@ -138,7 +138,7 @@
 
                                 <td>
                                     @foreach ($value->getItemsforReport() as $key => $item)
-                                        - {{ $item['description'] }} / Cantidad: {{ $item['quantity'] }} 
+                                        - {{ $item['description'] }} / Cantidad: {{ $item['quantity'] }}
                                         @if ($key < count($value->getItemsforReport()) - 1)
                                         <br/>
                                         @endif
@@ -166,7 +166,7 @@
                                     <td class="celda">{{ $value->total}}</td>
 
                                 @endif
-                                
+
                                 @if ($enabled_sales_agents)
                                     <td>{{optional($value->agent)->search_description}}</td>
                                     <td>{{$value->reference_data}}</td>

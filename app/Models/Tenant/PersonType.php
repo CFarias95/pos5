@@ -16,6 +16,7 @@ class PersonType extends ModelTenant
 {
     protected $fillable = [
         'description',
+        'discount',
 
     ];
 
@@ -27,6 +28,12 @@ class PersonType extends ModelTenant
         return $this->description;
     }
 
+    public function getDiscount()
+    : float {
+        return $this->discount;
+    }
+
+
     /**
      * @param string $description
      *
@@ -35,6 +42,12 @@ class PersonType extends ModelTenant
     public function setDescription(string $description)
     : PersonType {
         $this->description = $description;
+        return $this;
+    }
+
+    public function setDiscount(string $discount)
+    : PersonType {
+        $this->discount = $discount;
         return $this;
     }
 

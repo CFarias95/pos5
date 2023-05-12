@@ -408,7 +408,7 @@
                             <th>Número</th>
                             <th>Estado</th>
                             <th class="text-center">Moneda</th>
-                            <th class="text-right">T.Igv</th>
+                            <th class="text-right">T.IVA</th>
                             <th class="text-right">Total</th>
                             <th class="text-center">Saldo</th>
                             <th class="text-center"></th>

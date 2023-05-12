@@ -10,6 +10,8 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PaymentMethodType;
 use App\Exports\DocumentPaymentExport;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Finance\Traits\FinanceTrait;
@@ -17,6 +19,12 @@ use Modules\Finance\Traits\FilePaymentTrait;
 use Carbon\Carbon;
 use App\Models\Tenant\CashDocumentCredit;
 use App\Models\Tenant\Cash;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Person;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class DocumentPaymentController extends Controller
 {
@@ -115,6 +123,17 @@ class DocumentPaymentController extends Controller
             }
 
         }
+        if($id){
+
+            $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
+            foreach($asientos as $ass){
+                $ass->delete();
+            }
+        }
+
+        if((Company::active())->countable > 0 ){
+            $this->createAccountingEntry($request->document_id, $data);
+        }
 
         return [
             'success' => true,
@@ -123,11 +142,111 @@ class DocumentPaymentController extends Controller
         ];
     }
 
+    /* Crear los asientos contables del documento */
+    private function createAccountingEntry($document_id, $request){
+
+        $document = Document::find($document_id);
+        Log::info('documento created: ' . json_encode($document));
+        $entry = (AccountingEntries::get())->last();
+
+        if($document && $document->document_type_id == '01'){
+
+            try{
+                $idauth = auth()->user()->id;
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                $configuration = Configuration::first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+
+                $comment = 'Cobro Factura F'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+
+                $total_debe = 0;
+                $total_haber = 0;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = $document->date_of_issue;
+                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->comment = $comment;
+                $cabeceraC->serie = null;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $request->payment;
+                $cabeceraC->total_haber = $request->payment;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->currency_type_id = $document->currency_type_id;
+                $cabeceraC->doctype = $document->document_type_id;
+                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->establishment_id = $document->establishment_id;
+                $cabeceraC->establishment = $document -> establishment;
+                $cabeceraC->prefix = 'ASC';
+                $cabeceraC->person_id = $document->customer_id;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = 'CF'.$request->id;
+
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $customer = Person::find($cabeceraC->person_id);
+
+                $detalle = new AccountingEntryItems();
+                $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_clients;
+                $detalle->seat_line = 1;
+                $detalle->debe = 0;
+                $detalle->haber = $request->payment;
+                $detalle->save();
+
+                $detalle2 = new AccountingEntryItems();
+                $detalle2->accounting_entrie_id = $cabeceraC->id;
+                $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$configuration->cta_charge;
+                $detalle2->seat_line = 2;
+                $detalle2->debe = $request->payment;
+                $detalle2->haber = 0;
+                $detalle2->save();
+
+            }catch(Exception $ex){
+
+                Log::error('Error al intentar generar el asiento contable');
+                Log::error($ex->getMessage());
+            }
+
+        }else{
+            Log::info('tipo de documento no genera asiento contable de momento');
+        }
+
+    }
 
     public function destroy($id)
     {
         $item = DocumentPayment::findOrFail($id);
         $item->delete();
+
+        $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
+        foreach($asientos as $ass){
+            $ass->delete();
+        }
+        $asientos2 = AccountingEntries::where('document_id','PC'.$id)->get();
+        foreach($asientos2 as $ass){
+            $ass->delete();
+        }
 
         return [
             'success' => true,

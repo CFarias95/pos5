@@ -23,6 +23,7 @@ class Kernel extends ConsoleKernel
      * @return void
      */
     protected function schedule(Schedule $schedule) {
+
         $schedule->command('tenancy:run tenant:run')
             ->everyMinute();
         // Se ejecutara por hora guardando estado de cpu y memoria (windows/linux)
@@ -32,6 +33,9 @@ class Kernel extends ConsoleKernel
         //ejecutar comandos SRI
         $schedule->command('tenancy:run sri:send')->everyMinute()->withoutOverlapping();
         $schedule->command('tenancy:run sri:see')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run retentions:xml')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run retentions:send')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run retentions:see')->everyMinute()->withoutOverlapping();
     }
 
     /**

@@ -12,7 +12,7 @@
                     </div>
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.code}">
-                            <label class="control-label">Código Establecimineto</label>
+                            <label class="control-label">Código Establecimiento</label>
                             <el-input v-model="form.code" :maxlength="4"></el-input>
                             <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
                         </div>
@@ -126,6 +126,25 @@
 
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div :class="{'has-danger': errors.rate_id}"
+                             class="form-group">
+                                    <label class="control-label">
+                                        Tarifa
+                                    </label>
+                                    <el-select v-model="form.rate_id"
+                                               clearable
+                                               filterable>
+                                        <el-option v-for="option in rates"
+                                                   :key="option.id"
+                                                   :label="option.rate_name"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.rate_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.rate_id[0]"></small>
+                        </div>
+                    </div>
                     <div class="col-lg-6 col-md-6 form-group" style="padding-top: 29px;">
                         <img v-if="preview" :src="preview" alt="Vista previa" class="img-fluid img-thumbnail mb-2">
                         <input type="file" ref="inputFile" class="hidden" @change="onSelectImage" accept="image/png, image/jpeg, image/jpg">
@@ -168,6 +187,7 @@
                 provinces: [],
                 districts: [],
                 customers: [],
+                rates: [],
                 all_customers: [],
                 loading_search:false,
                 file: null,
@@ -183,6 +203,7 @@
                     this.all_provinces = response.data.provinces
                     this.all_districts = response.data.districts
                     this.all_customers = response.data.customers
+                    this.rates = response.data.rates
                 })
 
             await this.filterCustomers()
@@ -244,6 +265,7 @@
                     aditional_information: null,
                     customer_id: null,
                     has_igv_31556: false,
+                    rate_id: null,
                 }
                 this.file = null;
                 this.preview = null;

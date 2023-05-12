@@ -18,6 +18,7 @@ class PersonTypeCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'description' => $row->description,
+                'discount' => $row->discount,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

@@ -22,12 +22,14 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Exception;
+use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
 use Modules\Purchase\Models\PurchaseQuotation;
 use Modules\Purchase\Http\Resources\PurchaseQuotationCollection;
 use Modules\Purchase\Http\Resources\PurchaseQuotationResource;
 use Modules\Purchase\Mail\PurchaseQuotationEmail;
-
+use Swift_Mailer;
+use Swift_SmtpTransport;
 
 class PurchaseQuotationController extends Controller
 {
@@ -124,7 +126,7 @@ class PurchaseQuotationController extends Controller
 
             $this->setFilename();
             $this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
-           // $this->email($this->purchase_quotation);
+            $this->email($this->purchase_quotation);
         });
 
         return [
@@ -326,11 +328,11 @@ class PurchaseQuotationController extends Controller
 
             $email = $supplier_email;
             $mailable =new  PurchaseQuotationEmail($client, $purchase_quotation);
-            $id = (int)$purchase_quotation->id;
-            $model = __FILE__.";;".__LINE__;
-            $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
-            /*
-            Configuration::setConfigSmtpMail();
+            //$id = (int)$purchase_quotation->id;
+            //$model = __FILE__.";;".__LINE__;
+            //$sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+             /*
+
             $array_email = explode(',', $supplier_email);
             if (count($array_email) > 1) {
                 foreach ($array_email as $email_to) {
@@ -343,6 +345,14 @@ class PurchaseQuotationController extends Controller
                 Mail::to($supplier_email)->send(new  PurchaseQuotationEmail($client, $purchase_quotation));
             }
             */
+            Configuration::setConfigSmtpMail();
+            $backup = Mail::getSwiftMailer();
+            $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+            $transport->setUsername(Config::get('mail.username'));
+            $transport->setPassword(Config::get('mail.password'));
+            $mailer = new Swift_Mailer($transport);
+            Mail::setSwiftMailer($mailer);
+            Mail::to($email)->send($mailable);
         }
 
         return [

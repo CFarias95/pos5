@@ -156,7 +156,7 @@
             'grade',
             'section',
             'prefix',
-
+            'time_of_issue',
             'date_of_issue',
             'time_of_issue',
             'customer_id',

@@ -3,6 +3,41 @@
     $supplier = $document->supplier;
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+    $total12=0;
+    $totalIVA12=0;
+
+    $total8=0;
+    $totalIVA8=0;
+
+    $total0=0.00;
+    $totalIVA0=0.00;
+
+    $total14=0;
+    $totalIVA14=0;
+
+    foreach($document->items as $item){
+
+        if($item->affectation_igv_type_id === '10'){
+            //JOINSOFTWARE
+            $total12=$total12 + $item->total_value;
+            $totalIVA12= $totalIVA12 + $item->total_taxes;
+        }
+        if($item->affectation_igv_type_id === '11'){
+            //JOINSOFTWARE
+            $total8=$total8 + $item->total_value;
+            $totalIVA8= $totalIVA8 + $item->total_taxes;
+        }
+        if($item->affectation_igv_type_id === '12'){
+            //JOINSOFTWARE
+            $total14=$total14 + $item->total_value;
+            $totalIVA14= $totalIVA14 + $item->total_taxes;
+        }
+        if($item->affectation_igv_type_id === '30'){
+            //JOINSOFTWARE
+            $total0=$total0 + $item->total_value;
+            $totalIVA0= $totalIVA0 + $item->total_taxes;
+        }
+    }
 @endphp
 <html>
 <head>
@@ -212,6 +247,7 @@
             <td colspan="7" class="border-bottom"></td>
         </tr>
     @endforeach
+
         @if($document->total_exportation > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
@@ -238,8 +274,12 @@
         @endif
         @if($document->total_taxed > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
+                <td colspan="6" class="text-right font-bold">Subtotal 0%:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="6" class="text-right font-bold">Subtotal 12%:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
@@ -249,8 +289,12 @@
             </tr>
         @endif
         <tr>
-            <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
+            <td colspan="6" class="text-right font-bold">IVA 0%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
+        </tr>
+        <tr>
+            <td colspan="6" class="text-right font-bold">IVA 12%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
         </tr>
         <tr>
             <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>

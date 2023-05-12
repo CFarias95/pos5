@@ -50,6 +50,95 @@ class ProductionController extends Controller
         return view('production::production.form', compact('id'));
     }
 
+    public function storeOld(ProductionRequest $request)
+    {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+
+            // validar estado_type_id == 01
+            if ($request->records_id !== '01') {
+                return [
+                    'success' => false,
+                    'message' => 'Solo se permite ingresar productos con estado registrado'
+                ];
+            }
+
+            $production = Production::firstOrNew(['id' => null]);
+            $production->fill($request->all());
+            $production->state_type_id = $request->records_id;
+            $production->user_id = auth()->user()->id;
+            $production->soap_type_id = $this->getCompanySoapTypeId();
+            $production->save();
+
+
+            return [
+                'success' => true,
+                'message' => 'Producto registrado correctamente, listo para elaboración'
+            ];
+        });
+
+        return $result;
+    }
+
+    public function storeOriginal(ProductionRequest $request)
+    {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+
+            $item_id = $request->input('item_id');
+            $warehouse_id = $request->input('warehouse_id');
+            $quantity = $request->input('quantity');
+            $informative = ($request->informative) ?: false;
+
+
+            $inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser Ingreso de producción
+            $inventory = new Inventory();
+
+            if ($informative !== true) {
+                $inventory->type = null;
+                $inventory->description = $inventory_transaction->name;
+                $inventory->item_id = $item_id;
+                $inventory->warehouse_id = $warehouse_id;
+                $inventory->quantity = $quantity;
+                $inventory->inventory_transaction_id = $inventory_transaction->id;
+                $inventory->save();
+            }
+
+            $production = Production::firstOrNew(['id' => null]);
+            $production->fill($request->all());
+            $production->inventory_id_reference = $inventory->id;
+            $production->state_type_id = $request->records_id;
+            $production->user_id = auth()->user()->id;
+            $production->soap_type_id = $this->getCompanySoapTypeId();
+            $production->save();
+
+
+            if ($informative !== true) {
+                $items_supplies = $request->supplies;
+                foreach ($items_supplies as $item) {
+                    $supplyWarehouseId = (int) ($item['warehouse_id'] ?? $warehouse_id);
+                    $supplyWarehouseId = $supplyWarehouseId !== 0 ? $supplyWarehouseId : $warehouse_id;
+                    $qty = $item['quantity'] ?? 0;
+                    $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
+                    $inventory_it = new Inventory();
+                    $inventory_it->type = null;
+                    $inventory_it->description = $inventory_transaction_item->name;
+                    $inventory_it->item_id = $item['individual_item_id'];
+                    $inventory_it->warehouse_id = $supplyWarehouseId;
+                    $inventory_it->quantity = (float) ($qty * $quantity);
+                    $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                    $inventory_it->save();
+                }
+            }
+
+            return [
+                'success' => true,
+                'message' => 'Ingreso registrado correctamente'
+            ];
+        });
+
+        return $result;
+    }
+
+
     /**
      * Store a newly created resource in storage.
      *
@@ -59,48 +148,65 @@ class ProductionController extends Controller
      */
     public function store(ProductionRequest $request)
     {
-        try {
+        $result = DB::connection('tenant')->transaction(function () use ($request) {
+
             $item_id = $request->input('item_id');
             $warehouse_id = $request->input('warehouse_id');
             $quantity = $request->input('quantity');
             $state_type_id = $request->records_id;
-            $informative = $request->input('informative', false);
+            $informative = ($request->informative) ?: false;
+            $inventory_transaction = null;
 
+            switch ($state_type_id) {
+                case '01': // Registrado
+                    $inventory_transaction = null;
+                    break;
+                case '02': // En elaboración
+                    $inventory_transaction = InventoryTransaction::findOrFail(101); // Salida insumos por molino
+                    break;
+                case '03': // Finalizado
+                    $inventory_transaction = InventoryTransaction::findOrFail(19); // Ingreso de producción
+                    break;
+                case '04': // Anulado
+                    $inventory_transaction = null;
+                    break;
+            }
+            $inventory = new Inventory();
             $production = new Production();
+
+            if ($inventory_transaction && !$informative && $state_type_id == '03') {
+                $inventory->type = null;
+                $inventory->description = $inventory_transaction->name;
+                $inventory->item_id = $item_id;
+                $inventory->warehouse_id = $warehouse_id;
+                $inventory->quantity = $quantity;
+                $inventory->inventory_transaction_id = $inventory_transaction->id;
+                $inventory->save();
+            }
+
             $production->fill($request->all());
-            $production->inventory_id_reference = $request->input('inventory_id_reference');
+            $production->inventory_id_reference = $inventory->id ?? null;
             $production->warehouse_id = $warehouse_id;
             $production->state_type_id = $state_type_id;
             $production->user_id = auth()->user()->id;
             $production->soap_type_id = $this->getCompanySoapTypeId();
             $production->save();
 
-            $items_supplies = $request->supplies;
-            foreach ($items_supplies as $item) {
-                $production_supply = new ProductionSupply();
-                $production_id = $production->id;
-                $qty = $item['quantity'] ?? 0;
-                $production_supply->production_name = $production->name;
-                $production_supply->production_id = $production_id;
-                $production_supply->item_supply_name = $item['description'];
-                $production_supply->item_supply_id = $item['id'];
-                $production_supply->warehouse_name = $item['warehouse_name']?? null;
-                $production_supply->warehouse_id = $item['warehouse_id']?? null;
-                $production_supply->quantity = (float) $qty;
-                $production_supply->save();
-
-                $lots_group = $item["lots_group"];
-                foreach ($lots_group as $lots) {
-                    $item_lots_groups = new ItemSupplyLot();
-                    $item_lots_groups->item_supply_id = $item['id'];
-                    $item_lots_groups->item_supply_name = $item['description'];
-                    $item_lots_groups->lot_code = $lots["code"];
-                    $item_lots_groups->lot_id = $lots["id"];
-                    $item_lots_groups->production_name = $production->name;
-                    $item_lots_groups->production_id = $production_id;
-                    $item_lots_groups->quantity = $lots["compromise_quantity"];
-                    $item_lots_groups->expiration_date = $lots["date_of_due"];
-                    $item_lots_groups->save();
+            if (!$informative && $state_type_id != '01' && $state_type_id != '04' && $inventory_transaction) {
+                $items_supplies = $request->supplies;
+                foreach ($items_supplies as $item) {
+                    $supplyWarehouseId = (int) ($item['warehouse_id'] ?? $warehouse_id);
+                    $supplyWarehouseId = $supplyWarehouseId !== 0 ? $supplyWarehouseId : $warehouse_id;
+                    $qty = $item['quantity'] ?? 0;
+                    $inventory_transaction_item = InventoryTransaction::findOrFail(101); // Salida insumos por molino
+                    $inventory_it = new Inventory();
+                    $inventory_it->type = null;
+                    $inventory_it->description = $inventory_transaction_item->name;
+                    $inventory_it->item_id = $item['individual_item_id'];
+                    $inventory_it->warehouse_id = $supplyWarehouseId;
+                    $inventory_it->quantity = (float) ($qty * $quantity);
+                    $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                    $inventory_it->save();
                 }
             }
 
@@ -108,13 +214,11 @@ class ProductionController extends Controller
                 'success' => true,
                 'message' => 'Ingreso registrado correctamente'
             ];
-        } catch (\Exception $e) {
-            return [
-                'success' => false,
-                'message' => 'Error al registrar el ingreso: ' . $e->getMessage()
-            ];
-        }
+        });
+
+        return $result;
     }
+
 
     /**
      * Show the specified resource.
@@ -144,155 +248,8 @@ class ProductionController extends Controller
     public function update(ProductionRequest $request, $id)
     {
         $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
-            //llama a la producción que fue creada
-            $production = Production::findOrFail($id);
-            //si la producción que esta en el estado 01 (registrado) y se quiere cambiar a 02 (en elaboración)
-            if (!$production) {
-                return [
-                    'success' => false,
-                    'message' => 'No se encontró el registro'
-                ];
-            }
-            $new_state_type_id = $request->records_id;
-            $old_state_type_id = $production->state_type_id;
-            $quantity = $request->input('quantity');
-            $warehouse_id = $request->input('warehouse_id');
-            $production->fill($request->all());
-            $production->warehouse_id = $warehouse_id;
-            $production->quantity = $quantity;
-            $production->state_type_id = $new_state_type_id;
-            $informative = ($request->informative) ?: false;
-            $production->user_id = auth()->user()->id;
-            $production->soap_type_id = $this->getCompanySoapTypeId();
-            $production->save();
-
-            $items_supplies = $request->supplies;
-
-
-            foreach ($items_supplies as $item) {
-                $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
-                $production_id = $production->id;
-                $qty = $item['quantity'] ?? 0;
-                $production_supply->production_name = $production->name;
-                $production_supply->production_id = $production_id;
-                $production_supply->item_supply_name = $item['description'];
-                $production_supply->item_supply_id = $item['id'];
-                $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
-                $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
-                $production_supply->quantity = (float) $qty;
-                $production_supply->save();
-
-                $lots_group = $item["lots_group"];
-                foreach ($lots_group as $lots) {
-                    $item_lots_groups = ItemSupplyLot::where('production_id', $production->id)->where("item_supply_id", $production_supply->item_supply_id)->where("lot_id", $lots["lot_id"])->first();
-                    $item_lots_groups->item_supply_id = $production_supply->item_supply_id;
-                    $item_lots_groups->item_supply_name = $item['description'];
-                    $item_lots_groups->lot_code = $lots["code"];
-                    $item_lots_groups->lot_id = $lots["lot_id"];
-                    $item_lots_groups->production_name = $production->name;
-                    $item_lots_groups->production_id = $production_id;
-                    $item_lots_groups->quantity = $lots["compromise_quantity"];
-                    $item_lots_groups->expiration_date = $lots["date_of_due"];
-                    $item_lots_groups->save();
-                }
-            }
-
-            if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
-                //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
-                $inventory_transaction_item = InventoryTransaction::findOrFail(101);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
-            }
-            if($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
-                //cuando pasa a terminado se aumenta el inventario del producto terminado
-                $inventory_transaction_item = InventoryTransaction::findOrFail(19);
-                $this->inventoryFinishedProduct($production, $inventory_transaction_item);
-            }
-            if($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative){
-                //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
-                $inventory_transaction_item = InventoryTransaction::findOrFail(104);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
-                $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
-                $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
-
-            }
-
-            return [
-                'success' => true,
-                'message' => 'Registro actualizado correctamente'
-            ];
-        });
-
-        return $result;
-    }
-
-    public function inventoryFinishedProduct($production, $inventory_transaction_item)
-    {
-        try {
-            //esta función creará el inventario del producto terminado
-
-            $inventory_it = new Inventory();
-            $inventory_it->type = null;
-            $inventory_it->description = $inventory_transaction_item->name;
-            $inventory_it->item_id = $production->item_id;
-            $inventory_it->warehouse_id = $production->warehouse_id;
-            $inventory_it->quantity = (float) $production->quantity;
-            $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-            $inventory_it->save();
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-
-    public function inventorySupplies($production, $items_supplies,  $inventory_transaction_item)
-    {
-        try {
-            //esta función creará el inventario de los insumos
-            // Salida insumos por molino
-
-            foreach ($items_supplies as $item) {
-                $qty = $item['quantity'] ?? 0;
-                $inventory_it = new Inventory();
-                $inventory_it->type = null;
-                $inventory_it->description = $inventory_transaction_item->name;
-                $inventory_it->item_id = $item['item_id'];
-                $inventory_it->warehouse_id = $production->warehouse_id;
-                $inventory_it->quantity = (float) ($qty * $production->quantity);
-                $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-                $inventory_it->save();
-
-                if($item["lots_group"]) {
-                    $lots_group = $item["lots_group"];
-                    foreach ($lots_group as $lots) {
-                        $item_lots_group = ItemLotsGroup::findOrFail($lots["lot_id"]);
-                        if( $production->state_type_id == '04' ) {
-                            $item_lots_group->quantity += $lots["compromise_quantity"];
-                        } else {
-                            $item_lots_group->quantity -= $lots["compromise_quantity"];
-                        }
-                        $item_lots_group->save();
-                    }
-                        
-                }
-            }
-        } catch (\Throwable $th) {
-            throw $th;
-        }
-    }
-
-
-    public function updateOld(ProductionRequest $request, $id)
-    {
-        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
 
             $production = Production::findOrFail($id);
-
-            if (!$production) {
-                return [
-                    'success' => false,
-                    'message' => 'No se encontró el registro'
-                ];
-            }
-
 
             $old_state_type_id = $production->state_type_id;
             $new_state_type_id = $request->records_id;
@@ -392,6 +349,76 @@ class ProductionController extends Controller
                 }
             }
 
+
+            return [
+                'success' => true,
+                'message' => 'Actualización realizada correctamente'
+            ];
+        });
+
+        return $result;
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param Request $request
+     * @param int     $id
+     *
+     * @return Response
+     */
+    public function updateOld(ProductionRequest $request, $id)
+    {
+        $result = DB::connection('tenant')->transaction(function () use ($request, $id) {
+            $production = Production::findOrFail($id);
+            $current_status_production = $production->state_type_id;
+
+            switch ($current_status_production) {
+                case '01':
+                    if ($request->records_id)
+                        break;
+
+                default:
+                    # code...
+                    break;
+            }
+            $production->fill($request->all());
+            $production->state_type_id = $request->records_id;
+
+            $inventory = Inventory::findOrFail($production->inventory_id_reference);
+
+            $inventory_transaction = InventoryTransaction::findOrFail(19); //debe ser Ingreso de producción
+
+            if (!$request->informative) {
+                $inventory->type = null;
+                $inventory->description = $inventory_transaction->name;
+                $inventory->item_id = $request->input('item_id');
+                $inventory->warehouse_id = $request->input('warehouse_id');
+                $inventory->quantity = $request->input('quantity');
+                $inventory->inventory_transaction_id = $inventory_transaction->id;
+                $inventory->save();
+            }
+
+            if (!$request->informative) {
+                $items_supplies = $request->supplies;
+
+                foreach ($items_supplies as $item) {
+                    $supplyWarehouseId = (int) ($item['warehouse_id'] ?? $request->input('warehouse_id'));
+                    $supplyWarehouseId = $supplyWarehouseId !== 0 ? $supplyWarehouseId : $request->input('warehouse_id');
+                    $qty = $item['quantity'] ?? 0;
+
+                    $inventory_transaction_item = InventoryTransaction::findOrFail('101'); //Salida insumos por molino
+                    $inventory_it = Inventory::where('item_id', $item['individual_item_id'])
+                        ->where('warehouse_id', $supplyWarehouseId)
+                        ->where('inventory_transaction_id', $inventory_transaction_item->id)
+                        ->firstOrFail();
+
+                    $inventory_it->quantity = (float) ($qty * $request->input('quantity'));
+                    $inventory_it->save();
+                }
+            }
+
+            $production->save();
 
             return [
                 'success' => true,

@@ -569,7 +569,7 @@
                 class="col-lg-4 col-md-6 bg-white m-0 p-0"
                 style="height: calc(100vh - 110px)"
             >
-                <div class="h-70 bg-light" style="overflow-y: auto">
+                <div class="h-75 bg-light" style="overflow-y: auto">
                     <div class="row py-3 border-bottom m-0 p-0">
                         <div class="col-8">
                             <el-select
@@ -706,9 +706,9 @@
                         </div>
                     </div>
                 </div>
-                <div class="h-30 bg-light" style="overflow-y: auto">
+                <div class="h-25 bg-light" style="overflow-y: auto">
                     <div
-                        class="row border-top bg-light m-0 p-0 h-50 d-flex align-items-right pr-5 pt-2"
+                        class="row border-top bg-light m-0 p-0 h-70 d-flex align-items-right pr-5 pt-2"
                     >
                         <div
                             class="col-md-12"
@@ -815,42 +815,42 @@
                         </div>
 
                         <!-- <div class="col-12 text-right px-0" v-if="form.total_taxed > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">SUBTOTAL 12%: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
-              </h4>
-            </div>
+                        <h4 class="font-weight-semibold  m-0">
+                            <span class="font-weight-semibold">SUBTOTAL 12%: </span>
+                            <span class="text-blue">{{currency_type.symbol}} {{ form.total_taxed }}</span>
+                        </h4>
+                        </div>
 
-            <div class="col-12 text-right px-0" v-if="form.total_free > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.GRATUITAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
-              </h4>
-            </div>
+                        <div class="col-12 text-right px-0" v-if="form.total_free > 0">
+                        <h4 class="font-weight-semibold  m-0">
+                            <span class="font-weight-semibold">OP.GRATUITAS: </span>
+                            <span class="text-blue">{{currency_type.symbol}} {{ form.total_free }}</span>
+                        </h4>
+                        </div>
 
-            <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">SUBTOTAL 0%: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
-              </h4>
-            </div>
+                        <div class="col-12 text-right px-0" v-if="form.total_unaffected > 0">
+                        <h4 class="font-weight-semibold  m-0">
+                            <span class="font-weight-semibold">SUBTOTAL 0%: </span>
+                            <span class="text-blue">{{currency_type.symbol}} {{ form.total_unaffected }}</span>
+                        </h4>
+                        </div>
 
-            <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">OP.EXONERADAS: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
-              </h4>
-            </div>
+                        <div class="col-12 text-right px-0" v-if="form.total_exonerated > 0">
+                        <h4 class="font-weight-semibold  m-0">
+                            <span class="font-weight-semibold">OP.EXONERADAS: </span>
+                            <span class="text-blue">{{currency_type.symbol}} {{ form.total_exonerated }}</span>
+                        </h4>
+                        </div>
 
-            <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
-              <h4 class="font-weight-semibold  m-0">
-                <span class="font-weight-semibold">IVA: </span>
-                <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
-              </h4>
-            </div> -->
+                        <div class="col-12 text-right px-0" v-if="form.total_igv > 0">
+                        <h4 class="font-weight-semibold  m-0">
+                            <span class="font-weight-semibold">IVA: </span>
+                            <span class="text-blue">{{currency_type.symbol}} {{form.total_igv}}</span>
+                        </h4>
+                        </div> -->
                     </div>
                     <div
-                        class="row text-white m-0 p-0 h-50 d-flex align-items-center"
+                        class="row text-white m-0 p-0 h-30 d-flex align-items-center"
                         @click="clickPayment"
                         v-bind:class="[
                             form.total > 0 ? 'bg-info pointer' : 'bg-dark'

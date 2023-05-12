@@ -55,7 +55,8 @@ class Company extends ModelTenant
         'contribuyente_especial',
         'agente_retencion',
         'agente_retencion_num',
-        'contribuyente_especial_num'
+        'contribuyente_especial_num',
+        'countable',
     ];
 
     protected $casts = [
@@ -114,9 +115,9 @@ class Company extends ModelTenant
         return $this->morphMany(SystemActivityLog::class, 'origin');
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener soap_type_id para registro de entorno en tablas relacionadas
      *
      * @return string
@@ -128,7 +129,7 @@ class Company extends ModelTenant
 
 
     /**
-     * 
+     *
      * Obtener campos para cabecera de reportes
      *
      * @return string
@@ -137,10 +138,10 @@ class Company extends ModelTenant
     {
         return self::select(['number', 'name'])->withOut(['identity_document_type'])->firstOrFail();
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener campo individual
      *
      * @param  Builder $query
@@ -152,9 +153,9 @@ class Company extends ModelTenant
         return $query->select($column)->firstOrFail()->{$column};
     }
 
-            
+
     /**
-     * 
+     *
      * Obtener logo de la app
      *
      * @param  Builder $query
@@ -168,13 +169,13 @@ class Company extends ModelTenant
         {
             $app_logo = asset('storage/uploads/logos/'.$app_logo);
         }
-        
+
         return $app_logo;
     }
 
 
     /**
-     * 
+     *
      * Filtrar datos para whatsapp api
      *
      * @param  Builder $query
@@ -185,9 +186,9 @@ class Company extends ModelTenant
         return $query->select('ws_api_token', 'ws_api_phone_number_id');
     }
 
-    
+
     /**
-     * 
+     *
      * Descripción  del tipo de transaccion asociado al modelo
      *
      * @param  string $column
@@ -202,9 +203,9 @@ class Company extends ModelTenant
     //     return 'Actualización del campo '.$description.' en configuración de empresa';
     // }
 
-    
+
     /**
-     * 
+     *
      * Descripción de los tipos de transacción para cada actividad
      *
      * @return array
@@ -213,7 +214,7 @@ class Company extends ModelTenant
     // {
     //     $data = [];
 
-    //     foreach ($this->getCheckColumnsForSystemActivity() as $column) 
+    //     foreach ($this->getCheckColumnsForSystemActivity() as $column)
     //     {
     //         $data [$this->getTransactionTypeForSystemActivity($column)] = $this->getDescriptionColumnForSystemActivity($column);
     //     }
@@ -223,7 +224,7 @@ class Company extends ModelTenant
 
 
     /**
-     * 
+     *
      * Columnas a verificar para registro de actividad
      *
      * @return array
@@ -233,7 +234,7 @@ class Company extends ModelTenant
         return ['number', 'name', 'soap_send_id', 'soap_type_id', 'soap_username', 'soap_password', 'soap_url', 'certificate'];
     }
 
-        
+
     /**
      *
      * @param  string $column
@@ -243,5 +244,5 @@ class Company extends ModelTenant
     {
         return "{$this->getTable()}_{$column}";
     }
-    
+
 }

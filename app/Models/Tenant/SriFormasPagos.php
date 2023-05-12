@@ -11,7 +11,8 @@ class SriFormasPagos extends ModelTenant
     protected $fillable = [
         'id',
         'code',
-        'description'
+        'description',
+
     ];
 
 }

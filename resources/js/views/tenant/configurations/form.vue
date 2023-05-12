@@ -1203,6 +1203,403 @@
                             </div>
                         </div>
                     </el-tab-pane>
+                    <el-tab-pane v-if="company.countable > 0" class="mb-3" name="company_countable">
+                        <span slot="label">Cuentas por defecto</span>
+                        <div class="row">
+
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta cobros
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a cobros"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_charge}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_charge"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_charge"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_charge[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta para pagos
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a pagos"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_paymnets}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_paymnets"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_paymnets"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_paymnets[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta anticipo proveedores
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a anticipo de los porveedores"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_suppliers_advances}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_suppliers_advances"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_suppliers_advances"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_suppliers_advances[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta anticipo clientes
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a anticipo de clientes"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_client_advances}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_client_advances"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_client_advances"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_client_advances[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta clientes
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a clientes"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_clients}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_clients"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_clients"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_clients[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta proveedores
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a proveedores"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_suppliers}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_suppliers"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_suppliers"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_suppliers[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de compra
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a compras"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_purchases}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_purchases"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_purchases"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_purchases[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de costo de ventas
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a costos de venta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_sale_costs}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_sale_costs"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_sale_costs"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_sale_costs[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de ingreso
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a los ingresos"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_incomes}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_incomes"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_incomes"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_incomes[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de importacion en transito
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a las importaciones en transito"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_transit_imports}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_transit_imports"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_transit_imports"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_transit_imports[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de impuesto
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada de impuestos"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_taxes}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_taxes"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_taxes"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_taxes[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de impuesto por servicio
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada de impuestos por servicio"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_service_taxes}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_service_taxes"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_service_taxes"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_service_taxes[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de producto en proceso
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a productos en proceso"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_item_process}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_item_process"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_item_process"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_item_process[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de retencion del IVA
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a retenciones de IVA"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_iva_tax}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_iva_tax"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_iva_tax"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_iva_tax[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de retencion de renta
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a retenciones de renta"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_income_tax}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_income_tax"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_income_tax"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_income_tax[0]"></small>
+                                </div>
+                            </div>
+
+                        </div>
+                    </el-tab-pane>
                     <el-tab-pane class="mb-3" name="fourth">
                         <span slot="label">PDF</span>
                         <div class="row">
@@ -2294,6 +2691,7 @@ export default {
     props: [
         'typeUser',
         'configuration',
+        'company',
     ],
     components: {
         TermsCondition,
@@ -2322,6 +2720,7 @@ export default {
             },
             affectation_igv_types: [],
             global_discount_types: [],
+            ctas:[],
             placeholder: '',
             activeName: 'first'
         }
@@ -2382,6 +2781,7 @@ export default {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 this.affectation_igv_types = response.data.affectation_igv_types
                 this.global_discount_types = response.data.global_discount_types
+                this.ctas = response.data.ctas
             })
 
         },

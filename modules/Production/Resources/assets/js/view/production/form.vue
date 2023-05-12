@@ -12,12 +12,23 @@
                         <div class="col-lg-9">
                             <div class="row">
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div :class="{ 'has-danger': errors.item_id }" class="form-group">
-                                        <label class="control-label">Producto</label>
-                                        <el-select :disabled="!!id" v-model="form.item_id" :loading="loading_search"
-                                            :remote-method="searchRemoteItems" filterable remote @change="changeItem">
-                                            <el-option v-for="option in items" :key="option.id" :label="option.description"
-                                                :value="option.id"></el-option>
+                                    <div :class="{'has-danger': errors.item_id}"
+                                        class="form-group">
+                                        <label class="control-label">Producto </label>
+                                        <el-select
+                                            v-model="form.item_id"
+                                            :loading="loading_search"
+                                            :remote-method="searchRemoteItems"
+                                            filterable
+                                            remote
+                                            @change="changeItem"
+                                        >
+                                            <el-option
+                                                v-for="option in items"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"
+                                            ></el-option>
                                         </el-select>
                                         <small v-if="errors.item_id" class="form-control-feedback"
                                             v-text="errors.item_id[0]"></small>
@@ -37,11 +48,18 @@
                                 <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div :class="{ 'has-danger': errors.quantity }" class="form-group">
                                         <label class="control-label">Cantidad</label>
-                                        <el-input-number :disabled="!isCreating" v-model="form.quantity" :controls="false"
-                                            :min="0" :precision="precision"
-                                            ></el-input-number>
-                                        <small v-if="errors.quantity" class="form-control-feedback"
-                                            v-text="errors.quantity[0]"></small>
+                                        <el-input-number
+                                            v-model="form.quantity"
+                                            :controls="false"
+                                            :min="0"
+                                            :precision="precision"
+                                            @change="handleChange($event)"
+                                        ></el-input-number>
+                                        <small
+                                            v-if="errors.quantity"
+                                            class="form-control-feedback"
+                                            v-text="errors.quantity[0]"
+                                        ></small>
                                     </div>
                                 </div>
 
@@ -82,9 +100,11 @@
                                         <label class="control-label">
                                             Maquina
                                         </label>
-                                        <el-select :disabled="!isCreating" v-model="form.machine_id"
-                                            @change="fetchMachineInfo()">
-                                            <el-option v-for="option in machines" :key="option.id" :label="option.name"
+                                        <el-select v-model="form.machine_id">
+                                            <el-option
+                                                v-for="option in machines"
+                                                :key="option.id"
+                                                :label="option.name"
                                                 :value="option.id"></el-option>
                                         </el-select>
 
@@ -111,8 +131,12 @@
                                         <label class="control-label">
                                             Lote
                                         </label>
-                                        <input v-model="form.lot_code" class="form-control" placeholder="Lote"
-                                            type="text" disabled/>
+                                        <input
+                                            v-model="form.lot_code"
+                                            class="form-control"
+                                            placeholder="Lote"
+                                            type="text"
+                                        />
 
                                         <small v-if="errors.lot_code" class="form-control-feedback"
                                             v-text="errors.lot_code[0]"></small>
@@ -339,9 +363,14 @@
                         <div class="col-lg-3">
                             <div :class="{ 'has-danger': errors.records_id }" class="form-group">
                                 <label class="control-label">Estado</label>
-                                <el-select v-model="form.records_id" filterable>
-                                    <el-option v-for="option in records" :key="option.id" :label="option.description"
-                                        :value="option.id"></el-option>
+                                <el-select v-model="form.records_id"
+                                           filterable>
+                                    <el-option
+                                        v-for="option in records"
+                                        :key="option.id"
+                                        :label="option.description"
+                                        :value="option.id"
+                                    ></el-option>
                                 </el-select>
                                 <small v-if="errors.records_id" class="form-control-feedback"
                                     v-text="errors.records_id[0]"></small>
@@ -351,6 +380,14 @@
 
                 </div>
 
+                <div class="form-actions text-right mt-4" v-if="false">
+                    <el-button
+                        :loading="loading_submit"
+                        native-type="submit"
+                        type="primary"
+                    >Guardar
+                    </el-button>
+                </div>
 
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="onClose()">
@@ -367,51 +404,46 @@
                     <div class="col-md-12 mt-3 table-responsive">
                         <table class="table">
                             <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Cantidad a descargar</th>
-                                    <th>Unidad de medida</th>
-                                    <th>Cantidad</th>
-                                    <th>Unidad de medida</th>
-                                    <th class="text-center">Almacén</th>
-                                </tr>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad a descargar</th>
+                                <th>Unidad de medida</th>
+                                <th>Cantidad</th>
+                                <th>Unidad de medida</th>
+                                <th class="text-center">Almacen</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="row in supplies">
-                                    <th> {{ row.description }}</th>
-                                    <th>
-                                        <!-- {{ row.quantity }} -->
-                                        <el-input-number v-if="form.quantity != 0 && form.quantity != null"
-                                            :value="row.quantity * form.quantity" :controls="false"
-                                            disabled></el-input-number>
-                                        <el-input-number v-else :value="row.quantity" :controls="false"
-                                            disabled></el-input-number>
-                                        <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
-                                            <a class="text-center font-weight-bold text-info" href="#"
-                                                @click.prevent="clickLotGroup(row)">[&#10004;
-                                                Seleccionar
-                                                lote]</a>
-                                        </div>
+                            <tr v-for="row in supplies">
+                                <th>    {{ row.individual_item && row.individual_item.description ? row.individual_item.description : "" }}</th>
+                                <th>
+                                    <!-- {{ row.quantity }} -->
+                                    <el-input-number v-if="form.quantity != 0 && form.quantity != null" :value="row.quantity * form.quantity" :controls="false" disabled></el-input-number>
+                                    <el-input-number v-else :value="row.quantity" :controls="false" disabled></el-input-number>
 
-                                        <!-- JOINSOFTWARE
+                                    <!-- JOINSOFTWARE
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
                                     -->
-                                    </th>
-                                    <th>{{ row.unit_type }}</th>
-                                    <th>
-                                        <!-- {{ row.quantity }} -->
-                                        <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1"
-                                            disabled="disabled"></el-input-number>
-                                    </th>
-                                    <th>{{ row.unit_type }}</th>
-                                    <th>
-                                        <el-select v-model="row.warehouse_id" filterable>
-                                            <el-option v-for="option in warehouses" :key="option.id"
-                                                :label="option.description"
-                                                :value="option.id"></el-option>
-                                        </el-select>
-                                    </th>
-                                </tr>
+                                </th>
+                                <th>{{ row.individual_item.unit_type.description }}</th>
+                                <th>
+                                    <!-- {{ row.quantity }} -->
+                                    <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1" disabled="disabled"></el-input-number>
+                                </th>
+                                <th>{{ row.individual_item.unit_type.description }}</th>
+                                <th>
+
+                                    <el-select v-model="row.warehouse_id"
+                                               filterable>
+                                        <el-option
+                                            v-for="option in warehouses"
+                                            :key="option.id"
+                                            :label="option.description"
+                                            :value="option.id"
+                                        ></el-option>
+                                    </el-select>
+                                </th>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -491,38 +523,6 @@ export default {
         this.initForm()
     },
     methods: {
-        addRowLotGroup(id) {
-            let IdLoteSelected = id;
-            const index = this.supplies.findIndex(item => item.id === this.selectSupply.supply_id);
-
-            if (index !== -1) {
-                this.supplies[index].IdLoteSelected = IdLoteSelected
-            }
-        },
-        clickLotGroup(row) {
-            console.log("row", row)
-            let donwloadQuantity = row.quantity * this.form.quantity
-            this.selectSupply.supply_id = row.individual_item_id
-            this.selectSupply.lots_group = row.lots_group;
-            this.selectSupply.quantity = donwloadQuantity;
-            this.showDialogLots = true
-        },
-        deleteStatus(id) {
-            const index = this.records.findIndex((estado) => estado.id === id);
-            if (index !== -1) {
-                this.records.splice(index, 1);
-            }
-        },
-        fetchMachineInfo() {
-            if (this.form.machine_id) {
-                const machine = this.machines.find(m => m.id === this.form.machine_id);
-                this.min_force = parseInt(machine.minimum_force);
-                this.max_force = parseInt(machine.maximum_force);
-            } else {
-                this.min_force = null;
-                this.max_force = null;
-            }
-        },
         onClose() {
             window.location.href = '/production'
         },
@@ -534,29 +534,11 @@ export default {
                     .then(response => {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
-                        this.supplies = this.form.supplies
-                        let currentStatus = this.form.records_id;
-                        switch (currentStatus) {
-                            case '01':
-                                this.isCreating = true;
-                                this.deleteStatus("03")
-                                this.deleteStatus('04')
-                                break;
-                            case '02':
-                                this.deleteStatus("01")
-                                this.deleteStatus("04")
-                                break;
-                            case '03':
-                                this.deleteStatus("01")
-                                this.deleteStatus("02")
-                                break;
-                            case '04':
-                                this.records = []
-                                break
-                            default:
-                                break;
-                        }
-                        this.fetchMachineInfo();
+                        let item = _.find(this.items, {'id': this.form.item_id})
+                        this.form.item_extra_data= {}
+                        this.form.item_extra_data.color = null
+                        this.item = item
+                        this.supplies = item.supplies
                     })
             } else {
                 this.isCreating = true;
@@ -565,14 +547,16 @@ export default {
                 this.deleteStatus("02")
             }
 
+            console.log("is creating", this.isCreating)
+
         },
         async initForm() {
             this.form = {
                 id: this.id,
                 item_id: null,
                 warehouse_id: null,
-                quantity: 1,
-                informative: false,
+                quantity: 0,
+                informative:false,
                 records_id: null,
                 agreed: 0,
                 imperfect: 0,
@@ -602,7 +586,7 @@ export default {
                 this.quantityD = value
                 if (this.form.supplies) {
                     for (let i = 0; i < this.supplies.length; i++) {
-         
+
                     }
                 }
             } else {
@@ -622,45 +606,6 @@ export default {
         async submit() {
             if (this.form.quantity < 1) {
                 return this.$message.error('La cantidad debe ser mayor a 0');
-            }
-
-            if (!this.form.machine_id) {
-                this.$notify({
-                    title: 'Atención ',
-                    message: `Seleccione una máquina`,
-                    type: 'warning'
-                });
-                return;
-            }
-
-
-            if (this.form.quantity < this.min_force || this.form.quantity > this.max_force) {
-                this.$notify({
-                    title: 'Atención ',
-                    message: `La cantidad debe estar entre ${this.min_force} y ${this.max_force} (capacidad de máquina)`,
-                    type: 'warning'
-                });
-                return;
-            }
-            
-            let checkLots = false;
-            this.supplies.map(e => {
-                if (e.lots_enabled) {
-                    const totalCompromiseQuantity = e.lots_group.reduce(
-                        (accumulator, currentValue) => {
-                            return accumulator + currentValue.compromise_quantity;
-                        },
-                        0
-                    );
-                    if (totalCompromiseQuantity === this.form.quantity) {
-                        checkLots = true
-                    }
-                }
-            });
-
-            if(!checkLots) {
-                this.$message.error("Los lotes están incorrectos");
-                return
             }
 
             this.loading_submit = true;

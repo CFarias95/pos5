@@ -22,7 +22,7 @@ class IncomeCollection extends ResourceCollection
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'number' => $row->number,
                 'external_id' => $row->external_id,
-                'customer_name' => $row->customer, 
+                'customer_name' => $row->customer,
                 'currency_type_id' => $row->currency_type_id,
                 'state_type_id' => $row->state_type_id,
                 'total' => $row->total,

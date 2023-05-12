@@ -16,6 +16,7 @@ use Illuminate\Support\Str;
 use Modules\Offline\Models\OfflineConfiguration;
 use Html2Text\Html2Text;
 use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Log;
 use Modules\Finance\Helpers\UploadFileHelper;
 
 
@@ -106,18 +107,18 @@ class DocumentInput
             'total_charge' => Functions::valueKeyInArray($inputs, 'total_charge', 0),
             'total_exportation' => Functions::valueKeyInArray($inputs, 'total_exportation', 0),
             'total_free' => Functions::valueKeyInArray($inputs, 'total_free', 0),
-            'total_taxed' => $inputs['total_taxed'],
+            'total_taxed' => Functions::valueKeyInArray($inputs, 'total_taxed', 0),
             'total_unaffected' => Functions::valueKeyInArray($inputs, 'total_unaffected', 0),
             'total_exonerated' => Functions::valueKeyInArray($inputs, 'total_exonerated', 0),
-            'total_igv' => $inputs['total_igv'],
+            'total_igv' => Functions::valueKeyInArray($inputs, 'total_igv', 0),
             'total_igv_free' => Functions::valueKeyInArray($inputs, 'total_igv_free', 0),
             'total_base_isc' => Functions::valueKeyInArray($inputs, 'total_base_isc', 0),
             'total_isc' => Functions::valueKeyInArray($inputs, 'total_isc', 0),
             'total_base_other_taxes' => Functions::valueKeyInArray($inputs, 'total_base_other_taxes', 0),
             'total_other_taxes' => Functions::valueKeyInArray($inputs, 'total_other_taxes', 0),
             'total_plastic_bag_taxes' => Functions::valueKeyInArray($inputs, 'total_plastic_bag_taxes', 0),
-            'total_taxes' => $inputs['total_taxes'],
-            'total_value' => $inputs['total_value'],
+            'total_taxes' => Functions::valueKeyInArray($inputs, 'total_taxes', 0),
+            'total_value' => Functions::valueKeyInArray($inputs, 'total_value', 0),
             'subtotal' => (Functions::valueKeyInArray($inputs, 'subtotal')) ? $inputs['subtotal'] : $inputs['total'],
             'total' => $inputs['total'],
             'has_prepayment' => Functions::valueKeyInArray($inputs, 'has_prepayment', 0),
@@ -161,6 +162,7 @@ class DocumentInput
             'point_system_data' => $point_system_data['point_system_data'],
             'agent_id' => Functions::valueKeyInArray($inputs, 'agent_id'),
             'dispatch_ticket_pdf' => Functions::valueKeyInArray($inputs, 'dispatch_ticket_pdf', false),
+            'aproved' => Functions::valueKeyInArray($inputs, 'aproved', false),
         ];
     }
 
@@ -186,7 +188,7 @@ class DocumentInput
                 if($register_series_invoice_xml && in_array($inputs['document_type_id'], ['01', '03']))
                 {
                     self::registerSeriesInvoiceXml($items_attributes, $row);
-                } 
+                }
 
                 $arayItem = [
                     'item_id' => $item->id,
@@ -199,6 +201,7 @@ class DocumentInput
                         'unit_type_id' => (key_exists('item', $row)) ? $row['item']['unit_type_id'] : $item->unit_type_id,
                         'presentation' => (key_exists('item', $row)) ? (isset($row['item']['presentation']) ? $row['item']['presentation'] : []) : [],
                         'amount_plastic_bag_taxes' => $item->amount_plastic_bag_taxes,
+                        'amount_service_taxes' => $item->amount_service_taxes,
                         'is_set' => $item->is_set,
                         'lots' => self::lots($row),
                         'IdLoteSelected' => (isset($row['IdLoteSelected']) ? $row['IdLoteSelected'] : null),
@@ -213,13 +216,13 @@ class DocumentInput
                         'used_points_for_exchange' => $row['item']['used_points_for_exchange'] ?? null,
                     ],
                     'quantity' => $row['quantity'],
-                    'unit_value' => $row['unit_value'],
+                    'unit_value' => Functions::valueKeyInArray($row, 'unit_value',0),
                     'price_type_id' => $row['price_type_id'],
                     'unit_price' => $row['unit_price'],
                     'affectation_igv_type_id' => $row['affectation_igv_type_id'],
-                    'total_base_igv' => $row['total_base_igv'],
-                    'percentage_igv' => $row['percentage_igv'],
-                    'total_igv' => $row['total_igv'],
+                    'total_base_igv' => Functions::valueKeyInArray($row, 'total_base_igv',0),
+                    'percentage_igv' => Functions::valueKeyInArray($row, 'percentage_igv',0),
+                    'total_igv' => Functions::valueKeyInArray($row, 'total_igv',0),
                     'system_isc_type_id' => Functions::valueKeyInArray($row, 'system_isc_type_id'),
                     'total_base_isc' => Functions::valueKeyInArray($row, 'total_base_isc', 0),
                     'percentage_isc' => Functions::valueKeyInArray($row, 'percentage_isc', 0),
@@ -228,11 +231,11 @@ class DocumentInput
                     'percentage_other_taxes' => Functions::valueKeyInArray($row, 'percentage_other_taxes', 0),
                     'total_other_taxes' => Functions::valueKeyInArray($row, 'total_other_taxes', 0),
                     'total_plastic_bag_taxes' => Functions::valueKeyInArray($row, 'total_plastic_bag_taxes', 0),
-                    'total_taxes' => $row['total_taxes'],
-                    'total_value' => $row['total_value'],
+                    'total_taxes' => Functions::valueKeyInArray($row, 'total_taxes', 0),
+                    'total_value' => Functions::valueKeyInArray($row, 'total_value', 0),
                     'total_charge' => Functions::valueKeyInArray($row, 'total_charge', 0),
                     'total_discount' => Functions::valueKeyInArray($row, 'total_discount', 0),
-                    'total' => $row['total'],
+                    'total' => Functions::valueKeyInArray($row, 'total', 0),
                     'attributes' => $items_attributes,
                     // 'attributes' => self::attributes($row),
                     'discounts' => self::discounts($row),
@@ -243,6 +246,7 @@ class DocumentInput
                     'name_product_xml' => $name_product_xml,
                     'update_description' => Functions::valueKeyInArray($row, 'update_description', false),
                     'additional_data' => Functions::valueKeyInArray($row, 'additional_data'),
+                    'total_service_taxes' => Functions::valueKeyInArray($row, 'total_service_taxes', 0),
 //                    'additional_data' => key_exists('additional_data', $row)?$row['additional_data']:null,
                 ];
 //                dd($arayItem);
@@ -321,9 +325,9 @@ class DocumentInput
         return null;
     }
 
-    
+
     /**
-     * 
+     *
      * Registrar series como atributos (5019) para vehiculos
      *
      * @param  array $items_attributes
@@ -333,25 +337,25 @@ class DocumentInput
     public static function registerSeriesInvoiceXml(&$items_attributes, $row)
     {
         $series = self::lots($row);
-        
+
         if(!empty($series))
         {
             $series_to_attributes = self::getVehicleSeriesToAttributes($series);
 
-            if(is_null($items_attributes)) 
+            if(is_null($items_attributes))
             {
                 $items_attributes = $series_to_attributes;
             }
             else if(is_array($items_attributes))
             {
                 $items_attributes = array_merge($items_attributes, $series_to_attributes);
-            } 
+            }
         }
     }
 
-    
+
     /**
-     * 
+     *
      * Generar arreglo de atributos en base a las series - Vehiculos
      *
      * @param  array $series
@@ -363,7 +367,7 @@ class DocumentInput
         $attribute_type_id = '5019';
         $description = 'Serie/Chasis';
 
-        foreach ($series as $serie) 
+        foreach ($series as $serie)
         {
             $attributes [] = [
                 'attribute_type_id' => $attribute_type_id,
@@ -382,8 +386,9 @@ class DocumentInput
     private static function charges($inputs)
     {
         if (array_key_exists('charges', $inputs)) {
-            if ($inputs['charges']) {
+            if ($inputs['charges'] && is_array($inputs['charges'])) {
                 $charges = [];
+
                 foreach ($inputs['charges'] as $row) {
                     $charge_type_id = $row['charge_type_id'];
                     $description = $row['description'];

@@ -1,16 +1,27 @@
 <template>
     <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
-            <div class="form-body"> 
+            <div class="form-body">
                 <div class="row">
-                    <div class="col-md-12">
+                    <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.description}">
                             <label class="control-label">Descripción <span class="text-danger">*</span></label>
                             <el-input v-model="form.description" dusk="description"></el-input>
                             <small class="form-control-feedback" v-if="errors.description" v-text="errors.description[0]"></small>
                         </div>
-                    </div> 
-                </div>  
+                    </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.discount}">
+                            <label class="control-label">Descuento % <span class="text-danger">*</span></label>
+                            <el-input-number
+                                        v-model="form.discount"
+                                        :controls="false"
+                                        :min="0"
+                                        :precision="2"></el-input-number>
+                            <small class="form-control-feedback" v-if="errors.discount" v-text="errors.discount[0]"></small>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -31,21 +42,22 @@
                 loading_submit: false,
                 resource: 'person-types',
                 errors: {},
-                form: {}, 
+                form: {},
             }
         },
         created() {
-            this.initForm() 
-        }, 
+            this.initForm()
+        },
         methods: {
             initForm() {
                 this.errors = {}
                 this.form = {
                     id: null,
-                    description: null, 
+                    description: null,
+                    discount: null,
                 }
             },
-            create() { 
+            create() {
                 this.titleDialog = (this.recordId)? 'Editar tipo de cliente':'Nuevo tipo de cliente'
 
                 if (this.recordId) {
@@ -54,13 +66,13 @@
                             this.form = response.data
                         })
                 }
-            }, 
+            },
             submit() {
                 this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
-                            this.$message.success(response.data.message) 
+                            this.$message.success(response.data.message)
                             this.$eventHub.$emit('reloadData')
                             this.close()
                         } else {
@@ -77,11 +89,11 @@
                     .then(() => {
                         this.loading_submit = false
                     })
-            }, 
+            },
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
-            }, 
+            },
         }
     }
 </script>

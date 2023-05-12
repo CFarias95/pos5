@@ -269,10 +269,13 @@ class Document extends ModelTenant
         'agent_id',
         'force_send_by_summary',
         'dispatch_ticket_pdf',
+        'aproved',
     ];
 
     protected $casts = [
+
         'date_of_issue' => 'date',
+        'time_of_issue' => 'time',
         'user_rel_suscription_plan_id' => 'int',
         'quantity_period' => 'int',
         'enabled_concurrency' => 'bool',
@@ -283,6 +286,7 @@ class Document extends ModelTenant
         'point_system' => 'bool',
         'force_send_by_summary' => 'bool',
         'dispatch_ticket_pdf' => 'bool',
+        'aproved' => 'bool',
     ];
 
     public static function boot()
@@ -302,6 +306,17 @@ class Document extends ModelTenant
     public function setAdditionalDataAttribute($value)
     {
         $this->attributes['additional_data'] = (is_null($value))?null:json_encode($value);
+    }
+
+
+    public function getTimeofIssue($value)
+    {
+        return (is_null($value))?null:(object) json_decode($value);
+    }
+
+    public function setTimeofIssue($value)
+    {
+        $this->attributes['time_of_issue'] = (is_null($value))?null:json_encode($value);
     }
 
     /**
@@ -1674,7 +1689,7 @@ class Document extends ModelTenant
         return $qrCode->displayPNGBase64($text);
     }
 
-                
+
     /**
      *
      * @param  string $format
@@ -1685,7 +1700,7 @@ class Document extends ModelTenant
         return url("print/document/{$this->external_id}/{$format}");
     }
 
-    
+
     /**
      *
      * Filtrar registro para envio de mensajes por whatsapp

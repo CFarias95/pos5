@@ -22,11 +22,13 @@ class AuthSri extends BaseSunat
     {
         $response = null;
         $client = new nusoap_client("$url", 'wsdl');
-        $client->soap_defencoding = 'UTF-8';
-        $params = array(); 
+        $client->soap_defencoding = 'utf-8';
+        $client->decode_utf8 = false;
+
+        $params = array();
 
         try {
-            
+
             Log::info('CLAVE SRI: '.$clave);
             Log::info('API: '.$url);
 

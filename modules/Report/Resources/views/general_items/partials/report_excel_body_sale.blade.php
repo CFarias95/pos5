@@ -11,8 +11,8 @@
     } else {
         $observation = $data['additional_information']?$data['additional_information'][0]:'';
     }
-    
-    
+
+
     $purchseOrder = $document->purchase_order;
 $stablihsment = $stablihsment ?? [
         'district' => '',
@@ -30,6 +30,7 @@ $relation_item = $value->relation_item;
 $web_platform = '';
 $purchase_unit_price = '';
 $igv = '';
+$aditionals = '';
 $system_isc_type_id = '';
 $total_isc = '';
 $total_plastic_bag_taxes = '';
@@ -48,6 +49,7 @@ if (!isset($qty)) {
     $web_platform = optional($relation_item->web_platform)->name;
     $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
     $igv = $value->total_igv;
+    $aditionals = $value->total_service_taxes;
     // $igv = $value->system_isc_type_id;
     $total_isc = $value->total_isc;
     $system_isc_type_id = $value->system_isc_type_id;
@@ -55,7 +57,7 @@ if (!isset($qty)) {
     $category = $relation_item->category->name;
     $brand = $relation_item->brand->name;
 
-    
+
     // aplicar conversión si es que esta habilitada la configuracion
     if($apply_conversion_to_pen && $value->isCurrencyTypeUsd())
     {
@@ -207,6 +209,9 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
     <td class="celda">{{ $total_value }}</td>
     <td class="celda">{{ $value->affectation_igv_type_id }}</td>
     <td class="celda">{{ $igv }}</td>
+    @if($type == 'sale')
+    <td class="celda">{{ $aditionals }}</td>
+    @endif
     <td class="celda">{{ $system_isc_type_id }}</td>
     <td class="celda">{{ $total_isc }}</td>
     <td class="celda">{{ $total_plastic_bag_taxes }}</td>

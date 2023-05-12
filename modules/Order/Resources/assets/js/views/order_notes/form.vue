@@ -334,6 +334,7 @@ export default {
             showDialogLotsGroup: false,
             lots_group: [],
             input_person: {},
+            emailCustomer:null,
         }
     },
     created() {
@@ -465,7 +466,9 @@ export default {
             let customer = _.find(this.customers, {id : this.form.customer_id})
 
             if(customer){
+                console.log('customer',customer)
                 this.form.shipping_address = customer.address
+                this.emailCustomer = customer.email
             }
 
         },

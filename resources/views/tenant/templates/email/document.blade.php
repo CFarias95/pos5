@@ -4,8 +4,13 @@
     if($establishment->logo) {
         $logo = "{$establishment->logo}";
     }
-    
-    $document_number = $establishment->code.''.substr($document->series,1,3).''.str_pad($document->number, 9, '0', STR_PAD_LEFT);
+    $document_number = '';
+    if($document->idRetencion){
+        $document_number = $document->idRetencion;
+    }else{
+        $document_number = $establishment->code.''.substr($document->series,1,3).''.str_pad($document->number, 9, '0', STR_PAD_LEFT);
+    }
+
     $url =  asset("storage/uploads/logos/".$company->logo);
     @endphp
 
@@ -95,25 +100,6 @@
         </style>
     </head>
     <body>
-        <!-- Code1
-        <p>Estimad@: 
-            @if($document->customer)
-                {{ $document->customer->name }}
-            @else
-                {{ $document->supplier->name }}
-            @endif
-            , informamos que su comprobante electrónico ha sido emitido exitosamente.</p>
-        <p>Los datos de su comprobante electrónico son:</p>
-        <ul>
-            <li>Razon social: {{ $company->name }}</li>
-            <li>Teléfono: {{ $document->establishment->telephone }}</li>
-        {{--    <li>Tipo de comprobante: {{ $document->document_type->description }}</li>--}}
-            <li>Fecha de emisión: {{ $document->date_of_issue->format('d/m/Y') }}</li>
-            <li>Nro. de comprobante: {{ $document->series.'-'.$document->number }}</li>
-            <li>Total: {{ $document->total }}</li>
-        </ul>
-        -->
-
 
         <!-- JOINSOFTWARE Code2 -->
         <div class="main">
@@ -123,6 +109,8 @@
             <div class="fdiv">
                 @if($document->customer)
                 <h3 id="title">{{ $document->customer->name }}</h3>
+                @elseif($document->purchase)
+                <h3 id="title">{{ $document->purchase->supplier->name }}</h3>
                 @else
                 <h3 id="title">{{ $document->supplier->name }}</h3>
                 @endif
@@ -131,28 +119,34 @@
                 <!--<img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 150px;">
                 -->
                 <img alt="{{$company->name}}" src="{{ $url }}" width="50px" height="50px">
-                
+
                 @else
                 <img alt="logo" src="{{ asset('logo/logo.jpg') }}" width="50px" height="50px">
                 @endif
                 <hr class="solid">
+                @if($document->idRetencion)
+                <h3>Retencion {{ $document_number }}</h3>
+                @else
                 <h3>{{ $document->document_type->description }} {{ $document_number }}</h3>
+                @endif
+
             </div>
             <div class="sdiv">
+                @if($document->idRetencion)
+                <h6 id="value1">Fecha Emisión: {{$document->created_at->format('m-d-Y')}}</h6>
+                @else
                 <h6 id="value1">Fecha Emisión: {{$document->date_of_issue->format('m-d-Y')}}</h6>
+                @endif
             </div>
             <div class="fdiv">
                 <h6 id="value">Por el valor de:</h6>
+                @if($document->idRetencion)
+                <h2>{{ $document->purchase->currency_type->symbol }}{{ $document->total_retention }}</h2>
+                @else
                 <h2>{{ $document->currency_type->symbol }}{{ $document->total }}</h2>
+                @endif
             </div>
-            <!--
-            <div class="fdiv">
-                <h6 id="value2">Consulta el comprobante detallado en línea:</h6>
-                <button class="btn1">VER DOCUMENTO</button>
-            </div>
-            -->
-            <!--<button class="btn2">Descargar XML</button>-->
-            <p class="btn2">Adjunto encontrará los archivos pdf y xml de su factura</p>
+            <p class="btn2">Adjunto encontrará los archivos pdf y xml de su documento electronico</p>
             <div class="tdiv"></div>
         </div>
     </body>

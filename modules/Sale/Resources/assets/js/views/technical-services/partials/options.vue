@@ -348,7 +348,7 @@ export default {
                 date_of_due: moment().format("YYYY-MM-DD"),
                 customer_id: null,
                 is_receivable: false,
-                currency_type_id: 'PEN',
+                currency_type_id: this.config.currency_type_id,
                 exchange_rate_sale: this.exchange_rate_sale,
                 total_taxed: 0,
                 total_igv: 0,

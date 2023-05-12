@@ -115,7 +115,7 @@ class PurchaseOrderController extends Controller
 
         // $items = $this->table('items');
         $items =  SearchItemController::getItemToPurchaseOrder();
-
+        //$items =  SearchItemController::getAllItem();
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();

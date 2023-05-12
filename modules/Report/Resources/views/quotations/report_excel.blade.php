@@ -33,7 +33,7 @@
                         <p><strong>Ruc: </strong></p>
                     </td>
                     <td align="center">{{$company->number}}</td>
-                  
+
                     @inject('reportService', 'Modules\Report\Services\ReportService')
                     @if($filters['seller_id'])
                     <td>
@@ -67,7 +67,7 @@
                                 <th class="text-right" >T.Inafecta</th>
                                 <th class="text-right">T.Exonerado</th>
                                 <th class="text-right">T.Gravado</th>
-                                <th class="text-right">T.Igv</th>
+                                <th class="text-right">T.IVA</th>
                                 <th class="text-right">Total</th>
                             </tr>
                         </thead>
@@ -90,7 +90,7 @@
                                              <label class="d-block">{{$doc->identifier}}</label>
                                         @endforeach
                                     </td>
-                                    
+
                                     <td class="celda">{{ ($value->sale_opportunity) ? $value->sale_opportunity->number_full : '' }}</td>
                                     <td class="celda">{{$value->currency_type_id}}</td>
                                     <td class="celda">{{$value->total_exportation}}</td>

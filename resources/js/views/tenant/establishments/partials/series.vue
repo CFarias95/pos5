@@ -1,5 +1,5 @@
 <template>
-    <el-dialog title="Series" :visible="showDialog" @close="close" @open="getData">
+    <el-dialog title="Series de emisión" :visible="showDialog" @close="close" @open="getData">
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records.length > 0">

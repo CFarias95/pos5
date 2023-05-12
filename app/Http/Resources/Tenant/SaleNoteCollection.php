@@ -44,6 +44,7 @@
                     'soap_type_id'                 => $row->soap_type_id,
                     'external_id'                  => $row->external_id,
                     'date_of_issue'                => $row->date_of_issue->format('Y-m-d'),
+                    'time_of_issue'                => $row->time_of_issue,
                     'identifier'                   => $row->identifier,
                     'full_number'                  => $row->series.'-'.$row->number,
                     'customer_name'                => $row->customer->name,

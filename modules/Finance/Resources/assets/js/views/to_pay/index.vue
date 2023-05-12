@@ -227,7 +227,7 @@
                                                     type="button"
                                                     style="min-width: 41px"
                                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                    @click.prevent="clickPurchasePayment(row.id)"
+                                                    @click.prevent="clickPurchasePayment(row.id, row.supplier_id)"
                                                 >Pagos</button>
                                                 </template>
                                                 <template v-else>
@@ -255,6 +255,7 @@
         <purchase-payments
             :showDialog.sync="showDialogPurchasePayments"
             :purchaseId="recordId"
+            :customerId="customerId"
             :external="true"
             ></purchase-payments>
 
@@ -283,6 +284,7 @@
                 form: {},
                 suppliers: [],
                 recordId: null,
+                customerId: null,
                 records:[],
                 establishments: [],
                 pickerOptionsDates: {
@@ -439,11 +441,13 @@
             },
             loadToPay() {
                 this.$http.post(`/${this.resource}/records`, this.form).then(response => {
+                    console.log('loadToPay',response.data.records)
                     this.records = response.data.records;
                 });
             },
-            clickPurchasePayment(recordId) {
+            clickPurchasePayment(recordId,customer) {
                 this.recordId = recordId;
+                this.customerId = customer;
                 this.showDialogPurchasePayments = true;
             },
             clickExpensePayment(recordId) {

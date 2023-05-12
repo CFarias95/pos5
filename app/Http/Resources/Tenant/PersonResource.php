@@ -39,6 +39,7 @@ class PersonResource extends JsonResource
             'person_type_id' => $this->person_type_id,
             'contact' => $this->contact,
             'comment' => $this->comment,
+            'account' => $this->account,
             'addresses' => collect($this->addresses)->transform(function ($row) {
                 return [
                     'id' => $row->id,

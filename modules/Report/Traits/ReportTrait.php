@@ -4,6 +4,7 @@ namespace Modules\Report\Traits;
 
 use App\Http\Controllers\FunctionController;
 use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
@@ -55,7 +56,7 @@ trait ReportTrait
         $guides = FunctionController::InArray($request, 'guides');
         $web_platform = FunctionController::InArray($request, 'web_platform_id',0);
 
-
+        $time_of_issue = FunctionController::InArray($request, 'time_of_issue');
 
 
 
@@ -89,6 +90,7 @@ trait ReportTrait
 
         $records = $this->data($document_type_id,
             $establishment_id,
+            $time_of_issue,
             $d_start,
             $d_end,
             $person_id,
@@ -122,6 +124,7 @@ trait ReportTrait
     private function data(
         $document_type_id,
         $establishment_id,
+        $time_of_issue,
         $date_start,
         $date_end,
         $person_id,
@@ -152,7 +155,7 @@ trait ReportTrait
             else {
                 $data->where([['establishment_id', $establishment_id], ['document_type_id', $document_type_id]]);
             }
-            
+
         } elseif ($document_type_id) {
             if (in_array($document_type_id, [
                 '01',
@@ -413,6 +416,19 @@ trait ReportTrait
                 'id' => $row->id,
                 'name' => $row->name,
                 'type' => $row->type,
+            ];
+        });
+
+        return $persons;
+
+    }
+
+    public function getDocuments(){
+
+        $persons = Dispatch::where('reference_order_note_id','!=',['',null])->orderBy('id')->get()->transform(function($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->series . '-' . $row->number,
             ];
         });
 

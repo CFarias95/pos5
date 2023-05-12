@@ -182,7 +182,7 @@
                                         <small class="form-control-feedback" v-if="errors.sale_affectation_igv_type_id" v-text="errors.sale_affectation_igv_type_id[0]"></small>
                                     </div>
                                 </div>
-                                 <div class="short-div col-md-8">
+                                <div class="short-div col-md-8">
                                     <div class="form-group">
                                         <div :class="{'has-danger': errors.has_igv}"
                                             class="form-group">
@@ -192,6 +192,19 @@
                                             <small v-if="errors.has_igv"
                                                 class="form-control-feedback"
                                                 v-text="errors.has_igv[0]"></small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="short-div col-md-8">
+                                    <div class="form-group">
+                                        <div :class="{'has-danger': errors.has_service_taxes}"
+                                            class="form-group">
+                                            <el-checkbox v-model="form.has_service_taxes">Cargo por servicio
+                                            </el-checkbox>
+                                            <br>
+                                            <small v-if="errors.has_service_taxes"
+                                                class="form-control-feedback"
+                                                v-text="errors.has_service_taxes[0]"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -512,7 +525,8 @@ import ItemSetFormItem from './partials/item.vue'
                     sale_unit_price_set: 0,
                     date_of_due:null,
                     web_platform_id:null,
-                    individual_items:[]
+                    individual_items:[],
+                    has_service_taxes: true,
                 }
                 this.show_has_igv = true
                 this.enabled_percentage_of_profit = false
@@ -552,6 +566,7 @@ import ItemSetFormItem from './partials/item.vue'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
+                            console.log('create PACK: ', response.data.data)
                             this.form = response.data.data
                             this.changeAffectationIgvType()
                             this.calculateTotal();
@@ -562,6 +577,7 @@ import ItemSetFormItem from './partials/item.vue'
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
+                            console.log('loadRecord PACK: ', response.data.data)
                             this.form = response.data.data
                             this.changeAffectationIgvType();
 

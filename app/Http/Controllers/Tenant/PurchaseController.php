@@ -11,7 +11,9 @@
     use App\Http\Requests\Tenant\PurchaseRequest;
     use App\Http\Resources\Tenant\PurchaseCollection;
     use App\Http\Resources\Tenant\PurchaseResource;
-    use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\AttributeType;
     use App\Models\Tenant\Catalogs\ChargeDiscountType;
     use App\Models\Tenant\Catalogs\CurrencyType;
@@ -23,8 +25,8 @@
     use App\Models\Tenant\Catalogs\SystemIscType;
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
-use App\Models\Tenant\DocumentTypesSustentoSRI;
-use App\Models\Tenant\Establishment;
+    use App\Models\Tenant\DocumentTypesSustentoSRI;
+    use App\Models\Tenant\Establishment;
     use App\Models\Tenant\GuideFile;
     use App\Models\Tenant\Item;
     use App\Models\Tenant\ItemUnitType;
@@ -52,15 +54,16 @@ use App\Models\Tenant\Establishment;
     use Symfony\Component\HttpFoundation\StreamedResponse;
     use Throwable;
     use App\Models\Tenant\GeneralPaymentCondition;
-use App\Models\Tenant\Imports;
-use App\Models\Tenant\PurchaseDocumentTypes2;
-use App\Models\Tenant\RetentionTypePurchase;
+    use App\Models\Tenant\Imports;
+    use App\Models\Tenant\PurchaseDocumentTypes2;
+    use App\Models\Tenant\RetentionTypePurchase;
     use App\Models\Tenant\RetentionsDetailEC;
     use App\Models\Tenant\RetentionsEC;
-use App\Models\Tenant\Series;
-use App\Models\Tenant\TypeDocsPurchase;
-use App\Models\Tenant\UserDefaultDocumentType;
-use Illuminate\Support\Facades\Log;
+    use App\Models\Tenant\Series;
+    use App\Models\Tenant\TypeDocsPurchase;
+    use App\Models\Tenant\UserDefaultDocumentType;
+    use Illuminate\Support\Facades\Log;
+use Modules\Sale\Models\SaleOpportunity;
 
     class PurchaseController extends Controller
     {
@@ -70,6 +73,7 @@ use Illuminate\Support\Facades\Log;
         use OfflineTrait;
 
         private $id;
+        private $purchase;
 
         public function index()
         {
@@ -133,7 +137,6 @@ use Illuminate\Support\Facades\Log;
 
                     break;
             }
-
 
             return $records;
 
@@ -371,9 +374,13 @@ use Illuminate\Support\Facades\Log;
             //Log::info("REQUEST: ".json_encode($request));
             //Log::info(json_encode($request->ret));
             $data = self::convert($request);
-            //Log::info(json_encode($data));
+            $docIntern = PurchaseDocumentTypes2::where('idType',$request->document_type_intern)->get();
+            $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
+            $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
+
+            Log::info(json_encode($data));
             try {
-                $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                    $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();
                     $data['number'] = $numero + 1;
                     $doc = Purchase::create($data);
@@ -405,10 +412,11 @@ use Illuminate\Support\Facades\Log;
                         $ret->codSustento = $doc->document_type_id;
                         $ret->codDocSustento = $doc->codSustento;
                         $ret->numAuthSustento = $doc->auth_number;
+                        $ret->status_id = '01';
                         $ret->save();
 
                         foreach($data['ret'] as $retDet){
-                            Log::info(json_encode($retDet));
+                            //Log::info(json_encode($retDet));
                             $detRet = new RetentionsDetailEC();
                             $detRet->idRetencion = $ret->idRetencion;
                             $detRet->codRetencion = $retDet['code'];
@@ -422,6 +430,7 @@ use Illuminate\Support\Facades\Log;
 
                     foreach ($data['items'] as $row) {
                         $p_item = new PurchaseItem();
+                        $row['quantity'] = $row['quantity'] * $signo;
                         $p_item->fill($row);
                         $lots = $row['lots'] ?? null;
                         if ($lots != null) {
@@ -528,6 +537,7 @@ use Illuminate\Support\Facades\Log;
                         if (isset($payment['payment_destination_id'])) {
                             $this->createGlobalPayment($record_payment, $payment);
                         }
+
                     }
 
                     $this->savePurchaseFee($doc, $data['fee']);
@@ -535,6 +545,10 @@ use Illuminate\Support\Facades\Log;
                     $this->setFilename($doc);
                     $this->createPdf($doc, "a4", $doc->filename);
 
+                    if((Company::active())->countable > 0){
+                        $this->createAccountingEntry($doc->id, $data['ret']);
+                        $this->createAccountingEntryPayment($doc->id);
+                    }
                     return $doc;
                 });
 
@@ -561,9 +575,349 @@ use Illuminate\Support\Facades\Log;
             }
         }
 
+         /* Crear los asientos contables del documento */
+        private function createAccountingEntry($document_id,$ret){
+
+            $document = Purchase::find($document_id);
+            //Log::info('compra: '.json_encode($document));
+            //Log::info('retenciones: ',$ret);
+
+            $entry = (AccountingEntries::get())->last();
+            $iva = 0;
+            $renta = 0;
+
+            if(count($ret) > 0){
+
+
+               foreach($ret as $rett){
+
+                if($rett['tipo'] == 'IVA'){
+                    $iva += floatval($rett['valor']);
+                }
+                if($rett['tipo'] == 'RENTA')
+
+                    $renta += floatval($rett['valor']);
+                }
+
+            }
+
+            if($document && $document->document_type_id == '01'){
+
+                try{
+                    $idauth = auth()->user()->id;
+                    $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                    $ultimo = AccountingEntries::latest('id')->first();
+                    $configuration = Configuration::first();
+                    if (empty($lista)) {
+                        $seat = 1;
+                    } else {
+
+                        $seat = $lista->seat + 1;
+                    }
+
+                    if (empty($ultimo)) {
+                        $seat_general = 1;
+                    } else {
+                        $seat_general = $ultimo->seat_general + 1;
+                    }
+
+                    $comment = 'Factura de compra F'. substr($document->series,0). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->supplier->name ;
+
+                    $total_debe = 0;
+                    $total_haber = 0;
+
+                    $cabeceraC = new AccountingEntries();
+                    $cabeceraC->user_id = $document->user_id;
+                    $cabeceraC->seat = $seat;
+                    $cabeceraC->seat_general = $seat_general;
+                    $cabeceraC->seat_date = $document->date_of_issue;
+                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->comment = $comment;
+                    $cabeceraC->serie = null;
+                    $cabeceraC->number = $seat;
+                    $cabeceraC->total_debe = $total_debe;
+                    $cabeceraC->total_haber = $total_haber;
+                    $cabeceraC->revised1 = 0;
+                    $cabeceraC->user_revised1 = 0;
+                    $cabeceraC->revised2 = 0;
+                    $cabeceraC->user_revised2 = 0;
+                    $cabeceraC->currency_type_id = $document->currency_type_id;
+                    $cabeceraC->doctype = $document->document_type_id;
+                    $cabeceraC->is_client = ($document->customer)?true:false;
+                    $cabeceraC->establishment_id = $document->establishment_id;
+                    $cabeceraC->establishment = $document -> establishment;
+                    $cabeceraC->prefix = 'ASC';
+                    $cabeceraC->person_id = $document->supplier_id;
+                    $cabeceraC->external_id = Str::uuid()->toString();
+                    $cabeceraC->document_id = 'C'.$document_id;
+
+                    $cabeceraC->save();
+                    $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                    $cabeceraC->save();
+
+                    $customer = Person::find($cabeceraC->person_id);
+
+                    $detalle = new AccountingEntryItems();
+
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $detalle->seat_line = 1;
+                    $detalle->haber = $document->total;
+                    $detalle->debe = 0;
+                    $detalle->save();
+
+                    $arrayEntrys = [];
+                    $n = 1;
+
+                    foreach($document->items as $key => $value){
+
+                        $item = Item::find($value->item_id);
+                        $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
+
+
+                        if($item->purchase_cta){
+
+                            if(array_key_exists($item->purchase_cta,$arrayEntrys)){
+
+                                $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
+
+                            }
+                            if(!array_key_exists($item->purchase_cta,$arrayEntrys)){
+                                $n += 1;
+
+                                $arrayEntrys[$item->purchase_cta] = [
+                                    'seat_line' => $n,
+                                    'debe' => floatval($value->total_value),
+                                    'haber' => 0,
+                                ];
+                            }
+                        }
+
+                        if(!($item->purchase_cta) && $configuration->cta_purchases){
+
+                            if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+
+                                $arrayEntrys[$configuration->cta_purchases]['debe'] += floatval($value->total_value);
+
+                            }
+                            if(!array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+                                $n += 1;
+
+                                $arrayEntrys[$configuration->cta_purchases] = [
+                                    'seat_line' => $n,
+                                    'debe' => floatval($value->total_value),
+                                    'haber' => 0,
+                                ];
+                            }
+                        }
+
+                        if($impuesto->account){
+
+                            if(array_key_exists($impuesto->account,$arrayEntrys)){
+
+                                $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
+
+                            }
+                            if(!array_key_exists($impuesto->account,$arrayEntrys)){
+
+                                $n += 1;
+
+                                $arrayEntrys[$impuesto->account] = [
+                                    'seat_line' => $n,
+                                    'debe' => floatval($value->total_taxes),
+                                    'haber' => 0,
+                                ];
+
+                            }
+                        }
+
+                        if(!($impuesto->account) && $configuration->cta_taxes){
+
+                            if(array_key_exists($configuration->cta_taxes,$arrayEntrys)){
+
+                                $arrayEntrys[$configuration->cta_taxes]['debe'] += floatval($value->total_taxes);
+
+                            }
+                            if(!array_key_exists($configuration->cta_taxes,$arrayEntrys)){
+
+                                $n += 1;
+
+                                $arrayEntrys[$configuration->cta_taxes] = [
+                                    'seat_line' => $n,
+                                    'debe' => floatval($value->total_taxes),
+                                    'haber' => 0,
+                                ];
+
+                            }
+                        }
+
+                        if($iva > 0 && $configuration->cta_iva_tax){
+
+                            if(array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
+
+                                $arrayEntrys[$configuration->cta_iva_tax]['haber'] += $iva;
+
+                            }
+                            if(!array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
+
+                                $n += 1;
+
+                                $arrayEntrys[$configuration->cta_iva_tax] = [
+                                    'seat_line' => $n,
+                                    'haber' => floatval($iva),
+                                    'debe' => 0,
+                                ];
+
+                            }
+                        }
+
+                        if($renta > 0 && $configuration->cta_income_tax){
+
+                            if(array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
+
+                                $arrayEntrys[$configuration->cta_income_tax]['haber'] += $renta;
+
+                            }
+                            if(!array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
+
+                                $n += 1;
+
+                                $arrayEntrys[$configuration->cta_income_tax] = [
+                                    'seat_line' => $n,
+                                    'haber' => floatval($renta),
+                                    'debe' => 0,
+                                ];
+
+                            }
+                        }
+
+                    }
+
+                    foreach( $arrayEntrys as $key=>$value)
+                    {
+                        if($value['debe'] > 0 || $value['haber'] > 0){
+
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = $key;
+                            $detalle->seat_line = $value['seat_line'];
+                            $detalle->debe = $value['debe'];
+                            $detalle->haber = $value['haber'];
+                            $detalle->save();
+                        }
+
+                    }
+
+                }catch(Exception $ex){
+
+                    Log::error('Error al intentar generar el asiento contable');
+                    Log::error($ex->getMessage());
+                }
+
+            }else{
+
+                Log::info('tipo de documento no genera asiento contable de momento');
+            }
+
+        }
+
+        /* Crear los asientos contables de los pagos */
+        private function createAccountingEntryPayment($document_id){
+
+            $document = Purchase::find($document_id);
+            $entry = (AccountingEntries::get())->last();
+
+            if($document && $document->document_type_id == '01'){
+
+                foreach($document->payments as $payment){
+                    try{
+                        $idauth = auth()->user()->id;
+                        $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                        $ultimo = AccountingEntries::latest('id')->first();
+                        $configuration = Configuration::first();
+                        if (empty($lista)) {
+                            $seat = 1;
+                        } else {
+
+                            $seat = $lista->seat + 1;
+                        }
+
+                        if (empty($ultimo)) {
+                            $seat_general = 1;
+                        } else {
+                            $seat_general = $ultimo->seat_general + 1;
+                        }
+
+                        $comment = 'Pago factura de compra '. substr($document->series,0). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->supplier->name ;
+
+                        $total_debe = $payment->payment;
+                        $total_haber = $payment->payment;
+
+                        $cabeceraC = new AccountingEntries();
+                        $cabeceraC->user_id = $document->user_id;
+                        $cabeceraC->seat = $seat;
+                        $cabeceraC->seat_general = $seat_general;
+                        $cabeceraC->seat_date = $document->date_of_issue;
+                        $cabeceraC->types_accounting_entrie_id = 1;
+                        $cabeceraC->comment = $comment;
+                        $cabeceraC->serie = null;
+                        $cabeceraC->number = $seat;
+                        $cabeceraC->total_debe = $total_debe;
+                        $cabeceraC->total_haber = $total_haber;
+                        $cabeceraC->revised1 = 0;
+                        $cabeceraC->user_revised1 = 0;
+                        $cabeceraC->revised2 = 0;
+                        $cabeceraC->user_revised2 = 0;
+                        $cabeceraC->currency_type_id = $document->currency_type_id;
+                        $cabeceraC->doctype = $document->document_type_id;
+                        $cabeceraC->is_client = ($document->customer)?true:false;
+                        $cabeceraC->establishment_id = $document->establishment_id;
+                        $cabeceraC->establishment = $document -> establishment;
+                        $cabeceraC->prefix = 'ASC';
+                        $cabeceraC->person_id = $document->supplier_id;
+                        $cabeceraC->external_id = Str::uuid()->toString();
+                        $cabeceraC->document_id = 'PC'.$payment->id;
+
+                        $cabeceraC->save();
+                        $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                        $cabeceraC->save();
+
+                        $customer = Person::find($cabeceraC->person_id);
+
+                        $detalle = new AccountingEntryItems();
+                        $ceuntaC = PaymentMethodType::find($payment->payment_method_type_id);
+
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                        $detalle->seat_line = 1;
+                        $detalle->haber = 0;
+                        $detalle->debe = $payment->payment;
+                        $detalle->save();
+
+                        $detalle2 = new AccountingEntryItems();
+                        $detalle2->accounting_entrie_id = $cabeceraC->id;
+                        $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$configuration->cta_paymnets;
+                        $detalle2->seat_line = 2;
+                        $detalle2->haber = $payment->payment;
+                        $detalle2->debe = 0;
+                        $detalle2->save();
+
+                    }catch(Exception $ex){
+
+                        Log::error('Error al intentar generar el asiento contable del pago de compra');
+                        Log::error($ex->getMessage());
+                    }
+                }
+
+            }else{
+                Log::info('tipo de documento no genera asiento contable de momento');
+            }
+
+        }
+
         public static function convert($inputs)
         {
-            Log::info(json_encode($inputs));
+            //Log::info(json_encode($inputs));
             $company = Company::active();
             $values = [
                 'user_id' => auth()->id(),
@@ -673,16 +1027,9 @@ use Illuminate\Support\Facades\Log;
             if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
 
             $this->reloadPDF($purchase, $format, $purchase->filename);
+
             $temp = tempnam(sys_get_temp_dir(), 'purchase');
-
             file_put_contents($temp, $this->getStorage($purchase->filename, 'purchase'));
-
-            /*
-            $headers = [
-                'Content-Type' => 'application/pdf',
-                'Content-Disposition' => 'inline; filename="'.$purchase->filename.'"'
-            ];
-            */
 
             return response()->file($temp, $this->generalPdfResponseFileHeaders($purchase->filename));
         }
@@ -695,7 +1042,11 @@ use Illuminate\Support\Facades\Log;
         public function update(PurchaseRequest $request)
         {
 
-            $purchase = DB::connection('tenant')->transaction(function () use ($request) {
+            $docIntern = PurchaseDocumentTypes2::where('idType',$request->document_type_intern)->get();
+
+            $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
+
+            $purchase = DB::connection('tenant')->transaction(function () use ($request,$signo) {
 
                 $doc = Purchase::firstOrNew(['id' => $request['id']]);
                 $doc->fill($request->all());
@@ -707,6 +1058,7 @@ use Illuminate\Support\Facades\Log;
                 if(count($request['ret']) > 0){
 
                     $retenciones = RetentionsEC::where('idDocumento',$doc->id)->get();
+
                     foreach($retenciones as $ret){
                         $ret->delete();
                     }
@@ -736,10 +1088,11 @@ use Illuminate\Support\Facades\Log;
                     $ret->codSustento = $doc->document_type_id;
                     $ret->codDocSustento = $doc->codSustento;
                     $ret->numAuthSustento = $doc->auth_number;
+                    $ret->status_id = '01';
                     $ret->save();
 
                     foreach($request['ret'] as $retDet){
-                        Log::info(json_encode($retDet));
+                        //Log::info(json_encode($retDet));
                         $detRet = new RetentionsDetailEC();
                         $detRet->idRetencion = $ret->idRetencion;
                         $detRet->codRetencion = $retDet['code'];
@@ -760,6 +1113,7 @@ use Illuminate\Support\Facades\Log;
 
                 foreach ($request['items'] as $row) {
                     $p_item = new PurchaseItem();
+                    $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
                     $p_item->purchase_id = $doc->id;
                     $p_item->save();
@@ -802,6 +1156,11 @@ use Illuminate\Support\Facades\Log;
 
                 $this->deleteAllPayments($doc->purchase_payments);
 
+                $asientos = AccountingEntries::where('document_id',$request['document_id'])->get();
+                foreach($asientos as $ass){
+                    $ass->delete();
+                }
+
                 foreach ($request['payments'] as $payment) {
 
                     $record_payment = $doc->purchase_payments()->create($payment);
@@ -815,6 +1174,9 @@ use Illuminate\Support\Facades\Log;
                             'filename' => $payment['payment_filename']
                         ]);
                     }
+
+
+                    $this->createAccountingEntryPayment($doc->id,$payment['payment']);
                 }
 
                 $doc->fee()->delete();
@@ -825,6 +1187,11 @@ use Illuminate\Support\Facades\Log;
                     $this->setFilename($doc);
                 }
                 $this->createPdf($doc, "a4", $doc->filename);
+
+                if((Company::active())->countable > 0){
+                    $this->createAccountingEntry($doc->id, $request['ret']);
+                    $this->createAccountingEntryPayment($doc->id);
+                }
 
                 return $doc;
             });
@@ -1244,6 +1611,11 @@ use Illuminate\Support\Facades\Log;
                     $row = Purchase::findOrFail($id);
                     $this->deleteAllPayments($row->purchase_payments);
                     $row->delete();
+
+                    $asientos = AccountingEntries::where('document_id','C'.$id)->get();
+                    foreach($asientos as $ass){
+                        $ass->delete();
+                    }
 
                 });
 

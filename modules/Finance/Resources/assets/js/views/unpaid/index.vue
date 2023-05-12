@@ -356,7 +356,7 @@
                                                             type="button"
                                                             style="min-width: 41px"
                                                             class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                            @click.prevent="clickDocumentPayment(row.id)"
+                                                            @click.prevent="clickDocumentPayment(row.id,row.customer_id)"
                                                         >Pagos</button>
                                                         </template>
                                                         <template v-else>
@@ -394,6 +394,7 @@
         <document-payments
             :showDialog.sync="showDialogDocumentPayments"
             :documentId="recordId"
+            :customerId="customerId"
             :external="true"
             :configuration="this.configuration"
             ></document-payments>
@@ -424,6 +425,7 @@
                 form: {},
                 customers: [],
                 recordId: null,
+                customerId:null,
                 records:[],
                 establishments: [],
                 web_platforms: [],
@@ -601,6 +603,7 @@
                 this.loading = true
 
                 await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
+                                //console.log('loadUnpaid: ',response.data.data)
                                 this.records = response.data.data
                                 this.pagination = response.data.meta
                                 this.pagination.per_page = parseInt(response.data.meta.per_page)
@@ -631,8 +634,9 @@
                     ...this.form
                 })
             },
-            clickDocumentPayment(recordId) {
+            clickDocumentPayment(recordId,customer) {
                 this.recordId = recordId;
+                this.customerId = customer
                 this.showDialogDocumentPayments = true;
             },
             clickSaleNotePayment(recordId) {

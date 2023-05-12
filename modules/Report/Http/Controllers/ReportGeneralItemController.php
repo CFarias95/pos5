@@ -41,10 +41,10 @@ class ReportGeneralItemController extends Controller
     }
 
 
-    public function index(Request $request) 
+    public function index(Request $request)
     {
         $apply_conversion_to_pen = $this->applyConversiontoPen($request);
-        
+
         return view('report::general_items.index', compact('apply_conversion_to_pen'));
     }
 
@@ -53,7 +53,7 @@ class ReportGeneralItemController extends Controller
     {
 
         $records = $this->getRecordsItems($request->all())->latest('id');
-        
+
         return new GeneralItemCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -217,8 +217,8 @@ class ReportGeneralItemController extends Controller
         return $pdf->download($filename.'.pdf');
     }
 
-
     public function excel(Request $request) {
+
         ini_set('memory_limit', '4026M');
         ini_set("pcre.backtrack_limit", "5000000");
         $records = $this->getRecordsItems($request->all())->latest('id')->get();
@@ -232,7 +232,7 @@ class ReportGeneralItemController extends Controller
             ->type($request->type)
             ->document_type_id($document_type_id)
             ->request_apply_conversion_to_pen($request_apply_conversion_to_pen);
-            
+
         return $generalItemExport->download('Reporte_General_Productos_'.$type.Carbon::now().'.xlsx');
 
     }

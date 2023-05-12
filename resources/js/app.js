@@ -29,7 +29,7 @@ Vue.component('tenant-dashboard-sales-by-product', require('../../modules/Dashbo
 Vue.component('x-graph', require('./components/graph/src/Graph.vue'));
 Vue.component('x-graph-line', require('./components/graph/src/GraphLine.vue'));
 
-// configuracion pse
+// configuracion pse tenant-state-account-index
 Vue.component('tenant-signature-pse-index', require('./views/tenant/companies/signature_pse/index.vue'))
 Vue.component('tenant-whatsapp-api-index', require('./views/tenant/companies/whatsapp_api/index.vue'))
 
@@ -180,6 +180,14 @@ Vue.component('tenant-report-items-extra-index', require('../../modules/Report/R
 
 Vue.component('tenant-report-download-tray-index', require('../../modules/Report/Resources/assets/js/views/download_tray/index.vue'));
 
+//Reporte de Ventas
+Vue.component('tenant-reporte-ventas-index', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
+Vue.component('tenant-reporte-ventas-excel', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
+//Vue.component('tenant-reporte-ventas-pdf', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
+//Vue.component('tenant-reporte-ventas-pdf-simple', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
+/*PURCHASE QUOTATIONS REPORT */
+Vue.component('tenant-report-purchases-quotation', require('../../modules/Report/Resources/assets/js/views/purchases/quotation.vue'));
+
 /** Reporte de guias */
 Vue.component('tenant-report-guide-index', require('../../modules/Report/Resources/assets/js/views/guide/index.vue'));
 Vue.component('tenant-report-sale_notes-index', require('../../modules/Report/Resources/assets/js/views/sale_notes/index.vue'));
@@ -197,6 +205,7 @@ Vue.component('tenant-report-commissions-index', require('../../modules/Report/R
 Vue.component('tenant-report-order-notes-consolidated-index', require('../../modules/Report/Resources/assets/js/views/order_notes_consolidated/index.vue'));
 Vue.component('tenant-report-general-items-index', require('../../modules/Report/Resources/assets/js/views/general_items/index.vue'));
 Vue.component('tenant-report-order-notes-general-index', require('../../modules/Report/Resources/assets/js/views/order_notes_general/index.vue'));
+Vue.component('tenant-report-order-notes-general-report', require('../../modules/Report/Resources/assets/js/views/order_notes_general/report.vue'));
 Vue.component('tenant-report-sales-consolidated-index', require('../../modules/Report/Resources/assets/js/views/sales_consolidated/index.vue'));
 Vue.component('tenant-report-user-commissions-index', require('../../modules/Report/Resources/assets/js/views/user_commissions/index.vue'));
 Vue.component('tenant-report-fixed-asset-purchases-index', require('../../modules/Report/Resources/assets/js/views/fixed-asset-purchases/index.vue'));
@@ -254,6 +263,8 @@ Vue.component('tenant-finance-income-form', require('@viewsModuleFinance/income/
 Vue.component('tenant-income-types-index', require('@viewsModuleFinance/income_types/index.vue'));
 Vue.component('tenant-income-reasons-index', require('@viewsModuleFinance/income_reasons/index.vue'));
 Vue.component('tenant-finance-movements-index', require('@viewsModuleFinance/movements/index.vue'));
+Vue.component('tenant-finance-advances-index', require('@viewsModuleFinance/advances/index.vue'));
+Vue.component('tenant-finance-advances-generate', require('@viewsModuleFinance/advances/form.vue'));
 
 
 //Sale
@@ -463,6 +474,9 @@ Vue.component('tenant-accountingentries-edit', require('./views/tenant/accountin
 Vue.component('tenant-accountgroups-index', require('./views/tenant/account_groups/index.vue'));
 Vue.component('tenant-accountmovements-index', require('./views/tenant/account_movements/index.vue'));
 Vue.component('tenant-typesaccountingentries-index', require('./views/tenant/types_accounting_entries/index.vue'));
+
+//Lista tarifas
+Vue.component('tenant-ratelists-index', require('./views/tenant/rates/index.vue'));
 
 import VueClipboard from 'vue-clipboard2'
 Vue.use(VueClipboard)

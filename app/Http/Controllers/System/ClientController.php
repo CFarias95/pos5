@@ -311,6 +311,8 @@ use Modules\Document\Helpers\DocumentHelper;
             $client->soap_url = $company->soap_url;
             $client->certificate = $company->certificate;
             $client->number = $company->number;
+            $client->countable = (bool)$company->countable;
+            $client->obligado_contabilidad = (bool) $company->obligado_contabilidad;
 
             return new ClientResource($client);
 
@@ -376,6 +378,7 @@ use Modules\Document\Helpers\DocumentHelper;
             $smtp_port = ($request->has('smtp_port')) ? $request->smtp_port : null;
             $smtp_user = ($request->has('smtp_user')) ? $request->smtp_user : null;
             $smtp_encryption = ($request->has('smtp_encryption')) ? $request->smtp_encryption : null;
+            $countable = ($request->has('countable')) ? $request->countable: 0;
             try {
 
                 $temp_path = $request->input('temp_path');
@@ -448,7 +451,8 @@ use Modules\Document\Helpers\DocumentHelper;
                         'soap_password' => $request->soap_password,
                         'soap_url' => $request->soap_url,
                         'certificate' => $name_certificate,
-                        'certificate_pass' => $password
+                        'certificate_pass' => $password,
+                        'countable' => $countable,
                     ];
                 }else{
                     $update = [
@@ -456,7 +460,9 @@ use Modules\Document\Helpers\DocumentHelper;
                         'soap_send_id' => $request->soap_send_id,
                         'soap_username' => $request->soap_username,
                         'soap_password' => $request->soap_password,
-                        'soap_url' => $request->soap_url
+                        'soap_url' => $request->soap_url,
+                        'countable' => $countable,
+
                     ];
                 }
                 DB::connection('tenant')
@@ -665,7 +671,8 @@ use Modules\Document\Helpers\DocumentHelper;
                 'obligado_contabilidad'=>$request->input('obligado_contabilidad'),
                 'agente_retencion'=>$request->input('agente_retencion'),
                 'agente_retencion_num'=>$request->input('agente_retencion_num'),
-                'contribuyente_especial_num'=>$request->input('contribuyente_especial_num'),
+                'contribuyente_especial_num' =>$request->input('contribuyente_especial_num'),
+                'countable' => (bool) $request->input('countable'),
             ]);
 
             $plan = Plan::findOrFail($request->input('plan_id'));

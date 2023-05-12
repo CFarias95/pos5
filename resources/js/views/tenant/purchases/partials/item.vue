@@ -1,7 +1,8 @@
 <template>
     <el-dialog :title="titleDialog"
                :visible="showDialog"
-               @close="close">
+               @close="close"
+               @open="create">
         <Keypress
             :key-code="112"
             key-event="keyup"
@@ -80,6 +81,7 @@
                                 <label class="control-label">Tipo de Impuesto</label>
                                 <el-select v-model="form.affectation_igv_type_id"
                                            :disabled="!change_affectation_igv_type_id"
+                                           @change="cambioCantidad()"
                                            filterable>
                                     <el-option v-for="option in affectation_igv_types"
                                                :key="option.id"
@@ -658,6 +660,7 @@ export default {
         'exchangeRateSale',
         'localHasGlobalIgv',
         'percentageIgv',
+        'recordItem',
     ],
     components: {itemForm, LotsForm, Keypress},
     computed: {
@@ -764,6 +767,7 @@ export default {
         this.loadHasGlobalIgv()
         this.activeName = 'first'
         this.initForm()
+
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
             console.log("Data CREATE: ", response.data.items);
             this.all_items = response.data.items
@@ -785,7 +789,6 @@ export default {
             //console.log("Item id: ", item_id);
             this.reloadDataItems(item_id)
         })
-
     },
     methods: {
         ...mapActions([
@@ -825,8 +828,119 @@ export default {
                     }
                 })
         },
+        async create(){
+
+            console.log("record item",this.recordItem)
+
+            if (this.recordItem) {
+                this.titleDialog = 'Editar Producto o Servicio'
+                console.log("RECORD ITEM: ",this.recordItem)
+
+                this.form.item_id = await this.recordItem.item_id
+                this.form.quantity = this.recordItem.quantity
+                await this.reloadDataItems(this.recordItem.item_id)
+                //await this.changeItem()
+
+                this.form.unit_price_value = this.recordItem.input_unit_price_value
+                this.form.unit_price = this.recordItem.unit_value
+                this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
+                this.form.has_service_taxes = (this.recordItem.total_service_taxes > 0) ? true : false
+                this.form.warehouse_id = this.recordItem.warehouse_id
+                this.isUpdateWarehouseId = this.recordItem.warehouse_id
+
+                this.form.attributes = this.recordItem.attributes;
+                this.form.discounts = this.recordItem.discounts;
+                this.form.charges = this.recordItem.charges;
+                //this.setPresentationEditItem()
+                if (this.recordItem.item.name_product_pdf) {
+                    this.form.name_product_pdf = this.recordItem.item.name_product_pdf
+                }
+                if (this.recordItem.item.change_free_affectation_igv) {
+
+                    this.form.affectation_igv_type_id = '15'
+                    this.form.item.change_free_affectation_igv = true
+
+                } else {
+                    if (this.recordItem.item.original_affectation_igv_type_id) {
+                        this.form.affectation_igv_type_id = this.recordItem.item.original_affectation_igv_type_id
+                    }
+                }
+                this.form.income
+                this.form.retention_type_id_income = this.recordItem.retention_type_id_income
+                this.form.retention_type_id_iva = this.recordItem.retention_type_id_iva
+
+                this.calculateQuantity()
+
+
+            }
+
+        },
+        setPresentationEditItem() {
+
+            if (!_.isEmpty(this.recordItem.item.presentation)) {
+                this.selectedPrice(this.recordItem.item.presentation)
+                this.getSelectedClass(this.recordItem.item.presentation)
+            }
+
+        },
+        selectedPrice(row) {
+
+            if (this.isSelectedPrice(row)) {
+
+                this.form.item_unit_type_id = null
+                this.item_unit_type = {}
+                this.form.unit_price = this.form.item.unit_price
+                this.form.unit_price_value = this.form.item.sale_unit_price
+                this.form.item.unit_type_id = this.form.item.original_unit_type_id
+
+            } else {
+
+                let valor = 0
+                switch (row.price_default) {
+                    case 1:
+                        valor = row.price1
+                        break
+                    case 2:
+                        valor = row.price2
+                        break
+                    case 3:
+                        valor = row.price3
+                        break
+
+                }
+                this.form.item_unit_type_id = row.id
+                this.item_unit_type = row
+                this.form.unit_price = valor
+                this.form.unit_price_value = valor
+                this.form.item.unit_type_id = row.unit_type_id
+            }
+
+            this.calculateQuantity()
+        },
+        calculateQuantity() {
+            if (this.form.item.calculate_quantity) {
+                this.form.quantity = _.round((this.total_item / this.form.unit_price_value), 4)
+            }
+            //this.calculateTotal()
+        },
+        getSelectedClass(row) {
+
+            if (this.isSelectedPrice(row)) return 'btn-success'
+
+            return 'btn-secondary'
+
+        },
+        isSelectedPrice(item_unit_type) {
+
+            if (!_.isEmpty(this.item_unit_type)) {
+                return (this.item_unit_type.id === item_unit_type.id)
+            }
+            return false
+        },
         handleChange(value) {
 
+            this.income = this.form.quantity * value
+            this.iva = this.form.quantity * value
             this.cambioCantidad()
         },
         async searchRemoteItems(input) {
@@ -902,7 +1016,6 @@ export default {
                 update_date_of_due: false,
                 update_purchase_price: this.config.checked_update_purchase_price,
                 concepto:null,
-
                 // update_purchase_price: true,
             }
 
@@ -976,13 +1089,28 @@ export default {
         changeItem() {
 
             const item = {..._.find(this.items, {'id': this.form.item_id})};
-            console.log('changeItem',item)
+
             this.form.item = item;
             this.form.item = this.setExtraFieldOfitem(this.form.item)
 
             const saleUnitPrice = item.sale_unit_price;
             this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
-            this.form.unit_price = this.form.item.purchase_unit_price
+
+            if(this.recordItem){
+
+                if(this.recordItem.item.purchase_has_igv){
+                    console.log('Incluye IVA: ',this.recordItem.unit_price)
+                    this.form.unit_price = _.round(parseFloat(this.recordItem.unit_price),2)
+
+                }else{
+                    console.log('No Incluye IVA: ',this.recordItem.unit_value)
+                    this.form.unit_price = _.round(parseFloat(this.recordItem.unit_value),2)
+                }
+
+            }else{
+                this.form.unit_price = this.form.item.purchase_unit_price
+            }
+
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
             this.prices = this.form.item_unit_types;
@@ -996,8 +1124,9 @@ export default {
             this.form.has_isc = this.form.item.purchase_has_isc
             this.form.percentage_isc = this.form.item.purchase_percentage_isc
             this.form.system_isc_type_id = this.form.item.purchase_system_isc_type_id
-
             this.form.concepto = this.form.item.concept_id
+
+            this.handleChange(this.form.unit_price)
 
         },
         cambioCantidad(){
@@ -1007,35 +1136,37 @@ export default {
 
         },
         changeRetentionTypeIva(event) {
+
             const val = _.find(this.retention_types_iva, {'id': event});
             const item = {..._.find(this.items, {'id': this.form.item_id})};
-            console.log("retention_types_iva: ",this.retention_types_iva)
+            //console.log("retention_types_iva: ",val)
 
 
-            if (val.type_id == '02') {
+            if (val && val.type_id == '02') {
 
                 if(item.has_igv){
-                    if (item.sale_affectation_igv_type_id == '10') {
+
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.12)), 3) * this.form.quantity
                         console.log("valor RET: " + (parseFloat(val.percentage) + ' ' + this.iva ))
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.08)), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id == '12') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.14)), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * this.iva, 3) * this.form.quantity
+                    } else if (this.form.affectation_igv_type_id == '30') {
+                        this.form.iva_retention = 0
                     }
 
                 }else{
 
-                    if (item.sale_affectation_igv_type_id == '10') {
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.12) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.08) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id== '12') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.14) - this.iva), 3) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * this.iva, 3) * this.form.quantity
+                    } else if (this.form.affectation_igv_type_id == '30') {
+                        this.form.iva_retention = 0
                     }
                 }
                 //_.round
@@ -1045,20 +1176,22 @@ export default {
         },
         changeRetentionTypeIncome(event) {
 
+            //console.log("changeRetentionTypeIncome1 : ",event)
+            //console.log("changeRetentionTypeIncome2 : ",this.retention_types_income)
             const val = _.find(this.retention_types_income, {'id': event});
             const item = {..._.find(this.items, {'id': this.form.item_id})};
-            console.log("retenciones typo: ",this.retention_types_income)
+            //console.log("changeRetentionTypeIncome: ",this.val)
 
-            if (val.type_id == '01') {
+            if (val && val.type_id == '01') {
                 if(item.has_igv){
 
-                    if (item.sale_affectation_igv_type_id == '10') {
+                    if (this.form.affectation_igv_type_id == '10') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.12), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '11') {
+                    } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.08), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '12') {
+                    } else if (this.form.affectation_igv_type_id == '12') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.14), 2) * this.form.quantity
-                    } else if (item.sale_affectation_igv_type_id == '30') {
+                    } else if (this.form.affectation_igv_type_id == '30') {
 
                         this.form.income_retention = _.round((val.percentage / 100) * this.income, 2) * this.form.quantity
                     }
@@ -1087,22 +1220,26 @@ export default {
 
             }
         },
-
         changeItemAlt() {
-            let item = _.find(this.items, {'id': this.form.item_id});
-            this.form.item = item;
-            this.form.item = this.setExtraFieldOfitem(this.form.item)
-            let saleUnitPrice = item.sale_unit_price;
-            this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
-            this.form.unit_price = this.form.item.purchase_unit_price
-            this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
-            this.form.item_unit_types = item.item_unit_types
-            this.prices = this.form.item_unit_types;
-            this.date_of_due = this.form.date_of_due;
-            this.form.purchase_has_igv = this.form.item.purchase_has_igv;
-            this.search_item_by_barcode = 0;
-            this.setExtraElements(this.form.item);
-            this.setGlobalIgvToItem()
+
+                let item = _.find(this.items, {'id': this.form.item_id});
+                this.form.item = item;
+                this.form.item = this.setExtraFieldOfitem(this.form.item)
+                let saleUnitPrice = item.sale_unit_price;
+                this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
+                if(this.recordItem){
+
+                }else{
+                    this.form.unit_price = this.form.item.purchase_unit_price
+                }
+                this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
+                this.form.item_unit_types = item.item_unit_types
+                this.prices = this.form.item_unit_types;
+                this.date_of_due = this.form.date_of_due;
+                this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+                this.search_item_by_barcode = 0;
+                this.setExtraElements(this.form.item);
+                this.setGlobalIgvToItem()
         },
         async clickAddItem() {
 
@@ -1157,13 +1294,13 @@ export default {
             this.row = this.changeWarehouse(this.row)
 
             this.row.date_of_due = date_of_due
-            this.row.retention_type_id_income = this.form.retention_type_id_income;
-            this.row.retention_type_id_iva = this.form.retention_type_id_iva;
+            //this.row.retention_type_id_income = this.form.retention_type_id_income;
+            //this.row.retention_type_id_iva = this.form.retention_type_id_iva;
 
-            this.row.income_retention = this.form.income_retention;
-            this.row.iva_retention = this.form.iva_retention;
+            //this.row.income_retention = this.form.income_retention;
+            //this.row.iva_retention = this.form.iva_retention;
 
-            if( this.currencyTypeIdActive == this.currencyTypeIdConfig && this.currencyTypeIdActive !== this.form.currency_type_id ){
+            /*if( this.currencyTypeIdActive == this.currencyTypeIdConfig && this.currencyTypeIdActive !== this.form.currency_type_id ){
 
                 this.row.income_retention = this.form.income_retention / this.exchangeRateSale;
                 this.row.iva_retention = this.form.iva_retention  / this.exchangeRateSale;
@@ -1174,11 +1311,15 @@ export default {
                 this.row.iva_retention = this.form.iva_retention  * this.exchangeRateSale;
 
             }
+            */
             this.row.import = this.form.import;
             this.row.concepto = this.form.concepto;
 
+            if (this.recordItem) {
+                this.row.indexi = this.recordItem.indexi
+            }
             this.initForm()
-
+            //console.log('row: ',this.row);
             this.$emit('add', this.row)
         },
         changeWarehouse(row) {
@@ -1207,7 +1348,6 @@ export default {
 
                 })
             }
-
         },
         enabledSearchItemsBarcode() {
             if (this.search_item_by_barcode) {

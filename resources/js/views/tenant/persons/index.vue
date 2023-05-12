@@ -149,8 +149,8 @@ import DataTable from '../../../components/DataTable.vue'
 import {deletable} from '../../../mixins/deletable'
 
 export default {
+    props: ["company",'type', 'typeUser', 'api_service_token', 'configuration'],
     mixins: [deletable],
-    props: ['type', 'typeUser', 'api_service_token', 'configuration'],
     components: {PersonsForm, PersonsImport, PersonsExport, DataTable},
     data() {
         return {
@@ -213,6 +213,7 @@ export default {
     created() {
         this.title = (this.type === 'customers') ? 'Clientes' : 'Proveedores'
         this.getColumnsToShow();
+
     },
     computed: {
         showAccumulatedPoints()

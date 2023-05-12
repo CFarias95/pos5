@@ -2,7 +2,9 @@
 
 namespace App\Console\Commands;
 
+use App\Http\Controllers\Tenant\DocumentController as TenantDocumentController;
 use Facades\App\Http\Controllers\Tenant\DocumentController;
+
 use Illuminate\Console\Command;
 use App\Traits\CommandTrait;
 use App\Models\Tenant\{
@@ -49,17 +51,26 @@ class EnviarSri extends Command
                 $this->info('Offline service is enabled');
                 return;
             }
-
-            $documents = Document::query()
+            $documents = null;
+            if(Configuration::firstOrFail()->send_auto){
+                $documents = Document::query()
                 ->whereIn('document_type_id',['01','07'])
                 ->whereIn('state_type_id', ['01'])
                 ->get();
+            }else{
+                $documents = Document::query()
+                ->whereIn('document_type_id',['01','07'])
+                ->whereIn('state_type_id', ['01'])
+                ->where('aproved',1)
+                ->get();
+            }
 
             foreach ($documents as $document) {
                 try {
                     //$this->info('CLAVE ACCESO: '.$document->clave_SRI);
-                    $response = DocumentController::send($document->id);
-                    $document->sunat_shipping_status = json_encode($response);
+                    $response = new TenantDocumentController();
+                    $res = $response->send($document->id);
+                    $document->sunat_shipping_status = json_encode($res);
                     $document->success_sunat_shipping_status = true;
                     $document->save();
                     $this->info('DOCUMENTO ENVIADO AL SRI: '.$document->clave_SRI);

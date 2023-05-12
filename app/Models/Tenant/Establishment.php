@@ -25,6 +25,7 @@ class Establishment extends ModelTenant
         'web_address',
         'aditional_information',
         'customer_id',
+        'rate_id',
         'logo',
         'template_pdf',
         'template_ticket_pdf',
@@ -109,10 +110,10 @@ class Establishment extends ModelTenant
     {
         return $query->withOut(['country', 'department', 'province', 'district']);
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Obtener id del almacén
      *
      * @return int

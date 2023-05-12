@@ -40,7 +40,7 @@
                             <div :class="{'has-danger': errors.codSustento}"
                                  class="form-group">
                                 <label class="control-label">Código Tributario</label>
-                                <el-select v-model="form.codSustento" :required="haveRetentions">
+                                <el-select v-model="form.codSustento" :required="is_countable">
                                     <el-option v-for="option in codSustentos"
                                                :key="option.id"
                                                :label="option.description"
@@ -119,7 +119,7 @@
                                        v-text="errors.currency_type_id[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-2" v-if="form.currency_type_id != config.currency_type_id">
+                        <div class="col-lg-2">
                             <div :class="{'has-danger': errors.exchange_rate_sale}"
                                  class="form-group">
                                 <label class="control-label">Tipo de cambio
@@ -213,7 +213,7 @@
                                 :maxlength="maxLength1"
                                 show-word-limit
                                 dusk="sequential_number"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 >
                             </el-input>
                             <small v-if="errors.sequential_number"
@@ -227,7 +227,7 @@
                             <el-input
                                 v-model="form.auth_number"
                                 :maxlength="maxLength2"
-                                :required="haveRetentions"
+                                :required="is_countable"
                                 show-word-limit
                                 dusk="auth_number">
                             </el-input>
@@ -267,6 +267,20 @@
                             </div>
                         </div>
 
+                        <div class="form-group col-sm-12 col-md-6 col-lg-2"
+                            :class="{'has-danger': errors.afected_document}"
+                            v-if="is_credit_note">
+                            <label class="control-label">Documento Afectado</label>
+                            <el-input
+                                v-model="form.afected_document"
+                                dusk="afected_document"
+                                :required="is_credit_note"
+                                >
+                            </el-input>
+                            <small v-if="errors.afected_document"
+                                    class="form-control-feedback"
+                                    v-text="errors.afected_document[0]"></small>
+                        </div>
 
                         <div class="col-12">&nbsp;</div>
 
@@ -371,7 +385,7 @@
                                                 </el-tooltip>
                                             </th>
                                             <th v-if="form.payments.length>0"
-                                                class="pb-2">Referencia
+                                                class="pb-2">Referencia/Anticipo
                                             </th>
                                             <th v-if="form.payments.length>0"
                                                 class="pb-2">Monto
@@ -407,15 +421,24 @@
                                                     </el-select>
                                                 </div>
                                             </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input v-model="row.reference"></el-input>
-                                                </div>
+                                            <td v-if="!row.payment_method_type_id_desc">
+                                                <el-input
+                                                    v-model="row.reference"></el-input>
+
+                                            </td>
+                                            <td v-else>
+                                                <el-select
+                                                    v-model="row.reference"
+                                                    @change="changeAdvance(index,$event)">
+                                                    <el-option
+                                                        v-for="option in advances"
+                                                        :key="option.id"
+                                                        :label="option.id"
+                                                        :value="option.id"></el-option>
+                                                </el-select>
                                             </td>
                                             <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-input v-model="row.payment"></el-input>
-                                                </div>
+                                                <el-input v-model="row.payment"  @change="changeAdvanceInput(index,$event,row.payment_method_type_id,row.reference)"></el-input>
                                             </td>
                                             <td class="series-table-actions text-center">
                                                 <button class="btn waves-effect waves-light btn-xs btn-danger"
@@ -593,6 +616,10 @@
                                                     type="button"
                                                     @click.prevent="clickRemoveItem(index)">x
                                             </button>
+                                            <button class="btn waves-effect waves-light btn-xs btn-info"
+                                                type="button"
+                                                @click="ediItem(row, index)">
+                                            <span style='font-size:10px;'>&#9998;</span></button>
                                         </td>
                                     </tr>
                                     </tbody>
@@ -774,6 +801,7 @@
                             :currency-type-id-config="config.currency_type_id"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :showDialog.sync="showDialogAddItem"
+                            :record-item="recordItem"
                             :localHasGlobalIgv="localHasGlobalIgv"
                             :percentage-igv="percentage_igv"
                             @add="addRow"></purchase-form-item>
@@ -835,6 +863,7 @@ export default {
             maxLength1: null,
             maxLength2: null,
             showDialogAddItem: false,
+            recordItem: null,
             readonly_date_of_due: false,
             localHasGlobalIgv: false,
             showDialogNewPerson: false,
@@ -875,7 +904,12 @@ export default {
             imports:[],
             type_docs:[],
             codSustentos:[],
+            codSustentos_all:[],
             haveRetentions: false,
+            advances:[],
+
+            is_countable:false,
+            is_credit_note:false,
         }
     },
     async mounted() {
@@ -890,7 +924,7 @@ export default {
                 this.retention_types_income = data.retention_types_income
                 this.imports = data.imports
                 this.type_docs = data.typeDocs
-                this.codSustentos = data.codSustentos
+                this.codSustentos_all = data.codSustentos
                 this.document_types2 = data.typeDocs2
                 console.log("TIPO DE DOCUMENTOS COMPRAS LOCAL",data.typeDocs2)
                 // this.establishment = data.establishment
@@ -1045,7 +1079,7 @@ export default {
                         // this.changeDocumentType()
 
                     })
-
+                    this.changeSupplier()
             }
         },
         async validate_payments() {
@@ -1195,6 +1229,75 @@ export default {
             }
 
         },
+        getTotal() {
+            let total_pay = this.form.total;
+            if(this.form.has_retention) {
+                total_pay -= this.form.retention.amount;
+            }
+
+            if (!_.isEmpty(this.form.detraction) && this.form.total_pending_payment > 0) {
+                return this.form.total_pending_payment
+            }
+
+            if (!_.isEmpty(this.form.retention) && this.form.total_pending_payment > 0) {
+
+                return this.form.total_pending_payment
+            }
+
+            // console.log('2');
+            return total_pay
+        },
+        changeAdvanceInput(index,event,methodType, id){
+
+            let selectedAdvance = _.find(this.advances,{'id':id})
+            let payment_method_type = _.find(this.payment_method_types, {'id': methodType});
+            if(payment_method_type.description.includes('Anticipo')){
+
+                let maxAmount = selectedAdvance.valor
+
+                if(maxAmount >= event){
+                    /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+
+                }else{
+                    this.form.payments[index].payment = maxAmount
+                    let message = 'El monto maximo del anticipo es de '+maxAmount
+                    this.$message.warning(message)
+
+                }
+            }
+        },
+        changeAdvance(index, id){
+
+            let selectedAdvance = _.find(this.advances,{'id':id})
+            let maxAmount = selectedAdvance.valor
+
+            let payment_count = this.form.payments.length;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if(maxAmount >= amount ){
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+            }else if(amount > maxAmount ){
+
+                this.form.payments[index].payment = maxAmount
+                let message = 'El monto maximo del anticipo es de '+maxAmount
+                this.$message.warning(message)
+            }
+
+
+        },
+        addAdvancesCustomer(){
+
+            this.$http.get(`/documents/advance/${this.form.supplier_id}`).then(
+                response => {
+
+                    this.advances = response.data
+                }
+            )
+        },
         changePaymentMethodType(index) {
 
             let id = '01'
@@ -1220,6 +1323,20 @@ export default {
                     }
                 }
 
+            }else if(payment_method_type.description.includes('Anticipo')){
+
+                this.$notify({
+                    title: '',
+                    message: 'Debes seleccionar un anticipo disponible',
+                    type: 'success'
+                })
+                this.form.payments[index].payment_method_type_id_desc = 'Anticipo';
+                this.form.date_of_due = this.form.date_of_issue
+                this.readonly_date_of_due = false
+                this.form.payment_method_type_id = null
+                this.enabled_payments = true
+
+
             } else {
 
                 this.form.date_of_due = this.form.date_of_issue
@@ -1239,20 +1356,13 @@ export default {
         },
         changeSupplier() {
             this.calculatePerception()
+            this.addAdvancesCustomer()
         },
         filterSuppliers() {
 
-            /*if (this.form.document_type_id === '01') {
-                // this.suppliers = _.filter(this.all_suppliers, {'identity_document_type_id': '6'})
-                this.suppliers = _.filter(this.all_suppliers, (item) => {
-                    return ['6', '0'].includes(item.identity_document_type_id)
-                })
-                this.selectSupplier()
+            this.suppliers = this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
+            this.selectSupplier()
 
-            } else {*/
-                this.suppliers = this.all_suppliers  //_.filter(this.all_suppliers, (c) => { return c.identity_document_type_id !== '6' })
-                this.selectSupplier()
-            //}
         },
         selectSupplier() {
 
@@ -1277,7 +1387,7 @@ export default {
                 payment_method_type_id: '01',
                 currency_type_id: this.config.currency_type_id,
                 purchase_order: null,
-                exchange_rate_sale: 0,
+                exchange_rate_sale: 1,
                 total_prepayment: 0,
                 total_charge: 0,
                 total_discount: 0,
@@ -1371,7 +1481,7 @@ export default {
         async changeDateOfIssue() {
             this.form.date_of_due = this.form.date_of_issue
             await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
-                this.form.exchange_rate_sale = response
+                //this.form.exchange_rate_sale = response
             })
             await this.getPercentageIgv();
             this.changeCurrencyType();
@@ -1380,15 +1490,36 @@ export default {
             this.filterSuppliers()
         },
         changeDocumentType2() {
+
             var document = _.find(this.document_types2,{'idType': this.form.document_type_intern})
-            console.log('documento seleccionado',document.DocumentTypeID)
+            console.log('documento seleccionado',document)
             this.form.document_type_id = document.DocumentTypeID
             //this.codSustentos = _.find(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
-            this.codSustentos = _.filter(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
+            this.codSustentos = _.filter(this.codSustentos_all,{'idTipoComprobante':document.DocumentTypeID})
+
+            this.is_countable  = (document.accountant > 0)
+            console.log('es contable: ',this.is_countable)
+            this.is_credit_note = (document.DocumentTypeID == '04')
         },
         addRow(row) {
-            this.form.items.push(row)
-            this.calculateTotal()
+
+            if (this.recordItem) {
+                //this.form.items.$set(this.recordItem.indexi, row)
+                this.form.items[this.recordItem.indexi] = row
+                this.recordItem = null
+
+                if(this.config.enabled_point_system)
+                {
+                    //this.setTotalExchangePoints()
+                    //this.recalculateUsedPointsForExchange(row)
+                }
+
+            } else {
+
+                this.form.items.push(row);
+            }
+
+            this.calculateTotal();
         },
         clickRemoveItem(index) {
             this.form.items.splice(index, 1)
@@ -1424,9 +1555,15 @@ export default {
 
             this.form.items.forEach((row) => {
 
-                console.log('Rows: ',row)
+                retention_iva = 0
+                retention_renta  = 0
+                console.log("documento", row)
+                if( row.iva_retention || row.income_retention || row.iva_retention > 0 || row.income_retention > 0){
+                    retention_iva = parseFloat(row.iva_retention)
+                    retention_renta = parseFloat(row.income_retention)
 
-                if(row.iva_retention > 0 || row.income_retention > 0){
+                    toal_retenido += (retention_iva + retention_renta)
+
                     this.haveRetentions = true
                     this.maxLength1 = 15
                     this.maxLength2 = 45
@@ -1439,7 +1576,7 @@ export default {
                                 const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
                                 if(data.tipo == 'IVA' && data.desciption == retIvaDesc.description){
                                     data.valor += _.round(parseFloat(row.iva_retention),3)
-                                    dato.base += row.total_taxes
+                                    dato.base += row.total_taxes;
                                     nuevaRet = false
                                 }
                             }
@@ -1447,7 +1584,7 @@ export default {
                                 const retIncomeDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
                                 if(data.tipo == 'RENTA' && data.desciption == retIncomeDesc.description){
                                     data.valor += _.round(parseFloat(row.income_retention),3)
-                                    dato.base += row.unit_value
+                                    dato.base += (row.unit_value * row.quantity);
                                     nuevaRet = false
                                 }
                             }
@@ -1455,13 +1592,12 @@ export default {
                         });
 
                         if(nuevaRet){
-                            console.log('Nueva Retencion')
+
                             if(row.iva_retention > 0 ){
                                 let retencionLocal = {}
                                 retencionLocal.tipo = 'IVA'
                                 retencionLocal.valor  = _.round(parseFloat(row.iva_retention),3)
                                 const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
-                                console.log('Tipo retencion IVA: '+retIvaDesc.description)
                                 retencionLocal.desciption  = retIvaDesc.description
                                 retencionLocal.code  = retIvaDesc.code
                                 retencionLocal.porcentajeRet  = retIvaDesc.percentage
@@ -1473,11 +1609,10 @@ export default {
                                 retencionLocal.tipo = 'RENTA'
                                 retencionLocal.valor  = _.round(parseFloat(row.income_retention),3)
                                 const retIvaDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
-                                console.log('Tipo retencion RENTA: '+retIvaDesc.description)
                                 retencionLocal.desciption  = retIvaDesc.description
                                 retencionLocal.code  = retIvaDesc.code
                                 retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                                retencionLocal.base  = row.unit_value
+                                retencionLocal.base  = row.unit_value * row.quantity
                                 this.form.ret.push(retencionLocal)
                             }
                         }
@@ -1489,7 +1624,6 @@ export default {
                             retencionLocal.tipo = 'IVA'
                             retencionLocal.valor  = _.round(parseFloat(row.iva_retention),3)
                             const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
-                            //console.log('Tipo retencion : '+retIvaDesc.description)
                             retencionLocal.desciption  = retIvaDesc.description
                             retencionLocal.code  = retIvaDesc.code
                             retencionLocal.porcentajeRet  = retIvaDesc.percentage
@@ -1501,25 +1635,18 @@ export default {
                             retencionLocal.tipo = 'RENTA'
                             retencionLocal.valor  = _.round(parseFloat(row.income_retention),3)
                             const retIvaDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
-                            //console.log('Tipo retencion : '+retIvaDesc.description)
                             retencionLocal.desciption  = retIvaDesc.description
                             retencionLocal.code  = retIvaDesc.code
                             retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                            retencionLocal.base  = row.unit_value
+                            retencionLocal.base  = row.unit_value * row.quantity
                             this.form.ret.push(retencionLocal)
                         }
 
                     }
                 }
 
-
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
-
-                retention_iva = parseFloat(row.iva_retention)
-                retention_renta = parseFloat(row.income_retention)
-
-                toal_retenido += (retention_iva + retention_renta)
 
                 if (row.affectation_igv_type_id === '10') {
                     total_taxed += parseFloat(row.total_value)
@@ -1551,16 +1678,12 @@ export default {
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
-
-                //console.log('total: '+ total)
-                //console.log('retenido : '+ toal_retenido)
             });
 
             // isc
 
             this.form.total_base_isc = _.round(total_base_isc, 2)
             this.form.total_isc = _.round(total_isc, 2)
-
             this.form.total_exportation = _.round(total_exportation, 2)
             this.form.total_taxed = _.round(total_taxed, 2)
             this.form.total_exonerated = _.round(total_exonerated, 2)
@@ -1570,15 +1693,15 @@ export default {
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
             //impuestos (isc + igv)
+            console.log('toal_retenido',toal_retenido)
             this.form.total_taxes = _.round(total_igv + total_isc, 2)
             this.form.total_ret =  _.round(toal_retenido, 2)
+
             total = total - toal_retenido
+            console.log('total',total)
             this.form.total =  _.round(total, 2)
 
             this.calculatePerception()
-
-            // this.form.payments[0].payment = this.form.total
-            // this.setTotalDefaultPayment()
             this.calculatePayments()
             this.calculateFee()
             this.discountGlobal()
@@ -1673,6 +1796,11 @@ export default {
             return {
                 success: true
             }
+        },
+        async ediItem(row, index) {
+            row.indexi = index
+            this.recordItem = row
+            this.showDialogAddItem = true
         },
         async submit() {
 

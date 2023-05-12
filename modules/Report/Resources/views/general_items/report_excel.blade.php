@@ -138,7 +138,7 @@ function getLocationData($value, $type = 'sale')
                                 $series = implode(" - ", $series_data);
                             }
                             $total_item_purchase = \Modules\Report\Http\Resources\GeneralItemCollection::getPurchaseUnitPrice($value);
-                            $utility_item = $value->total - $total_item_purchase;
+                            $utility_item = $value->total_value - $total_item_purchase;
                             $item = $value->getModelItem();
                             $model = $item->model;
                             /** @var  \App\Models\Tenant\Document $document */

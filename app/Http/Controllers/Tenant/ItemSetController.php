@@ -23,6 +23,7 @@ use Maatwebsite\Excel\Excel;
 use Modules\Account\Models\Account;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
+use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Item\Models\Brand;
@@ -88,8 +89,6 @@ class ItemSetController extends Controller
 
     public function item_tables()
     {
-
-
         $individual_items = Item::whereWarehouse()->whereTypeUser()->whereNotIsSet()->whereIsActive()->get()->transform(function($row) {
             $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
             $unit_types = UnitType::find($row->unit_type_id);
@@ -125,7 +124,9 @@ class ItemSetController extends Controller
 
             $item = Item::firstOrNew(['id' => $id]);
             $item->item_type_id = '01';
+
             $item->fill($request->all());
+            $item->amount_service_taxes = (Configuration::first())->amount_service_taxes;
 
             $temp_path = $request->input('temp_path');
             if($temp_path) {

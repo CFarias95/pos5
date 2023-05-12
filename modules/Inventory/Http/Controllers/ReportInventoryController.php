@@ -129,7 +129,40 @@ class ReportInventoryController extends Controller
                     ->whereStockMinValidate();
               });
         }
+        if ($filter === '06') {
+            //$add = ($stock > $item->stock_min);
 
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                $query->with(['category', 'brand']);
+                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+               }])
+              ->whereHas('item', function ($q) {
+                  $q->where([
+                                ['item_type_id', '01'],
+                                ['unit_type_id', '!=', 'ZZ'],
+                            ])
+                    ->whereNotIsSet()
+                    ->WhereStockMinMax();
+              });
+        }
+        if ($filter === '07') {
+            //
+
+            $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
+                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                $query->with(['category', 'brand']);
+                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+               }])
+              ->whereHas('item', function ($q) {
+                  $q->where([
+                                ['item_type_id', '01'],
+                                ['unit_type_id', '!=', 'ZZ'],
+                            ])
+                    ->whereNotIsSet()
+                    ->WhereStockMinMaxEqual();
+              });
+        }
 
         if ($warehouse_id != 0) {
             $query->where('item_warehouse.warehouse_id', $warehouse_id);

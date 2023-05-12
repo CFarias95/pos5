@@ -43,7 +43,7 @@
                         <td class="text-right">{{ row.total }}</td>
 
                         <td class="text-center">
-                            
+
                             <button type="button" style="min-width: 41px" class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
                                     @click.prevent="clickPrint(row.external_id)">
                                     <i class="fas fa-print"></i>
@@ -67,8 +67,8 @@
 
             <income-payments :showDialog.sync="showDialogPayments"
                                :recordId="recordId"></income-payments>
-  
- 
+
+
         </div>
     </div>
 

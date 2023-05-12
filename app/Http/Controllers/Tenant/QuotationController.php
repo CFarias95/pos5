@@ -43,6 +43,9 @@ use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
+use Swift_SmtpTransport;
+use Illuminate\Support\Facades\Config;
+use Swift_Mailer;
 
 
 class QuotationController extends Controller
@@ -439,7 +442,9 @@ class QuotationController extends Controller
                         'identity_document_type_id' => $row->identity_document_type_id,
                         'identity_document_type_code' => $row->identity_document_type->code,
                         'addresses' => $row->addresses,
-                        'address' => $row->address
+                        'address' => $row->address,
+                        'email' => $row->email,
+                        'phone' => $row->telephone,
                     ];
                 });
                 return $customers;
@@ -830,21 +835,17 @@ class QuotationController extends Controller
         $email = $customer_email;
         $mailable = new QuotationEmail($client, $quotation);
         $id = (int)$request->id;
-        $sendIt = EmailController::SendMail($email, $mailable, $id, 3);
-        /*
+
         Configuration::setConfigSmtpMail();
-        $array_email = explode(',', $customer_email);
-        if (count($array_email) > 1) {
-            foreach ($array_email as $email_to) {
-                $email_to = trim($email_to);
-                if(!empty($email_to)) {
-                    Mail::to($email_to)->send(new QuotationEmail($client, $quotation));
-                }
-            }
-        } else {
-            Mail::to($customer_email)->send(new QuotationEmail($client, $quotation));
-        }
-        */
+        $backup = Mail::getSwiftMailer();
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
+
+
         return [
             'success' => true
         ];

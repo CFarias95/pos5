@@ -102,7 +102,7 @@
                                 >L. Atributos</a
                                 >
                             </template>
-                            
+
                             <a class="dropdown-item text-1" href="#" @click.prevent="clickImportUpdatePrice()">Actualizar precios</a>
 
                         </div>
@@ -454,6 +454,7 @@ import ItemsImportUpdatePrice from "./partials/update_prices.vue";
 export default {
     props: [
         "configuration",
+        "company",
         "typeUser",
         "type"],
     mixins: [deletable],

@@ -230,7 +230,7 @@
                                             </th>
                                             <th v-if="form.payments.length>0">Referencia</th>
                                             <th v-if="form.payments.length>0">Monto</th>
-                                            
+
                                             <template v-if="showLoadVoucher && form.payments.length>0">
                                                 <th style="width:50px">Voucher</th>
                                             </template>
@@ -285,7 +285,7 @@
                                                     <el-input v-model="row.payment"></el-input>
                                                 </div>
                                             </td>
-                                            
+
                                             <template v-if="showLoadVoucher">
                                                 <td class="" style="width: 50px">
                                                     <!-- <el-tooltip class="item" content="Cargar voucher" effect="dark" placement="top-start"> -->
@@ -429,7 +429,7 @@
                                 <div class="row mt-1 mb-2"  v-if="form.total_discount > 0">
                                     <div class="col-lg-10 float-right">
                                         <label class="float-right control-label">
-                                            
+
                                             <el-tooltip class="item"
                                                 :content="global_discount_type.description"
                                                 effect="dark"
@@ -442,7 +442,7 @@
                                             :
                                         </label>
                                     </div>
-                                    
+
                                     <div class="col-lg-2 float-right">
                                         <el-input-number v-model="total_global_discount"
                                                             :min="0"
@@ -615,7 +615,7 @@
             {
                 return !_.isEmpty(this.id)
             },
-            isGlobalDiscountBase() 
+            isGlobalDiscountBase()
             {
                 return (this.config.global_discount_type_id === '02')
             },
@@ -676,7 +676,7 @@
             total_global_charge: 0,
             global_charge_types: [],
             recordItem: null,
-            headers_token: headers_token,            
+            headers_token: headers_token,
             global_discount_types: [],
             global_discount_type: {},
             is_amount: true,
@@ -729,15 +729,15 @@
         this.changeCurrencyType()
     },
     methods: {
-        onSuccessUploadVoucher(response, file, fileList, index) 
+        onSuccessUploadVoucher(response, file, fileList, index)
         {
             if (response.success)
             {
                 this.form.payments[index].filename = response.data.filename
                 this.form.payments[index].temp_path = response.data.temp_path
                 this.form.payments[index].file_list = fileList
-            } 
-            else 
+            }
+            else
             {
                 this.cleanFileListUploadVoucher(index)
                 this.$message.error(response.message)
@@ -748,7 +748,7 @@
         {
             this.form.payments[index].file_list = []
         },
-        handleRemoveUploadVoucher(file, fileList, index) 
+        handleRemoveUploadVoucher(file, fileList, index)
         {
             this.form.payments[index].filename = null
             this.form.payments[index].temp_path = null
@@ -763,7 +763,7 @@
             if(this.authUser.multiple_default_document_types)
             {
                 const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : '80'})
-    
+
                 if(default_document_type_serie)
                 {
                     const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
@@ -782,8 +782,18 @@
             this.showDialogAddItem = true
         },
         clickAddItem() {
-            this.recordItem = null
-            this.showDialogAddItem = true
+            if(this.form.customer_id !== null){
+                this.errors={};
+                this.saveLocalCustomerId();
+                this.recordItem = null
+                this.showDialogAddItem = true
+
+            }else{
+                alert('Debe seleccionar el cliente');
+                //this.errors.customer_id=['Debe seleccionar el cliente'];
+                this.showDialogAddItem = false;
+
+            }
         },
         changePaymentMethodType(index) {
 
@@ -905,13 +915,13 @@
             }
 
         },
-        setDataUpdate() 
+        setDataUpdate()
         {
             if (this.form.total_charge > 0) this.total_global_charge = this.form.total_charge
 
             this.form.charges = (this.form.charges) ? Object.values(this.form.charges) : []
 
-            this.form.discounts = this.getDataGlobalDiscount() 
+            this.form.discounts = this.getDataGlobalDiscount()
 
         },
         getDataGlobalDiscount()
@@ -935,7 +945,7 @@
                 reference: null,
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: 0,
-                
+
                 filename: null,
                 temp_path: null,
                 file_list: [],
@@ -954,7 +964,7 @@
                 this.form.seller_id = seller.id
 
             }
-
+            this.saveLocalCustomerId();
         },
         searchRemoteCustomers(input) {
 
@@ -1212,12 +1222,12 @@
             this.setTotalDefaultPayment()
 
         },
-        deleteDiscountGlobal() 
+        deleteDiscountGlobal()
         {
             let discount = _.find(this.form.discounts, {'discount_type_id': this.config.global_discount_type_id})
             let index = this.form.discounts.indexOf(discount)
 
-            if (index > -1) 
+            if (index > -1)
             {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
@@ -1278,11 +1288,11 @@
             }
 
         },
-        changeTypeDiscount() 
+        changeTypeDiscount()
         {
             this.calculateTotal()
         },
-        changeTotalGlobalDiscount() 
+        changeTotalGlobalDiscount()
         {
             this.calculateTotal()
         },
@@ -1550,7 +1560,17 @@
             let code = e.event.code;
             if (code === 'F2') {
                 //abrir el modal de agergar producto
-                if (!this.showDialogAddItem) this.showDialogAddItem = true
+                if(this.form.customer_id !== null){
+                    this.errors={};
+                    if (!this.showDialogAddItem) this.showDialogAddItem = true
+
+                }else{
+                    //this.errors.customer_id={0:'Debe seleccionar el cliente '};
+                    alert('Debe seleccionar el cliente');
+                    if (this.showDialogAddItem) {
+                        this.showDialogAddItem = false;
+                    }
+                }
             }
             if (code === 'Escape') {
                 if (this.showDialogAddItem) {
@@ -1591,6 +1611,9 @@
                 identity_document_type_id: null
             }
         },
+        saveLocalCustomerId() {
+            localStorage.customer_id = this.form.customer_id;
+        }
 
     }
 }

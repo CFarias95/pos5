@@ -17,7 +17,7 @@
                         <th class="text-center">Orden de pedido</th>
                         <th class="text-center">Producto</th>
                         <th class="text-center">Cantidad</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td class="text-center">{{ row.dispatches.date_of_issue }}</td>

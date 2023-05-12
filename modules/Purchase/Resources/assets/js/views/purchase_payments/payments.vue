@@ -50,8 +50,8 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment_method_type_id}">
-                                            <el-select v-model="row.payment_method_type_id">
-                                                <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                            <el-select v-model="row.payment_method_type_id" @change="changePaymentMethodType(index)">
+                                                <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description" ></el-option>
                                             </el-select>
                                             <small class="form-control-feedback" v-if="row.errors.payment_method_type_id" v-text="row.errors.payment_method_type_id[0]"></small>
                                         </div>
@@ -65,14 +65,31 @@
                                         </div>
                                     </td>
                                     <td>
-                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}">
-                                            <el-input v-model="row.reference"></el-input>
+
+
+                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}" v-if="row.payment_method_type_id_desc">
+                                            <el-select
+                                                v-model="row.reference"
+                                                @change="changeAdvance(index,$event)">
+                                                <el-option
+                                                    v-for="option in advances"
+                                                    :key="option.id"
+                                                    :label="option.id"
+                                                    :value="option.id"></el-option>
+                                            </el-select>
+                                        <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
+
+                                        </div>
+
+                                        <div class="form-group mb-0" :class="{'has-danger': row.errors.reference}"  v-else>
+                                            <el-input v-model="row.reference" placeholder="Referencia y/o N° Operación" :disabled="row.payment_received == '0'"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.reference" v-text="row.errors.reference[0]"></small>
                                         </div>
+
                                     </td>
                                     <td>
                                         <div class="form-group mb-0">
-                                            
+
                                             <el-upload
                                                     :data="{'index': index}"
                                                     :headers="headers"
@@ -90,7 +107,7 @@
                                     </td>
                                     <td>
                                         <div class="form-group mb-0" :class="{'has-danger': row.errors.payment}">
-                                            <el-input v-model="row.payment"></el-input>
+                                            <el-input v-model="row.payment" @change="changeAdvanceInput(index,$event,row.payment_method_type_id,row.reference)"></el-input>
                                             <small class="form-control-feedback" v-if="row.errors.payment" v-text="row.errors.payment[0]"></small>
                                         </div>
                                     </td>
@@ -139,7 +156,7 @@
     import {deletable} from '@mixins/deletable'
 
     export default {
-        props: ['showDialog', 'purchaseId'],
+        props: ['showDialog', 'purchaseId','customerId'],
         mixins: [deletable],
         data() {
             return {
@@ -152,7 +169,8 @@
                 index_file: null,
                 fileList: [],
                 showAddButton: true,
-                purchase: {}
+                purchase: {},
+                advances:[],
             }
         },
         async created() {
@@ -170,9 +188,112 @@
                     "_blank"
                 );
             },
+            addAdvancesCustomer(){
+
+                this.$http.get(`/documents/advance/${this.customerId}`).then(
+                    response => {
+                        this.advances = response.data
+                    }
+                )
+            },
+            changeAdvanceInput(index,event,methodType, id){
+
+                let selectedAdvance = _.find(this.advances,{'id':id})
+                let payment_method_type = _.find(this.payment_method_types, {'id': methodType});
+
+                if(payment_method_type.description.includes('Anticipo')){
+
+                    let maxAmount = selectedAdvance.valor
+
+                    if(maxAmount >= event){
+                        /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+                    }else{
+
+                        this.records[index].payment = maxAmount
+                        let message = 'El monto maximo del anticipo es de '+maxAmount
+                        this.$message.warning(message)
+
+                    }
+                }
+            },
+            changeAdvance(index, id){
+
+                let selectedAdvance = _.find(this.advances,{'id':id})
+                let maxAmount = selectedAdvance.valor
+
+                let payment_count = this.records.length;
+                // let total = this.form.total;
+                let total = this.purchase.total_difference;
+
+                let payment = 0;
+                let amount = _.round(total / payment_count, 2);
+
+                if(maxAmount >= amount ){
+                    /* EL MONTO INGRESADO ESTA PERMITIDO */
+                    this.records[index].payment = amount
+
+                }else if(amount > maxAmount ){
+
+                    this.records[index].payment = maxAmount
+                    let message = 'El monto maximo del anticipo es de '+maxAmount
+                    this.$message.warning(message)
+                }
+
+
+            },
+            changePaymentMethodType(index) {
+
+                let id = '01';
+
+                if (this.records[index] !== undefined &&
+                    this.records[index].payment_method_type_id !== undefined) {
+                    id = this.records[index].payment_method_type_id;
+
+                }
+                let payment_method_type = _.find(this.payment_method_types, {'id': id});
+
+                if (payment_method_type.number_days) {
+
+                    this.form.date_of_due = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+                    // this.form.payments = []
+                    this.enabled_payments = false
+                    this.readonly_date_of_due = true
+                    this.form.payment_method_type_id = payment_method_type.id
+
+                    let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+
+                    // let date = moment()
+                    //     .add(payment_method_type.number_days, 'days')
+                    //     .format('YYYY-MM-DD')
+
+                    if (this.form.fee !== undefined) {
+                        for (let index = 0; index < this.form.fee.length; index++) {
+                            this.form.fee[index].date = date;
+                        }
+                    }
+
+                } else if (payment_method_type.id == '09') {
+
+                    this.form.payment_method_type_id = payment_method_type.id
+                    this.form.date_of_due = this.form.date_of_issue
+                    // this.form.payments = []
+                    this.enabled_payments = false
+
+                }else if(payment_method_type.description.includes('Anticipo')){
+
+                    this.$notify({
+                        title: '',
+                        message: 'Debes seleccionar un anticipo disponible',
+                        type: 'success'
+                    })
+                    this.records[index].payment_method_type_id_desc = 'Anticipo';
+
+
+                }
+
+            },
             onSuccess(response, file, fileList) {
 
-                // console.log(response, file, fileList)
                 this.fileList = fileList
 
                 if (response.success) {
@@ -186,20 +307,18 @@
                     this.$message.error(response.message)
                 }
 
-                // console.log(this.records)
-            
             },
             cleanFileList(){
                 this.fileList = []
             },
-            handleRemove(file, fileList) {       
-                
+            handleRemove(file, fileList) {
+
                 this.records[this.index_file].filename = null
                 this.records[this.index_file].temp_path = null
                 this.fileList = []
                 this.index_file = null
 
-            }, 
+            },
             initForm() {
                 this.records = [];
                 this.fileList = [];
@@ -215,6 +334,7 @@
                 await this.$http.get(`/${this.resource}/records/${this.purchaseId}`)
                     .then(response => {
                         this.records = response.data.data
+                        this.addAdvancesCustomer()
                     });
                 this.$eventHub.$emit('reloadDataToPay')
 
@@ -244,7 +364,7 @@
                 if(this.records[index].payment > parseFloat(this.purchase.total_difference)) {
                     this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
                     return;
-                } 
+                }
 
                 let form = {
                     id: this.records[index].id,
@@ -274,11 +394,10 @@
                         if (error.response.status === 422) {
                             this.records[index].errors = error.response.data;
                         } else {
-                            console.log(error);
                             this.$message.error(error.response.data.message)
                         }
                     })
-            }, 
+            },
             close() {
                 this.$emit('update:showDialog', false);
             },

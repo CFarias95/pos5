@@ -13,10 +13,11 @@
                     <div class="col-md-6">
                         <div
                             :class="{'has-danger': errors.number}"
-                            class="form-group">
+                            class="form-group"
+                            :disabled="form.is_update">
                             <label class="control-label">RUC</label>
                             <x-input-service v-model="form.number"
-                                             :identity_document_type_id="form.identity_document_type_id"
+                                            :identity_document_type_id="form.identity_document_type_id"
                                              @search="searchNumber"></x-input-service>
                         </div>
                     </div>
@@ -187,6 +188,21 @@
                                 v-if="errors.locked_emission"
                                 class="form-control-feedback"
                                 v-text="errors.locked_emission[0]">
+                            </small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 center-el-checkbox mt-4">
+                        <div :class="{'has-danger': errors.countable}"
+                             class="form-group">
+                            <el-checkbox
+                                v-model="form.countable">
+                                LLevar Contabilidad?
+                            </el-checkbox>
+                            <br>
+                            <small
+                                v-if="errors.countable"
+                                class="form-control-feedback"
+                                v-text="errors.countable[0]">
                             </small>
                         </div>
                     </div>

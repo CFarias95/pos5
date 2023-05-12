@@ -25,7 +25,7 @@ class PaymentExport implements  FromView, ShouldAutoSize
     }
 
     public function view(): View {
-        return view('tenant.reports.imports.report_excel', [
+        return view('tenant.reports.payments.report_excel', [
             'records'=> $this->records,
             'payment_count'=> $this->payment_count,
 

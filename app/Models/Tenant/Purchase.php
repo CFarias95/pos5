@@ -131,6 +131,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
         'tipo_doc_id',
         'document_type_intern',
         'is_aproved',
+        'afected_document',
     ];
 
     protected $casts = [
@@ -548,12 +549,24 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
 
         $retencionesID = RetentionsEC::where('idDocumento',$this->id)->get();
         $retencoinesArray = [];
+        $idRetentionsState = '';
+        $nameRetentionsState = 'N/A';
+        $fileRetentions = '';
+        $idRetentions = null;
+
         if($retencionesID && $retencionesID->count() > 0){
             //Log::info(json_encode($retencionesID));
             $retencoinesArray =  RetentionsDetailEC::where('idRetencion',$retencionesID[0]->idRetencion)->get();
+            $idRetentionsState = ( $retencionesID->count() > 0 )? $retencionesID[0]->status_id:'';
+            $estados = RetencionesStateTypes::where('idEstado',$retencionesID[0]->status_id)->get();
+            $nameRetentionsState = $estados[0]->name;
+            $fileRetentions = $retencionesID[0]->claveAcceso;
+            $idRetentions = $retencionesID[0]->id;
         }
         $retMejora = null;
-        Log::info("RETENCIONES: ".json_encode($retencoinesArray));
+
+        //Log::info("RETENCIONES: ".json_encode($retencoinesArray));
+
         foreach($retencoinesArray as $key => $retencionLocal){
 
             $catType = RetentionType::where('code',$retencionLocal->codRetencion)->get();
@@ -572,6 +585,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
                 ];
             }
         }
+
+
 
         return [
             'id'                             => $this->id,
@@ -626,6 +641,10 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
                 ];
             }),
             'retenciones' => $retMejora,
+            'retenciones_state_id' => $idRetentionsState,
+            'retenciones_id' => $idRetentions,
+            'retenciones_state_name' => $nameRetentionsState,
+            'retenciones_unique_name' => $fileRetentions,
             'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
             'filename'                         => $this->filename,
         ];

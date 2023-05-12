@@ -16,30 +16,30 @@ class TenancyDatabaseSeeder extends Seeder
     {
 
         // $id = DB::table('items')->insertGetId(
-        //     ['name' => 'Laptop Razer', 'second_name' => 'Laptop Razer', 'description' => 'Laptop Razer','item_type_id' => '01', 
+        //     ['name' => 'Laptop Razer', 'second_name' => 'Laptop Razer', 'description' => 'Laptop Razer','item_type_id' => '01',
         //     'unit_type_id' => 'NIU', 'currency_type_id' => 'PEN', 'sale_unit_price' => '5500.00', 'has_igv' => 1, 'purchase_unit_price' => '3000.00', 'has_isc' => 0,
-        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' , 
+        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' ,
         //     'purchase_affectation_igv_type_id' => '10', 'calculate_quantity' => '0', 'image' => 'demo1.jpg', 'image_medium' => 'demo1_medium.jpg', 'image_small' => 'demo1_small.jpg',  'stock' => '1',
         //     'stock_min' => '1',  'percentage_of_profit' => '20.0',  'has_perception' => '0',  'status' => 1, 'apply_store' => 1 ]
         // );
 
         // $id2 = DB::table('items')->insertGetId(
-           
-        //     ['name' => 'MacBook Pro', 'second_name' => 'LMacBook Pro', 'description' => 'MacBook Pro','item_type_id' => '01', 
+
+        //     ['name' => 'MacBook Pro', 'second_name' => 'LMacBook Pro', 'description' => 'MacBook Pro','item_type_id' => '01',
         //     'unit_type_id' => 'NIU', 'currency_type_id' => 'PEN', 'sale_unit_price' => '5500.00', 'has_igv' => 1, 'purchase_unit_price' => '3000.00', 'has_isc' => 0,
-        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' , 
+        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' ,
         //     'purchase_affectation_igv_type_id' => '10', 'calculate_quantity' => '0', 'image' => 'demo2.jpg', 'image_medium' => 'demo2_medium.jpg', 'image_small' => 'demo2_small.jpg',  'stock' => '1',
         //     'stock_min' => '1',  'percentage_of_profit' => '20.0',  'has_perception' => '0',  'status' => 1, 'apply_store' => 1 ]
         // );
 
         // $id3 = DB::table('items')->insertGetId(
-           
-        //     ['name' => 'Laptop Asus', 'second_name' => 'Laptop Asus', 'description' => 'Laptop Asus','item_type_id' => '01', 
+
+        //     ['name' => 'Laptop Asus', 'second_name' => 'Laptop Asus', 'description' => 'Laptop Asus','item_type_id' => '01',
         //     'unit_type_id' => 'NIU', 'currency_type_id' => 'PEN', 'sale_unit_price' => '5500.00', 'has_igv' => 1, 'purchase_unit_price' => '3000.00', 'has_isc' => 0,
-        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' , 
+        //     'amount_plastic_bag_taxes' => '0.10', 'percentage_isc' => '0.00', 'suggested_price' => '0.00', 'sale_affectation_igv_type_id' => '10' ,
         //     'purchase_affectation_igv_type_id' => '10', 'calculate_quantity' => '0', 'image' => 'demo3.jpg', 'image_medium' => 'demo3_medium.jpg', 'image_small' => 'demo3_small.jpg',  'stock' => '1',
         //     'stock_min' => '1',  'percentage_of_profit' => '20.0',  'has_perception' => '0',  'status' => 1, 'apply_store' => 1 ]
-         
+
         // );
 
         // DB::table('promotions')->insert([
@@ -67,8 +67,8 @@ class TenancyDatabaseSeeder extends Seeder
             ['id'=> 13, 'formats' => 'top_placa'],
             ['id'=> 14, 'formats' => 'unit_types_desc']
         ]);
-        
-         DB::table('types_accounting_entries')->insert([
+
+        DB::table('types_accounting_entries')->insert([
             ['id'=> 1, 'name' => 'VENTA','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
             ['id'=> 2, 'name' => 'COMPRA','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
             ['id'=> 3, 'name' => 'LIQUIDACION IMPORTACION','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
@@ -78,7 +78,18 @@ class TenancyDatabaseSeeder extends Seeder
             ['id'=> 7, 'name' => 'ANTICIPO PROVEEDOR','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
             ['id'=> 8, 'name' => 'DEPRECIACION','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
             ['id'=> 9, 'name' => 'ASIENTOS MANUALES','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-          
+
+        ]);
+
+        DB::table('rates')->insert([
+            [
+            'id'=> 1,
+            'rate_name' => 'Tarifa PVP',
+            'rate_start'=>Carbon::now(),
+            'rate_end'=>Carbon::now()->addYear(2),
+            'created_at'=>Carbon::now(),
+            'updated_at'=>Carbon::now()
+            ]
         ]);
     }
 }

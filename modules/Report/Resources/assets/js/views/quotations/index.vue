@@ -23,23 +23,23 @@
 
                             <th class="text-right">T.Exonerado</th>
                             <th class="text-right">T.Gravado</th>
-                            <th class="text-right">T.Igv</th>
+                            <th class="text-right">T.IVA</th>
                             <th class="text-right">Total</th>
                         <tr>
                         <tr slot-scope="{ index, row }">
-                            <td>{{ index }}</td>  
+                            <td>{{ index }}</td>
                             <td>{{row.date_of_issue}}</td>
                             <td>{{row.user_name}}</td>
                             <td>{{row.customer_name}}</td>
                             <td>{{row.state_type_description}}</td>
                             <td>{{row.identifier}}</td>
                             <td>
-                                <template v-for="(doc,i) in row.documents">                                
+                                <template v-for="(doc,i) in row.documents">
                                     <label class="d-block"  :key="i">{{doc.number_full}}</label>
                                 </template>
                             </td>
                             <td>
-                                <template v-for="(s_note,i) in row.sale_notes">                                
+                                <template v-for="(s_note,i) in row.sale_notes">
                                     <label class="d-block"  :key="i">{{s_note.identifier}}</label>
                                 </template>
                             </td>
@@ -52,36 +52,36 @@
                             <td>{{ row.total_taxed}}</td>
                             <td>{{ row.total_igv}}</td>
                             <td>{{ row.total}}</td>
-                            
+
                         </tr>
-                        
+
                     </data-table>
-                     
-                    
-                </div> 
+
+
+                </div>
         </div>
- 
+
     </div>
 </template>
 
 <script>
- 
+
     import DataTable from '../../components/DataTableReports.vue'
 
-    export default { 
+    export default {
         components: {DataTable},
         data() {
             return {
-                resource: 'reports/quotations',                 
-                form: {}, 
+                resource: 'reports/quotations',
+                form: {},
 
             }
         },
-        async created() { 
+        async created() {
         },
-        methods: { 
-             
-            
+        methods: {
+
+
         }
     }
 </script>

@@ -16,7 +16,6 @@
     class ReportCommissionController extends Controller
     {
 
-
         public function filter()
         {
 
@@ -50,7 +49,6 @@
             return new ReportCommissionCollection($records->paginate(config('tenant.items_per_page')));
         }
 
-
         public function getRecords($request, $model)
         {
 
@@ -62,7 +60,7 @@
             $month_end = $request['month_end'];
             $user_type = $request['user_type'];
             $user_seller_id = $request['user_seller_id'] ?? null;
-
+            //$var = User::get();
             $d_start = null;
             $d_end = null;
 
@@ -98,7 +96,7 @@
 
         }
 
-
+        
         /**
          * @param     $establishment_id
          * @param     $date_start

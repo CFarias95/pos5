@@ -159,6 +159,25 @@
                                            v-text="errors.person_type_id[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.rate_id}"
+                                     class="form-group">
+                                    <label class="control-label">
+                                        Tarifa
+                                    </label>
+                                    <el-select v-model="form.rate_id"
+                                               clearable
+                                               filterable>
+                                        <el-option v-for="option in rates"
+                                                   :key="option.id"
+                                                   :label="option.rate_name"
+                                                   :value="option.id"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.rate_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.rate_id[0]"></small>
+                                </div>
+                            </div>
                             <!--JOINSOFTWARE-->
                             <div class="col-md-3" hidden>
                                 <div :class="{'has-danger': errors.barcode}"
@@ -669,6 +688,25 @@
 
                         </div>
                         <div class="row">
+
+                            <div class="col-lg-4 col-md-4"  v-if="company && company.countable">
+                                <div :class="{'has-danger': errors.account}"
+                                    class="form-group">
+                                    <label class="control-label">
+                                        Cuenta clientes
+                                    </label>
+                                    <el-select v-model="form.account"
+                                            clearable>
+                                        <el-option v-for="option in accounts"
+                                                :key="option.id"
+                                                :label="option.code + ' - ' + option.description "
+                                                :value="option.id">
+                                                <span style="float: left"> {{ option.code }} - {{ option.description }}</span>
+                                        </el-option>
+                                    </el-select>
+                                </div>
+                            </div>
+
                             <div class="col-lg-4 col-md-4">
 
                                 <div :class="{'has-danger': errors.seller_id}"
@@ -726,6 +764,30 @@
                                 </div>
                             </div>
 
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.limit_credit}"
+                                     class="form-group">
+                                    <label class="control-label">Cupo crédito</label>
+                                    <el-input-number v-model="form.limit_credit" :min="0" ></el-input-number>
+                                    <small v-if="errors.contact"
+                                           class="form-control-feedback"
+                                           v-text="errors.limit_credit[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div :class="{'has-danger': errors.credit_quota}"
+                                     class="form-group">
+                                    <label class="control-label">Cupo de crédito</label>
+                                    <el-input-number
+                                        v-model="form.credit_quota"
+                                        :controls="false"
+                                        :min="0"
+                                        :precision="0"></el-input-number>
+                                    <small v-if="errors.credit_quota"
+                                           class="form-control-feedback"
+                                           v-text="errors.credit_quota[0]"></small>
+                                </div>
+                            </div>
 
                             <!--Zona -->
                             <!--
@@ -756,8 +818,8 @@
 </template>
 
 <script>
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 
+import {mapActions, mapState} from "vuex";
 import {serviceNumber} from '../../../mixins/functions'
 
 export default {
@@ -771,6 +833,22 @@ export default {
         'input_person',
         'parentId',
     ],
+    computed: {
+        ...mapState([
+            'config',
+            'person',
+            'parentPerson',
+
+        ]),
+        maxLength: function () {
+            if (this.form.identity_document_type_id === '6') {
+                return 11
+            }
+            if (this.form.identity_document_type_id === '1') {
+                return 8
+            }
+        },
+    },
     data() {
         return {
             form_zone: {add: false, name: null, id: null},
@@ -809,9 +887,12 @@ export default {
             districts: [],
             locations: [],
             person_types: [],
+            rates: [],
             identity_document_types: [],
             discount_types: [],
-            activeName: 'first'
+            activeName: 'first',
+            accounts:[],
+            company : null,
         }
     },
     async created() {
@@ -832,7 +913,10 @@ export default {
                 this.identity_document_types = response.data.identity_document_types;
                 this.locations = response.data.locations;
                 this.person_types = response.data.person_types;
+                this.rates = response.data.rates;
                 this.discount_types = response.data.discount_types;
+                this.accounts = response.data.accounts;
+                this.company = response.data.company;
             })
             .finally(() => {
                 if (this.api_service_token === false) {
@@ -842,21 +926,6 @@ export default {
                 }
             })
 
-    },
-    computed: {
-        ...mapState([
-            'config',
-            'person',
-            'parentPerson',
-        ]),
-        maxLength: function () {
-            if (this.form.identity_document_type_id === '6') {
-                return 11
-            }
-            if (this.form.identity_document_type_id === '1') {
-                return 8
-            }
-        },
     },
     methods: {
         ...mapActions([
@@ -877,6 +946,8 @@ export default {
                 department_id: null,
                 province_id: null,
                 district_id: null,
+                rate_id: null,
+                credit_quota: 0,
                 address: null,
                 telephone: null,
                 condition: null,
@@ -897,6 +968,7 @@ export default {
                 discount_amount: 0,
                 parteRel:'NO',
                 pagoLocExt:'Local',
+                account:null,
 
             }
             this.updateEmail()
@@ -954,6 +1026,7 @@ export default {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        console.log('form', response.data.data)
                         if (response.data.data.contact == null) {
                             this.form.contact = {
                                 full_name: null,

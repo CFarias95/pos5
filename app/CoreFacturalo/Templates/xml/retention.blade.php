@@ -1,5 +1,5 @@
 @php
-    $establishment = $document->establishment;
+    //$establishment = $document->establishment;
 @endphp
 {!! '<?xml version="1.0" encoding="utf-8" standalone="no"?>' !!}
 <Retention xmlns="urn:sunat:names:specification:ubl:peru:schema:xsd:Retention-1"

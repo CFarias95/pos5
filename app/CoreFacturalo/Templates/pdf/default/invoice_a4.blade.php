@@ -83,11 +83,11 @@
             <tr>
                 <td width="50%">
                 @if($company->logo)
-                    
+
                         <div class="company_logo_box">
                             <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 40px; max-width: 150px" >
                         </div>
-                   
+
                 @else
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
                         <!--
@@ -95,7 +95,7 @@
                         <img alt="Bootstrap Image Preview" src="https://www.pngitem.com/pimgs/m/47-479827_join-now-png-transparent-images-join-logo-png.png" width="100px" height="100px" style="margin-left: 50px"/>
                         -->
                 @endif
-                        
+
                     <!--<img alt="Bootstrap Image Preview" src="https://www.pngitem.com/pimgs/m/47-479827_join-now-png-transparent-images-join-logo-png.png" width="100px" height="100px" style="margin-left: 50px"/>-->
                     <table>
                         <tbody>
@@ -472,7 +472,7 @@
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->currency_type->symbol }}{{ number_format($pago->payment, 2) }}</td>
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">0 días</td>
                                 </tr>
-    
+
                             @endforeach
                             @endif
                             @if($document->payment_condition_id === '02')

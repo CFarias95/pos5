@@ -225,7 +225,8 @@ class DocumentCollection extends ResourceCollection
                 'filename' => $row->filename,
                 'date_of_payment' => $payment,
                 'btn_force_send_by_summary' => $row->isAvailableForceSendBySummary(),
-                'btn_retention' => $btn_retention
+                'btn_retention' => $btn_retention,
+                'aproved' => $row->aproved,
             ];
         });
     }

@@ -533,7 +533,7 @@
                 if (isset($item->lots_group)) {
                     if(is_array($item->lots_group) && count($item->lots_group) > 0) {
                             $lots_group = $item->lots_group;
-    
+
                             foreach ($lots_group as $ltg) {
                                 $lot = ItemLotsGroup::query()->find($ltg->id);
                                 $lot->quantity = $lot->quantity + $ltg->compromise_quantity;
@@ -640,9 +640,9 @@
             ];
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener url para impresión
          *
          * @param  string $format
@@ -652,7 +652,7 @@
         {
             return url("order-notes/print/{$this->external_id}/{$format}");
         }
-        
+
 
         /**
          * @return Dispatch[]|Builder[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|Collection|mixed
@@ -689,7 +689,7 @@
             return $this->hasMany(GuideFile::class);
         }
 
-        
+
         /**
          * @param $query
          *
@@ -702,7 +702,7 @@
 
 
         /**
-         * 
+         *
          * Obtener total y realizar conversión al tipo de cambio si se requiere
          *
          * @return float
@@ -711,10 +711,10 @@
         {
             return ($this->currency_type_id === 'PEN') ? $this->total : ($this->total * $this->exchange_rate_sale);
         }
-        
-        
+
+
         /**
-         * 
+         *
          * Obtener suma total del pedidos
          *
          * @param  Builder $query

@@ -109,10 +109,33 @@ if($hostname) {
                     Route::get('pdf', 'MovementController@pdf');
                     Route::post('pdf', 'MovementController@postPdf');
                     Route::get('excel', 'MovementController@excel');
-                    //Route::post('excel', 'MovementController@excel');
-                    //Route::post('excel', 'MovementController@excel');
                     Route::get('records', 'MovementController@records');
                 });
+
+                                /**
+                 * finances/advances
+                 * finances/advances/pdf
+                 * finances/advances/excel
+                 * finances/advances/records
+                 */
+                Route::prefix('advances')->group(function () {
+
+                    Route::get('', 'AdvanceController@index')->name('tenant.finances.advances.index');
+                    Route::get('columns', 'AdvanceController@columns');
+                    Route::get('records', 'AdvanceController@records');
+                    Route::get('records/income-payments/{record}', 'AdvanceController@recordsIncomePayments');
+                    Route::get('create', 'AdvanceController@create')->name('tenant.income.create');
+                    Route::get('tables', 'AdvanceController@tables');
+                    Route::get('table/{table}', 'AdvanceController@table');
+                    Route::post('', 'AdvanceController@store');
+                    Route::get('record/{record}', 'AdvanceController@record');
+                    Route::get('voided/{record}', 'AdvanceController@voided');
+
+                    Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
+
+
+                });
+
                 /**
                  * finances/transactions
                  * finances/transactions/pdf

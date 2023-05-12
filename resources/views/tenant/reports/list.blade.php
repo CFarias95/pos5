@@ -66,11 +66,16 @@
                                 Bandeja descarga de reportes
                             </a>
                         </li>
-                        
+
                         {{-- Actividades del sistema --}}
                         <li>
                             <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
                                 Actividades del sistema
+                            </a>
+                        </li>
+                        <li>
+                            <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
+                                Reporte ATS
                             </a>
                         </li>
 
@@ -117,6 +122,26 @@
                         <li>
                             <a href="{{route('tenant.reports.purchases.general_items.index')}}">
                                 Productos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.quotations')}}">
+                                Orden de compra Vs Compra
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.quotations')}}">
+                                Reporte bases es impuestos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.quotations')}}">
+                                Reporte compras retenciones
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.quotations')}}">
+                                DEtalle de compras
                             </a>
                         </li>
                     </ul>
@@ -171,7 +196,7 @@
                         <li>
                             <a href="{{route('tenant.reports.sales_consolidated.index')}}">Consolidado de items</a>
                         </li>
-                        
+
                         <li>
                             <a href="{{route('tenant.reports.tips.index')}}">Propinas</a>
                         </li>
@@ -179,7 +204,16 @@
                         <li>
                             <a href="{{route('tenant.reports.state_account.index')}}">Estado de cuenta</a>
                         </li>
-                        
+                        <li>
+                            <a href="{{route('tenant.reports.reporte_ventas.index')}}">Reporte de Ventas</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.reporte_ventas.index')}}">Reporte bases e impuestos</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.reporte_ventas.index')}}">Detalle de ventas</a>
+                        </li>
+
                     </ul>
                 </div>
             </div>
@@ -216,6 +250,9 @@
                             <a href="{{route('tenant.reports.order_notes_consolidated.index')}}">
                                 Consolidado de items
                             </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.order_notes_general.report')}}">Pedido Vs Despachado</a>
                         </li>
                     </ul>
                 </div>

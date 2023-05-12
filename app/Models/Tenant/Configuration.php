@@ -286,6 +286,21 @@
             'register_series_invoice_xml',
             'enable_discount_by_customer',
             'amount_service_taxes',
+            'cta_charge',
+            'cta_paymnets',
+            'cta_suppliers_advances',
+            'cta_client_advances',
+            'cta_clients',
+            'cta_suppliers',
+            'cta_purchases',
+            'cta_sale_costs',
+            'cta_incomes',
+            'cta_transit_imports',
+            'cta_taxes',
+            'cta_service_taxes',
+            'cta_item_process',
+            'cta_iva_tax',
+            'cta_income_tax',
         ];
 
         protected $casts = [
@@ -651,6 +666,22 @@
                 'register_series_invoice_xml' => $this->register_series_invoice_xml,
 
                 'enable_discount_by_customer' => $this->enable_discount_by_customer,
+
+                'cta_charge' => $this->cta_charge,
+                'cta_paymnets' => $this->cta_paymnets,
+                'cta_suppliers_advances'=> $this->cta_suppliers_advances,
+                'cta_client_advances'=> $this->cta_client_advances,
+                'cta_clients' => $this->cta_clients,
+                'cta_suppliers'=> $this->cta_suppliers,
+                'cta_purchases' => $this->cta_purchases,
+                'cta_sale_costs'  => $this->cta_sale_costs,
+                'cta_incomes' => $this->cta_incomes,
+                'cta_transit_imports'  => $this->cta_transit_imports,
+                'cta_taxes' => $this->cta_taxes,
+                'cta_service_taxes'  => $this->cta_service_taxes,
+                'cta_item_process'  => $this->cta_item_process,
+                'cta_iva_tax' => $this->cta_iva_tax,
+                'cta_income_tax' => $this->cta_income_tax,
 
             ];
         }

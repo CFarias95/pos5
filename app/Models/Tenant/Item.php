@@ -110,7 +110,7 @@ use Picqer\Barcode\BarcodeGeneratorPNG;
  */
 class Item extends ModelTenant
 {
-    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots'];
+    protected $with = ['item_type', 'unit_type', 'currency_type', 'warehouses','item_unit_types', 'tags','item_lots','item_rates','rates'];
 
     public const SERVICE_UNIT_TYPE = 'ZZ';
 
@@ -169,7 +169,6 @@ class Item extends ModelTenant
         'web_platform_id',
         'has_plastic_bag_taxes',
         'has_service_taxes',
-        'amount_service_taxes',
         'barcode',
         'sanitary',
         'cod_digemid',
@@ -187,6 +186,13 @@ class Item extends ModelTenant
         'factory_code',
         'tariff_id',
         'concept_id',
+
+        'item_import_cta',
+        'item_finish_cta',
+        'item_process_cta',
+        'income_cta',
+        'sale_cost_cta',
+        'purchase_cta',
 
         // 'warehouse_id'
     ];
@@ -1778,6 +1784,14 @@ class Item extends ModelTenant
         return $code;
     }
 
+    public function item_rates()
+    {
+        return $this->hasMany(ItemRate::class);
+    }
+    public function rates()
+    {
+        return $this->belongsToMany(Rate::class,'item_rate','item_id','rate_id')->withPivot('price1');
+    }
 
     /**
      * Obtiene una estructura estandar para generar los codigos de barra
@@ -2216,6 +2230,23 @@ class Item extends ModelTenant
         });
     }
 
+
+    public function scopeWhereStockMinMax($query)
+    {
+        $stockmin = (int)$this->stock_min;
+        return $query->whereHas('warehouses', function($query) use($stockmin) {
+            $query->where('stock', '<', $stockmin);
+        });
+    }
+
+    public function scopeWhereStockMinMaxEqual($query)
+    {
+        $stockmin = (int)$this->stock_min;
+        return $query->whereHas('warehouses', function($query) use($stockmin) {
+            //$query->where('stock', '<=', $stockmin);
+            $query->where('stock', '>', $stockmin);
+        });
+    }
 
     /**
      *
