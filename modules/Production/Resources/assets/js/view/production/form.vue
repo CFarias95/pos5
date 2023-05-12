@@ -100,11 +100,9 @@
                                         <label class="control-label">
                                             Maquina
                                         </label>
-                                        <el-select v-model="form.machine_id">
-                                            <el-option
-                                                v-for="option in machines"
-                                                :key="option.id"
-                                                :label="option.name"
+                                        <el-select :disabled="!isCreating" v-model="form.machine_id"
+                                            @change="fetchMachineInfo()">
+                                            <el-option v-for="option in machines" :key="option.id" :label="option.name"
                                                 :value="option.id"></el-option>
                                         </el-select>
 
@@ -398,7 +396,7 @@
                     </el-button>
                 </div>
 
-                <div v-if="supplies.length > 0" class="col-12 col-md-12 mt-3">
+                <div v-if="supplies && supplies.length > 0" class="col-12 col-md-12 mt-3">
                     <h3 class="my-0">Lista de materiales</h3>
 
                     <div class="col-md-12 mt-3 table-responsive">
@@ -415,22 +413,31 @@
                             </thead>
                             <tbody>
                             <tr v-for="row in supplies">
-                                <th>    {{ row.individual_item && row.individual_item.description ? row.individual_item.description : "" }}</th>
+                                <th> {{ row.description }}</th>
                                 <th>
                                     <!-- {{ row.quantity }} -->
-                                    <el-input-number v-if="form.quantity != 0 && form.quantity != null" :value="row.quantity * form.quantity" :controls="false" disabled></el-input-number>
-                                    <el-input-number v-else :value="row.quantity" :controls="false" disabled></el-input-number>
-
+                                    <el-input-number v-if="form.quantity != 0 && form.quantity != null"
+                                        :value="row.quantity * form.quantity" :controls="false"
+                                        disabled></el-input-number>
+                                    <el-input-number v-else :value="row.quantity" :controls="false"
+                                        disabled></el-input-number>
+                                    <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
+                                        <a class="text-center font-weight-bold text-info" href="#"
+                                            @click.prevent="clickLotGroup(row)">[&#10004;
+                                            Seleccionar
+                                            lote]</a>
+                                    </div>
                                     <!-- JOINSOFTWARE
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
                                     -->
                                 </th>
-                                <th>{{ row.individual_item.unit_type.description }}</th>
-                                <th>
-                                    <!-- {{ row.quantity }} -->
-                                    <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1" disabled="disabled"></el-input-number>
-                                </th>
-                                <th>{{ row.individual_item.unit_type.description }}</th>
+                                <th>{{ row.unit_type }}</th>
+                                    <th>
+                                        <!-- {{ row.quantity }} -->
+                                        <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1"
+                                            disabled="disabled"></el-input-number>
+                                    </th>
+                                <th>{{ row.unit_type }}</th>
                                 <th>
 
                                     <el-select v-model="row.warehouse_id"
@@ -523,6 +530,38 @@ export default {
         this.initForm()
     },
     methods: {
+        addRowLotGroup(id) {
+            let IdLoteSelected = id;
+            const index = this.supplies.findIndex(item => item.id === this.selectSupply.supply_id);
+
+            if (index !== -1) {
+                this.supplies[index].IdLoteSelected = IdLoteSelected
+            }
+        },
+        clickLotGroup(row) {
+            console.log("row", row)
+            let donwloadQuantity = row.quantity * this.form.quantity
+            this.selectSupply.supply_id = row.individual_item_id
+            this.selectSupply.lots_group = row.lots_group;
+            this.selectSupply.quantity = donwloadQuantity;
+            this.showDialogLots = true
+        },
+        deleteStatus(id) {
+            const index = this.records.findIndex((estado) => estado.id === id);
+            if (index !== -1) {
+                this.records.splice(index, 1);
+            }
+        },
+        fetchMachineInfo() {
+            if (this.form.machine_id) {
+                const machine = this.machines.find(m => m.id === this.form.machine_id);
+                this.min_force = parseInt(machine.minimum_force);
+                this.max_force = parseInt(machine.maximum_force);
+            } else {
+                this.min_force = null;
+                this.max_force = null;
+            }
+        },
         onClose() {
             window.location.href = '/production'
         },
@@ -534,11 +573,29 @@ export default {
                     .then(response => {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
-                        let item = _.find(this.items, {'id': this.form.item_id})
-                        this.form.item_extra_data= {}
-                        this.form.item_extra_data.color = null
-                        this.item = item
-                        this.supplies = item.supplies
+                        this.supplies = this.form.supplies
+                        let currentStatus = this.form.records_id;
+                        switch (currentStatus) {
+                            case '01':
+                                this.isCreating = true;
+                                this.deleteStatus("03")
+                                this.deleteStatus('04')
+                                break;
+                            case '02':
+                                this.deleteStatus("01")
+                                this.deleteStatus("04")
+                                break;
+                            case '03':
+                                this.deleteStatus("01")
+                                this.deleteStatus("02")
+                                break;
+                            case '04':
+                                this.records = []
+                                break
+                            default:
+                                break;
+                        }
+                        this.fetchMachineInfo();
                     })
             } else {
                 this.isCreating = true;
@@ -546,8 +603,6 @@ export default {
                 this.deleteStatus("03")
                 this.deleteStatus("02")
             }
-
-            console.log("is creating", this.isCreating)
 
         },
         async initForm() {

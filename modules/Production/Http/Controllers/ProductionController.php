@@ -538,6 +538,7 @@ class ProductionController extends Controller
         $data['warehouse_id'] = $warehouse_id;
         $data['records_id'] = $production->state_type_id;
         //hago un recorrido de todo los insumos que utilicé para fabricar un producto.
+        $transformed_supplies = null;
         foreach ($production_supplies as $supply) {
             $item_supply_id = $supply->item_supply_id;
             //por cada insumo que se fabricó voy a obtener los lotes que se utilizó
