@@ -88,7 +88,7 @@
                             <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
                                 <label class="control-label">Moneda</label>
                                 <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
-                                    <el-option v-for="option in currency_types" :key="option.id" :value="option.id"
+                                    <el-option v-for="option in currency_types" :key="option.symbol" :value="option.id"
                                                :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.currency_type_id"

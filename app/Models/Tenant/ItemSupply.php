@@ -120,6 +120,7 @@
         $data = $this->toArray();
         $data['item'] = $this->item;
         $data['individual_item'] = $this->individual_item;
+        $data['individual_item']['lots_group'] = $this->individual_item->lots_group;
         return $data;
 
     }

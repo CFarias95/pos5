@@ -12,12 +12,23 @@
                         <div class="col-lg-9">
                             <div class="row">
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div :class="{ 'has-danger': errors.item_id }" class="form-group">
+                                    <div :class="{'has-danger': errors.item_id}"
+                                        class="form-group">
                                         <label class="control-label">Producto </label>
-                                        <el-select :disabled="!isCreating" v-model="form.item_id" :loading="loading_search"
-                                            :remote-method="searchRemoteItems" filterable remote @change="changeItem">
-                                            <el-option v-for="option in items" :key="option.id" :label="option.description"
-                                                :value="option.id"></el-option>
+                                        <el-select
+                                            v-model="form.item_id"
+                                            :loading="loading_search"
+                                            :remote-method="searchRemoteItems"
+                                            filterable
+                                            remote
+                                            @change="changeItem"
+                                        >
+                                            <el-option
+                                                v-for="option in items"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"
+                                            ></el-option>
                                         </el-select>
                                         <small v-if="errors.item_id" class="form-control-feedback"
                                             v-text="errors.item_id[0]"></small>
@@ -37,10 +48,18 @@
                                 <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div :class="{ 'has-danger': errors.quantity }" class="form-group">
                                         <label class="control-label">Cantidad</label>
-                                        <el-input-number :disabled="!isCreating" v-model="form.quantity" :controls="false" :min="0"
-                                            :precision="precision" @change="handleChange($event)"></el-input-number>
-                                        <small v-if="errors.quantity" class="form-control-feedback"
-                                            v-text="errors.quantity[0]"></small>
+                                        <el-input-number
+                                            v-model="form.quantity"
+                                            :controls="false"
+                                            :min="0"
+                                            :precision="precision"
+                                            @change="handleChange($event)"
+                                        ></el-input-number>
+                                        <small
+                                            v-if="errors.quantity"
+                                            class="form-control-feedback"
+                                            v-text="errors.quantity[0]"
+                                        ></small>
                                     </div>
                                 </div>
 
@@ -81,7 +100,8 @@
                                         <label class="control-label">
                                             Maquina
                                         </label>
-                                        <el-select :disabled="!isCreating" v-model="form.machine_id" @change="fetchMachineInfo()">
+                                        <el-select :disabled="!isCreating" v-model="form.machine_id"
+                                            @change="fetchMachineInfo()">
                                             <el-option v-for="option in machines" :key="option.id" :label="option.name"
                                                 :value="option.id"></el-option>
                                         </el-select>
@@ -109,8 +129,12 @@
                                         <label class="control-label">
                                             Lote
                                         </label>
-                                        <input v-model="form.lot_code" class="form-control" placeholder="Lote"
-                                            type="text" />
+                                        <input
+                                            v-model="form.lot_code"
+                                            class="form-control"
+                                            placeholder="Lote"
+                                            type="text"
+                                        />
 
                                         <small v-if="errors.lot_code" class="form-control-feedback"
                                             v-text="errors.lot_code[0]"></small>
@@ -337,10 +361,14 @@
                         <div class="col-lg-3">
                             <div :class="{ 'has-danger': errors.records_id }" class="form-group">
                                 <label class="control-label">Estado</label>
-                                <el-select v-model="form.records_id" filterable>
-                                    <el-option v-for="option in records" :key="option.id" :label="option.description"
+                                <el-select v-model="form.records_id"
+                                           filterable>
+                                    <el-option
+                                        v-for="option in records"
+                                        :key="option.id"
+                                        :label="option.description"
                                         :value="option.id"
-                                        ></el-option>
+                                    ></el-option>
                                 </el-select>
                                 <small v-if="errors.records_id" class="form-control-feedback"
                                     v-text="errors.records_id[0]"></small>
@@ -351,7 +379,11 @@
                 </div>
 
                 <div class="form-actions text-right mt-4" v-if="false">
-                    <el-button :loading="loading_submit" native-type="submit" type="primary">Guardar
+                    <el-button
+                        :loading="loading_submit"
+                        native-type="submit"
+                        type="primary"
+                    >Guardar
                     </el-button>
                 </div>
 
@@ -364,51 +396,61 @@
                     </el-button>
                 </div>
 
-                <div v-if="supplies.length > 0" class="col-12 col-md-12 mt-3">
+                <div v-if="supplies && supplies.length > 0" class="col-12 col-md-12 mt-3">
                     <h3 class="my-0">Lista de materiales</h3>
 
                     <div class="col-md-12 mt-3 table-responsive">
                         <table class="table">
                             <thead>
-                                <tr>
-                                    <th>Nombre</th>
-                                    <th>Cantidad a descargar</th>
-                                    <th>Unidad de medida</th>
-                                    <th>Cantidad</th>
-                                    <th>Unidad de medida</th>
-                                    <th class="text-center">Almacen</th>
-                                </tr>
+                            <tr>
+                                <th>Nombre</th>
+                                <th>Cantidad a descargar</th>
+                                <th>Unidad de medida</th>
+                                <th>Cantidad</th>
+                                <th>Unidad de medida</th>
+                                <th class="text-center">Almacen</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="row in supplies">
-                                    <th> {{ row.individual_item && row.individual_item.description ?
-                                        row.individual_item.description : "" }}</th>
-                                    <th>
-                                        <!-- {{ row.quantity }} -->
-                                        <el-input-number v-if="form.quantity != 0 && form.quantity != null"
-                                            :value="row.quantity * form.quantity" :controls="false"
-                                            disabled></el-input-number>
-                                        <el-input-number v-else :value="row.quantity" :controls="false"
-                                            disabled></el-input-number>
-
-                                        <!-- JOINSOFTWARE
+                            <tr v-for="row in supplies">
+                                <th> {{ row.description }}</th>
+                                <th>
+                                    <!-- {{ row.quantity }} -->
+                                    <el-input-number v-if="form.quantity != 0 && form.quantity != null"
+                                        :value="row.quantity * form.quantity" :controls="false"
+                                        disabled></el-input-number>
+                                    <el-input-number v-else :value="row.quantity" :controls="false"
+                                        disabled></el-input-number>
+                                    <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
+                                        <a class="text-center font-weight-bold text-info" href="#"
+                                            @click.prevent="clickLotGroup(row)">[&#10004;
+                                            Seleccionar
+                                            lote]</a>
+                                    </div>
+                                    <!-- JOINSOFTWARE
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
                                     -->
-                                    </th>
-                                    <th>{{ row.individual_item.unit_type.description }}</th>
+                                </th>
+                                <th>{{ row.unit_type }}</th>
                                     <th>
                                         <!-- {{ row.quantity }} -->
                                         <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1"
                                             disabled="disabled"></el-input-number>
                                     </th>
-                                    <th>{{ row.individual_item.unit_type.description }}</th>
-                                    <th>
-                                        <el-select v-model="row.item.warehouse_id" filterable>
-                                            <el-option v-for="option in warehouses" :key="option.id"
-                                                :label="option.description" :value="option.id"></el-option>
-                                        </el-select>
-                                    </th>
-                                </tr>
+                                <th>{{ row.unit_type }}</th>
+                                <th>
+
+                                    <el-select v-model="row.warehouse_id"
+                                               filterable>
+                                        <el-option
+                                            v-for="option in warehouses"
+                                            :key="option.id"
+                                            :label="option.description"
+                                            :value="option.id"
+                                        ></el-option>
+                                    </el-select>
+                                </th>
+                            </tr>
                             </tbody>
                         </table>
                     </div>
@@ -417,14 +459,22 @@
 
             </form>
         </div>
+
+
+        <lots-group :lots_group="selectSupply.lots_group" :quantity="selectSupply.quantity"
+            :showDialog.sync="showDialogLots" @addRowLotGroup="addRowLotGroup">
+        </lots-group>
     </div>
 </template>
 
 <script>
 
+import LotsGroup from './lots_group.vue'
 
 export default {
-
+    components: {
+        LotsGroup
+    },
     props: {
         id: {
             type: Number,
@@ -440,6 +490,7 @@ export default {
         return {
             resource: 'production',
             loading_submit: false,
+            showDialogLots: false,
             errors: {},
             records: {},
             isCreating: false,
@@ -456,6 +507,11 @@ export default {
                     color: null
                 },
 
+            },
+            selectSupply: {
+                supply_id: null,
+                lots_group: [],
+                quantity: 0,
             },
             loading_search: false,
             warehouses: [],
@@ -474,6 +530,22 @@ export default {
         this.initForm()
     },
     methods: {
+        addRowLotGroup(id) {
+            let IdLoteSelected = id;
+            const index = this.supplies.findIndex(item => item.id === this.selectSupply.supply_id);
+
+            if (index !== -1) {
+                this.supplies[index].IdLoteSelected = IdLoteSelected
+            }
+        },
+        clickLotGroup(row) {
+            console.log("row", row)
+            let donwloadQuantity = row.quantity * this.form.quantity
+            this.selectSupply.supply_id = row.individual_item_id
+            this.selectSupply.lots_group = row.lots_group;
+            this.selectSupply.quantity = donwloadQuantity;
+            this.showDialogLots = true
+        },
         deleteStatus(id) {
             const index = this.records.findIndex((estado) => estado.id === id);
             if (index !== -1) {
@@ -501,25 +573,21 @@ export default {
                     .then(response => {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
-                        let item = _.find(this.items, { 'id': this.form.item_id })
-                        this.form.item_extra_data = {}
-                        this.form.item_extra_data.color = null
-                        this.item = item
-                        this.supplies = item.supplies
-                        let currentStatus =  this.form.records_id;
+                        this.supplies = this.form.supplies
+                        let currentStatus = this.form.records_id;
                         switch (currentStatus) {
                             case '01':
-                                    this.isCreating = true;
-                                    this.deleteStatus("03")
-                                    this.deleteStatus('04')
+                                this.isCreating = true;
+                                this.deleteStatus("03")
+                                this.deleteStatus('04')
                                 break;
                             case '02':
-                                    this.deleteStatus("01")
-                                    this.deleteStatus("04")
+                                this.deleteStatus("01")
+                                this.deleteStatus("04")
                                 break;
                             case '03':
-                                    this.deleteStatus("01")
-                                    this.deleteStatus("02")
+                                this.deleteStatus("01")
+                                this.deleteStatus("02")
                                 break;
                             case '04':
                                 this.records = []
@@ -536,8 +604,6 @@ export default {
                 this.deleteStatus("02")
             }
 
-            console.log("is creating", this.isCreating)
-
         },
         async initForm() {
             this.form = {
@@ -545,7 +611,7 @@ export default {
                 item_id: null,
                 warehouse_id: null,
                 quantity: 0,
-                informative: false,
+                informative:false,
                 records_id: null,
                 agreed: 0,
                 imperfect: 0,
@@ -575,7 +641,7 @@ export default {
                 this.quantityD = value
                 if (this.form.supplies) {
                     for (let i = 0; i < this.supplies.length; i++) {
-                        this.supplies[i].quantity = this.form.supplies[i].quantity * this.quantityD
+
                     }
                 }
             } else {
@@ -597,31 +663,13 @@ export default {
                 return this.$message.error('La cantidad debe ser mayor a 0');
             }
 
-            if (!this.form.machine_id) {
-                this.$notify({
-                    title: 'Atención ',
-                    message: `Seleccione una máquina`,
-                    type: 'warning'
-                });
-                return;
-            }
-
-
-            if (this.form.quantity < this.min_force || this.form.quantity > this.max_force) {
-                this.$notify({
-                    title: 'Atención ',
-                    message: `La cantidad debe estar entre ${this.min_force} y ${this.max_force} (capacidad de máquina)`,
-                    type: 'warning'
-                });
-                return;
-            }
-
             this.loading_submit = true;
 
             this.form.supplies = this.supplies;
 
             // Si no existe un ID, estás creando un nuevo registro
             if (!this.form.id) {
+
                 await this.$http.post(`/${this.resource}/create`, this.form)
                     .then(response => {
                         if (response.data.success) {

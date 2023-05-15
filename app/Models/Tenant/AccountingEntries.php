@@ -104,5 +104,4 @@ class AccountingEntries extends ModelTenant
         return $this->belongsTo(CurrencyType::class, 'currency_type_id');
     }
 
-
 }

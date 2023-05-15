@@ -209,6 +209,7 @@ export default {
         this.form.code = this.form.prefix + this.form.inputcode;
       }
 
+
       this.$http
         .post(`/${this.resource}`, this.form)
         .then((response) => {
