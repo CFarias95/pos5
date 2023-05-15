@@ -4,10 +4,10 @@
     "reportVersion": 1,
     "event": "Allocation failed - JavaScript heap out of memory",
     "trigger": "FatalError",
-    "filename": "report.20230512.162505.30640.0.001.json",
-    "dumpEventTime": "2023-05-12T16:25:05Z",
-    "dumpEventTimeStamp": "1683926705103",
-    "processId": 30640,
+    "filename": "report.20230515.120436.2892.0.001.json",
+    "dumpEventTime": "2023-05-15T12:04:36Z",
+    "dumpEventTimeStamp": "1684170276590",
+    "processId": 2892,
     "cwd": "C:\\laragon\\www\\pro51",
     "commandLine": [
       "node",
@@ -53,74 +53,74 @@
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 1102703,
+        "user": 3105562,
         "nice": 0,
-        "sys": 694031,
-        "idle": 42330421,
-        "irq": 80593
+        "sys": 1738218,
+        "idle": 55073703,
+        "irq": 192578
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 761078,
+        "user": 2386062,
         "nice": 0,
-        "sys": 339406,
-        "idle": 43025937,
-        "irq": 12828
+        "sys": 987359,
+        "idle": 56543343,
+        "irq": 33843
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 951500,
+        "user": 2818703,
         "nice": 0,
-        "sys": 404921,
-        "idle": 42770000,
-        "irq": 11359
+        "sys": 1050859,
+        "idle": 56047203,
+        "irq": 30968
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 860421,
+        "user": 2661406,
         "nice": 0,
-        "sys": 344671,
-        "idle": 42921328,
-        "irq": 8656
+        "sys": 879000,
+        "idle": 56376343,
+        "irq": 21109
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 714468,
+        "user": 2281187,
         "nice": 0,
-        "sys": 310234,
-        "idle": 43101703,
-        "irq": 10312
+        "sys": 928125,
+        "idle": 56707421,
+        "irq": 28796
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 619265,
+        "user": 2124453,
         "nice": 0,
-        "sys": 275421,
-        "idle": 43231718,
-        "irq": 6312
+        "sys": 810437,
+        "idle": 56981859,
+        "irq": 18968
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 808515,
+        "user": 2391171,
         "nice": 0,
-        "sys": 336656,
-        "idle": 42981234,
-        "irq": 11109
+        "sys": 824125,
+        "idle": 56701453,
+        "irq": 22984
       },
       {
         "model": "Intel(R) Core(TM) i5-1035G4 CPU @ 1.10GHz",
         "speed": 1498,
-        "user": 863484,
+        "user": 2433453,
         "nice": 0,
-        "sys": 398515,
-        "idle": 42864406,
-        "irq": 9468
+        "sys": 865671,
+        "idle": 56617609,
+        "irq": 18671
       }
     ],
     "networkInterfaces": [
@@ -137,7 +137,7 @@
         "name": "Ethernet",
         "internal": false,
         "mac": "98:e7:43:13:5a:af",
-        "address": "2800:bf0:162:30d3:c57c:97e0:6c96:f57d",
+        "address": "2800:bf0:162:30d3:38cf:146f:802:d43",
         "netmask": "ffff:ffff:ffff:ffff:ffff:ffff:ffff:ffff",
         "family": "IPv6",
         "scopeid": 0
@@ -187,83 +187,83 @@
   },
   "nativeStack": [
     {
-      "pc": "0x00007ff6fb791729",
+      "pc": "0x00007ff69b8e1729",
       "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+10873"
     },
     {
-      "pc": "0x00007ff6fb795b4c",
+      "pc": "0x00007ff69b8e5b4c",
       "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+28316"
     },
     {
-      "pc": "0x00007ff6fb794b08",
+      "pc": "0x00007ff69b8e4b08",
       "symbol": "std::basic_ostream<char,std::char_traits<char> >::operator<<+24152"
     },
     {
-      "pc": "0x00007ff6fb88369b",
+      "pc": "0x00007ff69b9d369b",
       "symbol": "v8::base::CPU::has_sse+37723"
     },
     {
-      "pc": "0x00007ff6fc0882de",
+      "pc": "0x00007ff69c1d82de",
       "symbol": "v8::Isolate::ReportExternalAllocationLimitReached+94"
     },
     {
-      "pc": "0x00007ff6fc070321",
+      "pc": "0x00007ff69c1c0321",
       "symbol": "v8::SharedArrayBuffer::Externalize+833"
     },
     {
-      "pc": "0x00007ff6fbf3dbec",
+      "pc": "0x00007ff69c08dbec",
       "symbol": "v8::internal::Heap::EphemeronKeyWriteBarrierFromCode+1436"
     },
     {
-      "pc": "0x00007ff6fbf48f90",
+      "pc": "0x00007ff69c098f90",
       "symbol": "v8::internal::Heap::ProtectUnprotectedMemoryChunks+1312"
     },
     {
-      "pc": "0x00007ff6fbf45ac4",
+      "pc": "0x00007ff69c095ac4",
       "symbol": "v8::internal::Heap::PageFlagsAreConsistent+3204"
     },
     {
-      "pc": "0x00007ff6fbf3b353",
+      "pc": "0x00007ff69c08b353",
       "symbol": "v8::internal::Heap::CollectGarbage+1283"
     },
     {
-      "pc": "0x00007ff6fbf39b24",
+      "pc": "0x00007ff69c089b24",
       "symbol": "v8::internal::Heap::AddRetainedMap+2356"
     },
     {
-      "pc": "0x00007ff6fbf53c2e",
+      "pc": "0x00007ff69c0a3c2e",
       "symbol": "v8::internal::Factory::AllocateRawFixedArray+94"
     },
     {
-      "pc": "0x00007ff6fbf5afc4",
+      "pc": "0x00007ff69c0aafc4",
       "symbol": "v8::internal::Factory::NewFixedArrayWithFiller+52"
     },
     {
-      "pc": "0x00007ff6fbf5af81",
+      "pc": "0x00007ff69c0aaf81",
       "symbol": "v8::internal::Factory::NewUninitializedFixedArray+65"
     },
     {
-      "pc": "0x00007ff6fbe3b87c",
+      "pc": "0x00007ff69bf8b87c",
       "symbol": "v8::Object::GetIsolate+5436"
     },
     {
-      "pc": "0x00007ff6fbcef13a",
+      "pc": "0x00007ff69be3f13a",
       "symbol": "v8::internal::OrderedHashMap::ValueAt+61274"
     },
     {
-      "pc": "0x00007ff6fc4b404d",
+      "pc": "0x00007ff69c60404d",
       "symbol": "v8::internal::SetupIsolateDelegate::SetupHeap+567949"
     },
     {
-      "pc": "0x000003960320def5",
+      "pc": "0x000003e442b4f4d5",
       "symbol": ""
     }
   ],
   "javascriptHeap": {
-    "totalMemory": 2179825664,
-    "totalCommittedMemory": 2179825664,
-    "usedMemory": 2136594512,
-    "availableMemory": 49410552,
+    "totalMemory": 2188754944,
+    "totalCommittedMemory": 2188754944,
+    "usedMemory": 2140404216,
+    "availableMemory": 153582592,
     "memoryLimit": 2197815296,
     "heapSpaces": {
       "read_only_space": {
@@ -281,31 +281,31 @@
         "available": 2094976
       },
       "old_space": {
-        "memorySize": 461221888,
-        "committedMemory": 461221888,
-        "capacity": 459708248,
-        "used": 432706856,
-        "available": 27001392
+        "memorySize": 464105472,
+        "committedMemory": 464105472,
+        "capacity": 455348632,
+        "used": 431999888,
+        "available": 23348744
       },
       "code_space": {
         "memorySize": 2260992,
         "committedMemory": 2260992,
-        "capacity": 2092416,
-        "used": 2092416,
+        "capacity": 1890496,
+        "used": 1890496,
         "available": 0
       },
       "map_space": {
-        "memorySize": 12587008,
-        "committedMemory": 12587008,
-        "capacity": 2850960,
-        "used": 2850960,
+        "memorySize": 13897728,
+        "committedMemory": 13897728,
+        "capacity": 2826880,
+        "used": 2826880,
         "available": 0
       },
       "large_object_space": {
-        "memorySize": 1698095104,
-        "committedMemory": 1698095104,
-        "capacity": 1697811568,
-        "used": 1697811568,
+        "memorySize": 1702830080,
+        "committedMemory": 1702830080,
+        "capacity": 1702554240,
+        "used": 1702554240,
         "available": 0
       },
       "code_large_object_space": {
@@ -318,24 +318,24 @@
       "new_large_object_space": {
         "memorySize": 0,
         "committedMemory": 0,
-        "capacity": 2094976,
+        "capacity": 118848944,
         "used": 0,
-        "available": 2094976
+        "available": 118848944
       }
     }
   },
   "resourceUsage": {
-    "userCpuSeconds": 60.765,
-    "kernelCpuSeconds": 6.468,
-    "cpuConsumptionPercent": 29.7491,
-    "maxRss": 2993479680,
+    "userCpuSeconds": 82.828,
+    "kernelCpuSeconds": 10.078,
+    "cpuConsumptionPercent": 32.259,
+    "maxRss": 2998054912,
     "pageFaults": {
-      "IORequired": 4645213,
+      "IORequired": 4750607,
       "IONotRequired": 0
     },
     "fsActivity": {
-      "reads": 13116,
-      "writes": 78
+      "reads": 13108,
+      "writes": 71
     }
   },
   "libuv": [
@@ -372,8 +372,8 @@
     "CMDER_ALIASES": "1",
     "CMDER_CLINK": "1",
     "CMDER_CONFIGURED": "1",
-    "CMDER_INIT_END": "12:33:44,83",
-    "CMDER_INIT_START": "12:33:42,73",
+    "CMDER_INIT_END": " 9:02:27,71",
+    "CMDER_INIT_START": " 9:02:25,08",
     "CMDER_ROOT": "C:\\laragon\\bin\\cmder",
     "CMDER_SHELL": "cmd",
     "CMDER_USER_FLAGS": " ",
@@ -387,20 +387,20 @@
     "ConEmuAnsiLog": "",
     "ConEmuArgs": "/Icon \"C:\\laragon\\bin\\cmder\\icons\\cmder.ico\" /Title Cmder",
     "ConEmuArgs2": "",
-    "ConEmuBackHWND": "0x00100CC6",
+    "ConEmuBackHWND": "0x00010700",
     "ConEmuBaseDir": "C:\\laragon\\bin\\cmder\\vendor\\conemu-maximus5\\ConEmu",
     "ConEmuBaseDirShort": "C:\\laragon\\bin\\cmder\\vendor\\conemu-maximus5\\ConEmu",
     "ConEmuBuild": "221218",
     "ConEmuCfgDir": "C:\\laragon\\bin\\cmder\\vendor\\conemu-maximus5",
     "ConEmuConfig": "",
     "ConEmuDir": "C:\\laragon\\bin\\cmder\\vendor\\conemu-maximus5",
-    "ConEmuDrawHWND": "0x0014076C",
+    "ConEmuDrawHWND": "0x00010702",
     "ConEmuDrive": "C:",
     "ConEmuHooks": "Enabled",
-    "ConEmuHWND": "0x00050B86",
+    "ConEmuHWND": "0x000306C4",
     "ConEmuPalette": "<SolarMe>",
-    "ConEmuPID": "21408",
-    "ConEmuServerPID": "7584",
+    "ConEmuPID": "18440",
+    "ConEmuServerPID": "8776",
     "ConEmuTask": "{cmd::Cmder}",
     "ConEmuWorkDir": "C:\\laragon\\www",
     "ConEmuWorkDrive": "C:",
@@ -419,7 +419,7 @@
     "DOCUMENT_TYPE_03_FILTER": "false",
     "dp0": "C:\\laragon\\www\\pro51\\node_modules\\.bin\\",
     "DriverData": "C:\\Windows\\System32\\Drivers\\DriverData",
-    "EFC_532": "1",
+    "EFC_24580": "1",
     "ENABLED_DISCOUNT_GLOBAL": "false",
     "ENABLED_TEMPLATE_TICKET_80": "false",
     "fast_init": "0",
@@ -428,8 +428,6 @@
     "find_query": "C:\\\\laragon\\\\bin\\\\cmder",
     "FORCE_HTTPS": "false",
     "found": "1",
-    "FPS_BROWSER_APP_PROFILE_STRING": "Internet Explorer",
-    "FPS_BROWSER_USER_PROFILE_STRING": "Default",
     "git_executable": "C:\\Program Files\\Git\\cmd\\git.exe",
     "GIT_INSTALL_ROOT": "C:\\laragon\\bin\\cmder\\..\\git",
     "git_locale": "\"C:\\Program Files\\Git\\usr\\bin\\locale.exe\"",
@@ -640,7 +638,7 @@
     "npm_package_devDependencies_lodash": "^4.17.21",
     "npm_package_devDependencies_popper_js": "^1.12",
     "npm_package_devDependencies_vue": "^2.5.7",
-    "npm_package_gitHead": "fbd994a2e7156e5d9f9ad825fac93f674445630c",
+    "npm_package_gitHead": "9a92b6d981ed9deb397de7444dcd06e12f443cba",
     "npm_package_name": "",
     "npm_package_private": "true",
     "npm_package_readmeFilename": "README.md",
@@ -739,21 +737,21 @@
     "C:\\WINDOWS\\System32\\WS2_32.dll",
     "C:\\WINDOWS\\System32\\RPCRT4.dll",
     "C:\\WINDOWS\\SYSTEM32\\dbghelp.dll",
-    "C:\\WINDOWS\\System32\\ucrtbase.dll",
     "C:\\WINDOWS\\System32\\ADVAPI32.dll",
+    "C:\\WINDOWS\\System32\\ucrtbase.dll",
     "C:\\WINDOWS\\System32\\msvcrt.dll",
-    "C:\\WINDOWS\\System32\\combase.dll",
     "C:\\WINDOWS\\System32\\sechost.dll",
+    "C:\\WINDOWS\\System32\\combase.dll",
     "C:\\WINDOWS\\System32\\OLEAUT32.dll",
     "C:\\WINDOWS\\System32\\USER32.dll",
-    "C:\\WINDOWS\\System32\\msvcp_win.dll",
     "C:\\WINDOWS\\System32\\win32u.dll",
+    "C:\\WINDOWS\\System32\\msvcp_win.dll",
     "C:\\WINDOWS\\System32\\GDI32.dll",
     "C:\\WINDOWS\\System32\\gdi32full.dll",
     "C:\\WINDOWS\\System32\\PSAPI.DLL",
     "C:\\WINDOWS\\System32\\CRYPT32.dll",
-    "C:\\WINDOWS\\SYSTEM32\\USERENV.dll",
     "C:\\WINDOWS\\SYSTEM32\\IPHLPAPI.DLL",
+    "C:\\WINDOWS\\SYSTEM32\\USERENV.dll",
     "C:\\WINDOWS\\SYSTEM32\\bcrypt.dll",
     "C:\\WINDOWS\\SYSTEM32\\WINMM.dll",
     "C:\\WINDOWS\\System32\\IMM32.DLL",
