@@ -522,7 +522,7 @@ class ProductionController extends Controller
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
-
+                $transformed_supplies = [];
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
 
