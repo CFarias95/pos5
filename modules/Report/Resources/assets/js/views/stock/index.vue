@@ -41,12 +41,12 @@
                                             {{ value1 }}
                                         </th>                                                           
                                     </tr>
-                                </slot>                     
+                                </slot>                  
                             </thead>
                             <tbody>
                                 <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
-                                    <tr v-for="(valor, dato) in row" :index="customIndex(dato)" :row="valor" class="" slot="heading" :key="dato">
-                                        <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" class="" slot="heading" :key="nombre">
+                                    <tr v-for="(valor, dato) in row" :row="valor" class="" slot="heading" :key="dato">
+                                        <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre">
                                             {{ obj }}
                                         </td>
                                     </tr>
@@ -77,7 +77,6 @@ export default {
             pagination: {},
             search: {},
             almacenList: [],
-            idList: [],
         }
     },
     created() {
@@ -118,9 +117,9 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP`).then((response) => {
                 this.records = response.data.data
-                console.log('resource', this.records) //Borrar antes del commit
                 this.almacenList = this.records[this.records.length - 1]
-                console.log('lista', this.almacenList) //Borrar antes del commit
+                let len = this.records.length
+                this.records.splice(len-1,1)
                 this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false

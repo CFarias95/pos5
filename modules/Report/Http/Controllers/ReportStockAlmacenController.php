@@ -15,10 +15,8 @@ use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
-use Illuminate\Support\Facades\Log;
-use Modules\Report\Exports\ReportBaseImpuestosExport;
+use Modules\Report\Exports\StockAlmacenExport;
 use Modules\Report\Http\Resources\ReportStockAlmacenCollection;
-use Mpdf\Tag\Q;
 
 class ReportStockAlmacenController extends Controller
 {
@@ -59,11 +57,21 @@ class ReportStockAlmacenController extends Controller
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $records = DB::connection('tenant')->select("CALL SP_StockAlmacen();");
-        $filters = $request->all();
+        $sp1 = array();
+        $sp2 = [];
+        foreach($records as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $pdf = PDF::loadView('report::stock.stock_pdf', compact("records", "company", "establishment", "usuario_log", "filters"))->setPaper('a3', 'landscape');
+        $pdf = PDF::loadView('report::stock.stock_pdf', compact("records", "company", "establishment", "usuario_log", "sp2"))->setPaper('a3', 'landscape');
 
         $filename = 'Reporte_Stock_Almacen_'.date('YmdHis');
 
@@ -80,11 +88,22 @@ class ReportStockAlmacenController extends Controller
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
+        $sp1 = array();
+        $sp2 = [];
+        foreach($records as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
 
-        return (new ReportBaseImpuestosExport)
+        return (new StockAlmacenExport)
                 ->records($records)
                 ->company($company)
-                ->filters($filters)
+                ->sp2($sp2)
                 ->usuario_log($usuario_log)
                 ->fechaActual($fechaActual)
                 ->download('Reporte_Stock_Almacen_'.Carbon::now().'.xlsx');

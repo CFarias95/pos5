@@ -8,7 +8,7 @@ use Maatwebsite\Excel\Concerns\Exportable;
 use Maatwebsite\Excel\Concerns\ShouldAutoSize;
 use Maatwebsite\Excel\Concerns\FromCollection;
 
-class ReportStockAlmacenExport implements  FromView, ShouldAutoSize
+class StockAlmacenExport implements  FromView, ShouldAutoSize
 {
     use Exportable;
 
@@ -24,8 +24,8 @@ class ReportStockAlmacenExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
-    public function filters($filters) {
-        $this->filters = $filters;
+    public function sp2($sp2) {
+        $this->sp2 = $sp2;
 
         return $this;
     }
@@ -48,6 +48,7 @@ class ReportStockAlmacenExport implements  FromView, ShouldAutoSize
             'company' => $this->company,
             'fechaActual'=>$this->fechaActual,
             'usuario_log'=>$this->usuario_log,
+            'sp2' => $this->sp2,
         ]);
     }
 }
