@@ -41,8 +41,11 @@ use Carbon\Carbon;
 use Illuminate\Support\Facades\Storage;
 use App\Http\Requests\Tenant\PurchaseOrderRequest;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
+use Illuminate\Support\Facades\Config;
 use Modules\Sale\Models\SaleOpportunity;
 use Modules\Finance\Helpers\UploadFileHelper;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 
 class PurchaseOrderController extends Controller
 {
@@ -443,21 +446,17 @@ class PurchaseOrderController extends Controller
         $email = $customer_email;
         $mailable = new  PurchaseOrderEmail($record);
         $id = (int)$record->id;
-        $sendIt = EmailController::SendMail($email, $mailable, $id, 5);
-        /*
+        //$sendIt = EmailController::SendMail($email, $mailable, $id, 5);
+
         Configuration::setConfigSmtpMail();
-        $array_email = explode(',', $customer_email);
-        if (count($array_email) > 1) {
-            foreach ($array_email as $email_to) {
-                $email_to = trim($email_to);
-                if(!empty($email_to)) {
-                    Mail::to($email_to)->send(new  PurchaseOrderEmail($record));
-                }
-            }
-        } else {
-            Mail::to($customer_email)->send(new  PurchaseOrderEmail($record));
-        }
-        */
+        $backup = Mail::getSwiftMailer();
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
+
         return [
             'success' => true
         ];

@@ -446,6 +446,13 @@
                                                         }}
                                                     </td>
                                                 </tr>
+                                                <tr v-if="form.total_service_taxes > 0">
+                                                    <td>SERVICIO:</td>
+                                                    <td>{{ currency_type.symbol }} {{
+                                                            form.total_service_taxes
+                                                        }}
+                                                    </td>
+                                                </tr>
 
                                                 <tr v-if="form.subtotal > 0 && form.total_discount > 0">
                                                     <td>SUBTOTAL:</td>
@@ -877,6 +884,10 @@
                                     <tr v-if="form.total_plastic_bag_taxes > 0">
                                         <td>ICBPER:</td>
                                         <td>{{ currency_type.symbol }} {{ form.total_plastic_bag_taxes }}</td>
+                                    </tr>
+                                    <tr v-if="form.total_service_taxes > 0">
+                                        <td>SERVICIO:</td>
+                                        <td>{{ currency_type.symbol }} {{ form.total_service_taxes }}</td>
                                     </tr>
 
                                     <tr v-if="form.subtotal > 0 && form.total_discount > 0">
@@ -2123,6 +2134,7 @@ export default {
                 total_base_other_taxes: 0,
                 total_other_taxes: 0,
                 total_plastic_bag_taxes: 0,
+                total_service_taxes: 0,
                 total_taxes: 0,
                 total_value: 0,
                 total: 0,
@@ -2421,6 +2433,7 @@ export default {
             this.form.total_base_other_taxes = parseFloat(data.total_base_other_taxes);
             this.form.total_other_taxes = parseFloat(data.total_other_taxes);
             this.form.total_plastic_bag_taxes = parseFloat(data.total_plastic_bag_taxes);
+            this.form.total_service_taxes = parseFloat(data.total_service_taxes);
             this.form.total_prepayment = parseFloat(data.total_prepayment);
             this.form.total_taxed = parseFloat(data.total_taxed);
             this.form.total_taxes = parseFloat(data.total_taxes);
@@ -3562,6 +3575,7 @@ export default {
             this.form.items = items
             this.calculateTotal()
         },
+
         calculateTotal() {
 
             let total_discount = 0
@@ -3575,6 +3589,7 @@ export default {
             let total_value = 0
             let total = 0
             let total_plastic_bag_taxes = 0
+            let total_service_taxes = 0
             this.total_discount_no_base = 0
 
             let total_igv_free = 0
@@ -3669,6 +3684,7 @@ export default {
                 }
 
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                total_service_taxes += parseFloat(row.total_service_taxes)
 
 
                 if (['14', '15', '16'].includes(row.affectation_igv_type_id)) {
@@ -3676,7 +3692,7 @@ export default {
                     let unit_value = row.total_value / row.quantity
                     let total_value_partial = unit_value * row.quantity
                     // row.total_taxes = row.total_value - total_value_partial
-                    row.total_taxes = row.total_value - total_value_partial + parseFloat(row.total_plastic_bag_taxes) //sumar icbper al total tributos
+                    row.total_taxes = row.total_value - total_value_partial + parseFloat(row.total_service_taxes) + parseFloat(row.total_plastic_bag_taxes) //sumar icbper al total tributos
 
                     row.total_igv = total_value_partial * (row.percentage_igv / 100)
                     row.total_base_igv = total_value_partial
@@ -3713,9 +3729,10 @@ export default {
             // this.form.total_taxes = _.round(total_igv, 2)
 
             //impuestos (isc + igv + icbper)
-            this.form.total_taxes = _.round(total_igv + total_isc + total_plastic_bag_taxes, 2);
+            this.form.total_taxes = _.round(total_igv + total_isc + total_plastic_bag_taxes + total_service_taxes, 2);
 
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
+            this.form.total_service_taxes = _.round(total_service_taxes,2)
 
             this.form.subtotal = _.round(total, 2)
             this.form.total = _.round(total - this.total_discount_no_base, 2)
@@ -3904,7 +3921,7 @@ export default {
                     this.form.total_igv = _.round(this.form.total_taxed * (percentage_igv / 100), 2)
 
                     //impuestos (isc + igv + icbper)
-                    this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes, 2);
+                    this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes + this.form.total_service_taxes, 2);
                     this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
                     this.form.subtotal = this.form.total
 

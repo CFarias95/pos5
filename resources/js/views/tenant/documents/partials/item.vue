@@ -146,6 +146,9 @@
                                          :disabled="isEditItemNote">Impuesto a la
                                                                     Bolsa Plástica
                             </el-checkbox>
+                            <el-checkbox v-model="form.has_service_taxes"
+                                         :disabled="isEditItemNote">Impuesto Servicio
+                            </el-checkbox>
                             <small v-if="errors.item_id"
                                    class="form-control-feedback"
                                    v-text="errors.item_id[0]"></small>
@@ -849,8 +852,11 @@ export default {
         ItemOptionDescriptionView(item) {
             return ItemOptionDescription(item)
         },
+
         getTables() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                //console.log(`/${this.resource}/item/tables`)
+                //console.log("DATA ITEMS: ",data)
                 let data = response.data
                 this.all_items = data.items
                 this.operation_types = data.operation_types
@@ -1068,6 +1074,7 @@ export default {
                 is_set: false,
                 item_unit_types: [],
                 has_plastic_bag_taxes: false,
+                has_service_taxes: false,
                 series_enabled: false,
                 warehouse_id: null,
                 lots_group: [],
@@ -1090,6 +1097,9 @@ export default {
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
+            //console.log("tipo de operacion : ",this.operationTypeId)
+            //console.log("tipos de operaciones", this.operation_types)
+
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 //
@@ -1457,6 +1467,7 @@ export default {
             this.form.unit_price = unit_price;
             this.form.item.unit_price = unit_price;
             this.form.item.presentation = this.item_unit_type;
+            console.log("this.affectation_igv_types: ",this.affectation_igv_types)
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
 
             let IdLoteSelected = this.form.IdLoteSelected
@@ -1465,7 +1476,7 @@ export default {
             console.log('ANTES DE ENVIAR: ', this.form)
 
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
-
+            //console.log("ITEM AFTER",this.row)
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi

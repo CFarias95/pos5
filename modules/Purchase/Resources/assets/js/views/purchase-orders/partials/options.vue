@@ -91,6 +91,7 @@
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        this.form.customer_email = response.data.data.purchase_order.supplier.email
                         let typei = this.type == 'edit' ? 'editada' : 'registrada'
                         this.titleDialog = `Orden de Compra ${typei}: ` + this.form.number_full
                     })
