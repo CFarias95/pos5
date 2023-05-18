@@ -38,7 +38,7 @@
                                 <slot v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
                                     <tr slot="heading" :key="value">
                                         <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class="" slot="heading" :key="name">
-                                            {{ value1 }}
+                                            <strong>{{ value1 }}</strong>
                                         </th>                                                           
                                     </tr>
                                 </slot>                  

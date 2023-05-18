@@ -347,7 +347,7 @@
                 )
             },
             clickPrint(external_id) {
-                 window.open(`/finances/unpaid/print/${external_id}/sale`, '_blank');
+                window.open(`/finances/unpaid/print/${external_id}/sale`, '_blank');
             },
             clickOptions() {
                 this.showDialogOptions = true

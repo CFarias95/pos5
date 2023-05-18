@@ -74,7 +74,7 @@
 import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type'],
+    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type', 'id'],
     components: {
     },
     data() {
@@ -179,12 +179,16 @@ export default {
             await this.$http.get(`/${this.resource_document}/record/${this.recordId}`).then(response => {
                 this.form = response.data.data;
                 this.titleDialog = 'Comprobante de documento por cobrar: ' + this.form.number;
+                //console.log('this.form', this.form)
             }).finally(() => {
                 this.loading = false
             });
         },
         clickPrint(format) {
-            window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}`, '_blank');
+            /*this..forEach(element => {
+                
+            });*/
+            window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}/${this.id}`, '_blank');
         },
         clickCloseUnpaid() {
             this.$emit('update:showDialogOptions', false)

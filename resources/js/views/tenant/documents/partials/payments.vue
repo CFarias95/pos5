@@ -70,7 +70,7 @@
                                     </td>
                                 <template  v-if="external">
                                     <td class="series-table-actions text-center">
-                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptionsPrint()"><i class="fas fa-file-upload"></i></button>
+                                        <button type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptionsPrint(index)"><i class="fas fa-file-upload"></i></button>
                                     </td>
                                 </template>
 
@@ -258,6 +258,9 @@
             :showClose="showDialogClose"
             :type="this.type"
             :configuration="this.configuration"
+            :id="this.index"
+            :monto="this.monto"
+            
         ></document-options>
     </el-dialog>
 
@@ -294,6 +297,8 @@
                 showDialogClose:false,
                 type:'document',
                 advances:[],
+                index:null,
+                monto: null,
             }
         },
         async created() {
@@ -417,13 +422,14 @@
                 await this.$http.get(`/${this.resource}/document/${this.documentId}`)
                     .then(response => {
                         this.document = response.data;
+                        console.log('data',this.document)
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.documentId}`)
                     .then(response => {
                         this.records = response.data.data
+                        console.log('data',this.records)
                     });
-
                 this.addAdvancesCustomer();
                 this.$eventHub.$emit('reloadDataUnpaid')
 
@@ -592,7 +598,9 @@
             clickPrint(external_id) {
                  window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
             },
-            clickOptionsPrint() {
+            clickOptionsPrint(key) {
+                this.monto = this.records[key].payment
+                this.index = key
                 this.showDialogOptions = true
                 this.showDialogClose=true
             },

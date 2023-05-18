@@ -29,11 +29,11 @@ trait StorageDocument
         return Storage::disk('tenant')->get($this->_folder.DIRECTORY_SEPARATOR.$this->_filename);
     }
 
-    public function getStorage1($filename, $root = null)
+    /*public function getStorage1($filename, $root = null)
     {
         $this->setData($filename, $root);
         return Storage::disk('tenant')->get($this->_folder.DIRECTORY_SEPARATOR.$this->_filename);
-    }
+    }*/
 
     private function setData($filename, $file_type, $root)
     {
