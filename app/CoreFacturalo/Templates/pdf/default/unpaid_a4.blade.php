@@ -9,7 +9,11 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
     //dd($tittle_unpaid);
     $data = $payments;
-    $data1 = $document
+    $valores = null;
+    for($i = 0 ; $i <= $index ; $i++)
+    {
+        $valores += $data[$i]->payment;
+    } 
 @endphp
 <html>
 <head>
@@ -156,7 +160,7 @@
                 @endif
             </td>
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
-            <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format($balance + $data[$index]->payment, 2) }}</td>
+            <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format( $row->total - $valores, 2) }}</td>
         </tr>
         <tr>
             <td colspan="9" class="border-bottom"></td>
@@ -212,17 +216,6 @@
     <tr>
         <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }}- {{ $data[$index]->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>   
     </tr>
-    <tr><td>TOTAL PAGADO {{$total_payment}}</td></tr>
-    <tr><td>PRUEBA 1: {{($total_payment - $data[$index]->payment) + ($balance)}}</td></tr>
-    <tr><td>BALANCE {{$balance}}</td></tr>
-    <tr><td>MONTO PAGADO {{$data[$index]->payment}}</td></tr>
-    <tr><td>{{$balance + $data[$index]->payment}}</td></tr>
-    <tr><td>BALANCE{{$balance}}</td></tr>
-    <tr><td>INFO: {{$data1->advance}}</td></tr>
-    @foreach
-
-    @endforeach
-    <tr><td>DATA: {{$payments}}</td></tr>
     @php
         $payment = 0;
     @endphp   

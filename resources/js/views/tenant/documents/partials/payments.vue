@@ -259,7 +259,6 @@
             :type="this.type"
             :configuration="this.configuration"
             :id="this.index"
-            :monto="this.monto"
             
         ></document-options>
     </el-dialog>
@@ -422,13 +421,11 @@
                 await this.$http.get(`/${this.resource}/document/${this.documentId}`)
                     .then(response => {
                         this.document = response.data;
-                        console.log('data',this.document)
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
                     });
                 await this.$http.get(`/${this.resource}/records/${this.documentId}`)
                     .then(response => {
                         this.records = response.data.data
-                        console.log('data',this.records)
                     });
                 this.addAdvancesCustomer();
                 this.$eventHub.$emit('reloadDataUnpaid')
@@ -599,7 +596,7 @@
                  window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
             },
             clickOptionsPrint(key) {
-                this.monto = this.records[key].payment
+                //this.monto = this.records[key].payment
                 this.index = key
                 this.showDialogOptions = true
                 this.showDialogClose=true
