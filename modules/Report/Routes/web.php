@@ -66,6 +66,14 @@ if ($current_hostname) {
                             Route::get('filter', 'ReportPurchaseController@orderFilter');
 
                         });
+                        
+                         Route::prefix('base_impuestos')->group(function () {
+                              Route::get('/', 'ReportBaseImpuestosController@index')->name('tenant.reports.purchases.base_impuestos.index');
+                              Route::get('records', 'ReportBaseImpuestosController@records');
+                              Route::get('excel', 'ReportBaseImpuestosController@excel');
+                              Route::get('pdf', 'ReportBaseImpuestosController@pdf');
+                              Route::get('datosSP', 'ReportBaseImpuestosController@datosSP');
+                         });
 
                     });
 
@@ -192,6 +200,15 @@ if ($current_hostname) {
                      * reports/commissions/filter
                      * reports/commissions/records
                      */
+                    Route::prefix('stock')->group(function (){
+                         Route::get('/', 'ReportStockAlmacenController@index')
+                              ->name('tenant.reports.stock.index');
+                         Route::get('records', 'ReportStockAlmacenController@records');
+                         Route::get('excel', 'ReportStockAlmacenController@excel');
+                         Route::get('pdf', 'ReportStockAlmacenController@pdf');
+                         Route::get('datosSP', 'ReportStockAlmacenController@datosSP');
+                    });
+
                     Route::get('commissions', 'ReportCommissionController@index')
                          ->name('tenant.reports.commissions.index');
                     Route::get('commissions/pdf', 'ReportCommissionController@pdf')
@@ -314,6 +331,27 @@ if ($current_hostname) {
                               ->name('tenant.reports.reporte_ventas.pdfSimple');
                          Route::get('/recuperarCategorias', 'ReporteVentasController@recuperarCategorias')
                               ->name('tenant.reports.reporte_ventas.recuperarCategorias');
+                    });
+
+                    Route::prefix('plan_cuentas')->group(function () {
+                         Route::get('', 'PlanCuentasController@index')
+                              ->name('tenant.plan_cuentas.index')
+                              ->middleware('tenant.internal.mode');
+                         Route::get('/pdf', 'PlanCuentasController@pdf')
+                              ->name('tenant.plan_cuentas.pdf');
+                         Route::get('/excel', 'PlanCuentasController@excel')
+                              ->name('tenant.plan_cuentas.excel');
+                         Route::get('/records', 'PlanCuentasController@records')
+                              ->name('tenant.plan_cuentas.records');
+                         Route::get('/filter', 'PlanCuentasController@filter')
+                              ->name('tenant.plan_cuentas.filter');
+                         Route::get('/item/tables', 'PlanCuentasController@item_tables')
+                              ->name('tenant.plan_cuentas.item_tables');
+                         Route::get('/tables', 'PlanCuentasController@tables')
+                              ->name('tenant.plan_cuentas.tables');
+                         Route::get('/columns', 'PlanCuentasController@columns');
+                         Route::get('/datosSP', 'PlanCuentasController@datosSP');
+
                     });
 
                     Route::get('order-notes-general', 'ReportOrderNoteGeneralController@index')

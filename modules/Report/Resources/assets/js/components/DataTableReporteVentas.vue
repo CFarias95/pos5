@@ -321,10 +321,6 @@
                     </div>
                 </div>
             </div>
-
-            <div>
-
-            </div>
         </div>
     </div>
 </template>
@@ -729,7 +725,7 @@ export default {
                     area: 'column',
                 }, {
                     groupName: 'date_of_issue',
-                    groupInterval: 'month',
+                    groupInterval: 'day',
                     visible: false,
                 }, {
                     caption: 'Hora Emisión',

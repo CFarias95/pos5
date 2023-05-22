@@ -92,6 +92,21 @@
     </tr>
 </table>
 
+<table class="full-width mt-4 mb-12">
+    <tr>
+        <td>Reparación {!! Form::checkbox('Reparacion', 1, $document->repair) !!}</td>
+        <td>Garantia {!! Form::checkbox('Garantia', 1, $document->warranty) !!}</td>
+        <td>Mantenimiento {!! Form::checkbox('Mantenimiento', 1, $document->maintenance) !!}</td>
+    </tr>
+    <tr>
+        <td>Diagnostico {!! Form::checkbox('Diagnostico', 1, $document->diagnosis) !!}</td>
+        <td>Entrega de Producto {!! Form::checkbox('Entrega Producto', 1, $document->delivered) !!}</td>
+        <td>Revisión {!! Form::checkbox('Revision', 1, $document->review) !!}</td>
+    </tr>
+    <tr>
+        <td>Otros {!! Form::checkbox('Otros', 1, $document->other) !!}</td>
+    </tr>
+</table>    
 
 <table class="full-width mt-4 mb-5">
     <tr>
@@ -113,6 +128,27 @@
     <tr>
         <td >{{ $document->reason }}</td>
     </tr>
+    @if($document->important_note != null)
+    <tr>
+        <td><b>Notas:</b></td>
+    </tr>
+    @foreach($document->important_note as $item)
+    <tr>
+        <td>{{ $item->description }}</td>
+    </tr>
+    @endforeach
+    <tr>
+        <td><b>Se solucionó?</b>
+        </td>
+    </tr>
+    <tr>
+        @if($document->solved == 1)
+            <td>Si</td>
+        @else
+            <td>No</td>
+        @endif
+    </tr>
+    @endif
     @if($document->activities)
     <tr>
         <td><b>Actividades realizadas:</b></td>
@@ -144,6 +180,26 @@
             <td class="text-right font-bold">{{ number_format($document->cost - $document->prepayment, 2) }}</td>
         </tr>
     </tbody>
+</table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<table class="full-width mt-4 mb-5">
+    <tr>
+        <td width="50%" class="text-center">________________________________________</td>
+        <td width="50%" class="text-center">________________________________________</td>     
+    </tr>
+    <tr>
+        <td width="50%" class="text-center">{{ $customer->name }}</td> 
+        <td width="50%" class="text-center">{{ $document->user->name }}</td>
+    </tr>  
 </table>
 </body>
 </html>

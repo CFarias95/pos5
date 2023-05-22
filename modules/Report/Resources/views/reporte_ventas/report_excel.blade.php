@@ -4,14 +4,6 @@
     use App\Models\Tenant\SaleNote;
     use App\Models\Tenant\SaleNotePayment;
     use App\Models\Tenant\DocumentPayment;
-/* foreach ($records as $value) {
-    $items=$value->items;
-    foreach ($items as $value) {
-        dd($value->item->description);
-    }
-    
-} */
-    //
 ?>
 <!DOCTYPE html>
 <html lang="es">

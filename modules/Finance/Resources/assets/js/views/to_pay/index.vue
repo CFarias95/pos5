@@ -442,6 +442,7 @@
             loadToPay() {
                 this.$http.post(`/${this.resource}/records`, this.form).then(response => {
                     console.log('loadToPay',response.data.records)
+                    console.log('ruta',this.resource)
                     this.records = response.data.records;
                 });
             },
