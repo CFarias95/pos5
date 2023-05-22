@@ -269,7 +269,7 @@
     import DialogLinkPayment from './dialog_link_payment'
     import DocumentOptions from '../../../../../../modules/Finance/Resources/assets/js/views/unpaid/partials/options'
     export default {
-        props: ['showDialog', 'documentId', 'external','configuration','customerId'],
+        props: ['showDialog', 'documentId', 'external','configuration','customerId','documentFeeId'],
         mixins: [deletable],
         components: {
             DialogLinkPayment,
@@ -420,8 +420,8 @@
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
                     });
 
-                
-                await this.$http.get(`/${this.resource}/records/${this.documentId}/`)
+
+                await this.$http.get(`/${this.resource}/records/${this.documentId}/${this.documentFeeId}`)
                     .then(response => {
                         this.records = response.data.data
                     });
@@ -471,8 +471,9 @@
                     temp_path: this.records[index].temp_path,
                     payment: this.records[index].payment,
                     payment_received: this.records[index].payment_received,
+                    fee_id:this.documentFeeId,
                 };
-
+                
                 this.$http.post(`/${this.resource}`, form)
                     .then(response => {
                         if (response.data.success) {

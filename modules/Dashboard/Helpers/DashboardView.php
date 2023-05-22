@@ -350,7 +350,8 @@ class DashboardView
             })
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
             ->whereIn('document_type_id', ['01', '03', '08'])
-            ->select(DB::raw($document_select));
+            ->select(DB::raw($document_select))
+            ->orderByDesc('date');
 
         if($stablishmentUnpaidAll !== 1) {
             $documents-> where('documents.establishment_id', $establishment_id);
@@ -432,7 +433,7 @@ class DashboardView
             $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
 
         }
-        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
+        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
     }
 
 

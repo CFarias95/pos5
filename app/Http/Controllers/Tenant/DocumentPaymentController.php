@@ -31,9 +31,15 @@ class DocumentPaymentController extends Controller
 {
     use FinanceTrait, FilePaymentTrait;
 
-    public function records($document_id)
+    public function records($document_id,$fee_id)
     {
         $records = DocumentPayment::where('document_id', $document_id)->get();
+
+        if($fee_id != 'undefined'){
+
+            $records = DocumentPayment::where('fee_id', $fee_id)->get();
+        }
+
 
         return new DocumentPaymentCollection($records);
     }
@@ -79,63 +85,104 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        //Log::info("data:",$request->all());
+        Log::info("data:",$request->all());
 
         $id = $request->input('id');
 
         $fee = DocumentFee::where('document_id', $request->document_id)->get();
         if($fee->count() > 0 ){
             $valorPagar = $request->payment;
+            $fee_id = $request->input('fee_id');
 
             foreach($fee as $cuotas){
-                Log::info("fee:".json_encode($cuotas));
-
+                
                 $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
                 $pagado = $pago->sum('payment');
                 Log::info("fee pago:".json_encode($pago));
-
                 $valorCuota = $cuotas->amount - $pagado;
-
                 $cuotaid = $cuotas->id;
 
-                if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+                if(isset($fee_id) && $cuotaid == $fee_id){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-                    $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
 
-                        $record = DocumentPayment::firstOrNew(['id' => $id]);
-                        $record->fill($request->all());
-                        $record->payment = $valorCuota;
-                        $record->fee_id = $cuotaid;
-                        $record->save();
+                            $record = DocumentPayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
 
-                        $this->createGlobalPayment($record, $request->all());
-                        $this->saveFiles($record, $request, 'documents');
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
 
-                        return $record;
-                    });
+                            return $record;
+                        });
 
-                    $valorPagar = $valorPagar - $valorCuota;
+                        $valorPagar = $valorPagar - $valorCuota;
 
-                }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
 
-                    $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
 
-                        unset($request->id);
-                        //$request->payment = $valorPagar;
-                        $record = new DocumentPayment();
-                        $record->fill($request->all());
-                        $record->payment = $valorPagar;
-                        $record->fee_id = $cuotaid;
-                        $record->save();
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new DocumentPayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
 
-                        $this->createGlobalPayment($record, $request->all());
-                        $this->saveFiles($record, $request, 'documents');
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
 
-                        return $record;
-                    });
+                            return $record;
+                        });
 
-                    $valorPagar = 0 ;
+                        $valorPagar = 0 ;
+                    }
+                }else if(isset($fee_id) == false){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+
+                            $record = DocumentPayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = $valorPagar - $valorCuota;
+
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new DocumentPayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = 0 ;
+                    }
                 }
+
+
             }
 
         }else{
