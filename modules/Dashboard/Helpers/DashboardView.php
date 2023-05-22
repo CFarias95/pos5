@@ -289,6 +289,8 @@ class DashboardView
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
 
+        $document_fee = DB::table('document_fee');
+
         $document_select = "documents.id as id, " .
             "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, " .
             "persons.name as customer_name,".
@@ -303,6 +305,9 @@ class DashboardView
             "documents.currency_type_id, " .
             "documents.exchange_rate_sale, " .
             " documents.user_id, " .
+            " fee.amount, " .
+            " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
+            " fee.id as fee_id, " .
             "users.name as username";
 
         $sale_note_select = "sale_notes.id as id, " .
@@ -319,6 +324,9 @@ class DashboardView
             "sale_notes.currency_type_id, " .
             "sale_notes.exchange_rate_sale, " .
             " sale_notes.user_id, " .
+            " 0 as amount, " .
+            " null as date, " .
+            " null as fee_id, " .
             "users.name as username";
 
         $documents = DB::connection('tenant')
@@ -328,6 +336,9 @@ class DashboardView
             ->join('users', 'users.id', '=', 'documents.user_id')
             ->leftJoinSub($document_payments, 'payments', function ($join) {
                 $join->on('documents.id', '=', 'payments.document_id');
+            })
+            ->leftJoinSub($document_fee, 'fee', function ($join) {
+                $join->on('documents.id', '=', 'fee.document_id');
             })
             ->leftJoinSub(Document::getQueryCreditNotes(), 'credit_notes', function ($join) {
                 $join->on('documents.id', '=', 'credit_notes.affected_document_id');

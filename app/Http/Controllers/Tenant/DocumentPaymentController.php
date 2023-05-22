@@ -22,6 +22,7 @@ use App\Models\Tenant\Cash;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\Person;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -78,68 +79,119 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        // dd($request->all());
+        Log::info("data:",$request->all());
 
         $id = $request->input('id');
 
-        $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+        $fee = DocumentFee::where('document_id', $request->document_id)->get();
+        if($fee->count() > 0 ){
+            $valorPagar = $request->payment;
 
-            $record = DocumentPayment::firstOrNew(['id' => $id]);
-            $record->fill($request->all());
-            $record->save();
-            $this->createGlobalPayment($record, $request->all());
-            $this->saveFiles($record, $request, 'documents');
+            foreach($fee as $cuotas){
+                //Log::info("data:".json_encode($cuotas));
+                $valorCuota = $cuotas->amount;
+                $cuotaid = $cuotas->id;
 
-            return $record;
-        });
+                if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-        $document_balance = (object)$this->document($request->document_id);
+                    $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
 
-        if ($document_balance->total_difference < 1) {
+                        $record = DocumentPayment::firstOrNew(['id' => $id]);
+                        $record->fill($request->all());
+                        $record->payment = $valorCuota;
+                        $record->fee_id = $cuotaid;
+                        $record->save();
 
-            $credit = CashDocumentCredit::where([
-                ['status', 'PENDING'],
-                ['document_id', $request->document_id]
-            ])->first();
+                        $this->createGlobalPayment($record, $request->all());
+                        $this->saveFiles($record, $request, 'documents');
 
-            if ($credit) {
+                        return $record;
+                    });
 
-                $cash = Cash::where([
-                    ['user_id', auth()->user()->id],
-                    ['state', true],
+                    $valorPagar = $valorPagar - $valorCuota;
+
+                }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                    $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                        unset($request->id);
+                        //$request->payment = $valorPagar;
+                        $record = new DocumentPayment();
+                        $record->fill($request->all());
+                        $record->payment = $valorPagar;
+                        $record->fee_id = $cuotaid;
+                        $record->save();
+
+                        $this->createGlobalPayment($record, $request->all());
+                        $this->saveFiles($record, $request, 'documents');
+
+                        return $record;
+                    });
+                    $valorPagar = $valorPagar - $valorCuota;
+                }
+            }
+        }else{
+            $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+
+                $record = DocumentPayment::firstOrNew(['id' => $id]);
+                $record->fill($request->all());
+                $record->save();
+
+                $this->createGlobalPayment($record, $request->all());
+                $this->saveFiles($record, $request, 'documents');
+
+                return $record;
+            });
+
+            $document_balance = (object)$this->document($request->document_id);
+
+            if ($document_balance->total_difference < 1) {
+
+                $credit = CashDocumentCredit::where([
+                    ['status', 'PENDING'],
+                    ['document_id', $request->document_id]
                 ])->first();
 
-                $credit->status = 'PROCESSED';
-                $credit->cash_id_processed = $cash->id;
-                $credit->save();
+                if ($credit) {
 
-                $req = [
-                    'document_id' => $request->document_id,
-                    'sale_note_id' => null
-                ];
+                    $cash = Cash::where([
+                        ['user_id', auth()->user()->id],
+                        ['state', true],
+                    ])->first();
 
-                $cash->cash_documents()->updateOrCreate($req);
+                    $credit->status = 'PROCESSED';
+                    $credit->cash_id_processed = $cash->id;
+                    $credit->save();
+
+                    $req = [
+                        'document_id' => $request->document_id,
+                        'sale_note_id' => null
+                    ];
+
+                    $cash->cash_documents()->updateOrCreate($req);
+
+                }
 
             }
+            if($id){
 
-        }
-        if($id){
-
-            $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
-            foreach($asientos as $ass){
-                $ass->delete();
+                $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
+                foreach($asientos as $ass){
+                    $ass->delete();
+                }
             }
+
+            if((Company::active())->countable > 0 ){
+                $this->createAccountingEntry($request->document_id, $data);
+            }
+
+            return [
+                'success' => true,
+                'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
+                'id' => $data->id,
+            ];
         }
 
-        if((Company::active())->countable > 0 ){
-            $this->createAccountingEntry($request->document_id, $data);
-        }
-
-        return [
-            'success' => true,
-            'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
-            'id' => $data->id,
-        ];
     }
 
     /* Crear los asientos contables del documento */

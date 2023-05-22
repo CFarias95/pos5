@@ -419,7 +419,9 @@
                         this.document = response.data;
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
                     });
-                await this.$http.get(`/${this.resource}/records/${this.documentId}`)
+
+                
+                await this.$http.get(`/${this.resource}/records/${this.documentId}/`)
                     .then(response => {
                         this.records = response.data.data
                     });

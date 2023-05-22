@@ -339,7 +339,6 @@
                                                     </td>
                                                         <td>{{row.currency_type_id}}</td>
                                                     <td class="text-right text-danger">{{ row.total_to_pay }}</td>
-
                                                     <td class="text-center">
                                                         <template v-if="row.type == 'document'">
                                                             {{ row.total_credit_notes }}
@@ -356,7 +355,7 @@
                                                             type="button"
                                                             style="min-width: 41px"
                                                             class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                            @click.prevent="clickDocumentPayment(row.id,row.customer_id)"
+                                                            @click.prevent="clickDocumentPayment(row.fee_id,row.id,row.customer_id)"
                                                         >Pagos</button>
                                                         </template>
                                                         <template v-else>
@@ -397,6 +396,7 @@
             :customerId="customerId"
             :external="true"
             :configuration="this.configuration"
+            :documentFeeId = "feeID"
             ></document-payments>
 
         <sale-note-payments
@@ -426,6 +426,7 @@
                 customers: [],
                 recordId: null,
                 customerId:null,
+                feeID:null,
                 records:[],
                 establishments: [],
                 web_platforms: [],
@@ -634,9 +635,10 @@
                     ...this.form
                 })
             },
-            clickDocumentPayment(recordId,customer) {
+            clickDocumentPayment(feeID, recordId,customer) {
                 this.recordId = recordId;
                 this.customerId = customer
+                this.feeID = feeID;
                 this.showDialogDocumentPayments = true;
             },
             clickSaleNotePayment(recordId) {

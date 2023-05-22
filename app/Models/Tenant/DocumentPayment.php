@@ -26,6 +26,7 @@ class DocumentPayment extends ModelTenant
         'change',
         'payment',
         'payment_received',
+        'fee_id',
     ];
 
     protected $casts = [
@@ -48,7 +49,7 @@ class DocumentPayment extends ModelTenant
         return $this->belongsTo(Document::class, 'document_id');
     }
 
-    
+
     public function global_payment()
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
@@ -64,9 +65,9 @@ class DocumentPayment extends ModelTenant
         return $this->morphOne(PaymentFile::class, 'payment');
     }
 
-        
+
     /**
-     * 
+     *
      * Filtros para obtener pagos en efectivo y con destino caja
      *
      * @param  Builder $query
@@ -80,9 +81,9 @@ class DocumentPayment extends ModelTenant
                     });
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener informacion del pago y registro origen relacionado
      *
      * @return array
@@ -103,16 +104,16 @@ class DocumentPayment extends ModelTenant
             'payment' => $this->associated_record_payment->isVoidedOrRejected() ? 0 : $this->payment,
         ];
     }
-    
+
 
     public function payment_links()
     {
         return $this->morphMany(PaymentLink::class, 'payment');
     }
 
-    
+
     /**
-     * 
+     *
      * Retornar descripcion del pago
      *
      * @return string
@@ -128,10 +129,10 @@ class DocumentPayment extends ModelTenant
 
         return $description;
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
      *
      * @param  Builder $query
@@ -144,7 +145,7 @@ class DocumentPayment extends ModelTenant
                     ->with([
                         'payment_method_type' => function($payment_method_type){
                             $payment_method_type->select('id', 'description');
-                        }, 
+                        },
                     ]);
     }
 
