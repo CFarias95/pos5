@@ -13,6 +13,7 @@ use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\WebPlatform;
 
 class DashboardView
@@ -289,6 +290,10 @@ class DashboardView
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
 
+        $document_payments_fee = DB::table('document_payments')
+            ->select('fee_id', DB::raw('SUM(payment) as total_payment_fee'))
+            ->groupBy('fee_id');
+
         $document_fee = DB::table('document_fee');
 
         $document_select = "documents.id as id, " .
@@ -300,12 +305,12 @@ class DashboardView
             "documents.total as total, " .
             "IFNULL(payments.total_payment, 0) as total_payment, " .
             "IFNULL(credit_notes.total_credit_notes, 0) as total_credit_notes, " .
-            "documents.total - IFNULL(total_payment, 0) - IFNULL(total_credit_notes, 0)  as total_subtraction, " .
+            "documents.total - IFNULL(payments.total_payment, 0) - IFNULL(total_credit_notes, 0)  as total_subtraction, " .
             "'document' AS 'type', " .
             "documents.currency_type_id, " .
             "documents.exchange_rate_sale, " .
             " documents.user_id, " .
-            " fee.amount, " .
+            " fee.amount as amount, " .
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
             "users.name as username";
@@ -319,7 +324,7 @@ class DashboardView
             "sale_notes.total as total, " .
             "IFNULL(payments.total_payment, 0) as total_payment, " .
             "null as total_credit_notes," .
-            "sale_notes.total - IFNULL(total_payment, 0)  as total_subtraction, " .
+            "sale_notes.total - IFNULL(payments.total_payment, 0)  as total_subtraction, " .
             "'sale_note' AS 'type', " .
             "sale_notes.currency_type_id, " .
             "sale_notes.exchange_rate_sale, " .

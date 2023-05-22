@@ -66,7 +66,10 @@ class UnpaidCollection extends ResourceCollection
             } else {
                 $date_payment_last = SaleNotePayment::where('sale_note_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
             }
-
+            $to_pay_fee = 0;
+            if($row->fee_id){
+                $to_pay_fee = (DocumentPayment::where('fee_id',$row->fee_id)->get())->sum('payment');
+            }
             $purchase_order = null;
             if ($row->type == 'document') {
                 $document = Document::find($row->id);
@@ -86,7 +89,7 @@ class UnpaidCollection extends ResourceCollection
                 'customer_id' => $row->customer_id,
                 'number_full' => $row->number_full,
                 'total' => number_format((float)$row->total, 2, ".", ""),
-                'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
+                'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
                 'type' => $row->type,
                 'guides' => $guides,
                 'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,

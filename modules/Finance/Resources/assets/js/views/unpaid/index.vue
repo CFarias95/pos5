@@ -337,7 +337,7 @@
                                                         <el-button icon="el-icon-view" slot="reference"></el-button>
                                                         </el-popover>
                                                     </td>
-                                                        <td>{{row.currency_type_id}}</td>
+                                                    <td>{{row.currency_type_id}}</td>
                                                     <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                                                     <td class="text-center">
                                                         <template v-if="row.type == 'document'">

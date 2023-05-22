@@ -79,7 +79,7 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        Log::info("data:",$request->all());
+        //Log::info("data:",$request->all());
 
         $id = $request->input('id');
 
@@ -88,8 +88,14 @@ class DocumentPaymentController extends Controller
             $valorPagar = $request->payment;
 
             foreach($fee as $cuotas){
-                //Log::info("data:".json_encode($cuotas));
-                $valorCuota = $cuotas->amount;
+                Log::info("fee:".json_encode($cuotas));
+
+                $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
+                $pagado = $pago->sum('payment');
+                Log::info("fee pago:".json_encode($pago));
+
+                $valorCuota = $cuotas->amount - $pagado;
+
                 $cuotaid = $cuotas->id;
 
                 if( $valorPagar > 0 && $valorPagar >= $valorCuota){
@@ -127,10 +133,13 @@ class DocumentPaymentController extends Controller
 
                         return $record;
                     });
-                    $valorPagar = $valorPagar - $valorCuota;
+
+                    $valorPagar = 0 ;
                 }
             }
+
         }else{
+
             $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
 
                 $record = DocumentPayment::firstOrNew(['id' => $id]);
@@ -185,12 +194,14 @@ class DocumentPaymentController extends Controller
                 $this->createAccountingEntry($request->document_id, $data);
             }
 
-            return [
-                'success' => true,
-                'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
-                'id' => $data->id,
-            ];
+
         }
+
+        return [
+            'success' => true,
+            'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
+            'id' => $data->id,
+        ];
 
     }
 
