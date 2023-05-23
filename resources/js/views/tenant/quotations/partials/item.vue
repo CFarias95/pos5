@@ -195,19 +195,19 @@
                                 </el-tooltip>
 
                             </label>
-                            
+
                             <template v-if="applyChangeCurrencyItem && changeCurrencyFromParent">
 
                                 <el-input v-model="form.unit_price"
                                         @input="calculateQuantity">
-                                        
+
                                         <el-select slot="prepend" v-model="form.item.currency_type_id" class="custom-change-select-currency">
                                             <el-option v-for="option in currencyTypes"
                                                         :key="option.id"
                                                         :label="option.symbol"
                                                         :value="option.id"></el-option>
                                         </el-select>
-                                </el-input> 
+                                </el-input>
 
                             </template>
                             <template v-else>
@@ -395,7 +395,7 @@
                                                     <template v-else>
                                                         <el-input v-model="row.percentage"></el-input>
                                                     </template>
-                                                    <!-- 
+                                                    <!--
                                                     <el-checkbox v-model="row.is_amount">Ingresar monto fijo
                                                     </el-checkbox>
                                                     <br>
@@ -1188,11 +1188,46 @@ export default {
                     // do nothing
                     // exonerado de igv
                 } else {
-                    unit_price = this.form.unit_price * (1 + this.percentageIgv);
+                    //JOINSOFTWARE //
+                    if(affectation_igv_type_id === "10" ){
+                        unit_price = this.form.unit_price_value * 1.12;
+                    }else if(affectation_igv_type_id === "11"){
+                        unit_price = this.form.unit_price_value * 1.08;
+                    }else if(affectation_igv_type_id === "12"){
+                        unit_price = this.form.unit_price_value * 1.14;
+                    }else if(affectation_igv_type_id === "30"){
+                        unit_price = this.form.unit_price_value;
+                    }else {
+                        unit_price = this.form.unit_price_value* (1 + this.percentageIgv);
+                    }
 
                 }
             }
+             //validar precio compra y venta
+             if(this.configuration)
+            {
+                if(this.configuration.validate_purchase_sale_unit_price)
+                {
+                    let val_purchase_unit_price = parseFloat(this.form.item.purchase_unit_price)
 
+                    if(val_purchase_unit_price > parseFloat(unit_price)){
+                        return this.$message.error(`El precio de compra no puede ser superior al precio de venta (P. Compra: ${val_purchase_unit_price})`)
+                    }
+                }
+            }
+
+            this.form.input_unit_price_value = this.form.unit_price_value;
+            this.form.unit_price = unit_price;
+            this.form.item.unit_price = unit_price;
+            this.form.item.presentation = this.item_unit_type;
+            console.log("this.affectation_igv_types: ",this.affectation_igv_types)
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
+
+            let IdLoteSelected = this.form.IdLoteSelected
+            let document_item_id = this.form.document_item_id
+
+            console.log('ANTES DE ENVIAR: ', this.form)
+            /*
             this.form.input_unit_price_value = this.form.unit_price;
             // this.form.input_unit_price_value = this.form.unit_price_value;
             // let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
@@ -1210,6 +1245,7 @@ export default {
 
             // let IdLoteSelected = this.form.IdLoteSelected
             // let document_item_id = this.form.document_item_id
+            */
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';

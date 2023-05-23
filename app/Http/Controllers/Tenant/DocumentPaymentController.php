@@ -53,7 +53,7 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function document($document_id)
+    public function document($document_id,$fee_id)
     {
         $document = Document::find($document_id);
 
@@ -63,13 +63,19 @@ class DocumentPaymentController extends Controller
             $total = $document->total;
         }
 
+
         $total_paid = collect($document->payments)->sum('payment');
-
         $credit_notes_total = $document->getCreditNotesTotal();
-
         $total_difference = round($total - $total_paid - $credit_notes_total, 2);
-        // $total_difference = round($total - $total_paid, 2);
 
+        if(isset($fee_id) && $fee_id != 'undefined'){
+
+            $cuota = DocumentFee::find($fee_id)->amount;
+
+            $total_paid = DocumentPayment::where('fee_id',$fee_id)->get()->sum('payment');
+            $total_difference = round($cuota - $total_paid, 2);
+
+        }
         return [
             'number_full' => $document->number_full,
             'total_paid' => $total_paid,
@@ -95,7 +101,7 @@ class DocumentPaymentController extends Controller
             $fee_id = $request->input('fee_id');
 
             foreach($fee as $cuotas){
-                
+
                 $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
                 $pagado = $pago->sum('payment');
                 Log::info("fee pago:".json_encode($pago));

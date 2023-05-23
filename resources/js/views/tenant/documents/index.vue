@@ -385,7 +385,7 @@
                                     </template>
 
                                     <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item"
+                                    <button class="dropdown-item" hidden
                                             @click.prevent="clickPayment(row.id)">
                                         Pagos
                                     </button>

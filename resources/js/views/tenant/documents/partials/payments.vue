@@ -215,7 +215,7 @@
                             </tbody>
                             <tfoot>
                             <tr>
-                                <td colspan="6" class="text-right">TOTAL PAGADO</td>
+                                <td colspan="6" class="text-right">{{ title1 }}</td>
                                 <td class="text-right">{{ document.total_paid }}</td>
                             </tr>
                             <tr v-if="document.credit_notes_total">
@@ -223,11 +223,11 @@
                                 <td class="text-right">{{ document.credit_notes_total }}</td>
                             </tr>
                             <tr>
-                                <td colspan="6" class="text-right">TOTAL A PAGAR</td>
+                                <td colspan="6" class="text-right">{{ title2 }}</td>
                                 <td class="text-right">{{ document.total }}</td>
                             </tr>
                             <tr>
-                                <td colspan="6" class="text-right">PENDIENTE DE PAGO</td>
+                                <td colspan="6" class="text-right">{{ title3 }}</td>
                                 <td class="text-right">{{ document.total_difference }}</td>
                             </tr>
                             </tfoot>
@@ -260,7 +260,7 @@
             :configuration="this.configuration"
             :id="this.index"
             :monto="this.monto"
-            
+
         ></document-options>
     </el-dialog>
 
@@ -281,6 +281,9 @@
         data() {
             return {
                 title: null,
+                title1:'TOTAL PAGADO',
+                title2:'TOTAL A PAGAR',
+                title3:'PENDIENTE DE PAGO',
                 resource: 'document_payments',
                 records: [],
                 payment_destinations:  [],
@@ -419,8 +422,15 @@
             },
             async getData() {
                 this.initForm();
-                await this.$http.get(`/${this.resource}/document/${this.documentId}`)
+                if(this.documentFeeId){
+                    this.title1 = "TOTAL PAGADO CUOTA"
+                    this.title2 = "TOTAL DOCUMENTO"
+                    this.title3 = "PENDIENTE DE PAGO CUOTA"
+                }
+                await this.$http.get(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`)
                     .then(response => {
+
+                        console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`,response.data);
                         this.document = response.data;
                         console.log('data',this.document)
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
@@ -479,7 +489,7 @@
                     payment_received: this.records[index].payment_received,
                     fee_id:this.documentFeeId,
                 };
-                
+
                 this.$http.post(`/${this.resource}`, form)
                     .then(response => {
                         if (response.data.success) {
