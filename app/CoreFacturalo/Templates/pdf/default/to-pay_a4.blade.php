@@ -6,7 +6,6 @@
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
-    //dd($tittle_unpaid);
     $data = $payments;
     $valores = null;
     for($i = 0 ; $i <= $index ; $i++)
@@ -14,6 +13,7 @@
         $valores += $data[$i]->payment;
     } 
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
+    
 @endphp
 <html>
 <head>
@@ -60,7 +60,7 @@
             </div>
         </td>
         <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">CUENTAS POR COBRAR</h5>
+            <h5 class="text-center">CUENTAS POR PAGAR</h5>
             <h3 class="text-center">{{ $num_comprobante }}</h3>
         </td>
     </tr>
@@ -68,15 +68,14 @@
 <table class="full-width mt-5">
     <tr>
         <td width="15%">Cliente:</td>
-        <td width="45%">{{ $document->customer->name }}</td>
+        <td width="45%">{{ $document->supplier->name}}</td>
         <td width="25%">Fecha de emisión:</td>
         {{-- <td width="15%">{{ $document->date_of_issue->format('Y-m-d') }}</td> --}}
         @if($payments->count())
-
+            <td width="15%">{{ $document->payments[$index]->date_of_payment->format('d/m/Y') }}</td>
                 @php
                     $payment = 0;
                 @endphp
-                <td width="15%">{{ $data[$index]->date_of_payment->format('Y-m-d') }}</td>
                 @foreach($payments as $row)
                     
                     @php
@@ -86,7 +85,7 @@
         @endif
     </tr>
     <tr>
-        <td width="30%">Documento por cobrar:</td>
+        <td width="30%">Documento por pagar:</td>
         <td width="45%"> {{ $tittle }}</td>
     </tr>
 </table>
@@ -97,7 +96,7 @@
     <tr class="bg-grey">
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-left py-2" width="60%">DESCRIPCIÓN</th>
         <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
         <th class="border-top-bottom text-right py-2" width="12%">PENDIENTE PAGAR</th>
     </tr>
@@ -167,29 +166,7 @@
             <td colspan="9" class="border-bottom"></td>
         </tr>
     @endforeach
-
-
-
-    @if ($document->prepayments)
-        @foreach($document->prepayments as $p)
-        <tr>
-            <td class="text-center align-top">1</td>
-            <td class="text-center align-top">NIU</td>
-            <td class="text-left align-top">
-                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
-            </td>
-            <td class="text-center align-top"></td>
-            <td class="text-center align-top"></td>
-            <td class="text-center align-top"></td>
-            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-            <td class="text-right align-top">0</td>
-            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-        </tr>
-        <tr>
-            <td colspan="9" class="border-bottom"></td>
-        </tr>
-        @endforeach
-    @endif
+    
     </tbody>
 </table>
 
@@ -215,7 +192,7 @@
         </td>
     </tr>
     <tr>
-        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }}- {{ $data[$index]->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>   
+        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }}- {{ $data[$index]->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>
     </tr>
     @php
         $payment = 0;

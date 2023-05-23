@@ -603,7 +603,6 @@
                 this.loading = true
 
                 await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                                //console.log('loadUnpaid: ',response.data.data)
                                 this.records = response.data.data
                                 this.pagination = response.data.meta
                                 this.pagination.per_page = parseInt(response.data.meta.per_page)

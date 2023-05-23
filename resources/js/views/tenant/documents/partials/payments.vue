@@ -297,7 +297,6 @@
                 type:'document',
                 advances:[],
                 index:null,
-                monto: null,
             }
         },
         async created() {

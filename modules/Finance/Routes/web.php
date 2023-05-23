@@ -77,6 +77,7 @@ if($hostname) {
                     Route::get('/to-pay', 'ToPayController@toPay');
                     Route::get('/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
                     Route::get('/pdf', 'ToPayController@pdf');
+                    Route::get('/print/{format}/{id}/{index}','ToPayController@toPrint');
                 });
 
                 Route::prefix('income')->group(function () {
