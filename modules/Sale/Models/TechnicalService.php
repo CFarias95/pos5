@@ -151,7 +151,9 @@
             'review',
             'other',
             'solved',
-            'upload_filename'
+            'upload_filename',
+            'finalized',
+            'observation',
         ];
 
         protected $casts = [
@@ -190,6 +192,7 @@
             'review' => 'bool',
             'other' => 'bool',
             'solved' => 'bool',
+            'finalized' => 'bool',
             'date_of_issue' => 'date',
         ];
 
@@ -452,6 +455,8 @@
                 'other' => (bool)$this->other,
                 'solved' => (bool)$this->solved,
                 'upload_filename' => $this->upload_filename,
+                'finalized' => $this->finalized,
+                'observation' => $this->observation,
                 'items' => $items,
                 'payments' => $this->payments,
 
@@ -1459,6 +1464,45 @@
             $this->solved = $solved;
             return $this;
         }
+
+        /**
+         * @return bool
+         */
+        public function isFinalized(): bool
+        {
+            return $this->finalized;
+        }
+
+        /**
+         * @param bool $solved
+         *
+         * @return TechnicalService
+         */
+        public function setFinalized(bool $finalized): TechnicalService
+        {
+            $this->finalized = $finalized;
+            return $this;
+        }
+        
+        /**
+         * @return string|null
+         */
+        public function getObservation(): ?string
+        {
+            return $this->observation;
+        }
+
+        /**
+         * @param string|null $upload_filename
+         *
+         * @return TechnicalService
+         */
+        
+        public function setObservation(?string $observation): TechnicalService
+        {
+            $this->observation = $observation;
+            return $this;
+        }
         
         /**
          * @return string|null
@@ -1473,6 +1517,7 @@
          *
          * @return TechnicalService
          */
+        
         public function setUploadFilename(?string $upload_filename): TechnicalService
         {
             $this->upload_filename = $upload_filename;
