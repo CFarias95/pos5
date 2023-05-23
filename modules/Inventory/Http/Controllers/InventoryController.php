@@ -54,7 +54,7 @@ class InventoryController extends Controller
 							})
 							->orderBy('item_id');
 		}
-		else 
+		else
 		{
 			$records = $this->getCommonRecords($request);
 		}
@@ -62,10 +62,8 @@ class InventoryController extends Controller
 		return new InventoryCollection($records->paginate(config('tenant.items_per_page')));
 	}
 
-
-		
 	/**
-	 * 
+	 *
 	 * Obtener registros
 	 *
 	 * @param  Request $request
@@ -89,8 +87,6 @@ class InventoryController extends Controller
 							})
 							->orderBy('item_id');
 	}
-
-
 
 	public function tables()
 	{
@@ -218,7 +214,7 @@ class InventoryController extends Controller
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
 			}
-			
+
 			$inventory->save();
 
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;
@@ -553,12 +549,12 @@ class InventoryController extends Controller
 				if ($quantity_real<$quantity) {
 					$inventory->inventory_transaction_id = 28;
 				}
-				
+
 				$inventory->real_stock = $item['quantity_real'];
 				$inventory->system_stock = $item['quantity'];
 
 				$inventory->save();
-				
+
 			}
 			DB::connection('tenant')->commit();
 

@@ -311,14 +311,14 @@
                                     <div v-if="configuration.permission_to_edit_cpe">
                                         <a :href="`/documents/${row.id}/edit`"
                                            class="dropdown-item"
-                                           v-if="row.state_type_id === '01' && userPermissionEditCpe && row.is_editable">
+                                           v-if="row.state_type_id != '05' && row.state_type_id != '07' && userPermissionEditCpe && row.is_editable">
                                             Editar
                                         </a>
                                     </div>
                                     <div v-else>
                                         <a :href="`/documents/${row.id}/edit`"
                                            class="dropdown-item"
-                                           v-if="row.state_type_id === '01' && userId == row.user_id && row.is_editable">
+                                           v-if="row.state_type_id != '05' && row.state_type_id != '07' && userId == row.user_id && row.is_editable">
                                             Editar
                                         </a>
                                     </div>
