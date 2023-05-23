@@ -13,6 +13,7 @@ use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\WebPlatform;
 
 class DashboardView
@@ -284,13 +285,16 @@ class DashboardView
                 $d_end = $date_end;
                 break;
         }
-        // dd($request['customer_id']);
-        /*
-         * Documents
-         */
+
         $document_payments = DB::table('document_payments')
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
+
+        $document_payments_fee = DB::table('document_payments')
+            ->select('fee_id', DB::raw('SUM(payment) as total_payment_fee'))
+            ->groupBy('fee_id');
+
+        $document_fee = DB::table('document_fee');
 
         $document_select = "documents.id as id, " .
             "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, " .
@@ -301,11 +305,14 @@ class DashboardView
             "documents.total as total, " .
             "IFNULL(payments.total_payment, 0) as total_payment, " .
             "IFNULL(credit_notes.total_credit_notes, 0) as total_credit_notes, " .
-            "documents.total - IFNULL(total_payment, 0) - IFNULL(total_credit_notes, 0)  as total_subtraction, " .
+            "documents.total - IFNULL(payments.total_payment, 0) - IFNULL(total_credit_notes, 0)  as total_subtraction, " .
             "'document' AS 'type', " .
             "documents.currency_type_id, " .
             "documents.exchange_rate_sale, " .
             " documents.user_id, " .
+            " fee.amount as amount, " .
+            " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
+            " fee.id as fee_id, " .
             "users.name as username";
 
         $sale_note_select = "sale_notes.id as id, " .
@@ -317,11 +324,14 @@ class DashboardView
             "sale_notes.total as total, " .
             "IFNULL(payments.total_payment, 0) as total_payment, " .
             "null as total_credit_notes," .
-            "sale_notes.total - IFNULL(total_payment, 0)  as total_subtraction, " .
+            "sale_notes.total - IFNULL(payments.total_payment, 0)  as total_subtraction, " .
             "'sale_note' AS 'type', " .
             "sale_notes.currency_type_id, " .
             "sale_notes.exchange_rate_sale, " .
             " sale_notes.user_id, " .
+            " 0 as amount, " .
+            " null as date, " .
+            " null as fee_id, " .
             "users.name as username";
 
         $documents = DB::connection('tenant')
@@ -332,15 +342,16 @@ class DashboardView
             ->leftJoinSub($document_payments, 'payments', function ($join) {
                 $join->on('documents.id', '=', 'payments.document_id');
             })
+            ->leftJoinSub($document_fee, 'fee', function ($join) {
+                $join->on('documents.id', '=', 'fee.document_id');
+            })
             ->leftJoinSub(Document::getQueryCreditNotes(), 'credit_notes', function ($join) {
                 $join->on('documents.id', '=', 'credit_notes.affected_document_id');
             })
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
             ->whereIn('document_type_id', ['01', '03', '08'])
-            ->select(DB::raw($document_select));
-
-        // dd($documents->get());
-        // dd($documents->toSql());
+            ->select(DB::raw($document_select))
+            ->orderByDesc('date');
 
         if($stablishmentUnpaidAll !== 1) {
             $documents-> where('documents.establishment_id', $establishment_id);
@@ -422,6 +433,6 @@ class DashboardView
             $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
 
         }
-        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0');
+        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
     }
 }

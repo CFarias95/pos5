@@ -1439,16 +1439,13 @@ export default {
                         unit_price = this.form.unit_price_value * 1.08;
                     }else if(affectation_igv_type_id === "12"){
                         unit_price = this.form.unit_price_value * 1.14;
+                    }else if(affectation_igv_type_id === "30"){
+                        unit_price = this.form.unit_price_value;
                     }else {
-                        unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
+                        unit_price = this.form.unit_price_value* (1 + this.percentageIgv);
                     }
-
-
-
-
                 }
             }
-
 
             //validar precio compra y venta
             if(this.configuration)

@@ -22,6 +22,7 @@ use App\Models\Tenant\Cash;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\Person;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -30,9 +31,15 @@ class DocumentPaymentController extends Controller
 {
     use FinanceTrait, FilePaymentTrait;
 
-    public function records($document_id)
+    public function records($document_id,$fee_id)
     {
         $records = DocumentPayment::where('document_id', $document_id)->get();
+
+        if($fee_id != 'undefined'){
+
+            $records = DocumentPayment::where('fee_id', $fee_id)->get();
+        }
+
 
         return new DocumentPaymentCollection($records);
     }
@@ -46,7 +53,7 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function document($document_id)
+    public function document($document_id,$fee_id)
     {
         $document = Document::find($document_id);
 
@@ -56,13 +63,19 @@ class DocumentPaymentController extends Controller
             $total = $document->total;
         }
 
+
         $total_paid = collect($document->payments)->sum('payment');
-
         $credit_notes_total = $document->getCreditNotesTotal();
-
         $total_difference = round($total - $total_paid - $credit_notes_total, 2);
-        // $total_difference = round($total - $total_paid, 2);
 
+        if(isset($fee_id) && $fee_id != 'undefined'){
+
+            $cuota = DocumentFee::find($fee_id)->amount;
+
+            $total_paid = DocumentPayment::where('fee_id',$fee_id)->get()->sum('payment');
+            $total_difference = round($cuota - $total_paid, 2);
+
+        }
         return [
             'number_full' => $document->number_full,
             'total_paid' => $total_paid,
@@ -78,61 +91,163 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        // dd($request->all());
+        Log::info("data:",$request->all());
 
         $id = $request->input('id');
 
-        $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+        $fee = DocumentFee::where('document_id', $request->document_id)->get();
+        if($fee->count() > 0 ){
+            $valorPagar = $request->payment;
+            $fee_id = $request->input('fee_id');
 
-            $record = DocumentPayment::firstOrNew(['id' => $id]);
-            $record->fill($request->all());
-            $record->save();
-            $this->createGlobalPayment($record, $request->all());
-            $this->saveFiles($record, $request, 'documents');
+            foreach($fee as $cuotas){
 
-            return $record;
-        });
+                $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
+                $pagado = $pago->sum('payment');
+                Log::info("fee pago:".json_encode($pago));
+                $valorCuota = $cuotas->amount - $pagado;
+                $cuotaid = $cuotas->id;
 
-        $document_balance = (object)$this->document($request->document_id);
+                if(isset($fee_id) && $cuotaid == $fee_id){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-        if ($document_balance->total_difference < 1) {
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
 
-            $credit = CashDocumentCredit::where([
-                ['status', 'PENDING'],
-                ['document_id', $request->document_id]
-            ])->first();
+                            $record = DocumentPayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
 
-            if ($credit) {
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
 
-                $cash = Cash::where([
-                    ['user_id', auth()->user()->id],
-                    ['state', true],
+                            return $record;
+                        });
+
+                        $valorPagar = $valorPagar - $valorCuota;
+
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new DocumentPayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = 0 ;
+                    }
+                }else if(isset($fee_id) == false){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+
+                            $record = DocumentPayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = $valorPagar - $valorCuota;
+
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new DocumentPayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = 0 ;
+                    }
+                }
+
+
+            }
+
+        }else{
+
+            $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+
+                $record = DocumentPayment::firstOrNew(['id' => $id]);
+                $record->fill($request->all());
+                $record->save();
+
+                $this->createGlobalPayment($record, $request->all());
+                $this->saveFiles($record, $request, 'documents');
+
+                return $record;
+            });
+
+            $document_balance = (object)$this->document($request->document_id);
+
+            if ($document_balance->total_difference < 1) {
+
+                $credit = CashDocumentCredit::where([
+                    ['status', 'PENDING'],
+                    ['document_id', $request->document_id]
                 ])->first();
 
-                $credit->status = 'PROCESSED';
-                $credit->cash_id_processed = $cash->id;
-                $credit->save();
+                if ($credit) {
 
-                $req = [
-                    'document_id' => $request->document_id,
-                    'sale_note_id' => null
-                ];
+                    $cash = Cash::where([
+                        ['user_id', auth()->user()->id],
+                        ['state', true],
+                    ])->first();
 
-                $cash->cash_documents()->updateOrCreate($req);
+                    $credit->status = 'PROCESSED';
+                    $credit->cash_id_processed = $cash->id;
+                    $credit->save();
+
+                    $req = [
+                        'document_id' => $request->document_id,
+                        'sale_note_id' => null
+                    ];
+
+                    $cash->cash_documents()->updateOrCreate($req);
+
+                }
 
             }
+            if($id){
 
-        }
-        if($id){
-
-            $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
-            foreach($asientos as $ass){
-                $ass->delete();
+                $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
+                foreach($asientos as $ass){
+                    $ass->delete();
+                }
             }
-        }
 
-        if((Company::active())->countable > 0 ){
-            $this->createAccountingEntry($request->document_id, $data);
+            if((Company::active())->countable > 0 ){
+                $this->createAccountingEntry($request->document_id, $data);
+            }
+
+
         }
 
         return [
@@ -140,6 +255,7 @@ class DocumentPaymentController extends Controller
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
             'id' => $data->id,
         ];
+
     }
 
     /* Crear los asientos contables del documento */

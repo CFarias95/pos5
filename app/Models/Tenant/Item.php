@@ -21,6 +21,7 @@ use Illuminate\Database\Eloquent\Relations\HasMany;
 use Illuminate\Database\Eloquent\Relations\HasOne;
 use Illuminate\Database\Eloquent\Relations\MorphMany;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Log;
 use Modules\Account\Models\Account;
 use Modules\Digemid\Models\CatDigemid;
 use Modules\Inventory\Helpers\InventoryValuedKardex;
@@ -2218,7 +2219,8 @@ class Item extends ModelTenant
     {
         $stockmin = (int)$this->stock_min;
         return $query->whereHas('warehouses', function($query) use($stockmin) {
-            $query->where('stock', '<=', $stockmin);
+            //$query->where('stock', '<=', $stockmin);
+            $query->whereColumn('stock','<=','stock_min')->where('stock','>',0);
         });
     }
 
@@ -2226,25 +2228,24 @@ class Item extends ModelTenant
     {
         $stockmin = (int)$this->stock_min;
         return $query->whereHas('warehouses', function($query) use($stockmin) {
-            $query->where('stock', '>', $stockmin);
+            $query->whereColumn('stock','>','stock_min');
         });
     }
 
 
     public function scopeWhereStockMinMax($query)
     {
-        $stockmin = (int)$this->stock_min;
-        return $query->whereHas('warehouses', function($query) use($stockmin) {
-            $query->where('stock', '<', $stockmin);
+
+        return $query->whereHas('warehouses', function($query) {
+            $query->whereColumn('stock','<','stock_min');
         });
     }
 
     public function scopeWhereStockMinMaxEqual($query)
     {
-        $stockmin = (int)$this->stock_min;
-        return $query->whereHas('warehouses', function($query) use($stockmin) {
-            //$query->where('stock', '<=', $stockmin);
-            $query->where('stock', '>', $stockmin);
+
+        return $query->whereHas('warehouses', function($query) {
+            $query->whereColumn('stock','<=','stock_min');
         });
     }
 

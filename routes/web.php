@@ -340,8 +340,8 @@ if ($hostname) {
             Route::get('documents/locked_emission', 'Tenant\DocumentController@messageLockedEmission');
             Route::get('documents/note/has-documents/{document}', 'Tenant\NoteController@hasDocuments');
 
-            Route::get('document_payments/records/{document_id}', 'Tenant\DocumentPaymentController@records');
-            Route::get('document_payments/document/{document_id}', 'Tenant\DocumentPaymentController@document');
+            Route::get('document_payments/records/{document_id}/{fee_id}', 'Tenant\DocumentPaymentController@records');
+            Route::get('document_payments/document/{document_id}/{fee_id}', 'Tenant\DocumentPaymentController@document');
             Route::get('document_payments/tables', 'Tenant\DocumentPaymentController@tables');
             Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
             Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');

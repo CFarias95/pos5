@@ -269,24 +269,14 @@
 
 @endif
 
-
-
 <table class="full-width">
     <tr>
-        {{-- <td width="65%">
-            @foreach($document->legends as $row)
-                <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
-            @endforeach
-            <br/>
-            <strong>Información adicional</strong>
-            @foreach($document->additional_information as $information)
-                <p>@if(\App\CoreFacturalo\Helpers\Template\TemplateHelper::canShowNewLineOnObservation())
-                            {!! \App\CoreFacturalo\Helpers\Template\TemplateHelper::SetHtmlTag($information) !!}
-                        @else
-                            {{$information}}
-                        @endif</p>
-            @endforeach
-        </td> --}}
+        <td width="65%">
+            @if($document->observation)
+                <strong>Información adicional</strong>
+                <p>{{$document->observation}}</p>
+            @endif
+        </td>
     </tr>
 </table>
 </body>
