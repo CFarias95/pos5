@@ -159,7 +159,20 @@
                     </tbody>
                 </table>
             </div>
-
+            <div style="display: grid;justify-items: end;" v-if="total_cuenta>0">
+                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                    <b>Nota: </b>
+                </p>
+                <p style="color: red; margin-bottom: 2px;width: 70%;" v-if="cuenta_pagar>0">
+                    Pendiente a pago: {{ this.document.currency_type_id }} <b>{{ cuenta_pagar }} </b>
+                </p>
+                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                    Cupo de crédito: {{ this.document.currency_type_id }} <b>{{ cupo_credito }}</b>
+                </p>
+                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                    <b>SELECCIONE OTRO METODO DE PAGO </b>
+                </p>
+            </div>
 
             <!-- propinas -->
             <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
@@ -224,7 +237,14 @@ export default {
             loading_search: false,
             payment_destinations: [],
             form_cash_document: {},
-            payment_method_types: []
+            payment_method_types: [],
+            cuenta_pagar:0,
+            cupo_credito:0,
+            total_cuenta:0,
+            cupo:0,
+            cuenta:0,
+            record: {},
+            deuda:0,
         };
     },
     created() {
@@ -363,6 +383,7 @@ export default {
 
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
+                payment_condition_id:'01', //condicion de pago por defecto contado
             };
 
             this.cleanFormTip()
@@ -409,39 +430,78 @@ export default {
                 this.resource_documents = "documents";
             }
 
-            this.$http
-                .post(`/${this.resource_documents}`, this.document)
-                .then(response => {
-                    if (response.data.success) {
-                        this.documentNewId = response.data.data.id;
-                        // console.log(this.document.document_type_id)
-                        if (this.document.document_type_id === "80") {
-                            this.form_cash_document.sale_note_id = response.data.data.id;
-                            this.showDialogSaleNoteOptions = true;
-                        } else {
-                            this.form_cash_document.document_id = response.data.data.id;
-                            this.showDialogDocumentOptions = true;
-                        }
-                        this.saveCashDocument();
+            let paso = false;
 
-                        this.$eventHub.$emit("reloadData");
-                        this.resetDocument();
-                        this.document.customer_id = this.form.order_note.customer_id;
-                        this.changeCustomer();
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data;
-                    } else {
-                        this.$message.error(error.response.data.message);
-                    }
-                })
-                .then(() => {
-                    this.loading_submit = false;
-                });
+            this.document.payments.forEach((row) => {
+
+                let paymentSelected = _.filter(this.payment_method_types,{id:row.payment_method_type_id});
+                let valor = row.payment;
+
+                if(paymentSelected[0].is_credit == 1){
+                    this.document.payment_condition_id =  '02';
+                }
+                //validar cupo
+                this.total_cuenta=0;
+                if(this.document.payment_condition_id != '01'){
+                    this.calcularCupo(valor);
+                }else{
+                    this.deuda=0;
+                    this.cupo=0;
+                }
+                let validar= this.validacionCupo();
+
+                console.log("deuda: "+validar)
+
+                if(validar){
+
+                    paso = true
+
+                }
+            });
+
+            console.log("Paso: "+paso)
+            if(paso){
+                this.$message.error('El monto es mayor al cupo disponible');
+                this.loading_submit = false;
+                return false;
+            }else{
+                this.$http
+                    .post(`/${this.resource_documents}`, this.document)
+                    .then(response => {
+                        if (response.data.success) {
+                            this.documentNewId = response.data.data.id;
+                            // console.log(this.document.document_type_id)
+                            if (this.document.document_type_id === "80") {
+                                this.form_cash_document.sale_note_id = response.data.data.id;
+                                this.showDialogSaleNoteOptions = true;
+                            } else {
+                                this.form_cash_document.document_id = response.data.data.id;
+                                this.showDialogDocumentOptions = true;
+                            }
+                            this.saveCashDocument();
+
+                            this.$eventHub.$emit("reloadData");
+                            this.resetDocument();
+                            this.document.customer_id = this.form.order_note.customer_id;
+                            this.changeCustomer();
+                        } else {
+                            this.$message.error(response.data.message);
+                        }
+                    })
+                    .catch(error => {
+                        if (error.response.status === 422) {
+                            this.errors = error.response.data;
+                        } else {
+                            this.$message.error(error.response.data.message);
+                        }
+                    })
+                    .then(() => {
+                        this.loading_submit = false;
+                    });
+            }
+
+
+
         },
         saveCashDocument() {
             this.$http.post(`/cash/cash_document`, this.form_cash_document)
@@ -562,6 +622,7 @@ export default {
                 this.all_series = response.data.series;
                 this.payment_destinations = response.data.payment_destinations
                 this.payment_method_types = response.data.payment_method_types;
+                console.log("payments: ",this.payment_method_types)
                 // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
                 // this.changeDocumentType()
             });
@@ -672,6 +733,57 @@ export default {
                 .then(() => {
                     this.loading = false;
                 });
+        },
+        calcularCupo(valor){
+            this.deuda=0;
+            this.cupo=0;
+            this.$http.get(`/finances/unpaid/records?customer_id=${this.document.customer_id}&establishment_id=${this.document.establishment_id}`).then((response) => {
+                var datos;
+                datos=response.data.data;
+                datos.map((i)=>{
+                    this.cuenta_pagar=parseFloat( this.cuenta_pagar)+ parseFloat(i.total);
+                })
+                 })
+                 .catch(error => {
+                  })
+                  .then(() => {
+                 });
+                 this.$http.get(`/persons/record/${this.document.customer_id}`).then((response) => {
+                    this.record = response.data.data
+                    this.cupo_credito=this.record.credit_quota;
+                })
+                .catch(error => {
+                })
+                .then(() => {
+
+                });
+                this.deuda=parseFloat(this.cuenta_pagar)+parseFloat(valor);
+                this.cupo=parseFloat(this.cupo_credito);
+                if(this.deuda>this.cupo){
+                    this.total_cuenta=this.deuda;
+                }else{
+                    this.total_cuenta=0
+                }
+            console.log("deuda: "+this.deuda +" cupo:"+ this.cupo )
+        },
+        validacionCupo(){
+            console.log(" validar cupo deuda: "+this.deuda +" cupo:"+ this.cupo )
+            if(this.deuda > this.cupo){
+                return true;
+            }else{
+                return false;
+            }
+        },
+        mpagoChange(event){
+
+            let paymentSelected = _.filter(this.payment_method_types,{id:event});
+            console.log("change: ",paymentSelected)
+            console.log("change: ",paymentSelected[0].is_credit)
+            if(paymentSelected[0].is_credit == 1){
+                this.document.payment_condition_id =  '02';
+            }
+            console.log("change: "+ this.document.payment_condition_id)
+
         }
     }
 };
