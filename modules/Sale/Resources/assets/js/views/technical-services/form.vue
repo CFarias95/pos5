@@ -154,9 +154,12 @@
                             </div>
                         </div>
                         <br>
-                        <div class="form-group">
-                            <label class="control-label">Facturado Finalizado? </label>
-                            <el-checkbox v-model="form.finalized">Si</el-checkbox>
+                        <div>
+                            <label>Seleccione una opción:</label>
+                            <select v-model="form.finalized">
+                                <option value="FF">Facturado Finalizado</option>
+                                <option value="FP">Facturado Con Pendiente</option>
+                            </select>
                         </div>
                         <div class="form-group">
                             <label class="control-label">Observación Interna</label>
@@ -315,6 +318,11 @@
                     <el-button slot="trigger" type="primary">Seleccione un archivo (PDF/JPG)
                     </el-button>
                 </el-upload>
+            </div>
+            <div>
+                <label>Archivo cargado: </label>
+                <label v-if="this.form.upload_filename != null">{{ this.form.upload_filename }}</label>
+                <label v-else>N/A</label>
             </div>
         </form>
 

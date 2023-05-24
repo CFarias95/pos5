@@ -192,7 +192,6 @@
             'review' => 'bool',
             'other' => 'bool',
             'solved' => 'bool',
-            'finalized' => 'bool',
             'date_of_issue' => 'date',
         ];
 
@@ -1466,9 +1465,9 @@
         }
 
         /**
-         * @return bool
+         * @return string
          */
-        public function isFinalized(): bool
+        public function isFinalized(): string
         {
             return $this->finalized;
         }
@@ -1478,7 +1477,7 @@
          *
          * @return TechnicalService
          */
-        public function setFinalized(bool $finalized): TechnicalService
+        public function setFinalized(string $finalized): TechnicalService
         {
             $this->finalized = $finalized;
             return $this;

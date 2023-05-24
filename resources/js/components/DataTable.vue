@@ -50,6 +50,10 @@
                                 @input="getRecords"
                             >
                             </el-input>
+                            <el-select v-if="search.column == 'finalized'" v-model="search.value" @change="getRecords">
+                                <el-option value="FP">Facturado Con Pendiente</el-option>
+                                <el-option value="FF">Facturado Finalizado</el-option>
+                            </el-select>  
                         </template>
                     </div>
                 </div>
@@ -181,7 +185,7 @@ export default {
         },
         getSearch() {
             return this.search;
-        }
+        },
     }
 };
 </script>
