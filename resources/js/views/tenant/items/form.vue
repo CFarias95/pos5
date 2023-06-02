@@ -1261,7 +1261,7 @@
                                         <th>#</th>
 <!--                                        <th>item_id</th>-->
                                         <th>Insumo</th>
-                                        <th>Porcentaje %</th>
+                                        <th>Porcentaje (decimal)</th>
                                         <th>Cantidad</th>
                                         <!--<th>Unidad de Medida</th>-->
                                         <th>Modificable?</th>
@@ -1750,6 +1750,7 @@ export default {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
+                    console.log('unit type1', this.unit_types)
                     this.accounts = response.data.accounts
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
