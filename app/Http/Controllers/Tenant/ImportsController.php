@@ -198,7 +198,7 @@ class ImportsController extends Controller
             $import = Imports::find($row->import_id);
             foreach($row->items as $key => $item){
 
-                $arancel = Tariff::findOrFail($item->item->tariff_id);
+                $arancel = Tariff::find($item->item->tariff_id);
 
                 $flete = $item->total_value * $fleteTotal /  $totalFOD;
                 $seguro = $item->total_value * $totalSeguro /  $totalFOD;
@@ -211,7 +211,7 @@ class ImportsController extends Controller
                 $costo = 0;
                 $factor = 0;
 
-                if($arancel->count() > 0){
+                if($arancel && $arancel->count() > 0){
 
                     $cif = $item->unit_value + ($flete/ $item->quantity) + ($seguro / $item->quantity);
                     $advaloren = ($item->unit_value + ($seguro / $item->quantity)) * ($arancel->advaloren/100);
@@ -237,8 +237,8 @@ class ImportsController extends Controller
                     'codArticulo' => $item->item->id,
                     'referencia' => $item->item->id,
                     'descripcion' => $item->item->name,
-                    'partidaArancelaria' => ($arancel->count > 0 ) ? '' : $arancel->tariff,
-                    'porcentajeAdvaloren' => ($arancel->count > 0 ) ? 0 : $arancel->advaloren ,
+                    'partidaArancelaria' => ($arancel && $arancel->count > 0 ) ? $arancel->tariff : '',
+                    'porcentajeAdvaloren' => ($arancel && $arancel->count > 0 ) ?$arancel->advaloren : 0,
                     'unidadestotal' => $item->quantity,
                     'fob' => round($item->unit_value,3),
                     'fobTotal' => round($item->total_value,3),

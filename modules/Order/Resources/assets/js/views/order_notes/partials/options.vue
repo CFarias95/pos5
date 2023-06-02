@@ -197,6 +197,7 @@
     <document-options :showDialog.sync="showDialogDocumentOptions" :recordId="documentNewId" :isContingency="false" :showClose="true" :configuration="configuration"></document-options>
 
     <sale-note-options :showDialog.sync="showDialogSaleNoteOptions" :recordId="documentNewId" :showClose="true" :configuration="configuration"></sale-note-options>
+
 </div>
 </template>
 
