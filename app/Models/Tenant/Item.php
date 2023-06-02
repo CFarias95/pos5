@@ -195,6 +195,8 @@ class Item extends ModelTenant
         'sale_cost_cta',
         'purchase_cta',
 
+        'lugar_produccion',
+        'total_producir',
         // 'warehouse_id'
     ];
 

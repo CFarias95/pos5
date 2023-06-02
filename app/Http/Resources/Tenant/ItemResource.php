@@ -201,6 +201,9 @@
                 'purchase_cta' => $this->purchase_cta,
                 'item_rate' => $this->item_rates,
 
+                'total_producir' => $this->total_producir,
+                'lugar_produccion' => $this->lugar_produccion,
+
             ];
         }
     }

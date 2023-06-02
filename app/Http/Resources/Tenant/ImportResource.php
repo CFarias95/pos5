@@ -24,7 +24,7 @@ class ImportResource extends JsonResource
             'fechaEmbarque'=> $this->fechaEmbarque,
             'fechaLlegada'=>$this->fechaLlegada,
             'estado' => $this->estado,
-
+            'cuenta_contable' => $this->cuenta_contable,
         ];
     }
 }
