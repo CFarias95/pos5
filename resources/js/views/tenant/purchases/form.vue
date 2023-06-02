@@ -1705,7 +1705,7 @@ export default {
             this.calculatePayments()
             this.calculateFee()
             this.discountGlobal()
-
+            console.log("items calculados final",this.form.items)
         },
         setTotalDefaultPayment() {
 
