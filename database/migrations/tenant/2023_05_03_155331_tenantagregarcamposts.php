@@ -29,7 +29,7 @@ class Tenantagregarcamposts extends Migration
      */
     public function down()
     {
-        Schema::table('clients', function (Blueprint $table) {
+        Schema::table('technical_services', function (Blueprint $table) {
             $table->dropColumn('delivered');
             $table->dropColumn('review');
             $table->dropColumn('other');

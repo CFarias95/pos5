@@ -1232,6 +1232,16 @@
                                        class="form-control-feedback"
                                        v-text="errors.item_id[0]"></small>
                             </div>
+
+                            <label>Bodega de Desarrollo:</label>
+                            <select v-model="form.lugar_produccion">
+                                <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">{{warehouse.description}}</option>
+                            </select>
+                            <br>
+                            <label>Cantidad a producir:</label>
+                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir"></el-input-number>
+                            
+
                         </div>
                         <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7 " style="    margin-top: 1rem !important;">
                             <div class="form-group ">
@@ -1251,7 +1261,11 @@
                                         <th>#</th>
 <!--                                        <th>item_id</th>-->
                                         <th>Insumo</th>
+                                        <th>Porcentaje (decimal)</th>
                                         <th>Cantidad</th>
+                                        <!--<th>Unidad de Medida</th>-->
+                                        <th>Modificable?</th>
+                                        <th>Borrar</th>
 <!--                                        <th class="text-right">Acciones</th>-->
                                     </tr>
                                     </thead>
@@ -1261,9 +1275,26 @@
 <!--                                        <td>{{ row.item_id }}</td>-->
                                         <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
-                                            <el-input-number v-model="row.quantity"
-                                                      ></el-input-number>
-                                            </td>
+                                            <el-input type="number" :min="0" :max="1" :step="0.001" v-model="row.percentage_decimal" @change="calcularCantidad"></el-input>
+                                        </td>
+                                        <td>
+                                            
+                                            <el-input v-model="row.quantity"></el-input>
+                                        </td>
+                                        <!--<td v-if="row.item.unit_type != undefined">
+                                            {{row.item.unit_type.id}}-{{ row.item.unit_type.description }}
+                                        </td>
+                                        <td v-else>
+                                            N/A
+                                        </td>-->
+                                        <td>
+                                            <el-checkbox v-model="row.modifiable" @click="updateModificable" :checked="row.modifiable">Si</el-checkbox>
+                                            
+                                        </td>
+                                        <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                                type="button"
+                                                @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i>
+                                        </button>
 
                                         <!--
                                         <td class="text-right">
@@ -1592,7 +1623,6 @@ export default {
                 this.tariffs = data.tariffs
                 this.concepts = data.concepts
                 this.rates = data.rates
-                console.log('acounts',this.accounts)
                 // this.config = data.configuration
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1622,7 +1652,6 @@ export default {
         this.$eventHub.$on('reloadTables', () => {
             this.reloadTables()
         })
-
         await this.setDefaultConfiguration()
 
     },
@@ -1642,6 +1671,10 @@ export default {
                 this.$store.commit('setConfiguration', response.data.data);
                 this.loadConfiguration()
             })
+        },
+        clickRemoveItem(index) {
+            this.form.supplies.splice(index, 1)
+            this.submit()
         },
         clickDeleteRate(id) {
             this.$http.delete(`/${this.resource}/item-rate/${id}`)
@@ -1665,6 +1698,23 @@ export default {
                 rate_id:null,
                 //unit_type_id: 'NIU',
                 price1: 0,
+            })
+        },
+
+        updateModificable(){
+            //this.form.item_supplies.modificable = this.form.item_supplies.modificable ? 0 : 1
+            if(this.form.supplies.modificable = 0)
+            {
+                return false
+            }
+            else
+            {
+                return true
+            }
+        },
+        calcularCantidad(){
+            this.form.supplies.forEach((row) =>{
+                row.quantity = row.percentage_decimal * this.form.total_producir
             })
         },
         clickCancelRate(index) {
@@ -1700,6 +1750,7 @@ export default {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
+                    console.log('unit type1', this.unit_types)
                     this.accounts = response.data.accounts
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
@@ -1844,6 +1895,9 @@ export default {
                 sale_cost_cta:null,
                 purchase_cta:null,
 
+                total_producir: null,
+                lugar_produccion: null,
+
             }
 
             this.show_has_igv = true
@@ -1898,7 +1952,7 @@ export default {
             //     delete w.price;
             //     return w;
             // });
-this.activeName =  'first'
+            this.activeName =  'first'
             if (this.type) {
                 if (this.type !== 'PRODUCTS') {
                     this.form.unit_type_id = 'ZZ';
@@ -2065,6 +2119,7 @@ this.activeName =  'first'
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     console.log(response.data)
+                    console.log('Form1', this.form)
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         if (this.external) {
@@ -2177,8 +2232,11 @@ this.activeName =  'first'
             })
         },
         changeItem() {
-            this.getItems();
+            //this.getItems();
+            console.log('item_supply', this.item_suplly)
+            console.log('this.items', this.items)
             this.item_suplly = _.find(this.items, {'id': this.item_suplly});
+            //this.clickAddSupply();
             /*
             this.form.unit_price = this.item_suplly.sale_unit_price;
 
@@ -2197,7 +2255,6 @@ this.activeName =  'first'
         focusSelectItem() {
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
         },
-
         ItemSlotTooltipView(item) {
             return ItemSlotTooltip(item);
         },
@@ -2208,6 +2265,7 @@ this.activeName =  'first'
             // item_supplies
             if(this.form.supplies === undefined) this.form.supplies = [];
             let item = this.item_suplly;
+            console.log('clickaddsupply', item)
             if(item === null) return false;
             if(item === undefined) return false;
             if(item.id=== undefined) return false;
@@ -2223,8 +2281,10 @@ this.activeName =  'first'
             //item.individual_item = item
             // item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
-            this.form.supplies.push(item)
-            this.changeItem()
+            this.form.supplies.push(item);
+            console.log('form supp', this.form.supplies)
+
+            //this.changeItem()
 
 
         },

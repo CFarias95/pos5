@@ -153,6 +153,18 @@
                                 <el-checkbox v-model="form.other">Otros</el-checkbox>
                             </div>
                         </div>
+                        <br>
+                        <div>
+                            <label>Seleccione una opción:</label>
+                            <select v-model="form.finalized">
+                                <option value="FF">Facturado Finalizado</option>
+                                <option value="FP">Facturado Con Pendiente</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="control-label">Observación Interna</label>
+                            <el-input v-model="form.observation" type="textarea"></el-input>
+                        </div>
                     </el-tab-pane>
                     <el-tab-pane class="mb-3" name="second">
                         <span slot="label">
@@ -300,19 +312,17 @@
                 </el-button>
             </div>
             <div class="form-actions text-left mt-4">
-                <el-upload 
-                    :data="{ 'type': 'technical-service-attached' }" 
-                    :headers="headers" 
-                    :multiple="false"
-                    :action="`/${resource}/upload`" 
-                    :show-file-list="true" 
-                    :file-list="fileList" 
-                    :on-remove="handleRemove"
-                    :on-success="onSuccess" 
-                    :limit="1">
+                <el-upload :data="{ 'type': 'technical-service-attached' }" :headers="headers" :multiple="false"
+                    :action="`/${resource}/upload`" :show-file-list="true" :file-list="fileList" :on-remove="handleRemove"
+                    :on-success="onSuccess" :limit="1">
                     <el-button slot="trigger" type="primary">Seleccione un archivo (PDF/JPG)
                     </el-button>
                 </el-upload>
+            </div>
+            <div>
+                <label>Archivo cargado: </label>
+                <label v-if="this.form.upload_filename != null">{{ this.form.upload_filename }}</label>
+                <label v-else>N/A</label>
             </div>
         </form>
 

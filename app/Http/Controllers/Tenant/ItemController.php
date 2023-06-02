@@ -405,8 +405,15 @@ class ItemController extends Controller
         }
 
         if (isset($request->supplies)) {
+            if($id)
+            {
+                $item_supp = ItemSupply::where('item_id', $id)->get();
+                foreach($item_supp as $item)
+                {
+                    $item->delete();
+                }
+            }
             foreach($request->supplies as $value){
-
                 if(!isset($value['item_id'])) $value['item_id'] = $item->id;
                 $itemSupply = ItemSupply::firstOrCreate(['id' => $value['id']],$value);
                 $itemSupply->fill($value);

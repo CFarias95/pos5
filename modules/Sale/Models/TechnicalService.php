@@ -151,7 +151,9 @@
             'review',
             'other',
             'solved',
-            'upload_filename'
+            'upload_filename',
+            'finalized',
+            'observation',
         ];
 
         protected $casts = [
@@ -452,6 +454,8 @@
                 'other' => (bool)$this->other,
                 'solved' => (bool)$this->solved,
                 'upload_filename' => $this->upload_filename,
+                'finalized' => $this->finalized,
+                'observation' => $this->observation,
                 'items' => $items,
                 'payments' => $this->payments,
 
@@ -1459,6 +1463,45 @@
             $this->solved = $solved;
             return $this;
         }
+
+        /**
+         * @return string
+         */
+        public function isFinalized(): string
+        {
+            return $this->finalized;
+        }
+
+        /**
+         * @param bool $solved
+         *
+         * @return TechnicalService
+         */
+        public function setFinalized(string $finalized): TechnicalService
+        {
+            $this->finalized = $finalized;
+            return $this;
+        }
+        
+        /**
+         * @return string|null
+         */
+        public function getObservation(): ?string
+        {
+            return $this->observation;
+        }
+
+        /**
+         * @param string|null $upload_filename
+         *
+         * @return TechnicalService
+         */
+        
+        public function setObservation(?string $observation): TechnicalService
+        {
+            $this->observation = $observation;
+            return $this;
+        }
         
         /**
          * @return string|null
@@ -1473,6 +1516,7 @@
          *
          * @return TechnicalService
          */
+        
         public function setUploadFilename(?string $upload_filename): TechnicalService
         {
             $this->upload_filename = $upload_filename;

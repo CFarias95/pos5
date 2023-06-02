@@ -157,6 +157,24 @@
         <td>{{ $document->activities }}</td>
     </tr>
     @endif
+    <tr>
+        <td><b>Factura finalizada o con Pendiente?</b></td>
+    </tr>
+    <tr>
+        @if($document->finalized == 'FF')
+            <td>Factura Finalizada</td>
+        @else
+            <td>Factura con Pendiente</td>
+        @endif
+    </tr>
+    <tr>
+        <td><b>Observaciones internas:</b></td>
+    </tr>
+    <tr>
+        <td>
+            {{$document->observation}}
+        </td>
+    </tr>
 </table>
 
 <table class="full-width mt-10 mb-10">

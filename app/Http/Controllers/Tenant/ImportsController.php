@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\ImportRequest as TenantImportRequest;
 use App\Http\Resources\Tenant\ImportResource;
 use App\Http\Resources\Tenant\ImportsCollection;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Imports;
 use App\Models\Tenant\Item;
@@ -267,6 +268,12 @@ class ImportsController extends Controller
     {
         $record = new ImportResource(Imports::findOrFail($id));
         return $record;
+    }
+
+    public function table()
+    {
+        $cuentas = AccountMovement::get();
+        return $cuentas;
     }
 
     /**

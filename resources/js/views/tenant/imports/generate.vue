@@ -88,6 +88,15 @@
                             </div>
 
                         </div>
+                        <div class="row">
+                            <div class="col-md-3">
+                                <label class="control-label">Cuenta contable</label>
+                                <el-select v-model="form.cuenta_contable"  filterable clearable>
+                                    <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
+                                </el-select>
+                            </div>
+
+                        </div>
                     </el-tab-pane>
                 </el-tabs>
             </div>
@@ -153,6 +162,7 @@ export default {
             discount_types: [],
             activeName: 'first',
             isEditForm : false,
+            cuenta_contable: null,
             estados: [{'id':1,'description':'Registrada'},{'id':2,'description':'Liberada'},{'id':3,'description':'Liquidada'}],
             tipoTransportes : [{'id':1,'description':'Aereo'},{'id':2,'description':'Maritimo'},{'id':3,'description':'Terrestre'}],
         }
@@ -192,6 +202,7 @@ export default {
                 fechaEmbarque: null,
                 tipoTransporte: null,
                 numeroImportacion:null,
+                cuenta_contable: null,
 
             }
             this.resource = 'imports'
@@ -206,6 +217,12 @@ export default {
             this.titleTabDialog = 'Datos de la importacion';
             this.typeDialog = (this.recordId) ? 'Editar' : 'Guardar';
             this.isEditForm = (this.recordId) ? true : false;
+            //this.cuenta_contable = response.data.data.cuenta_contable
+            this.$http.get(`/${this.resource}/tables`)
+            .then(response =>{
+                //console.log('DATA', response)
+                this.cuenta_contable = response.data
+            })
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
@@ -221,7 +238,7 @@ export default {
                         if(response.data.data.estado == 'Liquidada'){
                             this.estados= [{'id':3,'description':'Liquidada'}]
                         }
-
+                        
                     }).then(() => {
                     //this.updateEmail()
                 })

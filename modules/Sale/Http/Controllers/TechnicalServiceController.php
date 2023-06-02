@@ -74,6 +74,7 @@ class TechnicalServiceController extends Controller
             'serial_number' => 'Número Serie',
             'date_of_issue' => 'Fecha de emisión',
             'facturado' => 'Pendiente por Facturar',
+            'finalized' => 'Facturado Finalizado o Pendiente'
         ];
     }
 

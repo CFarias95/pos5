@@ -32,6 +32,8 @@
                         <th></th>
                         <th>Saldo</th>
                         <th class="text-center">Ver</th>
+                        <th class="text-center">Estado</th>
+                        <th class="text-center">Obs.</th>
                         <th class="text-right">Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }">
@@ -60,6 +62,21 @@
                                 @click.prevent="clickPrint(row.id)">PDF
                             </button>
                         </td>
+                        <td class="text-center">
+                            {{ row.finalized }}
+                        </td>
+                        <td>
+                            <el-popover
+                                placement="right"
+                                width="400"
+                                trigger="click">
+                                <label v-if="row.observation != null">{{row.observation}}</label>
+                                <label v-else>N/A</label>
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
+
+                        </td>
+
                         <td class="text-right">
                             <template v-if="!row.has_document_sale_note">
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info"

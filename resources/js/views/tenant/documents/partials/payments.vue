@@ -301,7 +301,6 @@
                 type:'document',
                 advances:[],
                 index:null,
-                monto: null,
             }
         },
         async created() {
@@ -432,7 +431,6 @@
 
                         console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`,response.data);
                         this.document = response.data;
-                        console.log('data',this.document)
                         this.title = 'Pagos del comprobante: '+this.document.number_full;
                     });
 
@@ -440,7 +438,6 @@
                 await this.$http.get(`/${this.resource}/records/${this.documentId}/${this.documentFeeId}`)
                     .then(response => {
                         this.records = response.data.data
-                        console.log('data',this.records)
                     });
                 this.addAdvancesCustomer();
                 this.$eventHub.$emit('reloadDataUnpaid')
@@ -612,7 +609,7 @@
                  window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
             },
             clickOptionsPrint(key) {
-                this.monto = this.records[key].payment
+                //this.monto = this.records[key].payment
                 this.index = key
                 this.showDialogOptions = true
                 this.showDialogClose=true

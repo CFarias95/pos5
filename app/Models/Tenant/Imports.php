@@ -14,6 +14,7 @@ class Imports extends ModelTenant
         'fechaEmbarque',
         'fechaLlegada',
         'estado',
+        'cuenta_contable',
     ];
 
     public function getCollectionData()
@@ -25,7 +26,7 @@ class Imports extends ModelTenant
             'fechaEmbarque'=> $this->fechaEmbarque,
             'fechaLlegada'=>$this->fechaLlegada,
             'estado' => $this->estado,
-
+            'cuenta_contable' => $this->cuenta_contable,
         ];
         return $data;
     }

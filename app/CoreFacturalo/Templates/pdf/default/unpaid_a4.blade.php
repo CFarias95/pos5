@@ -3,13 +3,17 @@
     $payments = $document->payments;
     $left =  ($document->series) ? $document->series : $document->prefix;
     $tittle = $left.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $tittle_unpaid = str_pad($payments->count(), 8, '0', STR_PAD_LEFT);
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
     $total_payment = $document->payments->sum('payment');
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
     //dd($tittle_unpaid);
     $data = $payments;
-    $data1 = $document
+    $valores = null;
+    for($i = 0 ; $i <= $index ; $i++)
+    {
+        $valores += $data[$i]->payment;
+    } 
+    $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
 @endphp
 <html>
 <head>
@@ -57,7 +61,7 @@
         </td>
         <td width="30%" class="border-box py-4 px-2 text-center">
             <h5 class="text-center">CUENTAS POR COBRAR</h5>
-            <h3 class="text-center">{{ $tittle_unpaid }}</h3>
+            <h3 class="text-center">{{ $num_comprobante }}</h3>
         </td>
     </tr>
 </table>
@@ -72,8 +76,9 @@
                 @php
                     $payment = 0;
                 @endphp
+                <td width="15%">{{ $data[$index]->date_of_payment->format('Y-m-d') }}</td>
                 @foreach($payments as $row)
-                    <td width="15%">{{ $row->date_of_payment->format('Y-m-d') }}</td>
+                    
                     @php
                         $payment += (float) $row->payment;
                     @endphp
@@ -156,7 +161,7 @@
                 @endif
             </td>
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
-            <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format($balance + $data[$index]->payment, 2) }}</td>
+            <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format( $row->total - $valores, 2) }}</td>
         </tr>
         <tr>
             <td colspan="9" class="border-bottom"></td>
@@ -212,17 +217,6 @@
     <tr>
         <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }}- {{ $data[$index]->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>   
     </tr>
-    <tr><td>TOTAL PAGADO {{$total_payment}}</td></tr>
-    <tr><td>PRUEBA 1: {{($total_payment - $data[$index]->payment) + ($balance)}}</td></tr>
-    <tr><td>BALANCE {{$balance}}</td></tr>
-    <tr><td>MONTO PAGADO {{$data[$index]->payment}}</td></tr>
-    <tr><td>{{$balance + $data[$index]->payment}}</td></tr>
-    <tr><td>BALANCE{{$balance}}</td></tr>
-    <tr><td>INFO: {{$data1->advance}}</td></tr>
-    @foreach
-
-    @endforeach
-    <tr><td>DATA: {{$payments}}</td></tr>
     @php
         $payment = 0;
     @endphp   

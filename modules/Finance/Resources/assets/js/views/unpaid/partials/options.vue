@@ -179,15 +179,11 @@ export default {
             await this.$http.get(`/${this.resource_document}/record/${this.recordId}`).then(response => {
                 this.form = response.data.data;
                 this.titleDialog = 'Comprobante de documento por cobrar: ' + this.form.number;
-                //console.log('this.form', this.form)
             }).finally(() => {
                 this.loading = false
             });
         },
         clickPrint(format) {
-            /*this..forEach(element => {
-                
-            });*/
             window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}/${this.id}`, '_blank');
         },
         clickCloseUnpaid() {
