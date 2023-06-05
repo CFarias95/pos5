@@ -1263,7 +1263,7 @@
                                         <th>Insumo</th>
                                         <th>Porcentaje (decimal)</th>
                                         <th>Cantidad</th>
-                                        <!--<th>Unidad de Medida</th>-->
+
                                         <th>Modificable?</th>
                                         <th>Borrar</th>
 <!--                                        <th class="text-right">Acciones</th>-->
@@ -1281,6 +1281,7 @@
                                             
                                             <el-input v-model="row.quantity"></el-input>
                                         </td>
+
                                         <!--<td v-if="row.item.unit_type != undefined">
                                             {{row.item.unit_type.id}}-{{ row.item.unit_type.description }}
                                         </td>
@@ -1674,7 +1675,12 @@ export default {
         },
         clickRemoveItem(index) {
             this.form.supplies.splice(index, 1)
-            this.submit()
+            //this.submit()
+            if (this.external) {
+                this.$eventHub.$emit('reloadDataItems', response.data.id)
+            } else {
+                this.$eventHub.$emit('reloadData')
+            }
         },
         clickDeleteRate(id) {
             this.$http.delete(`/${this.resource}/item-rate/${id}`)
@@ -1964,6 +1970,7 @@ export default {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        console.log('Form2', this.form.supplies)
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                         this.changeAffectationIgvType()
                         this.changePurchaseAffectationIgvType()
@@ -2283,8 +2290,12 @@ export default {
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item);
             console.log('form supp', this.form.supplies)
-
-            //this.changeItem()
+            /*if (this.external) {
+                this.$eventHub.$emit('reloadDataItems', response.data.id)
+            } else {
+                this.$eventHub.$emit('reloadData')
+            }*/
+            this.changeItem()
 
 
         },
