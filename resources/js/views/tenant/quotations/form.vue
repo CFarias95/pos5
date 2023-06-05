@@ -186,7 +186,20 @@
                                     </tbody>
                                 </table>
                             </div>
-
+                            <div style="display: grid;justify-items: end;" v-if="total_cuenta>0">
+                                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                                    <b>Nota: </b>
+                                </p>
+                                <p style="color: red; margin-bottom: 2px;width: 70%;" v-if="cuenta_pagar>0">
+                                    Pendiente a pago: {{ currency_type.symbol }} <b>{{ cuenta_pagar }} </b>
+                                </p>
+                                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                                    Cupo de crédito: {{ currency_type.symbol }} <b>{{ cupo_credito }}</b>
+                                </p>
+                                <p style="color: red; margin-bottom: 2px;width: 70%;">
+                                    <b>SELECCIONE OTRA CONDICIÓN DE PAGO </b>
+                                </p>
+                            </div>
                         </div>
 
                         <div class="row mt-2">
@@ -396,6 +409,11 @@
                 loading_search:false,
                 recordItem: null,
                 total_discount_no_base: 0,
+                cuenta_pagar:0,
+                cupo_credito:0,
+                total_cuenta:0,
+                cupo:0,
+                cuenta:0,
             }
         },
         async created() {
@@ -836,6 +854,21 @@
                     return this.$message.error('El destino del pago es obligatorio');
                 }
 
+
+                //validar cupo
+                this.total_cuenta=0;
+                if(this.form.payment_condition_id!=='01'){
+                await this.calcularCupo();
+                }else{
+                    this.deuda=0;
+                    this.cupo=0;
+                }
+                let validar= await this.validacionCupo();
+                if(validar){
+                    return false;
+                }
+
+
                 this.loading_submit = true
 
                 await this.$http.post(`/${this.resource}`, this.form).then(response => {
@@ -923,6 +956,45 @@
                     identity_document_type_id: null
                 }
             },
+            validacionCupo(){
+                if(this.deuda>this.cupo){
+                        return true;
+                    }else{
+                        return false;
+                    }
+            },
+            async calcularCupo(){
+                this.deuda=0;
+                this.cupo=0;
+                await this.$http.get(`/finances/unpaid/records?customer_id=${this.form.customer_id}&establishment_id=${this.form.establishment_id}`).then((response) => {
+                    var datos;
+                    datos=response.data.data;
+                    datos.map((i)=>{
+                        this.cuenta_pagar=parseFloat( this.cuenta_pagar)+ parseFloat(i.total);
+                    })
+                    })
+                    .catch(error => {
+                    })
+                    .then(() => {
+                    });
+                    await this.$http.get(`/persons/record/${this.form.customer_id}`).then((response) => {
+                    this.record = response.data.data
+                    this.cupo_credito=this.record.credit_quota;
+                    })
+                    .catch(error => {
+                    })
+                    .then(() => {
+
+                    });
+                    this.deuda=parseFloat(this.cuenta_pagar)+parseFloat(this.form.total);
+                    this.cupo=parseFloat(this.cupo_credito);
+                    if(this.deuda>this.cupo){
+                        this.total_cuenta=this.deuda;
+                    }else{
+                        this.total_cuenta=0
+                    }
+
+        },
         }
     }
 </script>
