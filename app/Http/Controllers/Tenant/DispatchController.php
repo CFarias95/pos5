@@ -43,7 +43,9 @@ use Modules\Order\Models\Driver;
 use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\PaymentCondition;
 use App\Models\Tenant\Catalogs\RelatedDocumentType;
-
+use Illuminate\Support\Facades\Config;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 
 /**
  * Class DispatchController
@@ -482,21 +484,16 @@ class DispatchController extends Controller
         $mailable =new DispatchEmail($record);
         $id =  $request->input('id');
         $model = __FILE__.";;".__LINE__;
-        $sendIt = EmailController::SendMail($email, $mailable, $id, 4);
-        /*
+        //$sendIt = EmailController::SendMail($email, $mailable, $id, 4);
         Configuration::setConfigSmtpMail();
-        $array_email = explode(',', $customer_email);
-        if (count($array_email) > 1) {
-            foreach ($array_email as $email_to) {
-                $email_to = trim($email_to);
-                if(!empty($email_to)) {
-                    Mail::to($email_to)->send(new DispatchEmail($record));
-                }
-            }
-        } else {
-            Mail::to($customer_email)->send(new DispatchEmail($record));
-        }
-        */
+        $backup = Mail::getSwiftMailer();
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
+
         return [
             'success' => true
         ];
