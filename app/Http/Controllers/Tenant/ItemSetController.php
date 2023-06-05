@@ -24,6 +24,8 @@ use Modules\Account\Models\Account;
 use App\Models\Tenant\ItemTag;
 use App\Models\Tenant\Catalogs\Tag;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\ItemRate;
+use App\Models\Tenant\Rate;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Modules\Item\Models\Brand;
@@ -72,6 +74,7 @@ class ItemSetController extends Controller
         $web_platforms = WebPlatform::get();
         $categories = Category::all();
         $brands = Brand::all();
+        $rates =Rate::select('id','rate_name')->orderBy('rate_name')->get();
         // $warehouses = Warehouse::all();
         // $accounts = Account::all();
         // $tags = Tag::all();
@@ -83,7 +86,9 @@ class ItemSetController extends Controller
             'attribute_types',
             'system_isc_types',
             'affectation_igv_types',
-            'web_platforms');
+            'web_platforms',
+            'rates'
+        );
     }
 
 
@@ -148,6 +153,15 @@ class ItemSetController extends Controller
             }
 
             $item->save();
+
+            foreach ($request->item_rate as $val) {
+                $item_rate = ItemRate::firstOrNew(['id' => $val['id']]);
+                $item_rate->item_id = $item->id;
+                $item_rate->rate_id = $val['rate_id'];
+                //$item_unit_type->unit_type_id = $value['unit_type_id'];
+                $item_rate->price1 = $val['price1'];
+                $item_rate->save();
+            }
 
             $item->sets()->delete();
 
