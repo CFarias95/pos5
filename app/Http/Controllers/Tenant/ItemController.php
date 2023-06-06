@@ -69,6 +69,7 @@ use setasign\Fpdi\Fpdi;
 use Modules\Inventory\Models\InventoryConfiguration;
 use App\Models\Tenant\ItemRate;
 use App\Models\Tenant\Person;
+use Illuminate\Support\Facades\Log;
 
 class ItemController extends Controller
 {
@@ -407,10 +408,10 @@ class ItemController extends Controller
         if (isset($request->supplies)) {
             if($id)
             {
-                $item_supp = ItemSupply::where('item_id', $id)->get();
-                foreach($item_supp as $item)
+                $item_supp1 = ItemSupply::where('item_id', $id)->get();
+                foreach($item_supp1 as $item1)
                 {
-                    $item->delete();
+                    $item1->delete();
                 }
             }
             foreach($request->supplies as $value){

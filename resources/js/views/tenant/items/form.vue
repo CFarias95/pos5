@@ -1239,7 +1239,7 @@
                             </select>
                             <br>
                             <label>Cantidad a producir:</label>
-                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir"></el-input-number>
+                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir" @change="calcularCantidad"></el-input-number>
                             
 
                         </div>
@@ -1263,7 +1263,7 @@
                                         <th>Insumo</th>
                                         <th>Porcentaje (decimal)</th>
                                         <th>Cantidad</th>
-
+                                        <th>Unidades de medida</th>
                                         <th>Modificable?</th>
                                         <th>Borrar</th>
 <!--                                        <th class="text-right">Acciones</th>-->
@@ -1275,19 +1275,21 @@
 <!--                                        <td>{{ row.item_id }}</td>-->
                                         <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
-                                            <el-input type="number" :min="0" :max="1" :step="0.001" v-model="row.percentage_decimal" @change="calcularCantidad"></el-input>
+                                            <el-input type="number" :min="0" :max="1" :step="0.01" v-model="row.percentage_decimal" @change="calcularCantidad"></el-input>
                                         </td>
-                                        <td>
-                                            
-                                            <el-input v-model="row.quantity"></el-input>
+                                        <td>                            
+                                            <el-input v-model="row.quantity" @change="calcularCantidad"></el-input>
                                         </td>
 
-                                        <!--<td v-if="row.item.unit_type != undefined">
-                                            {{row.item.unit_type.id}}-{{ row.item.unit_type.description }}
+                                        <td v-if="row.tipoDato != null || row.tipoDato != undefined">
+                                            {{ row.tipoDato.tipo }}
+                                        </td>
+                                        <td v-else-if="row.individual_item.unit_type != undefined || row.individual_item.unit_type != null">
+                                            {{ row.individual_item.unit_type.id }} - {{ row.individual_item.unit_type.description }}
                                         </td>
                                         <td v-else>
                                             N/A
-                                        </td>-->
+                                        </td>
                                         <td>
                                             <el-checkbox v-model="row.modifiable" @click="updateModificable" :checked="row.modifiable">Si</el-checkbox>
                                             
@@ -1720,7 +1722,7 @@ export default {
         },
         calcularCantidad(){
             this.form.supplies.forEach((row) =>{
-                row.quantity = row.percentage_decimal * this.form.total_producir
+                row.quantity = _.round(row.percentage_decimal * this.form.total_producir, 2)
             })
         },
         clickCancelRate(index) {
@@ -1756,7 +1758,6 @@ export default {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.unit_types = response.data.unit_types
-                    console.log('unit type1', this.unit_types)
                     this.accounts = response.data.accounts
                     this.currency_types = response.data.currency_types
                     this.system_isc_types = response.data.system_isc_types
@@ -1970,7 +1971,6 @@ export default {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
-                        console.log('Form2', this.form.supplies)
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                         this.changeAffectationIgvType()
                         this.changePurchaseAffectationIgvType()
@@ -2125,8 +2125,6 @@ export default {
 
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
-                    console.log(response.data)
-                    console.log('Form1', this.form)
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         if (this.external) {
@@ -2240,8 +2238,6 @@ export default {
         },
         changeItem() {
             //this.getItems();
-            console.log('item_supply', this.item_suplly)
-            console.log('this.items', this.items)
             this.item_suplly = _.find(this.items, {'id': this.item_suplly});
             //this.clickAddSupply();
             /*
@@ -2272,7 +2268,6 @@ export default {
             // item_supplies
             if(this.form.supplies === undefined) this.form.supplies = [];
             let item = this.item_suplly;
-            console.log('clickaddsupply', item)
             if(item === null) return false;
             if(item === undefined) return false;
             if(item.id=== undefined) return false;
@@ -2285,11 +2280,13 @@ export default {
             item.individual_item = {
                 'description':item.description
             }
+            item.tipoDato = {
+                'tipo' :item.unit_type_id,
+            },
             //item.individual_item = item
             // item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item);
-            console.log('form supp', this.form.supplies)
             /*if (this.external) {
                 this.$eventHub.$emit('reloadDataItems', response.data.id)
             } else {
