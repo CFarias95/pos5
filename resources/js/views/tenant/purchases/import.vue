@@ -451,6 +451,7 @@ export default {
                 .then(() => {
                     this.loading_submit = false;
                 });
+                console.log('XML',this.form)
         },
         close() {
             this.$emit("update:showDialog", false);
@@ -482,10 +483,12 @@ export default {
                         var attribute = xml.attributes.item(j);
                         obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
                     }
+                    console.log('obj', obj)
                 }
             } else if (xml.nodeType == 3) {
                 // text
                 obj = xml.nodeValue;
+                console.log('obj', obj)
             }
 
             // do children

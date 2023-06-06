@@ -412,7 +412,7 @@
                             </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="row in supplies">
+                            <tr v-for="row in this.supplies" :key="row.id">
                                 <th> {{ row.description }}</th>
                                 <th>
                                     <!-- {{ row.quantity }} -->
