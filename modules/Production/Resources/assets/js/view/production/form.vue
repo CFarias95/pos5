@@ -668,6 +668,8 @@ export default {
             this.form.supplies = this.supplies;
 
             // Si no existe un ID, estás creando un nuevo registro
+            console.log("submit production",this.form)
+
             if (!this.form.id) {
 
                 await this.$http.post(`/${this.resource}/create`, this.form)

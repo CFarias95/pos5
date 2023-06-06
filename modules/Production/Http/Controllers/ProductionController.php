@@ -175,7 +175,7 @@ class ProductionController extends Controller
              $items_supplies = $request->supplies;
              try{
                 foreach ($items_supplies as $item) {
-
+                    $sitienelote = false;
                     $production_supply = new ProductionSupply();
                     $production_id = $production->id;
                     $qty = $item['quantity'] ?? 0;
@@ -191,23 +191,31 @@ class ProductionController extends Controller
                     $lots_group = $item["lots_group"];
                     foreach ($lots_group as $lots) {
 
-                        if(isset($lots["compromise_quantity"]) == false){
-                            $production->delete();
-                            return [
-                                'success' => false,
-                                'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
-                            ];
+                        if(isset($lots["compromise_quantity"])){
+
+                            $sitienelote = true;
+
+                            $item_lots_groups = new ItemSupplyLot();
+                            $item_lots_groups->item_supply_id = $item['id'];
+                            $item_lots_groups->item_supply_name = $item['description'];
+                            $item_lots_groups->lot_code = $lots["code"];
+                            $item_lots_groups->lot_id = $lots["id"];
+                            $item_lots_groups->production_name = $production->name;
+                            $item_lots_groups->production_id = $production_id;
+                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->expiration_date = $lots["date_of_due"];
+                            $item_lots_groups->save();
+
+
                         }
-                        $item_lots_groups = new ItemSupplyLot();
-                        $item_lots_groups->item_supply_id = $item['id'];
-                        $item_lots_groups->item_supply_name = $item['description'];
-                        $item_lots_groups->lot_code = $lots["code"];
-                        $item_lots_groups->lot_id = $lots["id"];
-                        $item_lots_groups->production_name = $production->name;
-                        $item_lots_groups->production_id = $production_id;
-                        $item_lots_groups->quantity = $lots["compromise_quantity"];
-                        $item_lots_groups->expiration_date = $lots["date_of_due"];
-                        $item_lots_groups->save();
+
+                    }
+                    if($sitienelote == false){
+                        $production->delete();
+                        return [
+                            'success' => false,
+                            'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
+                        ];
                     }
                 }
              }catch(Exception $ex2){
