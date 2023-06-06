@@ -1292,7 +1292,7 @@
                                             N/A
                                         </td>
                                         <td>
-                                            <el-checkbox v-model="row.modifiable" @click="updateModificable" :checked="row.modifiable">Si</el-checkbox>
+                                            <el-checkbox v-model="row.modifiable" :checked="row.modifiable > 0">Si</el-checkbox>
 
                                         </td>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
