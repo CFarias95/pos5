@@ -84,6 +84,45 @@
         /**
          * @return int
          */
+        public function getModifiable()
+        {
+            return (bool)$this->modifiable;
+        }
+
+        /**
+         * @param int $modifiable
+         *
+         * @return 
+         */
+        public function setModifiable($modifiable)
+        {
+            $this->modifiable = (bool)$modifiable;
+            return $this;
+        }
+
+        /**
+         * @return int
+         */
+        public function getPercentage()
+        {
+            return (float)$this->percentage_decimal;
+        }
+
+        /**
+         * @param int $percentage_decimal
+         *
+         * @return 
+         */
+        public function setPercentage($percentage_decimal)
+        {
+            $this->percentage_decimal = (float)$percentage_decimal;
+            return $this;
+        }
+
+
+        /**
+         * @return int
+         */
         public function getIndividualItemId()
         {
             return (int)$this->individual_item_id;

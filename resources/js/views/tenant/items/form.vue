@@ -1291,8 +1291,7 @@
                                             N/A
                                         </td>
                                         <td>
-                                            <el-checkbox v-model="row.modifiable" @click="updateModificable" :checked="row.modifiable">Si</el-checkbox>
-                                            
+                                            <el-checkbox v-model="row.modifiable" :checked="row.modifiable>0">Si</el-checkbox>                                         
                                         </td>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
@@ -1707,18 +1706,6 @@ export default {
                 //unit_type_id: 'NIU',
                 price1: 0,
             })
-        },
-
-        updateModificable(){
-            //this.form.item_supplies.modificable = this.form.item_supplies.modificable ? 0 : 1
-            if(this.form.supplies.modificable = 0)
-            {
-                return false
-            }
-            else
-            {
-                return true
-            }
         },
         calcularCantidad(){
             this.form.supplies.forEach((row) =>{
