@@ -189,6 +189,8 @@ class ProductionController extends Controller
                     $production_supply->save();
 
                     $lots_group = $item["lots_group"];
+
+
                     foreach ($lots_group as $lots) {
 
                         if(isset($lots["compromise_quantity"])){
@@ -210,13 +212,17 @@ class ProductionController extends Controller
                         }
 
                     }
-                    if($sitienelote == false){
-                        $production->delete();
-                        return [
-                            'success' => false,
-                            'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
-                        ];
+                    if(count($lots_group) > 0 ){
+
+                        if($sitienelote == false){
+                            $production->delete();
+                            return [
+                                'success' => false,
+                                'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
+                            ];
+                        }
                     }
+
                 }
              }catch(Exception $ex2){
                 $production->delete();
