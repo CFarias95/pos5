@@ -299,6 +299,7 @@
             'cta_taxes',
             'cta_service_taxes',
             'cta_item_process',
+            'cta_item_finish',
             'cta_iva_tax',
             'cta_income_tax',
         ];
@@ -680,6 +681,7 @@
                 'cta_taxes' => $this->cta_taxes,
                 'cta_service_taxes'  => $this->cta_service_taxes,
                 'cta_item_process'  => $this->cta_item_process,
+                'cta_item_finish' => $this->cta_item_finish,
                 'cta_iva_tax' => $this->cta_iva_tax,
                 'cta_income_tax' => $this->cta_income_tax,
 
