@@ -824,7 +824,7 @@ export default {
 
         },
         //JOINSOFTWARE
-        
+
         setDefaultSerieByDocument()
         {
             if(this.authUser.multiple_default_document_types)
@@ -839,10 +839,10 @@ export default {
             }
 
         },
-        
+
         //JOINSOFTWARE
         // #307 Ajuste para seleccionar automaticamente el tipo de comprobante y serie
-        
+
         setDefaultDocumentType(from_function) {
 
             if(this.authUser.multiple_default_document_types) return
@@ -862,7 +862,7 @@ export default {
                 }
             }
         },
-        
+
         changeDocumentType() {
             this.form.note_credit_or_debit_type_id = null
             this.form.series_id = null
