@@ -203,7 +203,7 @@ class ProductionController extends Controller
                             $item_lots_groups->lot_id = $lots["id"];
                             $item_lots_groups->production_name = $production->name;
                             $item_lots_groups->production_id = $production_id;
-                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->quantity = 0;
                             $item_lots_groups->expiration_date = $lots["date_of_due"];
                             $item_lots_groups->save();
                         //}
