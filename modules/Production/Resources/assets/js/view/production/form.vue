@@ -418,9 +418,9 @@
                                     <!-- {{ row.quantity }} -->
                                     <el-input-number v-if="form.quantity != 0 && form.quantity != null"
                                         :value="row.quantity * form.quantity" :controls="false"
-                                        disabled></el-input-number>
+                                        :disabled="row.modificable == 0"></el-input-number>
                                     <el-input-number v-else :value="row.quantity" :controls="false"
-                                        disabled></el-input-number>
+                                        :disabled="row.modificable == 0"></el-input-number>
                                     <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
                                         <a class="text-center font-weight-bold text-info" href="#"
                                             @click.prevent="clickLotGroup(row)">[&#10004;
@@ -435,7 +435,7 @@
                                     <th>
                                         <!-- {{ row.quantity }} -->
                                         <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1"
-                                            disabled="disabled"></el-input-number>
+                                            disabled></el-input-number>
                                     </th>
                                 <th>{{ row.unit_type }}</th>
                                 <th>
@@ -573,17 +573,20 @@ export default {
                     .then(response => {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
-                        this.supplies = this.form.supplies
+                        console.log("DATA: ",response.data)
+                        //this.supplies = this.form.supplies
                         let currentStatus = this.form.records_id;
                         switch (currentStatus) {
                             case '01':
                                 this.isCreating = true;
                                 this.deleteStatus("03")
                                 this.deleteStatus('04')
+                                this.changeItem()
                                 break;
                             case '02':
                                 this.deleteStatus("01")
                                 this.deleteStatus("04")
+
                                 break;
                             case '03':
                                 this.deleteStatus("01")
@@ -596,6 +599,7 @@ export default {
                                 break;
                         }
                         this.fetchMachineInfo();
+
                     })
             } else {
                 this.isCreating = true;
@@ -718,10 +722,13 @@ export default {
         },
 
         changeItem() {
+
             let item = _.find(this.items, { 'id': this.form.item_id })
             this.form.item_extra_data = {}
             this.form.item_extra_data.color = null
             this.item = item
+            console.log("changeIte: ",item )
+            this.form.warehouse_id = (item.lugar_produccion)?item.lugar_produccion:item.warehouse_id
             this.supplies = item.supplies
         },
 
