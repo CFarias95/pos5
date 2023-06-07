@@ -1239,8 +1239,8 @@
                             </select>
                             <br>
                             <label>Cantidad a producir:</label>
-                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir" @change="calcularCantidad"></el-input-number>
-                            
+                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir"></el-input-number>
+
 
                         </div>
                         <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7 " style="    margin-top: 1rem !important;">
@@ -1277,7 +1277,8 @@
                                         <td>
                                             <el-input type="number" :min="0" :max="1" :step="0.01" v-model="row.percentage_decimal" @change="calcularCantidad"></el-input>
                                         </td>
-                                        <td>                            
+
+                                        <td>
                                             <el-input v-model="row.quantity" @change="calcularCantidad"></el-input>
                                         </td>
 
@@ -1291,7 +1292,8 @@
                                             N/A
                                         </td>
                                         <td>
-                                            <el-checkbox v-model="row.modifiable" :checked="row.modifiable>0">Si</el-checkbox>                                         
+                                            <el-checkbox v-model="row.modifiable" :checked="row.modifiable > 0">Si</el-checkbox>
+
                                         </td>
                                         <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                 type="button"
@@ -1361,8 +1363,7 @@
                     </div>
                 </el-tab-pane>
                 <el-tab-pane class
-                                 v-if="!isService"
-                                 name="eight">
+                                name="eight">
                         <span slot="label">Tarifas</span>
                         <div class="row">
                             <div class="col-md-12">

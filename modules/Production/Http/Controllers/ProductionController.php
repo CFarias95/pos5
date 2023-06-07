@@ -2,9 +2,13 @@
 
 namespace Modules\Production\Http\Controllers;
 
-
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemSupplyLot;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\ProductionSupply;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
@@ -26,6 +30,7 @@ use Modules\Production\Http\Resources\ProductionCollection;
 use Modules\Production\Models\Machine;
 use Modules\Production\Models\Production;
 use Modules\Production\Models\StateTypeProduction;
+use Illuminate\Support\Str;
 
 class ProductionController extends Controller
 {
@@ -170,7 +175,7 @@ class ProductionController extends Controller
              $items_supplies = $request->supplies;
              try{
                 foreach ($items_supplies as $item) {
-
+                    $sitienelote = false;
                     $production_supply = new ProductionSupply();
                     $production_id = $production->id;
                     $qty = $item['quantity'] ?? 0;
@@ -184,26 +189,40 @@ class ProductionController extends Controller
                     $production_supply->save();
 
                     $lots_group = $item["lots_group"];
+
+
                     foreach ($lots_group as $lots) {
 
-                        if(isset($lots["compromise_quantity"]) == false){
+                        if(isset($lots["compromise_quantity"])){
+
+                            $sitienelote = true;
+
+                            $item_lots_groups = new ItemSupplyLot();
+                            $item_lots_groups->item_supply_id = $item['id'];
+                            $item_lots_groups->item_supply_name = $item['description'];
+                            $item_lots_groups->lot_code = $lots["code"];
+                            $item_lots_groups->lot_id = $lots["id"];
+                            $item_lots_groups->production_name = $production->name;
+                            $item_lots_groups->production_id = $production_id;
+                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->expiration_date = $lots["date_of_due"];
+                            $item_lots_groups->save();
+
+
+                        }
+
+                    }
+                    if(count($lots_group) > 0 ){
+
+                        if($sitienelote == false){
                             $production->delete();
                             return [
                                 'success' => false,
                                 'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
                             ];
                         }
-                        $item_lots_groups = new ItemSupplyLot();
-                        $item_lots_groups->item_supply_id = $item['id'];
-                        $item_lots_groups->item_supply_name = $item['description'];
-                        $item_lots_groups->lot_code = $lots["code"];
-                        $item_lots_groups->lot_id = $lots["id"];
-                        $item_lots_groups->production_name = $production->name;
-                        $item_lots_groups->production_id = $production_id;
-                        $item_lots_groups->quantity = $lots["compromise_quantity"];
-                        $item_lots_groups->expiration_date = $lots["date_of_due"];
-                        $item_lots_groups->save();
                     }
+
                 }
              }catch(Exception $ex2){
                 $production->delete();
@@ -213,6 +232,8 @@ class ProductionController extends Controller
                 ];
              }
 
+
+            $this->createAccountingEntry($production->id);
 
              return [
                  'success' => true,
@@ -227,6 +248,255 @@ class ProductionController extends Controller
          }
      }
 
+      /* CREARE ACCOUNTING ENTRIES PRODUCCTION*/
+    public function createAccountingEntry($document_id){
+
+        $document = Production::find($document_id);
+        Log::info('documento created: ' . json_encode($document));
+        $entry = (AccountingEntries::get())->last();
+        //ASIENTO CONTABLE DE ORDENES DE PRODCUCION
+        if($document && $document->state_type_id == '02'){
+
+            try{
+
+                $idauth = auth()->user()->id;
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                $configuration = Configuration::first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+
+                $comment = 'Orden de Producción Iniciada '. $document->name;
+
+                $total_debe = 0;
+                $total_haber = 0;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = $document->date_start;
+                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->comment = $comment;
+                $cabeceraC->serie = null;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $total_debe;
+                $cabeceraC->total_haber = $total_haber;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->currency_type_id = $configuration->currency_type_id;
+                $cabeceraC->doctype = 10;
+                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->establishment_id = null;
+                $cabeceraC->establishment = '';
+                $cabeceraC->prefix = 'ASC';
+                $cabeceraC->person_id = null;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = 'OPS'.$document_id;
+
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $itemP = Item::find($document->item_id);
+                $itemSuppliers = ProductionSupply::where('production_id',$document_id)->get();
+
+                $arrayEntrys = [];
+                $n = 1;
+
+                $debeGlobal = 0;
+
+                foreach($itemSuppliers as $key => $value){
+
+                    $item = Item::find($value->item_supply_id);
+
+                    $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
+
+                    if($item->purchase_cta){
+
+                        if(array_key_exists($item->purchase_cta,$arrayEntrys)){
+
+                            $arrayEntrys[$item->purchase_cta]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+
+                        }
+                        if(!array_key_exists($item->purchase_cta,$arrayEntrys)){
+
+                            $n += 1;
+
+                            $arrayEntrys[$item->purchase_cta] = [
+                                'seat_line' => $n,
+                                'haber' => ($item->purchase_unit_price * intval($value->quantity)),
+                                'debe' => 0,
+                            ];
+                        }
+                    }
+
+                    if(!($item->purchase_cta) && $configuration->cta_incomes){
+
+                        if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+
+                            $arrayEntrys[$configuration->cta_purchases]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+
+                        }
+                        if(!array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+
+                            $n += 1;
+
+                            $arrayEntrys[$configuration->cta_purchases] = [
+                                'seat_line' => $n,
+                                'haber' => ($item->purchase_unit_price * intval($value->quantity)),
+                                'debe' => 0,
+                            ];
+                        }
+                    }
+                }
+
+
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = ($itemP->item_process_cta)?$itemP->item_process_cta:$configuration->cta_item_process;
+                $detalle->seat_line = 1;
+                $detalle->debe = $debeGlobal;
+                $detalle->haber = 0;
+                $detalle->save();
+
+                foreach( $arrayEntrys as $key=>$value)
+                {
+                    if($value['debe'] > 0 || $value['haber'] > 0){
+
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $key;
+                        $detalle->seat_line = $value['seat_line'];
+                        $detalle->debe = $value['debe'];
+                        $detalle->haber = $value['haber'];
+                        $detalle->save();
+                    }
+
+                }
+
+                //Log::info('arreglo de items cuentas',$arrayEntrys);
+
+            }catch(Exception $ex){
+
+                Log::error('Error al intentar generar el asiento contable');
+                Log::error($ex->getMessage());
+            }
+
+        }elseif($document && $document->state_type_id == '03'){
+
+            try{
+
+                $idauth = auth()->user()->id;
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                $configuration = Configuration::first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+
+                $comment = 'Orden de Producción Finalizada '. $document->name;
+
+                $total_debe = 0;
+                $total_haber = 0;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = $document->date_end;
+                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->comment = $comment;
+                $cabeceraC->serie = null;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $total_debe;
+                $cabeceraC->total_haber = $total_haber;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->currency_type_id = $configuration->currency_type_id;
+                $cabeceraC->doctype = 10;
+                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->establishment_id = null;
+                $cabeceraC->establishment = '';
+                $cabeceraC->prefix = 'ASC';
+                $cabeceraC->person_id = null;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = 'OPF'.$document_id;
+
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $itemP = Item::find($document->item_id);
+                $itemSuppliers = ProductionSupply::where('production_id',$document_id)->get();
+
+                $arrayEntrys = [];
+                $n = 1;
+
+                $debeGlobal = 0;
+
+                foreach($itemSuppliers as $key => $value){
+
+                    $item = Item::find($value->item_supply_id);
+
+                    $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
+
+                }
+
+                $detalle1 = new AccountingEntryItems();
+                $detalle1->accounting_entrie_id = $cabeceraC->id;
+                $detalle1->account_movement_id = ($itemP->item_finish_cta)?$itemP->item_finish_cta:$configuration->cta_item_finish;
+                $detalle1->seat_line = 1;
+                $detalle1->debe = $debeGlobal;
+                $detalle1->haber = 0;
+                $detalle1->save();
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = ($itemP->item_process_cta)?$itemP->item_process_cta:$configuration->cta_item_process;
+                $detalle->seat_line = 2;
+                $detalle->debe = 0;
+                $detalle->haber = $debeGlobal;
+                $detalle->save();
+
+
+                //Log::info('arreglo de items cuentas',$arrayEntrys);
+
+            }catch(Exception $ex){
+
+                Log::error('Error al intentar generar el asiento contable');
+                Log::error($ex->getMessage());
+            }
+
+        }else{
+            Log::info('tipo de documento no genera asiento contable de momento');
+        }
+
+    }
 
     /**
      * Show the specified resource.
@@ -333,6 +603,7 @@ class ProductionController extends Controller
             ];
         });
 
+        $this->createAccountingEntry($id);
         return $result;
     }
 

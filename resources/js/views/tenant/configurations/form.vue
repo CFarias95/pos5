@@ -1546,6 +1546,32 @@
                                 </div>
                             </div>
                             <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de producto terminado
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada a productos ya terminados"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_item_finish}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_item_finish"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_item_finish"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_item_finish[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
                                 <label class="control-label">Cuenta de retencion del IVA
                                     <el-tooltip
                                         class="item"

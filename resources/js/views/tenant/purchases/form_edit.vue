@@ -131,8 +131,7 @@
                             </div>
                         </div>
 
-                        <div class="col-lg-2"
-                             v-if="purchase_order_id === null">
+                        <div class="col-lg-2" v-if=" form.purchase_order_id === null">
                             <div class="form-group">
                                 <label>
                                     Orden de compra
@@ -553,7 +552,7 @@
                                             }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-left">{{ getWarehouseDescription(row) }}</td>
                                         <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
-                                        <td class="text-left">{{ row.lot_code }}</td>
+                                        <td class="text-left">{{ row.item.lot_code }}</td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
@@ -1133,7 +1132,7 @@ export default {
                 .then(response => {
                     //console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
-                    //console.log('RESPONSE: ',dato)
+                    console.log('RESPONSE LOAD DATA EDIT: ',dato.items)
                     this.form.id = dato.id
                     this.form.document_type_intern = dato.document_type_intern
                     this.form.document_type_id = dato.document_type_id
@@ -1663,11 +1662,14 @@ export default {
 
             this.form.total =  _.round(total, 2)
 
+            //console.log("items calculados prev",this.form.items)
+
             this.calculatePerception()
             this.calculatePayments()
             this.calculateFee()
             this.recordItem = null
 
+            console.log("items calculados final",this.form.items)
         },
         calculatePerception() {
 
