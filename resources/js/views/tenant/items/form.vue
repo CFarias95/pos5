@@ -1232,24 +1232,29 @@
                                        class="form-control-feedback"
                                        v-text="errors.item_id[0]"></small>
                             </div>
-
-                            <label>Bodega de Desarrollo:</label>
-                            <select v-model="form.lugar_produccion">
-                                <option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id">{{warehouse.description}}</option>
-                            </select>
+                            <button class="btn waves-effect waves-light btn-primary"
+                                type="button"
+                                @click.prevent="clickAddSupply">
+                                + Agregar Producto
+                            </button>
                             <br>
+                            <label>Bodega de Desarrollo:</label>
+                            <el-select v-model="form.lugar_produccion" clearable>
+                                <el-option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id" :label="warehouse.description"></el-option>
+                            </el-select>
+                            
                             <label>Cantidad a producir:</label>
-                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir"></el-input-number>
-
+                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir" @change="calcularCantidad" :min="0"></el-input-number>
+                            
 
                         </div>
                         <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7 " style="    margin-top: 1rem !important;">
                             <div class="form-group ">
-                                <button class="btn waves-effect waves-light btn-primary"
+                                <!--<button class="btn waves-effect waves-light btn-primary"
                                         type="button"
-                                        @click.prevent="clickAddSupply" >
+                                        @click.prevent="clickAddSupply" @change="calcularCantidad">
                                     + Agregar Producto
-                                </button>
+                                </button>-->
                             </div>
                         </div>
                         <div class="col-12 table-responsive" v-if="form.supplies && form.supplies.length > 0">
@@ -1275,11 +1280,10 @@
 <!--                                        <td>{{ row.item_id }}</td>-->
                                         <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
-                                            <el-input type="number" :min="0" :max="1" :step="0.01" v-model="row.percentage_decimal" @change="calcularCantidad"></el-input>
+                                            <el-input-number v-model="row.percentage_decimal" @change="calcularCantidad" :min="0" :max="1" :step="0.01"></el-input-number>
                                         </td>
-
                                         <td>
-                                            <el-input v-model="row.quantity" @change="calcularCantidad"></el-input>
+                                            <el-input v-model="row.quantity"></el-input>
                                         </td>
 
                                         <td v-if="row.tipoDato != null || row.tipoDato != undefined">
@@ -1709,7 +1713,14 @@ export default {
             })
         },
         calcularCantidad(){
+           
             this.form.supplies.forEach((row) =>{
+                /*let existe = 0
+                if(row.percentage_decimal != null || row.percentage_decimal != undefined)
+                {
+                    existe = row.percentage_decimal
+                }
+                row.quantity = _.round(existe * this.form.total_producir, 2)*/
                 row.quantity = _.round(row.percentage_decimal * this.form.total_producir, 2)
             })
         },
@@ -1890,8 +1901,10 @@ export default {
                 sale_cost_cta:null,
                 purchase_cta:null,
 
-                total_producir: null,
+                total_producir: 0,
                 lugar_produccion: null,
+                percentage_decimal: 0,
+                quantity:0,
 
             }
 
@@ -1959,6 +1972,7 @@ export default {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         this.form = response.data.data
+                        //console.log('con datos', this.form)
                         this.has_percentage_perception = (this.form.percentage_perception) ? true : false
                         this.changeAffectationIgvType()
                         this.changePurchaseAffectationIgvType()
@@ -2227,6 +2241,7 @@ export default {
         changeItem() {
             //this.getItems();
             this.item_suplly = _.find(this.items, {'id': this.item_suplly});
+            //this.item_suplly.percentage_decimal = 0
             //this.clickAddSupply();
             /*
             this.form.unit_price = this.item_suplly.sale_unit_price;
@@ -2253,6 +2268,7 @@ export default {
             return ItemOptionDescription(item)
         },
         clickAddSupply(){
+            //this.changeItem();
             // item_supplies
             if(this.form.supplies === undefined) this.form.supplies = [];
             let item = this.item_suplly;
@@ -2271,10 +2287,14 @@ export default {
             item.tipoDato = {
                 'tipo' :item.unit_type_id,
             },
+            item.total_producir = this.form.supplies.total_producir
+            //item.percentage_decimal = 0
+            //item.quantity = 0
             //item.individual_item = item
             // item.quantity = 0
             //if(isNaN(item.quantity)) item.quantity = 0 ;
             this.form.supplies.push(item);
+            this.calcularCantidad()
             /*if (this.external) {
                 this.$eventHub.$emit('reloadDataItems', response.data.id)
             } else {

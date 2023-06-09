@@ -86,16 +86,12 @@
                                     <el-option v-for="option in estados" :key="option.id" :value="option.description" :label="option.description"></el-option>
                                 </el-select>
                             </div>
-
-                        </div>
-                        <div class="row">
                             <div class="col-md-3">
                                 <label class="control-label">Cuenta contable</label>
                                 <el-select v-model="form.cuenta_contable"  filterable clearable>
                                     <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
                                 </el-select>
                             </div>
-
                         </div>
                     </el-tab-pane>
                 </el-tabs>
