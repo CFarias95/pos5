@@ -12,6 +12,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\PurchasePayment;
 use App\Models\Tenant\Purchase;
+use App\Models\Tenant\PurchaseFee;
 use Exception;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Traits\FilePaymentTrait;
@@ -23,10 +24,13 @@ class PurchasePaymentController extends Controller
 {
     use FinanceTrait, FilePaymentTrait;
 
-    public function records($purchase_id)
+    public function records($purchase_id,$fee_id)
     {
         $records = PurchasePayment::where('purchase_id', $purchase_id)->get();
+        if($fee_id != 'undefined'){
 
+            $records = PurchasePayment::where('fee_id', $fee_id)->get();
+        }
         return new PurchasePaymentCollection($records);
     }
 
@@ -38,7 +42,7 @@ class PurchasePaymentController extends Controller
         ];
     }
 
-    public function purchase($purchase_id)
+    public function purchase($purchase_id,$fee_id)
     {
         $purchase = Purchase::find($purchase_id);
 
@@ -46,6 +50,14 @@ class PurchasePaymentController extends Controller
         $total = $purchase->total;
         $total_difference = round($total - $total_paid, 2);
 
+        if(isset($fee_id) && $fee_id != 'undefined'){
+
+            $cuota = PurchaseFee::find($fee_id)->amount;
+
+            $total_paid = PurchasePayment::where('fee_id',$fee_id)->get()->sum('payment');
+            $total_difference = round($cuota - $total_paid, 2);
+
+        }
         return [
             'number_full' => $purchase->number_full,
             'total_paid' => $total_paid,
@@ -60,30 +72,129 @@ class PurchasePaymentController extends Controller
     {
         $id = $request->input('id');
 
-        $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+        $fee = PurchaseFee::where('purchase_id', $request->purchase_id)->orderBY('date')->get();
+        if($fee->count() > 0 ){
+            $valorPagar = $request->payment;
+            $fee_id = $request->input('fee_id');
 
-            $record = PurchasePayment::firstOrNew(['id' => $id]);
-            $record->fill($request->all());
-            $record->save();
-            $this->createGlobalPayment($record, $request->all());
-            $this->saveFiles($record, $request, 'purchases');
+            foreach($fee as $cuotas){
 
-            return $record;
-        });
+                $pago = PurchasePayment::where('fee_id',$cuotas->id)->get();
+                $pagado = $pago->sum('payment');
+                Log::info("fee pago:".json_encode($pago));
+                $valorCuota = $cuotas->amount - $pagado;
+                $cuotaid = $cuotas->id;
 
-        if($id){
+                if(isset($fee_id) && $cuotaid == $fee_id){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-            $asientos = AccountingEntries::where('document_id','PC'.$id)->get();
-            foreach($asientos as $ass){
-                $ass->delete();
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+
+                            $record = PurchasePayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = $valorPagar - $valorCuota;
+
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new PurchasePayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = 0 ;
+                    }
+                }else if(isset($fee_id) == false){
+                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+
+                            $record = PurchasePayment::firstOrNew(['id' => $id]);
+                            $record->fill($request->all());
+                            $record->payment = $valorCuota;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = $valorPagar - $valorCuota;
+
+                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+
+                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+
+                            unset($request->id);
+                            //$request->payment = $valorPagar;
+                            $record = new PurchasePayment();
+                            $record->fill($request->all());
+                            $record->payment = $valorPagar;
+                            $record->fee_id = $cuotaid;
+                            $record->save();
+
+                            $this->createGlobalPayment($record, $request->all());
+                            $this->saveFiles($record, $request, 'documents');
+
+                            return $record;
+                        });
+
+                        $valorPagar = 0 ;
+                    }
+                }
+
+
             }
+
+        }else{
+            $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
+
+                $record = PurchasePayment::firstOrNew(['id' => $id]);
+                $record->fill($request->all());
+                $record->save();
+                $this->createGlobalPayment($record, $request->all());
+                $this->saveFiles($record, $request, 'purchases');
+
+                return $record;
+            });
+
+            if($id){
+
+                $asientos = AccountingEntries::where('document_id','PC'.$id)->get();
+                foreach($asientos as $ass){
+                    $ass->delete();
+                }
+            }
+
+
         }
 
         if((Company::active())->countable > 0 ){
 
             $this->createAccountingEntryPayment($data->purchase_id, $data);
         }
-
         return [
             'success' => true,
             'message' => ($id)?'Pago editado con éxito':'Pago registrado con éxito'

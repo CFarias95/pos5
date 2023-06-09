@@ -91,11 +91,11 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        Log::info("data:",$request->all());
+        //Log::info("data:",$request->all());
 
         $id = $request->input('id');
 
-        $fee = DocumentFee::where('document_id', $request->document_id)->get();
+        $fee = DocumentFee::where('document_id', $request->document_id)->orderBy('date')->get();
         if($fee->count() > 0 ){
             $valorPagar = $request->payment;
             $fee_id = $request->input('fee_id');
@@ -243,13 +243,13 @@ class DocumentPaymentController extends Controller
                 }
             }
 
-            if((Company::active())->countable > 0 ){
-                $this->createAccountingEntry($request->document_id, $data);
-            }
+
 
 
         }
-
+        if((Company::active())->countable > 0 ){
+            $this->createAccountingEntry($request->document_id, $data);
+        }
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',

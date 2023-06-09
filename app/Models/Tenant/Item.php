@@ -1222,6 +1222,7 @@ class Item extends ModelTenant
             'supplies' => $itemSupply,
             'tariff_id' => $this->tariff_id,
             'concept_id' => $this->concept_id,
+            'lugar_produccion' => $this->lugar_produccion,
 
         ];
     }

@@ -154,26 +154,27 @@ class ProductionController extends Controller
      * @return Response
      */
 
-     public function store(ProductionRequest $request)
-     {
+    public function store(ProductionRequest $request)
+    {
         try {
-             $item_id = $request->input('item_id');
-             $warehouse_id = $request->input('warehouse_id');
-             $quantity = $request->input('quantity');
-             $state_type_id = $request->records_id;
-             $informative = $request->input('informative', false);
+            $item_id = $request->input('item_id');
+            $warehouse_id = $request->input('warehouse_id');
+            $quantity = $request->input('quantity');
+            $state_type_id = $request->records_id;
+            $informative = $request->input('informative', false);
 
-             $production = new Production();
-             $production->fill($request->all());
-             $production->inventory_id_reference = $request->input('inventory_id_reference');
-             $production->warehouse_id = $warehouse_id;
-             $production->state_type_id = $state_type_id;
-             $production->user_id = auth()->user()->id;
-             $production->soap_type_id = $this->getCompanySoapTypeId();
-             $production->save();
+            $production = new Production();
+            $production->fill($request->all());
+            $production->inventory_id_reference = $request->input('inventory_id_reference');
+            $production->warehouse_id = $warehouse_id;
+            $production->state_type_id = $state_type_id;
+            $production->user_id = auth()->user()->id;
+            $production->soap_type_id = $this->getCompanySoapTypeId();
+            $production->save();
 
-             $items_supplies = $request->supplies;
-             try{
+            $items_supplies = $request->supplies;
+
+            try {
                 foreach ($items_supplies as $item) {
                     $sitienelote = false;
                     $production_supply = new ProductionSupply();
@@ -183,8 +184,8 @@ class ProductionController extends Controller
                     $production_supply->production_id = $production_id;
                     $production_supply->item_supply_name = $item['description'];
                     $production_supply->item_supply_id = $item['id'];
-                    $production_supply->warehouse_name = $item['warehouse_name']?? null;
-                    $production_supply->warehouse_id = $item['warehouse_id']?? null;
+                    $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
+                    $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                     $production_supply->quantity = (float) $qty;
                     $production_supply->save();
 
@@ -193,9 +194,7 @@ class ProductionController extends Controller
 
                     foreach ($lots_group as $lots) {
 
-                        if(isset($lots["compromise_quantity"])){
-
-                            $sitienelote = true;
+                        //if (isset($lots["compromise_quantity"])){
 
                             $item_lots_groups = new ItemSupplyLot();
                             $item_lots_groups->item_supply_id = $item['id'];
@@ -204,60 +203,44 @@ class ProductionController extends Controller
                             $item_lots_groups->lot_id = $lots["id"];
                             $item_lots_groups->production_name = $production->name;
                             $item_lots_groups->production_id = $production_id;
-                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->quantity = 0;
                             $item_lots_groups->expiration_date = $lots["date_of_due"];
                             $item_lots_groups->save();
-
-
-                        }
-
+                        //}
                     }
-                    if(count($lots_group) > 0 ){
-
-                        if($sitienelote == false){
-                            $production->delete();
-                            return [
-                                'success' => false,
-                                'message' => 'Debe seleccionar lote/serie y cantidad de '.$item['description']
-                            ];
-                        }
-                    }
-
                 }
-             }catch(Exception $ex2){
+            } catch (Exception $ex2) {
                 $production->delete();
                 return [
                     'success' => false,
                     'message' => 'Error al registrar el ingreso: ' . $ex2->getMessage()
                 ];
-             }
-
-
+            }
             $this->createAccountingEntry($production->id);
+            return [
+                'success' => true,
+                'message' => 'Ingreso registrado correctamente'
+            ];
+        } catch (\Exception $e) {
 
-             return [
-                 'success' => true,
-                 'message' => 'Ingreso registrado correctamente'
-             ];
-         } catch (\Exception $e) {
+            return [
+                'success' => false,
+                'message' => 'Error al registrar el ingreso: ' . $e->getMessage()
+            ];
+        }
+    }
 
-             return [
-                 'success' => false,
-                 'message' => 'Error al registrar el ingreso: ' . $e->getMessage()
-             ];
-         }
-     }
-
-      /* CREARE ACCOUNTING ENTRIES PRODUCCTION*/
-    public function createAccountingEntry($document_id){
+    /* CREARE ACCOUNTING ENTRIES PRODUCCTION*/
+    public function createAccountingEntry($document_id)
+    {
 
         $document = Production::find($document_id);
         Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
         //ASIENTO CONTABLE DE ORDENES DE PRODCUCION
-        if($document && $document->state_type_id == '02'){
+        if ($document && $document->state_type_id == '02') {
 
-            try{
+            try {
 
                 $idauth = auth()->user()->id;
                 $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
@@ -276,7 +259,7 @@ class ProductionController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = 'Orden de Producción Iniciada '. $document->name;
+                $comment = 'Orden de Producción Iniciada ' . $document->name;
 
                 $total_debe = 0;
                 $total_haber = 0;
@@ -298,40 +281,39 @@ class ProductionController extends Controller
                 $cabeceraC->user_revised2 = 0;
                 $cabeceraC->currency_type_id = $configuration->currency_type_id;
                 $cabeceraC->doctype = 10;
-                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->is_client = ($document->customer) ? true : false;
                 $cabeceraC->establishment_id = null;
                 $cabeceraC->establishment = '';
                 $cabeceraC->prefix = 'ASC';
                 $cabeceraC->person_id = null;
                 $cabeceraC->external_id = Str::uuid()->toString();
-                $cabeceraC->document_id = 'OPS'.$document_id;
+                $cabeceraC->document_id = 'OPS' . $document_id;
 
                 $cabeceraC->save();
-                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
                 $cabeceraC->save();
 
                 $itemP = Item::find($document->item_id);
-                $itemSuppliers = ProductionSupply::where('production_id',$document_id)->get();
+                $itemSuppliers = ProductionSupply::where('production_id', $document_id)->get();
 
                 $arrayEntrys = [];
                 $n = 1;
 
                 $debeGlobal = 0;
 
-                foreach($itemSuppliers as $key => $value){
+                foreach ($itemSuppliers as $key => $value) {
 
                     $item = Item::find($value->item_supply_id);
 
                     $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
 
-                    if($item->purchase_cta){
+                    if ($item->purchase_cta) {
 
-                        if(array_key_exists($item->purchase_cta,$arrayEntrys)){
+                        if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
                             $arrayEntrys[$item->purchase_cta]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
-
                         }
-                        if(!array_key_exists($item->purchase_cta,$arrayEntrys)){
+                        if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
                             $n += 1;
 
@@ -343,14 +325,13 @@ class ProductionController extends Controller
                         }
                     }
 
-                    if(!($item->purchase_cta) && $configuration->cta_incomes){
+                    if (!($item->purchase_cta) && $configuration->cta_incomes) {
 
-                        if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+                        if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
 
                             $arrayEntrys[$configuration->cta_purchases]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
-
                         }
-                        if(!array_key_exists($configuration->cta_purchases,$arrayEntrys)){
+                        if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
 
                             $n += 1;
 
@@ -367,15 +348,14 @@ class ProductionController extends Controller
 
                 $detalle = new AccountingEntryItems();
                 $detalle->accounting_entrie_id = $cabeceraC->id;
-                $detalle->account_movement_id = ($itemP->item_process_cta)?$itemP->item_process_cta:$configuration->cta_item_process;
+                $detalle->account_movement_id = ($itemP->item_process_cta) ? $itemP->item_process_cta : $configuration->cta_item_process;
                 $detalle->seat_line = 1;
                 $detalle->debe = $debeGlobal;
                 $detalle->haber = 0;
                 $detalle->save();
 
-                foreach( $arrayEntrys as $key=>$value)
-                {
-                    if($value['debe'] > 0 || $value['haber'] > 0){
+                foreach ($arrayEntrys as $key => $value) {
+                    if ($value['debe'] > 0 || $value['haber'] > 0) {
 
                         $detalle = new AccountingEntryItems();
                         $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -385,20 +365,18 @@ class ProductionController extends Controller
                         $detalle->haber = $value['haber'];
                         $detalle->save();
                     }
-
                 }
 
                 //Log::info('arreglo de items cuentas',$arrayEntrys);
 
-            }catch(Exception $ex){
+            } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
                 Log::error($ex->getMessage());
             }
+        } elseif ($document && $document->state_type_id == '03') {
 
-        }elseif($document && $document->state_type_id == '03'){
-
-            try{
+            try {
 
                 $idauth = auth()->user()->id;
                 $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
@@ -417,7 +395,7 @@ class ProductionController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = 'Orden de Producción Finalizada '. $document->name;
+                $comment = 'Orden de Producción Finalizada ' . $document->name;
 
                 $total_debe = 0;
                 $total_haber = 0;
@@ -439,37 +417,36 @@ class ProductionController extends Controller
                 $cabeceraC->user_revised2 = 0;
                 $cabeceraC->currency_type_id = $configuration->currency_type_id;
                 $cabeceraC->doctype = 10;
-                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->is_client = ($document->customer) ? true : false;
                 $cabeceraC->establishment_id = null;
                 $cabeceraC->establishment = '';
                 $cabeceraC->prefix = 'ASC';
                 $cabeceraC->person_id = null;
                 $cabeceraC->external_id = Str::uuid()->toString();
-                $cabeceraC->document_id = 'OPF'.$document_id;
+                $cabeceraC->document_id = 'OPF' . $document_id;
 
                 $cabeceraC->save();
-                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
                 $cabeceraC->save();
 
                 $itemP = Item::find($document->item_id);
-                $itemSuppliers = ProductionSupply::where('production_id',$document_id)->get();
+                $itemSuppliers = ProductionSupply::where('production_id', $document_id)->get();
 
                 $arrayEntrys = [];
                 $n = 1;
 
                 $debeGlobal = 0;
 
-                foreach($itemSuppliers as $key => $value){
+                foreach ($itemSuppliers as $key => $value) {
 
                     $item = Item::find($value->item_supply_id);
 
                     $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
-
                 }
 
                 $detalle1 = new AccountingEntryItems();
                 $detalle1->accounting_entrie_id = $cabeceraC->id;
-                $detalle1->account_movement_id = ($itemP->item_finish_cta)?$itemP->item_finish_cta:$configuration->cta_item_finish;
+                $detalle1->account_movement_id = ($itemP->item_finish_cta) ? $itemP->item_finish_cta : $configuration->cta_item_finish;
                 $detalle1->seat_line = 1;
                 $detalle1->debe = $debeGlobal;
                 $detalle1->haber = 0;
@@ -477,7 +454,7 @@ class ProductionController extends Controller
 
                 $detalle = new AccountingEntryItems();
                 $detalle->accounting_entrie_id = $cabeceraC->id;
-                $detalle->account_movement_id = ($itemP->item_process_cta)?$itemP->item_process_cta:$configuration->cta_item_process;
+                $detalle->account_movement_id = ($itemP->item_process_cta) ? $itemP->item_process_cta : $configuration->cta_item_process;
                 $detalle->seat_line = 2;
                 $detalle->debe = 0;
                 $detalle->haber = $debeGlobal;
@@ -486,16 +463,14 @@ class ProductionController extends Controller
 
                 //Log::info('arreglo de items cuentas',$arrayEntrys);
 
-            }catch(Exception $ex){
+            } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
                 Log::error($ex->getMessage());
             }
-
-        }else{
+        } else {
             Log::info('tipo de documento no genera asiento contable de momento');
         }
-
     }
 
     /**
@@ -548,55 +523,122 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
+            if ($production->state_type_id == '02') {
+                try {
+                    foreach ($items_supplies as $item) {
+                        $sitienelote = false;
 
+                        $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
+                        $production_id = $production->id;
+                        $qty = $item['quantity'] ?? 0;
+                        $production_supply->production_name = $production->name;
+                        $production_supply->production_id = $production_id;
+                        $production_supply->item_supply_name = $item['description'];
+                        $production_supply->item_supply_id = $item['id'];
+                        $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
+                        $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
+                        $production_supply->quantity = (float) $qty;
+                        $production_supply->save();
 
-            foreach ($items_supplies as $item) {
-                $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
-                $production_id = $production->id;
-                $qty = $item['quantity'] ?? 0;
-                $production_supply->production_name = $production->name;
-                $production_supply->production_id = $production_id;
-                $production_supply->item_supply_name = $item['description'];
-                $production_supply->item_supply_id = $item['id'];
-                $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
-                $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
-                $production_supply->quantity = (float) $qty;
-                $production_supply->save();
+                        $lots_group = $item["lots_group"];
 
-                $lots_group = $item["lots_group"];
-                foreach ($lots_group as $lots) {
-                    $item_lots_groups = ItemSupplyLot::where('production_id', $production->id)->where("item_supply_id", $production_supply->item_supply_id)->where("lot_id", $lots["lot_id"])->first();
-                    $item_lots_groups->item_supply_id = $production_supply->item_supply_id;
-                    $item_lots_groups->item_supply_name = $item['description'];
-                    $item_lots_groups->lot_code = $lots["code"];
-                    $item_lots_groups->lot_id = $lots["lot_id"];
-                    $item_lots_groups->production_name = $production->name;
-                    $item_lots_groups->production_id = $production_id;
-                    $item_lots_groups->quantity = $lots["compromise_quantity"];
-                    $item_lots_groups->expiration_date = $lots["date_of_due"];
-                    $item_lots_groups->save();
+                        foreach ($lots_group as $lots) {
+
+                            if (isset($lots["compromise_quantity"])) {
+
+                                $sitienelote = true;
+
+                                $item_lots_groups = new ItemSupplyLot();
+                                $item_lots_groups->item_supply_id = $item['id'];
+                                $item_lots_groups->item_supply_name = $item['description'];
+                                $item_lots_groups->lot_code = $lots["code"];
+                                $item_lots_groups->lot_id = $lots["id"];
+                                $item_lots_groups->production_name = $production->name;
+                                $item_lots_groups->production_id = $production_id;
+                                $item_lots_groups->quantity = $lots["compromise_quantity"];
+                                $item_lots_groups->expiration_date = $lots["date_of_due"];
+                                $item_lots_groups->save();
+                            }
+                        }
+                        if (count($lots_group) > 0) {
+
+                            if ($sitienelote == false) {
+                                //$production->delete();
+                                return [
+                                    'success' => false,
+                                    'message' => 'Debe seleccionar lote/serie y cantidad de ' . $item['description']
+                                ];
+                            }
+                        }
+                    }
+                } catch (Exception $ex2) {
+                    $production->delete();
+                    return [
+                        'success' => false,
+                        'message' => 'Error al registrar el ingreso: ' . $ex2->getMessage()
+                    ];
+                }
+            }
+            else{
+                try {
+                    foreach ($items_supplies as $item) {
+                        $sitienelote = false;
+
+                        $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
+                        $production_id = $production->id;
+                        $qty = $item['quantity'] ?? 0;
+                        $production_supply->production_name = $production->name;
+                        $production_supply->production_id = $production_id;
+                        $production_supply->item_supply_name = $item['description'];
+                        $production_supply->item_supply_id = $item['id'];
+                        $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
+                        $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
+                        $production_supply->quantity = (float) $qty;
+                        $production_supply->save();
+
+                        $lots_group = $item["lots_group"];
+                        foreach ($lots_group as $lots) {
+                            $item_lots_groups = ItemSupplyLot::where('production_id', $production->id)->where("item_supply_id", $production_supply->item_supply_id)->where("lot_id", $lots["lot_id"])->first();
+                            $item_lots_groups->item_supply_id = $production_supply->item_supply_id;
+                            $item_lots_groups->item_supply_name = $item['description'];
+                            $item_lots_groups->lot_code = ($lots["code"])?$lots["code"]:null;
+                            //$item_lots_groups->lot_id = (isset($lots["lot_id"]))?$lots["lot_id"]:null;
+                            $item_lots_groups->production_name = $production->name;
+                            $item_lots_groups->production_id = $production_id;
+                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->expiration_date = $lots["date_of_due"];
+                            $item_lots_groups->save();
+                        }
+
+                    }
+
+                } catch (Exception $ex2) {
+                    //$production->delete();
+                    return [
+                        'success' => false,
+                        'message' => 'Error al actualizar el ingreso: ' . $ex2->getMessage()
+                    ];
                 }
             }
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                 $inventory_transaction_item = InventoryTransaction::findOrFail(101);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
+                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
             }
-            if($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
+            if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
                 //cuando pasa a terminado se aumenta el inventario del producto terminado
                 $inventory_transaction_item = InventoryTransaction::findOrFail(19);
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item);
             }
-            if($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative){
+            if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
                 //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
                 $inventory_transaction_item = InventoryTransaction::findOrFail(104);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
+                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
                 $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
-
             }
-
+            $this->createAccountingEntry($production->id);
             return [
                 'success' => true,
                 'message' => 'Registro actualizado correctamente'
@@ -642,18 +684,17 @@ class ProductionController extends Controller
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->save();
 
-                if($item["lots_group"]) {
+                if ($item["lots_group"]) {
                     $lots_group = $item["lots_group"];
                     foreach ($lots_group as $lots) {
                         $item_lots_group = ItemLotsGroup::findOrFail($lots["lot_id"]);
-                        if( $production->state_type_id == '04' ) {
+                        if ($production->state_type_id == '04') {
                             $item_lots_group->quantity += $lots["compromise_quantity"];
                         } else {
                             $item_lots_group->quantity -= $lots["compromise_quantity"];
                         }
                         $item_lots_group->save();
                     }
-
                 }
             }
         } catch (\Throwable $th) {
@@ -720,20 +761,19 @@ class ProductionController extends Controller
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                 $inventory_transaction_item = InventoryTransaction::findOrFail(101);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
+                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
             }
-            if($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
+            if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
                 //cuando pasa a terminado se aumenta el inventario del producto terminado
                 $inventory_transaction_item = InventoryTransaction::findOrFail(19);
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item);
             }
-            if($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative){
+            if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
                 //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
                 $inventory_transaction_item = InventoryTransaction::findOrFail(104);
-                $this->inventorySupplies($production, $items_supplies,$inventory_transaction_item);
+                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
                 $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
-
             }
 
             return [
@@ -794,6 +834,7 @@ class ProductionController extends Controller
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
                 $transformed_supplies = [];
+                Log::info("INFO ".json_encode($supplies));
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
 
@@ -809,6 +850,7 @@ class ProductionController extends Controller
                         'quantity_per_unit' => $value["quantity"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
+                        'modificable' => $value["modificable"],
                         'lots_group' => $lots_group,
                     ];
                     $transformed_supplies[] = $transformed_supply;

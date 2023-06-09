@@ -18,6 +18,7 @@ class PurchasePayment extends ModelTenant
         'card_brand_id',
         'reference',
         'payment',
+        'fee_id',
     ];
 
     protected $casts = [
@@ -33,7 +34,7 @@ class PurchasePayment extends ModelTenant
     {
         return $this->belongsTo(CardBrand::class);
     }
-    
+
     public function global_payment()
     {
         return $this->morphOne(GlobalPayment::class, 'payment');
@@ -48,15 +49,15 @@ class PurchasePayment extends ModelTenant
     {
         return $this->morphOne(PaymentFile::class, 'payment');
     }
-    
+
     public function purchase()
     {
         return $this->belongsTo(Purchase::class);
     }
-    
+
 
     /**
-     * 
+     *
      * Filtros para obtener pagos en efectivo y con destino caja
      *
      * @param  Builder $query
@@ -70,9 +71,9 @@ class PurchasePayment extends ModelTenant
                     });
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener informacion del pago y registro origen relacionado
      *
      * @return array
@@ -96,7 +97,7 @@ class PurchasePayment extends ModelTenant
 
 
     /**
-     * 
+     *
      * Obtener relaciones necesarias o aplicar filtros para reporte pagos - finanzas
      *
      * @param  Builder $query
@@ -108,8 +109,8 @@ class PurchasePayment extends ModelTenant
                     ->with([
                         'payment_method_type' => function($payment_method_type){
                             $payment_method_type->select('id', 'description');
-                        }, 
+                        },
                     ]);
     }
-    
+
 }

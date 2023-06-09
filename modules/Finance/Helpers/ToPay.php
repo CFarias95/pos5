@@ -72,6 +72,8 @@ class ToPay
             ->select('purchase_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('purchase_id');
 
+        $document_fee = DB::table('purchase_fee');
+
         $purchases = DB::connection('tenant')
             ->table('purchases')
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
@@ -79,6 +81,9 @@ class ToPay
             ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
             ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                 $join->on('purchases.id', '=', 'payments.purchase_id');
+            })
+            ->leftJoinSub($document_fee, 'fee', function ($join) {
+                $join->on('purchases.id', '=', 'fee.purchase_id');
             });
         if ($stablishmentTopaidAll !== 1) {
             if ($establishment_id != 0) {
@@ -93,6 +98,9 @@ class ToPay
             "CONCAT(purchases.series,'-',purchases.number) AS number_full, " .
             'purchases.total as total, ' .
             'purchases.user_id as user_id, ' .
+            " fee.amount as amount, " .
+            " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
+            " fee.id as fee_id, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ' .
             "'purchase' AS 'type', " . 'purchases.currency_type_id, ' . 'purchases.exchange_rate_sale');
         $purchases->select($select);
@@ -135,6 +143,9 @@ class ToPay
             'expenses.number as number_full, ' .
             'expenses.total as total, ' .
             'expenses.user_id as user_id, ' .
+            " 0 as amount, " .
+            " null as date, " .
+            " null as fee_id, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ';
         if ($d_start && $d_end) {
             $expenses
@@ -183,6 +194,9 @@ class ToPay
                 'bank_loans.total as total, ' .
                 // 'bank_loans.user_id as user_id, ' .
                 ' null as user_id, ' .
+                " 0 as amount, " .
+                " null as date, " .
+                " null as fee_id, " .
                 'IFNULL(payments.total_payment, 0) as total_payment, ';
             if ($d_start && $d_end) {
                 $bankLoans
@@ -271,6 +285,10 @@ class ToPay
                 else{
                     $date_payment_last = ExpensePayment::where('expense_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
                 }
+                $to_pay_fee = 0;
+                if($row->fee_id){
+                    $to_pay_fee = (PurchasePayment::where('fee_id',$row->fee_id)->get())->sum('payment');
+                }
 
                 return [
                     'id' => $row->id,
@@ -283,13 +301,14 @@ class ToPay
                     'total_payment' => number_format((float)$row->total_payment),
                     'total_subtraction' => $total_subtraction,
 
-                    'total_to_pay' => number_format($total_to_pay,2, ".", ""),
+                    'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
                     'type' => $row->type,
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
                     'delay_payment' => $delay_payment,
-                    'date_of_due' =>  $date_of_due,
+                    'date_of_due' =>  ($row->date)?$row->date:$date_of_due,
                     'currency_type_id' => $row->currency_type_id,
-                    'exchange_rate_sale' => (float)$row->exchange_rate_sale
+                    'exchange_rate_sale' => (float)$row->exchange_rate_sale,
+                    'fee_id' =>$row->fee_id
                 ];
         });
     }
