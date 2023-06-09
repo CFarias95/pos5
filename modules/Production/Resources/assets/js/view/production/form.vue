@@ -51,7 +51,8 @@
                                         <el-input-number
                                             v-model="form.quantity"
                                             :controls="false"
-                                            :min="0"
+                                            :min="this.min_force"
+                                            :max="this.max_force"
                                             :precision="precision"
                                             @change="handleChange($event)"
                                         ></el-input-number>
@@ -520,8 +521,8 @@ export default {
             machines: [],
             // JOINSOFTWARE
             quantityD: 0,
-            max_force: null,
-            min_force: null,
+            max_force: 1000,
+            min_force: 0,
             canEdit: true,
         }
     },
@@ -561,6 +562,11 @@ export default {
                 this.min_force = null;
                 this.max_force = null;
             }
+
+            if(this.form.quantity > this.max_force ||  this.form.quantity < this.min_force){
+                this.$message.error('Verifica la cantidad a producir en base a la maquina seleccionada');
+                this.form.quantity = 0;
+            }
         },
         onClose() {
             window.location.href = '/production'
@@ -574,7 +580,7 @@ export default {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
                         console.log("DATA: ",response.data)
-                        //this.supplies = this.form.supplies
+
                         let currentStatus = this.form.records_id;
                         switch (currentStatus) {
                             case '01':
@@ -586,11 +592,12 @@ export default {
                             case '02':
                                 this.deleteStatus("01")
                                 this.deleteStatus("04")
-
+                                this.supplies = this.form.supplies
                                 break;
                             case '03':
                                 this.deleteStatus("01")
                                 this.deleteStatus("02")
+                                this.supplies = this.form.supplies
                                 break;
                             case '04':
                                 this.records = []
@@ -598,6 +605,7 @@ export default {
                             default:
                                 break;
                         }
+
                         this.fetchMachineInfo();
 
                     })

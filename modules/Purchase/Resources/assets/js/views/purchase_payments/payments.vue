@@ -142,17 +142,17 @@
                             </tbody>
                             <tfoot>
                                 <tr>
-                                    <td colspan="6" class="text-right">TOTAL PAGADO</td>
+                                    <td colspan="6" class="text-right">{{ this.title1 }}</td>
                                     <td class="text-right">{{ purchase.total_paid }}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="6" class="text-right">TOTAL A PAGAR</td>
+                                    <td colspan="6" class="text-right">{{ this.title2 }}</td>
                                     <td class="text-right">{{ purchase.total }}</td>
                                     <td></td>
                                 </tr>
                                 <tr>
-                                    <td colspan="6" class="text-right">PENDIENTE DE PAGO</td>
+                                    <td colspan="6" class="text-right">{{ this.title3 }}</td>
                                     <td class="text-right">{{ purchase.total_difference }}</td>
                                     <td></td>
                                 </tr>
@@ -173,11 +173,14 @@
 import { deletable } from '@mixins/deletable'
 
 export default {
-    props: ['showDialog', 'purchaseId', 'customerId'],
+    props: ['showDialog', 'purchaseId', 'customerId','documentFeeId'],
     mixins: [deletable],
     data() {
         return {
             title: null,
+            title1:'TOTAL PAGADO',
+            title2:'TOTAL A PAGAR',
+            title3:'PENDIENTE DE PAGO',
             resource: 'purchase-payments',
             records: [],
             payment_destinations: [],
@@ -343,13 +346,18 @@ export default {
             this.showAddButton = true;
         },
         async getData() {
+            if(this.documentFeeId){
+                    this.title1 = "TOTAL PAGADO CUOTA"
+                    this.title2 = "TOTAL DOCUMENTO"
+                    this.title3 = "PENDIENTE DE PAGO CUOTA"
+                }
             this.initForm();
-            await this.$http.get(`/${this.resource}/purchase/${this.purchaseId}`)
+            await this.$http.get(`/${this.resource}/purchase/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
                     this.purchase = response.data;
                     this.title = 'Pagos de la compra: ' + this.purchase.number_full;
                 });
-            await this.$http.get(`/${this.resource}/records/${this.purchaseId}`)
+            await this.$http.get(`/${this.resource}/records/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
                     this.records = response.data.data
                     this.addAdvancesCustomer()
@@ -394,6 +402,7 @@ export default {
                 filename: this.records[index].filename,
                 temp_path: this.records[index].temp_path,
                 payment: this.records[index].payment,
+                fee_id:this.documentFeeId,
             }
 
             this.$http.post(`/${this.resource}`, form)

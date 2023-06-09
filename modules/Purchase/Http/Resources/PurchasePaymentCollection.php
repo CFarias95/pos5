@@ -23,6 +23,7 @@ class PurchasePaymentCollection extends ResourceCollection
                 'reference' => $row->reference,
                 'filename' => ($row->payment_file) ? $row->payment_file->filename:null,
                 'payment' => $row->payment,
+                'fee_id' =>$row->fee_id,
             ];
         });
     }

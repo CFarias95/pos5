@@ -657,10 +657,16 @@ use Modules\Sale\Models\SaleOpportunity;
 
                     $customer = Person::find($cabeceraC->person_id);
 
+                    $importP = Imports::find($document->import_id);
+                    $importCTA = '';
+
+                    if($importP && $importP->count() > 0 ){
+                        $importCTA = $importP->cuenta_contable;
+                    }
                     $detalle = new AccountingEntryItems();
 
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $detalle->account_movement_id =($importCTA != '')? $importCTA: (($customer->account) ? $customer->account : $configuration->cta_suppliers);
                     $detalle->seat_line = 1;
                     $detalle->haber = $document->total;
                     $detalle->debe = 0;
@@ -671,12 +677,20 @@ use Modules\Sale\Models\SaleOpportunity;
 
                     foreach($document->items as $key => $value){
 
+                        $importCTAItem = $value->import;
+                        $ctaImportItem = Imports::find($importCTAItem);
+                        $itemCTA = "";
+                        if($ctaImportItem && $ctaImportItem->count() > 0){
+                            $itemCTA = $ctaImportItem->cuenta_contable;
+                        }
+
                         $item = Item::find($value->item_id);
                         $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
 
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if($value->quantity > 0){
-                            if($item->purchase_cta){
+
+                            if($itemCTA == "" && $item->purchase_cta){
 
                                 if(array_key_exists($item->purchase_cta,$arrayEntrys)){
 
@@ -694,7 +708,25 @@ use Modules\Sale\Models\SaleOpportunity;
                                 }
                             }
 
-                            if(!($item->purchase_cta) && $configuration->cta_purchases){
+                            if($itemCTA != "" && !$item->purchase_cta){
+
+                                if(array_key_exists($itemCTA,$arrayEntrys)){
+
+                                    $arrayEntrys[$itemCTA]['debe'] += floatval($value->total_value);
+
+                                }
+                                if(!array_key_exists($itemCTA,$arrayEntrys)){
+                                    $n += 1;
+
+                                    $arrayEntrys[$itemCTA] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_value),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+
+                            if($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases){
 
                                 if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
 
@@ -795,7 +827,25 @@ use Modules\Sale\Models\SaleOpportunity;
                         //CONTABILIDAD PARA VALORES NEGATIVOS
                         if($value->quantity < 0 ){
 
-                            if($item->purchase_cta){
+                            if($itemCTA != "" && !$item->purchase_cta){
+
+                                if(array_key_exists($itemCTA ,$arrayEntrys)){
+
+                                    $arrayEntrys[$itemCTA ]['debe'] += floatval($value->total_value);
+
+                                }
+                                if(!array_key_exists($itemCTA ,$arrayEntrys)){
+                                    $n += 1;
+
+                                    $arrayEntrys[$itemCTA ] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_value),
+                                    ];
+                                }
+                            }
+
+                            if($itemCTA == "" && $item->purchase_cta){
 
                                 if(array_key_exists($item->purchase_cta,$arrayEntrys)){
 
@@ -813,7 +863,7 @@ use Modules\Sale\Models\SaleOpportunity;
                                 }
                             }
 
-                            if(!($item->purchase_cta) && $configuration->cta_purchases){
+                            if($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases){
 
                                 if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
 

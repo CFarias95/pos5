@@ -227,7 +227,7 @@
                                                     type="button"
                                                     style="min-width: 41px"
                                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                    @click.prevent="clickPurchasePayment(row.id, row.supplier_id)"
+                                                    @click.prevent="clickPurchasePayment(row.fee_id,row.id, row.supplier_id)"
                                                 >Pagos</button>
                                                 </template>
                                                 <template v-else>
@@ -257,6 +257,7 @@
             :purchaseId="recordId"
             :customerId="customerId"
             :external="true"
+            :documentFeeId = "feeID"
             ></purchase-payments>
 
         <expense-payments
@@ -285,6 +286,7 @@
                 suppliers: [],
                 recordId: null,
                 customerId: null,
+                feeID:null,
                 records:[],
                 establishments: [],
                 pickerOptionsDates: {
@@ -444,9 +446,10 @@
                     this.records = response.data.records;
                 });
             },
-            clickPurchasePayment(recordId,customer) {
+            clickPurchasePayment(feeID,recordId,customer) {
                 this.recordId = recordId;
                 this.customerId = customer;
+                this.feeID = feeID;
                 this.showDialogPurchasePayments = true;
             },
             clickExpensePayment(recordId) {

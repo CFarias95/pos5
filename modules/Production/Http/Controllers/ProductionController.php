@@ -601,8 +601,8 @@ class ProductionController extends Controller
                             $item_lots_groups = ItemSupplyLot::where('production_id', $production->id)->where("item_supply_id", $production_supply->item_supply_id)->where("lot_id", $lots["lot_id"])->first();
                             $item_lots_groups->item_supply_id = $production_supply->item_supply_id;
                             $item_lots_groups->item_supply_name = $item['description'];
-                            $item_lots_groups->lot_code = $lots["code"];
-                            $item_lots_groups->lot_id = $lots["lot_id"];
+                            $item_lots_groups->lot_code = ($lots["code"])?$lots["code"]:null;
+                            //$item_lots_groups->lot_id = (isset($lots["lot_id"]))?$lots["lot_id"]:null;
                             $item_lots_groups->production_name = $production->name;
                             $item_lots_groups->production_id = $production_id;
                             $item_lots_groups->quantity = $lots["compromise_quantity"];
