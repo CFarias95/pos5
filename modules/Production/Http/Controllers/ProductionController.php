@@ -681,7 +681,7 @@ class ProductionController extends Controller
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
                 $inventory_it->item_id = (isset($item['item_id']))?$item['item_id']:$item['individual_item_id'];
-                $inventory_it->warehouse_id = $production->warehouse_id;
+                $inventory_it->warehouse_id = (isset($item['warehouse_id']))?$item['warehouse_id']:$production->warehouse_id;
                 $inventory_it->quantity = (float) ($qty * $production->quantity);
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->save();
