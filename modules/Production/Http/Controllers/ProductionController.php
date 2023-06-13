@@ -663,7 +663,20 @@ class ProductionController extends Controller
             $inventory_it->warehouse_id = $production->warehouse_id;
             $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+            $inventory_it->lot_code = ($production->lote_code)?$production->lote_code:null;
             $inventory_it->save();
+
+            if($production->lote_code){
+                $item_lots_group = new ItemLotsGroup();
+                $item_lots_group->code = $production->lote_code;
+                $item_lots_group->quantity = $production->quantity;
+                $item_lots_group->item_id = $production->item_id;
+                $item_lots_group->date_of_due = $production->date_of_issue;
+                $item_lots_group->save();
+            }
+
+
+
         } catch (\Throwable $th) {
             throw $th;
         }
