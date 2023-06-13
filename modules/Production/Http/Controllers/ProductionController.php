@@ -1075,7 +1075,7 @@ class ProductionController extends Controller
     public function excel(Request $request)
     {
         // $records = $this->getData($request);
-        $records = $this->getRecords($request)->where('informative', 0)->get()->transform(function (Production $row) {
+        $records = $this->getRecords($request)->where('state_type_id', '03')->get()->transform(function (Production $row) {
             return $row->getCollectionData();
         });
 
@@ -1094,7 +1094,7 @@ class ProductionController extends Controller
     public function excel2(Request $request)
     {
         // $records = $this->getData($request);
-        $records = $this->getRecords($request)->where('informative', 1)->get()->transform(function (Production $row) {
+        $records = $this->getRecords($request)->where('state_type_id', '02')->get()->transform(function (Production $row) {
             return $row->getCollectionData();
         });
 
