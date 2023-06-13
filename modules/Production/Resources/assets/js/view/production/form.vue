@@ -639,6 +639,7 @@ export default {
         async getTable() {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
+                    console.log(`/${this.resource}/tables`,response)
                     let data = response.data
                     this.warehouses = data.warehouses
                     this.items = data.items

@@ -523,6 +523,7 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
+
             if ($production->state_type_id == '02') {
                 try {
                     foreach ($items_supplies as $item) {
@@ -621,6 +622,7 @@ class ProductionController extends Controller
                 }
             }
 
+            //Log::info("items: ", $items_supplies);
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                 $inventory_transaction_item = InventoryTransaction::findOrFail(101);
@@ -661,7 +663,20 @@ class ProductionController extends Controller
             $inventory_it->warehouse_id = $production->warehouse_id;
             $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+            $inventory_it->lot_code = ($production->lote_code)?$production->lote_code:null;
             $inventory_it->save();
+
+            if($production->lote_code){
+                $item_lots_group = new ItemLotsGroup();
+                $item_lots_group->code = $production->lote_code;
+                $item_lots_group->quantity = $production->quantity;
+                $item_lots_group->item_id = $production->item_id;
+                $item_lots_group->date_of_due = $production->date_of_issue;
+                $item_lots_group->save();
+            }
+
+
+
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -678,8 +693,8 @@ class ProductionController extends Controller
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
-                $inventory_it->item_id = $item['item_id'];
-                $inventory_it->warehouse_id = $production->warehouse_id;
+                $inventory_it->item_id = (isset($item['item_id']))?$item['item_id']:$item['individual_item_id'];
+                $inventory_it->warehouse_id = (isset($item['warehouse_id']))?$item['warehouse_id']:$production->warehouse_id;
                 $inventory_it->quantity = (float) ($qty * $production->quantity);
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->save();
@@ -687,11 +702,11 @@ class ProductionController extends Controller
                 if ($item["lots_group"]) {
                     $lots_group = $item["lots_group"];
                     foreach ($lots_group as $lots) {
-                        $item_lots_group = ItemLotsGroup::findOrFail($lots["lot_id"]);
+                        $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
                         if ($production->state_type_id == '04') {
-                            $item_lots_group->quantity += $lots["compromise_quantity"];
+                            $item_lots_group->quantity += isset($lots["compromise_quantity"])?$lots["compromise_quantity"]:0;
                         } else {
-                            $item_lots_group->quantity -= $lots["compromise_quantity"];
+                            $item_lots_group->quantity -= isset($lots["compromise_quantity"])?$lots["compromise_quantity"]:0;
                         }
                         $item_lots_group->save();
                     }
