@@ -622,7 +622,7 @@ class ProductionController extends Controller
                 }
             }
 
-            //Log::info("items: ", $items_supplies);
+
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                 $inventory_transaction_item = InventoryTransaction::findOrFail(101);
@@ -655,7 +655,7 @@ class ProductionController extends Controller
     {
         try {
             //esta función creará el inventario del producto terminado
-
+            Log::info("production: ".json_encode($production));
             $inventory_it = new Inventory();
             $inventory_it->type = null;
             $inventory_it->description = $inventory_transaction_item->name;
@@ -663,15 +663,16 @@ class ProductionController extends Controller
             $inventory_it->warehouse_id = $production->warehouse_id;
             $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-            $inventory_it->lot_code = ($production->lote_code)?$production->lote_code:null;
+            $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
             $inventory_it->save();
 
-            if($production->lote_code){
+            if(isset($production->lot_code) && $production->lot_code != ""){
+
                 $item_lots_group = new ItemLotsGroup();
-                $item_lots_group->code = $production->lote_code;
+                $item_lots_group->code = $production->lot_code;
                 $item_lots_group->quantity = $production->quantity;
                 $item_lots_group->item_id = $production->item_id;
-                $item_lots_group->date_of_due = $production->date_of_issue;
+                $item_lots_group->date_of_due = $production->date_end;
                 $item_lots_group->save();
             }
 
