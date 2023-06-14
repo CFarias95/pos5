@@ -15,7 +15,27 @@
 
                     <div class="row mt-2">
 
+                        <div class="d-flex">
+                            
+                        </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
+                            <!--<div style="width:100px">
+                                Filtrar por:
+                            </div>
+                            <el-select
+                                v-model="form.column"
+                                placeholder="Select"
+                                @change="changeClearInput"
+                            >
+                                <el-option
+                                    v-for="(label, key) in columns"
+                                    :key="key"
+                                    :value="key"
+                                    :label="label"
+                                ></el-option>
+                            </el-select>
+                            <br>
+                            <br>-->
 
                             <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i
                                     class="fa fa-file-excel"></i>
@@ -26,6 +46,8 @@
                                     class="fa fa-file-pdf"></i>
                                 Exportar PDF
                             </el-button>
+                            <br>
+                            <br>
 
                         </div>
 
@@ -45,7 +67,7 @@
                             </thead>
                             <tbody>
                                 <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
-                                    <tr v-for="(valor, dato) in row" :row="valor" class="" slot="heading" :key="dato">
+                                    <tr v-for="valor in row" :row="valor" class="" slot="heading">
                                         <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre">
                                             {{ obj }}
                                         </td>
@@ -65,13 +87,17 @@
 
 <script>
 
+import queryString from 'query-string'
 
 export default {
     data() {
         return {
             resource: 'reports/stock',
             form: {
+                column: null,
+                value: null
             },
+            columns: [],
             loading_submit: false,
             records: [],
             pagination: {},
@@ -115,8 +141,9 @@ export default {
 
         },
         getRecords() {
-            return this.$http.get(`/${this.resource}/datosSP`).then((response) => {
+            return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
+                //console.log('data',this.records)
                 this.almacenList = this.records[this.records.length - 1]
                 let len = this.records.length
                 this.records.splice(len-1,1)
@@ -124,6 +151,21 @@ export default {
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false
             });
+        },
+        getQueryParameters() {
+            /*if(this.records != null){
+                this.form.column = this.records.Codigointerno
+            }*/
+            return queryString.stringify({
+                page: this.pagination.current_page,
+                limit: this.limit,
+                ...this.form
+            })
+            
+        },
+        changeClearInput() {
+            this.search.value = "";
+            this.getRecords();
         },
     },
 }   
