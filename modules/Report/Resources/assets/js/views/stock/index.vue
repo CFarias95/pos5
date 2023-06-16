@@ -16,26 +16,23 @@
                     <div class="row mt-2">
 
                         <div class="d-flex">
-                            
+
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
-                            <!--<div style="width:100px">
+                            <!-- <div style="width:100px">
                                 Filtrar por:
                             </div>
-                            <el-select
-                                v-model="form.column"
-                                placeholder="Select"
-                                @change="changeClearInput"
+                            <el-input
+                                placeholder="Buscar"
+                                v-model="search.value"
+                                style="width: 100%;"
+                                prefix-icon="el-icon-search"
+                                @input="getRecords"
                             >
-                                <el-option
-                                    v-for="(label, key) in columns"
-                                    :key="key"
-                                    :value="key"
-                                    :label="label"
-                                ></el-option>
-                            </el-select>
+                            </el-input>
                             <br>
                             <br>-->
+                            
 
                             <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i
                                     class="fa fa-file-excel"></i>
@@ -59,16 +56,18 @@
                             <thead>
                                 <slot v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
                                     <tr slot="heading" :key="value">
-                                        <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class="" slot="heading" :key="name">
+                                        <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class=""
+                                            slot="heading" :key="name">
                                             <strong>{{ value1 }}</strong>
-                                        </th>                                                           
+                                        </th>
                                     </tr>
-                                </slot>                  
+                                </slot>
                             </thead>
                             <tbody>
                                 <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
                                     <tr v-for="valor in row" :row="valor" class="" slot="heading">
-                                        <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre">
+                                        <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj"
+                                            :key="nombre">
                                             {{ obj }}
                                         </td>
                                     </tr>
@@ -94,12 +93,13 @@ export default {
         return {
             resource: 'reports/stock',
             form: {
-                column: null,
-                value: null
+                //column: null,
+               //value: null
             },
-            columns: [],
+            //columns: [],
             loading_submit: false,
             records: [],
+            data: [],
             pagination: {},
             search: {},
             almacenList: [],
@@ -128,6 +128,9 @@ export default {
 
             this.form = {
             }
+            this.search = {
+                value: null
+            }
 
         },
         customIndex(index) {
@@ -143,30 +146,28 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                //console.log('data',this.records)
+                console.log('data',this.records)
                 this.almacenList = this.records[this.records.length - 1]
                 let len = this.records.length
-                this.records.splice(len-1,1)
+                this.records.splice(len - 1, 1)
                 this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false
             });
         },
         getQueryParameters() {
-            /*if(this.records != null){
-                this.form.column = this.records.Codigointerno
-            }*/
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
-                ...this.form
+                ...this.form,
+                ...this.search
             })
-            
         },
         changeClearInput() {
             this.search.value = "";
-            this.getRecords();
+            //this.getRecords();
         },
+        
     },
 }   
 </script>
