@@ -5,8 +5,10 @@ namespace Modules\Production\Http\Controllers;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
+use App\Models\Tenant\ItemSupply;
 use App\Models\Tenant\ItemSupplyLot;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\ProductionSupply;
@@ -17,6 +19,7 @@ use Illuminate\Database\Query\Builder;
 use Illuminate\Http\Request;
 use Illuminate\Http\Response;
 use Illuminate\Routing\Controller;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Finance\Traits\FinanceTrait;
@@ -1126,5 +1129,36 @@ class ProductionController extends Controller
 
         $filename = 'Reporte de produccion - ' . date('YmdHis');
         return $pdf->stream($filename . '.pdf');
+    }
+
+    public function pdf_Atributos($recordId)
+    {
+        //Log::info($recordId);
+        $company = Company::first();
+        $records = Item::find($recordId);
+        $usuario_log = Auth::user();
+        $fechaActual = date('d/m/Y');
+        //$insumos = Item::where('items.id', '=', $recordId)->leftJoin('item_supplies', 'items.id', '=', 'item_supplies.item_id')->get();
+        //Log::info($insumos);
+        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", /*"insumos"*/));
+
+        $filename = 'Listado_Atributos_' . date('YmdHis');
+
+        return $pdf->download($filename . '.pdf');
+    }
+
+    public function etiqueta(Request $request)
+    {
+
+        //$company = Company::first();
+        $records = Item::get();
+        $usuario_log = Auth::user();
+        $fechaActual = date('d/m/Y');
+
+        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records"/*, "company"*/, "usuario_log", "request"));
+
+        $filename = 'Listado_Atributos_' . date('YmdHis');
+
+        return $pdf->download($filename . '.pdf');
     }
 }

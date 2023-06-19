@@ -19,7 +19,7 @@
 
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
-                            <!-- <div style="width:100px">
+                            <!--<div style="width:100px">
                                 Filtrar por:
                             </div>
                             <el-input
@@ -27,7 +27,7 @@
                                 v-model="search.value"
                                 style="width: 100%;"
                                 prefix-icon="el-icon-search"
-                                @input="getRecords"
+                                @input="filtarData"
                             >
                             </el-input>
                             <br>
@@ -129,7 +129,7 @@ export default {
             this.form = {
             }
             this.search = {
-                value: null
+                //value: null
             }
 
         },
@@ -165,8 +165,24 @@ export default {
         },
         changeClearInput() {
             this.search.value = "";
-            //this.getRecords();
+            this.getRecords();
         },
+        /*filtarData()
+        {
+            this.records.forEach((row) =>{
+                row.forEach((obj) => {
+                    //console.log('dato', obj.Nombreproducto)
+                    if(this.search.value = obj.Nombreproducto)
+                    {
+                        console.log('dato', row)
+                    }
+                    else
+                    {
+                        console.log('No entra en if')
+                    }
+                })
+            })
+        }*/
         
     },
 }   

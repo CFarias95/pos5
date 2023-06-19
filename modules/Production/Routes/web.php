@@ -112,7 +112,8 @@
                     Route::get('/excel', 'ProductionController@excel');
                     Route::get('/excel2', 'ProductionController@excel2');
                     Route::get('/pdf', 'ProductionController@pdf');
-
+                    Route::get('/pdf_Atributos/{recordId}', 'ProductionController@pdf_Atributos');
+                    Route::get('/etiqueta/{recordId}', 'ProductionController@etiqueta');
                 });
                 Route::prefix('packaging')->group(function () {
                     Route::get('', 'PackagingController@index')->name('tenant.packaging.index'); // ->middleware('redirect.level');

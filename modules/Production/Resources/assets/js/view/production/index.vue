@@ -146,6 +146,8 @@
                                 <th>Fecha de registro</th>
                                 
                                 <th></th>
+                                <th></th>
+                                <th></th>
                             </tr>
                             </thead>
                             <tbody>
@@ -218,6 +220,20 @@
                                     </button>
 
                                 </td>
+                                <td>
+                                    <button
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        type="button"
+                                        @click.prevent="clickPDF(row.item_id)">PDF
+                                    </button>
+                                </td>
+                                <!--<td>
+                                    <button
+                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                        type="button"
+                                        @click.prevent="clickEtiqueta(row.id)">Etiqueta
+                                    </button>
+                                </td>-->
                             </tr>
                             </tbody>
                         </table>
@@ -386,6 +402,14 @@ export default {
 
             // this.recordId = recordId
             // this.showDialog = true
+        },
+        clickPDF(recordId)
+        {
+            window.open(`/${this.resource}/pdf_Atributos/${recordId}`, '_blank');
+        },
+        clickEtiqueta(recordId)
+        {
+            window.open(`/${this.resource}/etiqueta/${recordId}`, '_blank');
         },
         clickImportSet() {
             this.showImportSetDialog = true

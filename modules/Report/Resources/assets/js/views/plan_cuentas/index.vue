@@ -3,14 +3,14 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Asientos Contables</span></li>
+                <li class="active"><span>Plan Cuentas</span></li>
             </ol>
         </div>
         <div class="card-header bg-info">
             <div class="card mb-0 pt-2 pt-md-0">
                 <div class="card mb-0">
                     <div class="card-header bg-info py-1">
-                        <h4 class="my-0">Imprimir en PDF</h4>
+                        <h4 class="my-0">Plan Cuentas</h4>
                     </div>
                 </div>
             </div>
