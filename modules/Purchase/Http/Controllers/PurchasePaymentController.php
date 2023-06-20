@@ -50,7 +50,7 @@ class PurchasePaymentController extends Controller
         $total = $purchase->total;
         $total_difference = round($total - $total_paid, 2);
 
-        if(isset($fee_id) && $fee_id != 'undefined'){
+        if(isset($fee_id) && $fee_id != 'undefined' && $fee_id != null){
 
             $cuota = PurchaseFee::find($fee_id)->amount;
 
@@ -73,6 +73,7 @@ class PurchasePaymentController extends Controller
         $id = $request->input('id');
 
         $fee = PurchaseFee::where('purchase_id', $request->purchase_id)->orderBY('date')->get();
+
         if($fee->count() > 0 ){
             $valorPagar = $request->payment;
             $fee_id = $request->input('fee_id');
