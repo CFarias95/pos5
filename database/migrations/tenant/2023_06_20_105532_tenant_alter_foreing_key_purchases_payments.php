@@ -15,7 +15,8 @@ class TenantAlterForeingKeyPurchasesPayments extends Migration
     {
         Schema::table('purchase_payments', function (Blueprint $table) {
 
-            $table->foreign('fee_id')->references('id')->on('purchase_fee')->onDelete('cascade')->change();
+            $table->dropForeign('purchase_payments_fee_id_foreign');
+            $table->foreign('fee_id')->references('id')->on('purchase_fee')->onDelete('cascade');
 
         });
 
