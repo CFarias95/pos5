@@ -1148,17 +1148,18 @@ class ProductionController extends Controller
         return $pdf->download($filename . '.pdf');
     }
 
-    public function etiqueta(Request $request)
+    public function etiqueta($recordId)
     {
 
-        //$company = Company::first();
-        $records = Item::get();
-        $usuario_log = Auth::user();
+        $company = Company::first();
+        $records = Item::find($recordId);
+        //$usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
+        $produccion =  Production::where('item_id', '=', $recordId)->get();
 
-        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records"/*, "company"*/, "usuario_log", "request"));
+        $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
 
-        $filename = 'Listado_Atributos_' . date('YmdHis');
+        $filename = 'Etiquetas_2x1_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }

@@ -147,7 +147,7 @@
                                 
                                 <th></th>
                                 <th>Atributos PDF</th>
-                                <!--<th></th>-->
+                                <!--<th>Etiquetas</th>-->
                             </tr>
                             </thead>
                             <tbody>
