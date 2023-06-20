@@ -143,12 +143,12 @@ class TechnicalServiceController extends Controller
         $temp = tempnam(sys_get_temp_dir(), $type);
         file_put_contents($temp, file_get_contents($file));
 
-        
+
         $mime = mime_content_type($temp);
         $data = file_get_contents($temp);
-       
+
         Storage::disk('tenant')->put('technical_service_attached/'.$file->getClientOriginalName(),$data);
-        
+
         return [
             'success' => true,
             'data' => [
@@ -330,7 +330,7 @@ class TechnicalServiceController extends Controller
 
             $data = $this->mergeData($request);
             $tc_id = ($request->has('id')) ? $request->id : null;
-            
+
             $tech_preview = TechnicalService::find($request->input('id'));
             $pdf_name = ($tech_preview && $tech_preview->upload_filename) ? $tech_preview->upload_filename : null;
             $technical_service = TechnicalService::updateOrCreate(['id' => $request->input('id')], $data);
@@ -357,9 +357,12 @@ class TechnicalServiceController extends Controller
             $this->createPdf($this->technical_service, "a4", $this->technical_service->filename);
 
             $cash = Cash::query()->where([['user_id', auth()->id()], ['state', true]])->first();
-            $cash->cash_documents()->create([
-                'technical_service_id' => $this->technical_service->id
-            ]);
+            if( $cash->count() > 0 ){
+                $cash->cash_documents()->create([
+                    'technical_service_id' => $this->technical_service->id
+                ]);
+            }
+
         });
 
         return [
@@ -517,9 +520,9 @@ class TechnicalServiceController extends Controller
     public function download($id){
 
         $technical_service1 = TechnicalService::where('id', $id)->first();
-    
+
         if (!$technical_service1) throw new Exception("El código {$id} es inválido, no se encontro la orden de compra relacionada");
-    
+
         return Storage::disk('tenant')->download('technical_service_attached'.DIRECTORY_SEPARATOR.$technical_service1->upload_filename);
 
     }
