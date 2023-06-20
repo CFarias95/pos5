@@ -357,7 +357,7 @@ class TechnicalServiceController extends Controller
             $this->createPdf($this->technical_service, "a4", $this->technical_service->filename);
 
             $cash = Cash::query()->where([['user_id', auth()->id()], ['state', true]])->first();
-            if( $cash->count() > 0 ){
+            if(isset($cash) && $cash->count() > 0 ){
                 $cash->cash_documents()->create([
                     'technical_service_id' => $this->technical_service->id
                 ]);
