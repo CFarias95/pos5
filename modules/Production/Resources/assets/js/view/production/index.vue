@@ -231,7 +231,7 @@
                                     <button
                                         class="btn waves-effect waves-light btn-xs btn-info"
                                         type="button"
-                                        @click.prevent="clickEtiqueta(row.id)">Etiqueta
+                                        @click.prevent="clickEtiqueta(row.item_id)">Etiqueta
                                     </button>
                                 </td>-->
                             </tr>

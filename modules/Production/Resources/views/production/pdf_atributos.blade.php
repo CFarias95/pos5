@@ -88,12 +88,17 @@ $logo = "storage/uploads/logos/{$company->logo}";
             <br>
             <label><strong>Lote:</strong> {{$records->lot_code}}</label>
             <br>
-            <label><strong>LoteF. Elaboracion:</strong> {{$records->created_at}}</label>
+            <label><strong>LoteF. Elaboracion:</strong> {{$fechas[0]->date_start}}</label>
             <br>
-            <label><strong>LoteF. Vencimiento:</strong> {{$records->date_of_due}}</label>
+            <label><strong>LoteF. Vencimiento:</strong> {{$fechas[0]->date_end}}</label>
             <br>
         </div>
-        
+        <div>
+            <label><strong>Ingregientes/Insumos: </strong></label>
+            @foreach($insumos as $insumo)
+                <label>{{$insumo->name}};</label>
+            @endforeach
+        </div>
         </div>
         @if(!empty($records))
             <div class="">

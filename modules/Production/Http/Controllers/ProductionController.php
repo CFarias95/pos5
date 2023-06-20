@@ -1133,14 +1133,15 @@ class ProductionController extends Controller
 
     public function pdf_Atributos($recordId)
     {
-        //Log::info($recordId);
         $company = Company::first();
         $records = Item::find($recordId);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
-        //$insumos = Item::where('items.id', '=', $recordId)->leftJoin('item_supplies', 'items.id', '=', 'item_supplies.item_id')->get();
-        //Log::info($insumos);
-        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", /*"insumos"*/));
+        $fechas =  Production::where('item_id', '=', $recordId)->get();
+        $insumos = ItemSupply::where('item_id', '=', $recordId)
+            ->leftJoin('items', 'item_supplies.individual_item_id','=','items.id')->get();
+        Log::info($fechas);
+        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "insumos", "fechas"));
 
         $filename = 'Listado_Atributos_' . date('YmdHis');
 
