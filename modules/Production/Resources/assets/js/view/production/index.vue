@@ -146,8 +146,8 @@
                                 <th>Fecha de registro</th>
                                 
                                 <th></th>
-                                <th></th>
-                                <th></th>
+                                <th>Atributos PDF</th>
+                                <!--<th></th>-->
                             </tr>
                             </thead>
                             <tbody>
