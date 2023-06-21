@@ -131,7 +131,6 @@ class UnpaidController extends Controller
     public function pdf(Request $request) {
 
         $records = $this->transformRecords((new DashboardView())->getUnpaidFilterUser($request->all())->get());
-
         $company = Company::first();
 
 
