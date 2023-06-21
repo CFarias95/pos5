@@ -1,5 +1,37 @@
 @php
 $logo = "storage/uploads/logos/{$company->logo}";
+$atributos = $records->attributes;
+$bpm = null;
+$psn = null;
+$em = null;
+$array1 = [];
+$array2 = [];
+foreach ($atributos as $key => $value) {
+    if($value->attribute_type_id == 'BPM')
+    {
+        $bpm = $value->value;
+    }
+    if($value->attribute_type_id == 'PSN')
+    {
+        $psn = $value->value;
+    }
+    if($value->attribute_type_id == 'EM')
+    {
+        $em = $value->value;
+    }
+    if(starts_with($value->attribute_type_id, 'ET'))
+    {
+        $array1[] = $value; 
+    }
+    if(starts_with($value->attribute_type_id, 'CM'))
+    {
+        
+        $value->resultdo = str_before($value->value, ' || ');
+        $value->metodo = str_after($value->value, ' || ');
+        $array2[] = $value;
+    }
+}
+
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -8,7 +40,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Listado de Atributos</title>
+        <title>Certificado de Calidad</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -80,7 +112,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
             </div>
         </div>
         <div>
-            <h2 align="center" class="title"><strong>Listado de Atributos</strong></h2>
+            <h2 align="center" class="title"><strong>Certificado de Calidad</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
         <div>
@@ -88,9 +120,11 @@ $logo = "storage/uploads/logos/{$company->logo}";
             <br>
             <label><strong>Lote:</strong> {{$records->lot_code}}</label>
             <br>
-            <label><strong>LoteF. Elaboracion:</strong> {{$fechas[0]->date_start}}</label>
+            <label><strong>F. Elaboracion:</strong> {{$fechas[0]->date_start}}</label>
             <br>
-            <label><strong>LoteF. Vencimiento:</strong> {{$fechas[0]->date_end}}</label>
+            <label><strong>F. Vencimiento:</strong> {{$fechas[0]->date_end}}</label>
+            <br>
+            <label><strong>BPM:</strong>{{$bpm}}</label>
             <br>
         </div>
         <div>
@@ -103,6 +137,8 @@ $logo = "storage/uploads/logos/{$company->logo}";
         @if(!empty($records))
             <div class="">
                 <div class=" ">
+                    <label><strong>Características Físico-Químicas:</strong></label>
+                    <br>
                     <table class="">
                         <thead>
                             <tr>
@@ -111,7 +147,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($records->attributes as $row)
+                            @foreach($array1 as $row)
                                 <tr>
                                     <td class="celda">{{$row->description}}</td>
                                     <td class="celda">{{$row->value}}</td> 
@@ -119,8 +155,34 @@ $logo = "storage/uploads/logos/{$company->logo}";
                             @endforeach
                         </tbody>
                     </table>
+                    <br>
+                    <br>
+                    <label><strong>Características Microbiológicas:</strong></label>
+                    <br>
+                    <table class="">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Ensayo</th>
+                                <th class="text-center">Resultado</th>
+                                <th class="text-center">Método</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($array2 as $row)
+                                <tr>
+                                    <td class="celda">{{$row->description}}</td>
+                                    <td class="celda">{{$row->resultdo}}</td> 
+                                    <td class="celda">{{$row->metodo}}</td> 
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
                 </div>
             </div>
+            <br>
+            <label><strong>Empaque:</strong>{{$em}}</label>
+            <br>
+            <label><strong>Peso Neto:</strong>{{$psn}}</label>
             <br>
             <br>
             <br>
@@ -129,9 +191,9 @@ $logo = "storage/uploads/logos/{$company->logo}";
             <br>
             <div>
                 <p alignment="center">________________________</p>
-                <p alignment="center">{{ $usuario_log->name }}</p>
-                <br>
-                <p alignment="center">{{ $company->name }}</p>                
+                <p alignment="center">Ing. Leonardo Cajiao</p>
+                <p alignment="center">DEPARTAMENTO CALIDAD</p>
+                <p alignment="center">{{$company->name}}</p>
             </div>
         @else
             <div class="callout callout-info">

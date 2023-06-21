@@ -147,7 +147,7 @@
                                 
                                 <th></th>
                                 <th>Atributos PDF</th>
-                                <!--<th>Etiquetas</th>-->
+                                <th>Etiquetas</th>
                             </tr>
                             </thead>
                             <tbody>
@@ -227,13 +227,13 @@
                                         @click.prevent="clickPDF(row.item_id)">PDF
                                     </button>
                                 </td>
-                                <!--<td>
+                                <td>
                                     <button
                                         class="btn waves-effect waves-light btn-xs btn-info"
                                         type="button"
                                         @click.prevent="clickEtiqueta(row.item_id)">Etiqueta
                                     </button>
-                                </td>-->
+                                </td>
                             </tr>
                             </tbody>
                         </table>

@@ -1143,7 +1143,7 @@ class ProductionController extends Controller
         Log::info($fechas);
         $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "insumos", "fechas"));
 
-        $filename = 'Listado_Atributos_' . date('YmdHis');
+        $filename = 'Certifiicado_Calidad_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }
@@ -1155,11 +1155,12 @@ class ProductionController extends Controller
         $records = Item::find($recordId);
         //$usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
+        $fechas =  Production::where('item_id', '=', $recordId)->get();
         $produccion =  Production::where('item_id', '=', $recordId)->get();
 
-        $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
+        $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion", "fechas"));
 
-        $filename = 'Etiquetas_2x1_' . date('YmdHis');
+        $filename = 'Etiquetas_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }

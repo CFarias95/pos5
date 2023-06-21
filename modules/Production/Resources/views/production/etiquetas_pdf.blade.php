@@ -1,5 +1,34 @@
 @php
-$image = "storage/uploads/logos/{$records->image_small}";
+$logo = "storage/uploads/logos/{$company->logo}";
+$atributos = $records->attributes;
+$bpm = null;
+$psn = null;
+$em = null;
+$array1 = [];
+$array2 = [];
+foreach ($atributos as $key => $value) {
+    if($value->attribute_type_id == 'BPM')
+    {
+        $bpm = $value->value;
+    }
+    if($value->attribute_type_id == 'PSN')
+    {
+        $psn = $value->value;
+    }
+    if($value->attribute_type_id == 'EM')
+    {
+        $em = $value->value;
+    }
+    if(starts_with($value->attribute_type_id, 'ET'))
+    {
+        $array1[] = $value; 
+    }
+    if(starts_with($value->attribute_type_id, 'CM'))
+    {
+        $array2[] = $value;
+    }
+}
+
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -14,26 +43,6 @@ $image = "storage/uploads/logos/{$records->image_small}";
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
-            table {
-                width: 100%;
-                border-spacing: 0;
-                border: 1px solid black;
-            }
-            
-            .celda {
-                text-align: center;
-                padding: 5px;
-                border: 0.1px solid black;
-            }
-            
-            th {
-                padding: 5px;
-                text-align: center;
-                border-color: #0088cc;
-                border: 0.1px solid black;
-            }
-            
             .title {
                 font-weight: bold;
                 padding: 5px;
@@ -45,99 +54,63 @@ $image = "storage/uploads/logos/{$records->image_small}";
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
-            thead {
-                font-weight: bold;
-                background: #0088cc;
-                color: white;
-                text-align: center;
-            }
             p {
                 text-align:center;
             }
             img {
-                text-align:center;
+
+                align-items: center
             }
-            hr {
+            .card {
+                border: 1px solid #000;
+                padding: 10px;
+                width: 450px;
+            }
+            .card img {
                 display: block;
-                margin-top: 0.5em;
-                margin-bottom: 0.5em;
-                margin-left: auto;
-                margin-right: auto;
-                border-style: inset;
-                border-width: 1px;
+                margin: 0 auto;
             }
             .container {
                 display: flex;
-                
+                justify-content: center;
+                align-items: center;  
             }
-
         </style>
     </head>
     <body>
         <div class="container">
-            <div id="column_1">
-                <img src = "data:{{mime_content_type(public_path("{$image}"))}};base64, {{base64_encode(file_get_contents(public_path("{$image}")))}}" alt="{{$records->name}}" class="" style="margin-left: 50px; padding-bottom: 0px; max-width: 150px" >
-            </div>
-        </div>
-        <div>
-            <h2 align="center" class="title"><strong>Etiquetas</strong></h2>
-        </div>
-        <div style="margin-top:20px; margin-bottom:20px;">
-        <div>
-            <label><strong>Producto:</strong> {{$records->name}}</label>
-            <br>
-            <label><strong>Lote:</strong> {{$records->lot_code}}</label>
-            <br>
-            <label><strong>LoteF. Elaboracion:</strong> {{$fechas[0]->date_start}}</label>
-            <br>
-            <label><strong>LoteF. Vencimiento:</strong> {{$fechas[0]->date_end}}</label>
-            <br>
-        </div>
-        <div>
-            <label><strong>Ingregientes/Insumos: </strong></label>
-            @foreach($insumos as $insumo)
-                <label>{{$insumo->name}};</label>
-            @endforeach
-        </div>
-        </div>
-        @if(!empty($records))
-            <div class="">
-                <div class=" ">
-                    <table class="">
-                        <thead>
-                            <tr>
-                                <th class="text-center">Categoria</th>
-                                <th class="text-center">Descripción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($records->attributes as $row)
-                                <tr>
-                                    <td class="celda">{{$row->description}}</td>
-                                    <td class="celda">{{$row->value}}</td> 
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
+            <div class="card">
+                <div class="card-body">
+                    <br>
+                    <img src = "data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$records->name}}" class="" style="margin-center: 300px; padding-bottom: 0px; max-width: 150px" >
+                    <br>
+                    <p><strong>{{$records->name}}</strong>  <strong>000{{$records->id}}</strong></p>
+                    <p><strong>Peso: {{$psn}}</strong></p>
+                    <p><strong>Lote: {{$records->lot_code}}</strong></p>
+                    <p><strong>Fecha de Producción: {{$fechas[0]->date_start}}</strong></p>
+                    <p><strong>Fecha de Caducidad: {{$records->date_of_due}}</strong></p>
+                    <label><strong>PRODUCTO IMPORTADO, DISTRIBUIDO, Y COMERCIALIZADO POR {{$company->name}}</strong></label>
                 </div>
             </div>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div>
-                <p alignment="center">________________________</p>
-                <p alignment="center">{{ $usuario_log->name }}</p>
-                <br>
-                <p alignment="center">{{ $company->name }}</p>                
+        </div>
+        
+        <br>
+        <br>
+        <div class="container">
+            <div class="card">
+                <div class="card-body">
+                    <br>
+                    <img src = "data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$records->name}}" class="" style="margin-center: 300px; padding-bottom: 0px; max-width: 150px" >
+                    <br>
+                    <p><strong>{{$records->name}}</strong>  <strong>000{{$records->id}}</strong></p>
+                    <p><strong>Peso: {{$psn}}</strong></p>
+                    <p><strong>Lote: {{$records->lot_code}}</strong></p>
+                    <p><strong>Fecha de Producción: {{$fechas[0]->date_start}}</strong></p>
+                    <p><strong>Fecha de Caducidad: {{$records->date_of_due}}</strong></p>
+                    <label><strong>PRODUCTO IMPORTADO, DISTRIBUIDO, Y COMERCIALIZADO POR {{$company->name}}</strong></label>
+                </div>
             </div>
-        @else
-            <div class="callout callout-info">
-                <p>No se encontraron registros.</p>
-            </div>
-        @endif
+        </div>
+        
     </body>
 </html>
