@@ -1071,6 +1071,22 @@
                                                 <a class="nav-link"
                                                    href="{{route('tenant.typesaccountingentries.index')}}">Estracto de cuentas</a>
                                             </li>
+                                            <li class="{{ ($firstLevel === 'balance-comprobacion')?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.balance_comprobacion.index')}}">Balance Comprobación</a>
+                                            </li>
+                                            <li class="{{ ($firstLevel === 'balance-general')?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.balance_general.index')}}">Balance General</a>
+                                            </li>
+                                            <li class="{{ ($firstLevel === 'extracto-cuentas')?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.extracto_cuentas.index')}}">Extracto Cuentas</a>
+                                            </li>
+                                            <li class="{{ ($firstLevel === 'mayor-contable')?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.mayor_contable.index')}}">Mayor Contable</a>
+                                            </li>                                   
                                         </ul>
                                     </li>
                                 @endif

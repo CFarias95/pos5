@@ -278,6 +278,81 @@ if ($hostname) {
                 Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');
             });
 
+            //SPs
+            /*Route::prefix('asientos-contables')->group(function () {
+                Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index');
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');
+                Route::get('', 'Tenant\AsientosContablesController@index')->name('tenant.asientos_contables.index');
+                Route::get('records', 'Tenant\AsientosContablesController@records');
+                Route::get('excel', 'Tenant\AsientosContablesController@excel');
+                Route::get('pdf', 'Tenant\AsientosContablesController@pdf');
+                Route::get('datosSP', 'Tenant\AsientosContablesController@datosSP');
+            });*/
+            Route::prefix('extracto-cuentas')->group(function () {
+                /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');*/
+                Route::get('', 'Tenant\ExtractoCuentasController@index')->name('tenant.extracto_cuentas.index');
+                Route::get('records', 'Tenant\ExtractoCuentasController@records');
+                Route::get('excel', 'Tenant\ExtractoCuentasController@excel');
+                Route::get('pdf', 'Tenant\ExtractoCuentasController@pdf');
+                Route::get('datosSP', 'Tenant\ExtractoCuentasController@datosSP');
+            });
+            Route::prefix('balance-comprobacion')->group(function () {
+                /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');*/
+                Route::get('', 'Tenant\BalanceComprobacionController@index')->name('tenant.balance_comprobacion.index');
+                Route::get('records', 'Tenant\BalanceComprobacionController@records');
+                Route::get('excel', 'Tenant\BalanceComprobacionController@excel');
+                Route::get('pdf', 'Tenant\BalanceComprobacionController@pdf');
+                Route::get('datosSP', 'Tenant\BalanceComprobacionController@datosSP');
+            });
+            Route::prefix('mayor-contable')->group(function () {
+                /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');*/
+                Route::get('', 'Tenant\MayorContableController@index')->name('tenant.mayor_contable.index');
+                Route::get('records', 'Tenant\MayorContableController@records');
+                Route::get('excel', 'Tenant\MayorContableController@excel');
+                Route::get('pdf', 'Tenant\MayorContableController@pdf');
+                Route::get('datosSP', 'Tenant\MayorContableController@datosSP');
+            });
+            Route::prefix('balance-general')->group(function () {
+                /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');*/
+                Route::get('', 'Tenant\BalanceGeneralController@index')->name('tenant.balance_general.index');
+                Route::get('records', 'Tenant\BalanceGeneralController@records');
+                Route::get('excel', 'Tenant\BalanceGeneralController@excel');
+                Route::get('pdf', 'Tenant\BalanceGeneralController@pdf');
+                Route::get('datosSP', 'Tenant\BalanceGeneralController@datosSP');
+            });
+            /*Route::prefix('')->group(function () {
+                Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');
+            });*/
+
             //cuentas movimientos
             Route::prefix('accounts-movements')->group(function () {
                 Route::get('', 'Tenant\AccountMovementController@index')->name('tenant.accountsmovements.index')->middleware(['redirect.level', 'tenant.internal.mode']);

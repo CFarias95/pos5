@@ -8,7 +8,8 @@
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\DB;
-    use Modules\Inventory\Exports\InventoryTransferExport;
+use Illuminate\Support\Facades\Log;
+use Modules\Inventory\Exports\InventoryTransferExport;
     use Modules\Inventory\Http\Resources\TransferCollection;
     use Modules\Inventory\Http\Resources\TransferResource;
     use Modules\Inventory\Models\Inventory;

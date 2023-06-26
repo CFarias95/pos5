@@ -486,6 +486,14 @@ Vue.component('tenant-accountgroups-index', require('./views/tenant/account_grou
 Vue.component('tenant-accountmovements-index', require('./views/tenant/account_movements/index.vue'));
 Vue.component('tenant-typesaccountingentries-index', require('./views/tenant/types_accounting_entries/index.vue'));
 
+//SPs contabilidad
+//Vue.component('tenant-asientos_contables-index', require('./views/tenant/asientos_contables/index.vue'));
+Vue.component('tenant-extracto_cuentas-index', require('./views/tenant/extracto_cuentas/index.vue'));
+Vue.component('tenant-balance_comprobacion-index', require('./views/tenant/balance_comprobacion/index.vue'));
+Vue.component('tenant-mayor_contable-index', require('./views/tenant/mayor_contable/index.vue'));
+Vue.component('tenant-balance_general-index', require('./views/tenant/balance_general/index.vue'));
+//Vue.component('tenant-typesaccountingentries-index', require('./views/tenant/types_accounting_entries/index.vue'));
+
 //Lista tarifas
 Vue.component('tenant-ratelists-index', require('./views/tenant/rates/index.vue'));
 
