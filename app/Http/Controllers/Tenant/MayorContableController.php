@@ -39,9 +39,9 @@ class MayorContableController extends Controller
 
     public function datosSP(Request $request)
     {
-        Log::info($request);
-        $sp = DB::connection('tenant')->select("CALL SP_Extractocuenta(?,?,?);", [$request->date_start, $request->date_end,  $request->cuenta]);
-        Log::info($sp);
+        //Log::info($request);
+        $sp = DB::connection('tenant')->select("CALL SP_Mayorcontable(?,?,?);", [$request->date_start, $request->date_end,  $request->cuenta]);
+        //Log::info($sp);
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;

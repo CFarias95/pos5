@@ -39,9 +39,18 @@ class BalanceGeneralController extends Controller
 
     public function datosSP(Request $request)
     {
-        Log::info($request);
-        $sp = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?);", [$request->d, $request->date_start, $request->date_end]);
-        Log::info($sp);
+        $detalle = null;
+        //Log::info($request);
+        if($request->d == 'true')
+        {
+            $detalle = 1;
+        };
+        if($request->d == 'false'){
+            $detalle = 0;
+        }
+        //Log::info($detalle);
+        $sp = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
+        //Log::info($sp);
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;

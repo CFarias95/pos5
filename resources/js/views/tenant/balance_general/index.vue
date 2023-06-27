@@ -25,8 +25,10 @@
                                 value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
                         <div class="col-md-3">
-                            <label class="control-label">Mostrar Detalle</label>
-                            <el-input v-model="form.d" type="text"></el-input>
+                            <label class="control-label">Mostrar Detalle?</label>
+                            <!--<el-input v-model="form.d" type="text"></el-input>-->
+                            <br>
+                            <el-checkbox v-model="form.d">Si</el-checkbox>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
@@ -133,7 +135,7 @@ export default {
         initForm() {
 
             this.form = {
-                d: null,
+                d: false,
                 date_start: moment().format('YYYY-MM-DD'),
                 date_end: moment().format('YYYY-MM-DD'),
             }

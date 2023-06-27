@@ -1079,6 +1079,10 @@
                                                 <a class="nav-link"
                                                    href="{{route('tenant.balance_general.index')}}">Balance General</a>
                                             </li>
+                                            <li class="{{ ($firstLevel === 'balance-general')?'nav-active':'' }}">
+                                                <a class="nav-link"
+                                                   href="{{route('tenant.balance_resultados.index')}}">Balance Resultados</a>
+                                            </li>
                                             <li class="{{ ($firstLevel === 'extracto-cuentas')?'nav-active':'' }}">
                                                 <a class="nav-link"
                                                    href="{{route('tenant.extracto_cuentas.index')}}">Extracto Cuentas</a>

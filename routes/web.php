@@ -344,6 +344,19 @@ if ($hostname) {
                 Route::get('pdf', 'Tenant\BalanceGeneralController@pdf');
                 Route::get('datosSP', 'Tenant\BalanceGeneralController@datosSP');
             });
+            Route::prefix('balance-resultados')->group(function () {
+                /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
+                Route::get('/columns', 'Tenant\AccountGroupController@columns');
+                Route::get('/records', 'Tenant\AccountGroupController@records');
+                Route::get('/record/{person}', 'Tenant\AccountGroupController@record');
+                Route::post('', 'Tenant\AccountGroupController@store');
+                Route::delete('/{person}', 'Tenant\AccountGroupController@destroy');*/
+                Route::get('', 'Tenant\BalanceResultadosController@index')->name('tenant.balance_resultados.index');
+                Route::get('records', 'Tenant\BalanceResultadosController@records');
+                Route::get('excel', 'Tenant\BalanceResultadosController@excel');
+                Route::get('pdf', 'Tenant\BalanceResultadosController@pdf');
+                Route::get('datosSP', 'Tenant\BalanceResultadosController@datosSP');
+            });
             /*Route::prefix('')->group(function () {
                 Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
                 Route::get('/columns', 'Tenant\AccountGroupController@columns');

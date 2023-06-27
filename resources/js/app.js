@@ -492,6 +492,7 @@ Vue.component('tenant-extracto_cuentas-index', require('./views/tenant/extracto_
 Vue.component('tenant-balance_comprobacion-index', require('./views/tenant/balance_comprobacion/index.vue'));
 Vue.component('tenant-mayor_contable-index', require('./views/tenant/mayor_contable/index.vue'));
 Vue.component('tenant-balance_general-index', require('./views/tenant/balance_general/index.vue'));
+Vue.component('tenant-balance_resultados-index', require('./views/tenant/balance_resultados/index.vue'));
 //Vue.component('tenant-typesaccountingentries-index', require('./views/tenant/types_accounting_entries/index.vue'));
 
 //Lista tarifas
