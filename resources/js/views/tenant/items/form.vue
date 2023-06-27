@@ -1316,6 +1316,10 @@
                                     </tr>
                                     </tbody>
                                 </table>
+                                <!--<div>
+                                    <label><strong>Total a producir:</strong></label>
+                                    <label @change="sumaProducir">{{ total_producir }}<strong></strong></label>
+                                </div>-->
                             </div>
                         </div>
 
@@ -1606,6 +1610,8 @@ export default {
             concepts : [],
             accounts: [],
             rates: [],
+            /*total: null,
+            cantidad_producir: [],*/
         }
     },
     async created() {
@@ -1668,6 +1674,11 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
+        /*sumaProducir(){
+            this.form.supplies.forEach((row) => {
+                this.total_producir += row.percentage_decimal;
+            })
+        },*/
         setDefaultConfiguration() {
             this.form.sale_affectation_igv_type_id = (this.config) ? this.config.affectation_igv_type_id : '10'
 
