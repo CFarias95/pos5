@@ -26,20 +26,22 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label"># Cuenta</label>
-                            <el-input v-model="form.cuenta" type="text"></el-input>
+                            <el-select v-model="form.cuenta" clearable>
+                                <el-option v-for="codigo in cuentas" :key="codigo" :value="codigo" :label="codigo"></el-option>
+                            </el-select>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
                                 @click.prevent="getRecordsByFilter">Buscar
                             </el-button>
 
-                            <!--<el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
+                            <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
                                 Exportar Excel
                             </el-button>
 
                             <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"><i class="fa fa-file-pdf"></i>
                                 Exportar PDF
-                            </el-button>-->
+                            </el-button>
 
                         </div>
 
@@ -76,10 +78,10 @@
                                         <td>{{ row[0].fecha }}</td>
                                         <td>{{ row[0].Serie }}</td>
                                         <td>{{ row[0].Numero }}</td>
-                                        <td>{{ row[0].Debe }}</td>
-                                        <td>{{ row[0].Haber }}</td>
+                                        <td>{{ row[0].Debe.toFixed(2) }}</td>
+                                        <td>{{ row[0].Haber.toFixed(2) }}</td>
                                         <td>{{ row[0].C_C }}</td>
-                                        <td>{{ row[0].Id_Persona }}</td>
+                                        <td>{{ row[0].Id_persona }}</td>
                                         <td>{{ row[0].Nombre_persona }}</td>
                                     </tr>
                                 </slot>
@@ -119,21 +121,24 @@ export default {
                     time = moment(time).format('YYYY-MM-DD')
                     return this.form.date_start > time
                 }
-            }
+            },
+            cuentas: [],
         }
     },
     created() {
         this.initForm()
-        /*this.$eventHub.$on('reloadData', () => {
-            this.getRecords()
-        })*/
+        this.$eventHub.$on('reloadData', () => {
+            //this.getRecords()
+            this.getCuentas()
+        })
     },
 
     async mounted() {
         //await this.getRecords();
+        await this.getCuentas();
     },
     methods: {
-        /*clickDownloadPDF() {
+        clickDownloadPDF() {
             let query = queryString.stringify({
                 ...this.form
             });
@@ -147,7 +152,7 @@ export default {
             });
 
             window.open(`/${this.resource}/excel/?${query}`, '_blank');
-        },*/
+        },
 
         initForm() {
 
@@ -168,6 +173,11 @@ export default {
             await this.getRecords()
             this.loading_submit = await false
 
+        },
+        getCuentas(){
+            return this.$http.get(`/${this.resource}/cuentas`).then((response) => {
+                this.cuentas = response.data
+            });
         },
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {

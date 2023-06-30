@@ -1051,45 +1051,25 @@
                                         <a class="nav-link"
                                            href="#">Analítica</a>
                                         <ul class="nav nav-children">
-                                            <li class="{{ ($firstLevel === 'accounting-entries')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.accountingentries.index')}}">Libro mayor contable</a>
-                                            </li>
-                                            <li class="{{ ($firstLevel === 'accounts-groups')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.accountsgroups.index')}}">Balance de comprobacion</a>
-                                            </li>
-                                            <li class="{{ ($firstLevel === 'accounts-movements')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.accountsmovements.index')}}">Balance situacion inicial</a>
-                                            </li>
-                                            <li class="{{ ($firstLevel === 'types-accounting-entries')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.typesaccountingentries.index')}}">Estado de resultados</a>
-                                            </li>
-                                            <li class="{{ ($firstLevel === 'types-accounting-entries')?'nav-active':'' }}">
-                                                <a class="nav-link"
-                                                   href="{{route('tenant.typesaccountingentries.index')}}">Estracto de cuentas</a>
-                                            </li>
                                             <li class="{{ ($firstLevel === 'balance-comprobacion')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                   href="{{route('tenant.balance_comprobacion.index')}}">Balance Comprobación</a>
+                                                   href="{{route('tenant.balance_comprobacion.index')}}">Balance de comprobación</a>
                                             </li>
                                             <li class="{{ ($firstLevel === 'balance-general')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                   href="{{route('tenant.balance_general.index')}}">Balance General</a>
+                                                   href="{{route('tenant.balance_general.index')}}">Balance general</a>
                                             </li>
-                                            <li class="{{ ($firstLevel === 'balance-general')?'nav-active':'' }}">
+                                            <li class="{{ ($firstLevel === 'balance-resultados')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                   href="{{route('tenant.balance_resultados.index')}}">Balance Resultados</a>
+                                                   href="{{route('tenant.balance_resultados.index')}}">Balance de resultados</a>
                                             </li>
                                             <li class="{{ ($firstLevel === 'extracto-cuentas')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                   href="{{route('tenant.extracto_cuentas.index')}}">Extracto Cuentas</a>
+                                                   href="{{route('tenant.extracto_cuentas.index')}}">Extracto de cuentas</a>
                                             </li>
                                             <li class="{{ ($firstLevel === 'mayor-contable')?'nav-active':'' }}">
                                                 <a class="nav-link"
-                                                   href="{{route('tenant.mayor_contable.index')}}">Mayor Contable</a>
+                                                   href="{{route('tenant.mayor_contable.index')}}">Libro mayor contable</a>
                                             </li>                                   
                                         </ul>
                                     </li>

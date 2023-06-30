@@ -313,8 +313,14 @@ use Modules\Inventory\Exports\InventoryTransferExport;
         public function getPdf(InventoryTransfer $inventoryTransfer): \Illuminate\Http\Response
         {
             $data = $inventoryTransfer->getPdfData();
+            $transfer_id = $inventoryTransfer->id;
+            $lote = DB::connection('tenant')->select("SELECT i.lot_code FROM items i
+            RIGHT JOIN inventories inv ON i.id = inv.item_id
+            RIGHT JOIN inventories_transfer it ON inv.inventories_transfer_id = it.id
+            WHERE it.id = :transfer_id", ['transfer_id' => $transfer_id]);
+            Log::info($lote);
             // return View('inventory::transfers.export.pdf', compact('data'));
-            $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
+            $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data', 'lote'));
             $pdf->setPaper('A4', 'portrait');
             // $pdf->setPaper('A4', 'landscape');
             $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');

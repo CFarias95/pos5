@@ -304,6 +304,7 @@ if ($hostname) {
                 Route::get('excel', 'Tenant\ExtractoCuentasController@excel');
                 Route::get('pdf', 'Tenant\ExtractoCuentasController@pdf');
                 Route::get('datosSP', 'Tenant\ExtractoCuentasController@datosSP');
+                Route::get('cuentas', 'Tenant\ExtractoCuentasController@cuentas');
             });
             Route::prefix('balance-comprobacion')->group(function () {
                 /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
@@ -317,6 +318,7 @@ if ($hostname) {
                 Route::get('excel', 'Tenant\BalanceComprobacionController@excel');
                 Route::get('pdf', 'Tenant\BalanceComprobacionController@pdf');
                 Route::get('datosSP', 'Tenant\BalanceComprobacionController@datosSP');
+                Route::get('cuentas', 'Tenant\BalanceComprobacionController@cuentas');
             });
             Route::prefix('mayor-contable')->group(function () {
                 /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);
@@ -330,6 +332,7 @@ if ($hostname) {
                 Route::get('excel', 'Tenant\MayorContableController@excel');
                 Route::get('pdf', 'Tenant\MayorContableController@pdf');
                 Route::get('datosSP', 'Tenant\MayorContableController@datosSP');
+                Route::get('cuentas', 'Tenant\MayorContableController@cuentas');
             });
             Route::prefix('balance-general')->group(function () {
                 /*Route::get('', 'Tenant\AccountGroupController@index')->name('tenant.accountsgroups.index')->middleware(['redirect.level', 'tenant.internal.mode']);

@@ -35,13 +35,13 @@
                                 @click.prevent="getRecordsByFilter">Buscar
                             </el-button>
 
-                            <!--<el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
+                            <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
                                 Exportar Excel
                             </el-button>
 
                             <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"><i class="fa fa-file-pdf"></i>
                                 Exportar PDF
-                            </el-button>-->
+                            </el-button>
 
                         </div>
 
@@ -64,7 +64,7 @@
                                         <td>{{ row[0].P }}</td>
                                         <td>{{ row[0].CODE }}</td>
                                         <td>{{ row[0].DESCRIPTION }}</td>
-                                        <td>{{ row[0].valor }}</td>
+                                        <td>{{ row[0].valor.toFixed(2) }}</td>
                                     </tr>
                                 </slot>
                             </tbody>
@@ -116,7 +116,7 @@ export default {
         //await this.getRecords();
     },
     methods: {
-        /*clickDownloadPDF() {
+        clickDownloadPDF() {
             let query = queryString.stringify({
                 ...this.form
             });
@@ -130,7 +130,7 @@ export default {
             });
 
             window.open(`/${this.resource}/excel/?${query}`, '_blank');
-        },*/
+        },
 
         initForm() {
 

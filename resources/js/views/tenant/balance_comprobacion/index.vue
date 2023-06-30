@@ -26,24 +26,28 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Inicio</label>
-                            <el-input v-model="form.icuenta" type="text"></el-input>
+                            <el-select v-model="form.icuenta" clearable>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
+                            </el-select>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Fin</label>
-                            <el-input v-model="form.fcuenta" type="text"></el-input>
+                            <el-select v-model="form.fcuenta" clearable>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
+                            </el-select>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
                                 @click.prevent="getRecordsByFilter">Buscar
                             </el-button>
 
-                            <!--<el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
+                            <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i class="fa fa-file-excel"></i>
                                 Exportar Excel
                             </el-button>
 
                             <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"><i class="fa fa-file-pdf"></i>
                                 Exportar PDF
-                            </el-button>-->
+                            </el-button>
 
                         </div>
 
@@ -69,12 +73,12 @@
                                     <tr :key="index">
                                         <td>{{ row[0].Cuenta }}</td>
                                         <td>{{ row[0].Descripcion_cuenta }}</td>
-                                        <td>{{ row[0].Saldo_inicial }}</td>
-                                        <td>{{ row[0].Debe }}</td>
-                                        <td>{{ row[0].Haber }}</td>
-                                        <td>{{ row[0].Saldo_deudor }}</td>
-                                        <td>{{ row[0].Saldo_acreedor }}</td>
-                                        <td>{{ row[0].Saldo_final }}</td>
+                                        <td>{{ row[0].Saldo_inicial.toFixed(2) }}</td>
+                                        <td>{{ row[0].Debe.toFixed(2) }}</td>
+                                        <td>{{ row[0].Haber.toFixed(2) }}</td>
+                                        <td>{{ row[0].Saldo_deudor.toFixed(2) }}</td>
+                                        <td>{{ row[0].Saldo_acreedor.toFixed(2) }}</td>
+                                        <td>{{ row[0].Saldo_final.toFixed(2) }}</td>
                                     </tr>
                                 </slot>
                             </tbody>
@@ -114,21 +118,24 @@ export default {
                     time = moment(time).format('YYYY-MM-DD')
                     return this.form.date_start > time
                 }
-            }
+            },
+            cuentas: [],
         }
     },
     created() {
         this.initForm()
-        /*this.$eventHub.$on('reloadData', () => {
-            this.getRecords()
-        })*/
+        this.$eventHub.$on('reloadData', () => {
+            //this.getRecords()
+            this.getCuentas()
+        })
     },
 
     async mounted() {
         //await this.getRecords();
+        await this.getCuentas();
     },
     methods: {
-        /*clickDownloadPDF() {
+        clickDownloadPDF() {
             let query = queryString.stringify({
                 ...this.form
             });
@@ -142,7 +149,7 @@ export default {
             });
 
             window.open(`/${this.resource}/excel/?${query}`, '_blank');
-        },*/
+        },
 
         initForm() {
 
@@ -165,10 +172,19 @@ export default {
             this.loading_submit = await false
 
         },
+        getCuentas(){
+            return this.$http.get(`/${this.resource}/cuentas`).then((response) => {
+                this.cuentas = response.data
+            });
+        },
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                //console.log('data', this.records);
+                /*console.log('data', this.records);
+                this.records.forEach((row) => {
+                    this.cuentas.push(row[0].Cuenta)
+                })   
+                console.log('rows', this.cuentas)*/         
                 this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Exports\BalanceResultadosExport;
 use App\Traits\OfflineTrait;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
@@ -49,7 +50,7 @@ class BalanceResultadosController extends Controller
             $detalle = 0;
         }
         //Log::info($detalle);
-        $sp = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
+        $sp = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
         //Log::info($sp);
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
@@ -60,35 +61,51 @@ class BalanceResultadosController extends Controller
         return new BalanceResultadosCollection($paginatedCollection);
     }
 
-    /*public function pdf(Request $request)
+    public function pdf(Request $request)
     {
-
+        $detalle = null;
+        //Log::info($request);
+        if($request->d == 'true')
+        {
+            $detalle = 1;
+        };
+        if($request->d == 'false'){
+            $detalle = 0;
+        }
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_PlanCuentas();");
+        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $pdf = PDF::loadView('report::plan_cuentas.plan_cuenta_pdf', compact("records", "company", "usuario_log", "request"));
+        $pdf = PDF::loadView('tenant.balance_resultados.balance_resultados_pdf', compact("records", "company", "usuario_log", "request"));
 
-        $filename = 'Reporte_Plan_Ventas_' . date('YmdHis');
+        $filename = 'Reporte_Balance_Resultados_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }
 
-    public function excel()
+    public function excel(Request $request)
     {
+        $detalle = null;
+        if($request->d == 'true')
+        {
+            $detalle = 1;
+        };
+        if($request->d == 'false'){
+            $detalle = 0;
+        }
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_PlanCuentas();");
+        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $documentExport = new PlanCuentasExport();
+        $documentExport = new BalanceResultadosExport();
         $documentExport
             ->records($records)
             ->company($company)
             ->usuario_log($usuario_log)
             ->fechaActual($fechaActual);
 
-        return $documentExport->download('Reporte_plan_de_cuenta' . Carbon::now() . '.xlsx');
-    }*/
+        return $documentExport->download('Reporte_balance_resultados' . Carbon::now() . '.xlsx');
+    }
 }

@@ -10,6 +10,7 @@ use Illuminate\Http\Request;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Exports\BalanceGeneralExport;
 use App\Traits\OfflineTrait;
 use Illuminate\Support\Facades\DB;
 use Modules\Finance\Traits\FinanceTrait;
@@ -60,35 +61,50 @@ class BalanceGeneralController extends Controller
         return new BalanceGeneralCollection($paginatedCollection);
     }
 
-    /*public function pdf(Request $request)
+    public function pdf(Request $request)
     {
-
+        $detalle = null;
+        if($request->d == 'true')
+        {
+            $detalle = 1;
+        };
+        if($request->d == 'false'){
+            $detalle = 0;
+        }
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_PlanCuentas();");
+        $records = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $pdf = PDF::loadView('report::plan_cuentas.plan_cuenta_pdf', compact("records", "company", "usuario_log", "request"));
+        $pdf = PDF::loadView('tenant.balance_general.balance_general_pdf', compact("records", "company", "usuario_log", "request"));
 
-        $filename = 'Reporte_Plan_Ventas_' . date('YmdHis');
+        $filename = 'Reporte_Balance_General_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }
 
-    public function excel()
+    public function excel(Request $request)
     {
+        $detalle = null;
+        if($request->d == 'true')
+        {
+            $detalle = 1;
+        };
+        if($request->d == 'false'){
+            $detalle = 0;
+        }
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_PlanCuentas();");
+        $records = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $documentExport = new PlanCuentasExport();
+        $documentExport = new BalanceGeneralExport();
         $documentExport
             ->records($records)
             ->company($company)
             ->usuario_log($usuario_log)
             ->fechaActual($fechaActual);
 
-        return $documentExport->download('Reporte_plan_de_cuenta' . Carbon::now() . '.xlsx');
-    }*/
+        return $documentExport->download('Reporte_balance_general' . Carbon::now() . '.xlsx');
+    }
 }
