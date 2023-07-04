@@ -151,7 +151,7 @@ class ReportKardexController extends Controller
     private function data($item_id, $warehouse_id, $date_start, $date_end)
     {
         //$warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
-
+        //$inventory_kardexable_id = null;
         $data = InventoryKardex::with(['inventory_kardexable']);
         if($warehouse_id !== 'all') {
             $data->where('warehouse_id', $warehouse_id);
@@ -165,6 +165,7 @@ class ReportKardexController extends Controller
         if ($item_id) {
             $data->where('item_id', $item_id);
         }
+        //$data->where('inventory_kardexable_id', $inventory_kardexable_id);
 
 
         // if($date_start && $date_end){

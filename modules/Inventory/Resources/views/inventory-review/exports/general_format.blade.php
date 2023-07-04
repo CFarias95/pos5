@@ -1,3 +1,6 @@
+@php
+$length = 1;
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>
@@ -90,16 +93,18 @@
         @foreach($records as $row)
             @php
             @endphp
-            <tr>
-                <td>{{ $loop->iteration}}</td>
+            @if($row['stock'] > 0)
+            <tr>     
+                <td>{{ $length ++}}</td>
                 <td>{{ $row['item_barcode'] }}</td>
                 <td>{{ $row['item_description'] }}</td>
                 <td align="center">{{ $row['stock'] }}</td>
                 <td align="center">{{ $row['input_stock'] }}</td>
                 <td align="center" style="{{ ($row['difference'] < 0) ? 'color: red;': ''}}">
                     {{ $row['difference'] }}
-                </td>
+                </td>            
             </tr>
+            @endif
         @endforeach
     </tbody>
 </table>

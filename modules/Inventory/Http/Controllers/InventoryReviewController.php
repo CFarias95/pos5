@@ -9,6 +9,7 @@ use Modules\Inventory\Models\{
     ItemWarehouse,
 };
 use Modules\Item\Models\{
+    Brand,
     Category,
 };
 use App\Models\Tenant\{
@@ -22,7 +23,7 @@ use App\Models\Tenant\Catalogs\{
 use App\Exports\GeneralFormatExport;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade as PDF;
-
+use Illuminate\Support\Facades\Log;
 
 class InventoryReviewController extends Controller
 {
@@ -39,8 +40,9 @@ class InventoryReviewController extends Controller
         $categories = Category::getDataForFilters();
         $item_sizes = CatItemSize::get();
         $item_colors = CatColorsItem::get();
+        $brands = Brand::get();
 
-        return compact('warehouses', 'categories', 'item_sizes', 'item_colors');
+        return compact('warehouses', 'categories', 'item_sizes', 'item_colors', 'brands');
     }
 
     
@@ -65,6 +67,9 @@ class InventoryReviewController extends Controller
                         $category_id = $request->has('category_id') && $request->category_id;
                         if($category_id) $query->where('category_id', $request->category_id);
 
+                        $brand_id = $request->has('brand_id') && $request->brand_id;
+                        if($brand_id) $query->where('brand_id', $request->brand_id);
+
                         // para variantes
                         if($filter_by_variants)
                         {   
@@ -87,6 +92,7 @@ class InventoryReviewController extends Controller
                     ->orderBy('item_id')
                     ->get()
                     ->transform(function($row, $index) use($filter_by_variants, $request){
+                        //Log::info($row);
                         return [
                             'index' => $index + 1,
                             'id' => $row->id,

@@ -38,6 +38,16 @@
                         </div>
                     </div>
                     <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold text-info">
+                                Marca
+                            </label>
+                            <el-select v-model="form.brand_id" filterable clearable>
+                                <el-option v-for="option in brands" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.filter_by_variants}">
                             <el-checkbox class="mt-4" v-model="form.filter_by_variants">Filtrar por variantes </el-checkbox>
                         </div>
@@ -202,6 +212,7 @@
                 resource: 'inventory-review',
                 warehouses: [],
                 categories: [],
+                brands: [],
                 item_sizes: [],
                 item_colors: [],
                 records: [],
@@ -325,6 +336,7 @@
                 await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`)
                     .then(response => {
                         this.records = response.data.data
+                        //console.log('records', this.records)
                     })
                     .then(()=>{
                         this.loading_submit = false
@@ -345,16 +357,19 @@
                     filter_by_variants: false,
                     item_color_id: null,
                     item_size_id: null,
+                    brand_id: null,
                 }
             },
             filters() 
             {
                 this.$http.get(`/${this.resource}/filters`)
                     .then(response => {
+                        //console.log(response)
                         this.warehouses = response.data.warehouses
                         this.categories = response.data.categories
                         this.item_colors = response.data.item_colors
                         this.item_sizes = response.data.item_sizes
+                        this.brands = response.data.brands
                         
                         this.form.warehouse_id = this.warehouses.length > 0 ? this.warehouses[0].id : null
                         this.changeWarehouse()

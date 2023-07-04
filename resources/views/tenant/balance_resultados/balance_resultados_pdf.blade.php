@@ -1,3 +1,6 @@
+@php
+$logo = "storage/uploads/logos/{$company->logo}";
+@endphp
 <!DOCTYPE html>
 <html lang="en">
     <head>
@@ -71,6 +74,9 @@
     </head>
     <body>
         <div class="container">
+            <div id="column_2">
+                <img src = "data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 0px; max-width: 150px" >
+            </div>
             <div id="column_1">
                 <p><strong>Empresa: </strong>{{$company->name}}</p>
                 <p><strong>Usuario: </strong>{{$usuario_log->name}}</p>
