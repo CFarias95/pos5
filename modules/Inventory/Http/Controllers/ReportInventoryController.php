@@ -18,6 +18,7 @@ use Modules\Item\Models\Category;
 use Hyn\Tenancy\Models\Hostname;
 use App\Models\System\Client;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Inventory\Jobs\ProcessInventoryReport;
 use Modules\Inventory\Http\Resources\ReportInventoryCollection;
 
@@ -52,6 +53,7 @@ class ReportInventoryController extends Controller
         //$category_id = (int)$request->category_id;
         //$active = $request->active;
         $filter = $request->input('filter');
+        //Log::info($filter);
         //$date_end = $request->has('date_end') ? $request->date_end : null;
         //$date_start = $request->has('date_start') ? $request->date_start : null;
         $records = $this->getRecords($warehouse_id, $filter, $request);

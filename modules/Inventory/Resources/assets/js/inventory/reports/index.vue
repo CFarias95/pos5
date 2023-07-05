@@ -146,7 +146,7 @@
                                             <th class="text-center">F. vencimiento</th>
                                             <th>Almacén</th>
                                             <th>Cód. Barras</th>
-                                            <th class="text-right">Motivo Traslado</th>
+                                            <!--<th class="text-right">Motivo Traslado</th>-->
                                         </tr>
                                     </thead>
                                     <tbody>
@@ -166,6 +166,7 @@
                                             <td class="text-center">{{ row.date_of_due }}</td>
                                             <td>{{ row.warehouse_name }}</td>
                                             <td>{{ row.barcode }}</td>
+                                            <!--<td></td>-->
                                         </tr>
                                     </tbody>
                                     <tfoot>
@@ -361,9 +362,9 @@ export default {
                 .then(response => {
                     //console.log(`/${this.resource}/records?${this.getQueryParameters()}`)
                     this.records = response.data.data;
-                    console.log('records', this.records)
+                    /*console.log('records', this.records)
                     console.log('resource', this.resource)
-                    console.log('response', response)
+                    console.log('response', response)*/
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
                     this.calculeTotalProfit()

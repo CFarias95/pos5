@@ -49,7 +49,7 @@
                 </div>
                 <div class="col-md-12">
                     <div class="table-responsive">
-                        <table class="table">
+                        <table class="table table-striped table-responsive-xl table-bordered table-hover">
                             <thead>
                                 <tr slot="heading">
                                     <th class="">Asiento</th>
