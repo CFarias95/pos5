@@ -87,14 +87,35 @@ class ImportsController extends Controller
 
     public function liquidationsReport($id){
 
-        $records = Purchase::where('import_id',$id)->where('tipo_doc_id',1)->get();
+        $records = Purchase::where('import_id',$id)->where('tipo_doc_id',1)
+                    ->join('purchase_items',function($join) use($id){
+                        $join->on('purchases.id','=','purchase_items.purchase_id')
+                        ->where('purchase_items.item','NOT LIKE','%ZZ%');
+                    })
+                    ->get();
+
         $flete = Purchase::where('tipo_doc_id',2)
                     ->join('purchase_items',function($join) use($id){
                         $join->on('purchases.id','=','purchase_items.purchase_id')
                         ->where('purchase_items.import',$id)->where('concepto',4);
                     })
                     ->get();
+
         $totalFlete = $flete->sum('total_value');
+
+        $fleteIncluido = Purchase::where('tipo_doc_id',2)
+                        ->join('purchase_items',function($join) use($id){
+                            $join->on('purchases.id','=','purchase_items.purchase_id')
+                            ->where('purchase_items.import',$id)
+                            ->where('concepto',4)
+                            ->where('purchase_items.item','LIKE','%ZZ%');
+                        })
+                        ->get();
+
+        $totalFleteAdd = ($fleteIncluido && $fleteIncluido->count() > 0)?$fleteIncluido->sum('total_value'):0;
+
+        $totalFlete += $totalFleteAdd;
+
         //Log::info(json_encode($flete));
         $seguro = Purchase::where('tipo_doc_id',2)
                     ->join('purchase_items',function($join) use($id){
@@ -111,6 +132,7 @@ class ImportsController extends Controller
                     })
                     ->get();
         $totalgasto = $gasto->sum('total_value');
+
 
 
         $source = $this->transformReportImports($records, $totalFlete, $totalSeguro, $totalgasto);
@@ -194,70 +216,77 @@ class ImportsController extends Controller
         $totalFOD = $resource->sum('total_value');
         $records = null;
 
+
+
         foreach($resource as $row){
 
             $import = Imports::find($row->import_id);
+
             foreach($row->items as $key => $item){
 
-                $arancel = Tariff::find($item->item->tariff_id);
+                if($item->item->unit_type_id != 'ZZ'){
 
-                $flete = $item->total_value * $fleteTotal /  $totalFOD;
-                $seguro = $item->total_value * $totalSeguro /  $totalFOD;
-                $gasto = $item->total_value * $totalgasto /  $totalFOD;
+                    $arancel = Tariff::find($item->item->tariff_id);
 
-                $cif = 0;
-                $advaloren = 0;
-                $fodinfa = 0;
-                $iva = 0;
-                $costo = 0;
-                $factor = 0;
+                    $flete = $item->total_value * $fleteTotal /  $totalFOD;
+                    $seguro = $item->total_value * $totalSeguro /  $totalFOD;
+                    $gasto = $item->total_value * $totalgasto /  $totalFOD;
 
-                if($arancel && $arancel->count() > 0){
+                    $cif = 0;
+                    $advaloren = 0;
+                    $fodinfa = 0;
+                    $iva = 0;
+                    $costo = 0;
+                    $factor = 0;
 
-                    $cif = $item->unit_value + ($flete/ $item->quantity) + ($seguro / $item->quantity);
-                    $advaloren = ($item->unit_value + ($seguro / $item->quantity)) * ($arancel->advaloren/100);
-                    $fodinfa = $cif * $arancel->fodinfa;
-                    $iva = ($cif + $advaloren + $fodinfa) * 0.12;
-                    $costo = $item->unit_value + $advaloren + ($gasto / $item->quantity);
-                    $factor = (($gasto / $item->quantity) + $cif) / $item->unit_value;
+                    if($arancel && $arancel->count() > 0){
 
-                }else{
+                        $cif = $item->unit_value + ($flete/ $item->quantity) + ($seguro / $item->quantity);
+                        $advaloren = ($item->unit_value + ($seguro / $item->quantity)) * ($arancel->advaloren/100);
+                        $fodinfa = $cif * $arancel->fodinfa;
+                        $iva = ($cif + $advaloren + $fodinfa) * 0.12;
+                        $costo = $item->unit_value + $advaloren + ($gasto / $item->quantity);
+                        $factor = (($gasto / $item->quantity) + $cif) / $item->unit_value;
 
-                    $cif = $item->unit_value + ($flete / $item->quantity) + ($seguro / $item->quantity);
-                    $iva = ($cif + $advaloren + $fodinfa) * 0.12;
-                    $costo = $item->unit_value + $advaloren + ($gasto / $item->quantity);
-                    $factor = (($gasto / $item->quantity) + $cif) / $item->unit_value;
+                    }else{
 
+                        $cif = $item->unit_value + ($flete / $item->quantity) + ($seguro / $item->quantity);
+                        $iva = ($cif + $advaloren + $fodinfa) * 0.12;
+                        $costo = $item->unit_value + $advaloren + ($gasto / $item->quantity);
+                        $factor = (($gasto / $item->quantity) + $cif) / $item->unit_value;
+
+                    }
+
+                    $records[] = [
+                        'serie' => $row->series,
+                        'numero' => $row->number,
+                        'importacion' => $import->numeroImportacion,
+                        'numLinea' => $key + 1,
+                        'codArticulo' => $item->item->id,
+                        'referencia' => $item->item->id,
+                        'descripcion' => $item->item->name,
+                        'partidaArancelaria' => ($arancel && $arancel->count > 0 ) ? $arancel->tariff : '',
+                        'porcentajeAdvaloren' => ($arancel && $arancel->count > 0 ) ?$arancel->advaloren : 0,
+                        'unidadestotal' => $item->quantity,
+                        'fob' => round($item->unit_value,3),
+                        'fobTotal' => round($item->total_value,3),
+                        'flete' => round($flete / $item->quantity,3),
+                        'fleteTotal' => round($flete,3),
+                        'seguro' => round($seguro / $item->quantity,3),
+                        'seguroTotal' => round($seguro,3),
+                        'cif' => round($cif,3),
+                        'advaloren' => round($advaloren,3),
+                        'fodinfa' => round($fodinfa,3),
+                        'iva' => round($iva,3),
+                        'gastos' => round($gasto / $item->quantity,3),
+                        'gastosTotal' => round($gasto,3),
+                        'costo' => round($costo,3),
+                        'totalLinea' => $item->total_value,
+                        'factor' => round($factor,3),
+
+                    ];
                 }
 
-                $records[] = [
-                    'serie' => $row->series,
-                    'numero' => $row->number,
-                    'importacion' => $import->numeroImportacion,
-                    'numLinea' => $key + 1,
-                    'codArticulo' => $item->item->id,
-                    'referencia' => $item->item->id,
-                    'descripcion' => $item->item->name,
-                    'partidaArancelaria' => ($arancel && $arancel->count > 0 ) ? $arancel->tariff : '',
-                    'porcentajeAdvaloren' => ($arancel && $arancel->count > 0 ) ?$arancel->advaloren : 0,
-                    'unidadestotal' => $item->quantity,
-                    'fob' => round($item->unit_value,3),
-                    'fobTotal' => round($item->total_value,3),
-                    'flete' => round($flete / $item->quantity,3),
-                    'fleteTotal' => round($flete,3),
-                    'seguro' => round($seguro / $item->quantity,3),
-                    'seguroTotal' => round($seguro,3),
-                    'cif' => round($cif,3),
-                    'advaloren' => round($advaloren,3),
-                    'fodinfa' => round($fodinfa,3),
-                    'iva' => round($iva,3),
-                    'gastos' => round($gasto / $item->quantity,3),
-                    'gastosTotal' => round($gasto,3),
-                    'costo' => round($costo,3),
-                    'totalLinea' => $item->total_value,
-                    'factor' => round($factor,3),
-
-                ];
             }
         }
 

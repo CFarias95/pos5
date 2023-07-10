@@ -1558,7 +1558,9 @@ export default {
                 retention_iva = 0
                 retention_renta  = 0
                 console.log("documento", row)
+
                 if( row.iva_retention || row.income_retention || row.iva_retention > 0 || row.income_retention > 0){
+
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
 
@@ -1567,16 +1569,18 @@ export default {
                     this.haveRetentions = true
                     this.maxLength1 = 15
                     this.maxLength2 = 45
+
                     if(this.form.ret.length > 0){
 
                         let nuevaRet = true
 
                         this.form.ret.forEach((data) => {
+
                             if(row.iva_retention > 0 ){
                                 const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
                                 if(data.tipo == 'IVA' && data.desciption == retIvaDesc.description){
                                     data.valor += _.round(parseFloat(row.iva_retention),3)
-                                    dato.base += row.total_taxes;
+                                    data.base += row.total_taxes;
                                     nuevaRet = false
                                 }
                             }
@@ -1584,7 +1588,7 @@ export default {
                                 const retIncomeDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
                                 if(data.tipo == 'RENTA' && data.desciption == retIncomeDesc.description){
                                     data.valor += _.round(parseFloat(row.income_retention),3)
-                                    dato.base += (row.unit_value * row.quantity);
+                                    data.base += (row.unit_value * row.quantity);
                                     nuevaRet = false
                                 }
                             }
@@ -1619,6 +1623,7 @@ export default {
 
                     }else{
                         console.log('Retencion Inicial')
+
                         if(row.iva_retention > 0 ){
                             let retencionLocal = {}
                             retencionLocal.tipo = 'IVA'
