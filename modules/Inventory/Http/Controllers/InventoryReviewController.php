@@ -110,7 +110,7 @@ class InventoryReviewController extends Controller
                             'input_stock' => 0,
                             'difference' => null,
                             'stock_by_variants' => $filter_by_variants ? $row->item->getStockByVariantsInventoryReview($request->establishment_id) : null,
-                            //'attribute_types' => $row->item->attributes
+                            'attribute_types' => $row->item->attributes
                         ];
                     });
         //Log::info($records);
@@ -219,11 +219,11 @@ class InventoryReviewController extends Controller
      */
     public function export(Request $request) 
     {
-        Log::info($request);
+        //Log::info($request);
         $this->initConfigurations();
         $format = $request->format;
         $records = $request->records;
-        Log::info(json_encode($records));
+        //Log::info(json_encode($records));
         $company = Company::getDataForReportHeader();
         $data = compact('records', 'company');
         $view = 'inventory::inventory-review.exports.general_format';

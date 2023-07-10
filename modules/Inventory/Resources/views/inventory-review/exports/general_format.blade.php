@@ -1,5 +1,6 @@
 @php
 $length = 1;
+$posicion = 0;
 @endphp
 <!DOCTYPE html>
 <html lang="es">
@@ -87,6 +88,7 @@ $length = 1;
             <th align="center">Stock sistema</th>
             <th align="center">Stock escaneado</th>
             <th align="center">Diferencia Stock</th>
+            <th align="center">Atributos</th>
         </tr>
     </thead>
     <tbody>
@@ -102,8 +104,10 @@ $length = 1;
                 <td align="center">{{ $row['input_stock'] }}</td>
                 <td align="center" style="{{ ($row['difference'] < 0) ? 'color: red;': ''}}">
                     {{ $row['difference'] }}
-                </td> 
-                <td>{{$records}}</td>           
+                </td>
+                 
+                <td align="center">{{$row['attribute_types'][$posicion ++]->attribute_type_id}}</td>  
+                     
             </tr>
             @endif
         @endforeach
