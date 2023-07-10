@@ -25,7 +25,8 @@ use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 use Modules\Inventory\Models\Devolution;
 use App\Models\Tenant\Dispatch;
-
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 class ReportKardexController extends Controller
 {
@@ -108,6 +109,7 @@ class ReportKardexController extends Controller
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all());
+        //Log::info($records);
 
         return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -134,8 +136,13 @@ class ReportKardexController extends Controller
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        /*Log::info('itemid'.$item_id);
+        Log::info('warehouse'.$warehouse_id);
+        Log::info('start'.$date_start);
+        Log::info('end'.$date_end);*/
 
         $records = $this->data($item_id, $warehouse_id, $date_start, $date_end);
+        //Log::info(json_encode($records));
 
         return $records;
 
@@ -153,6 +160,10 @@ class ReportKardexController extends Controller
         //$warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
         //$inventory_kardexable_id = null;
         $data = InventoryKardex::with(['inventory_kardexable']);
+        /*$data['info_kardex'] = DB::connection('tenant')->select("SELECT * FROM inventory_kardex ik 
+            LEFT JOIN inventories i ON ik.inventory_kardexable_id = i.id
+            WHERE ik.item_id = :item_id", ['item_id' => $item_id]);*/
+        //Log::info($data);
         if($warehouse_id !== 'all') {
             $data->where('warehouse_id', $warehouse_id);
         }
@@ -165,8 +176,9 @@ class ReportKardexController extends Controller
         if ($item_id) {
             $data->where('item_id', $item_id);
         }
+        //Log::info(json_encode($data));
         //$data->where('inventory_kardexable_id', $inventory_kardexable_id);
-
+        
 
         // if($date_start && $date_end){
 

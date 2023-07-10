@@ -48,6 +48,16 @@
                         </div>
                     </div>
                     <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold text-info">
+                                Atributos
+                            </label>
+                            <el-select v-model="form.attribute_id" filterable clearable>
+                                <el-option v-for="option in attributes" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.filter_by_variants}">
                             <el-checkbox class="mt-4" v-model="form.filter_by_variants">Filtrar por variantes </el-checkbox>
                         </div>
@@ -227,6 +237,7 @@
                 input_search_barcode: null,
                 init_review: false,
                 loading: false,
+                attributes: [],
             }
         },
         created() {
@@ -358,6 +369,7 @@
                     item_color_id: null,
                     item_size_id: null,
                     brand_id: null,
+                    attribute_id: null,
                 }
             },
             filters() 
@@ -370,6 +382,7 @@
                         this.item_colors = response.data.item_colors
                         this.item_sizes = response.data.item_sizes
                         this.brands = response.data.brands
+                        this.attributes = response.data.attributes
                         
                         this.form.warehouse_id = this.warehouses.length > 0 ? this.warehouses[0].id : null
                         this.changeWarehouse()

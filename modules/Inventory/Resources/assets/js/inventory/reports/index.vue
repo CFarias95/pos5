@@ -81,6 +81,16 @@
                                 </el-select>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div class="form-group">
+                                <label class="control-label font-weight-bold text-info">
+                                    Atributos
+                                </label>
+                                <el-select v-model="form.attribute_id" filterable clearable @change="changeFilter">
+                                    <el-option v-for="option in attributes" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                </el-select>
+                            </div>
+                        </div>
                         <div v-if="filters.active.visible" class="col-md-3">
                             <label class="control-label">Estado del item</label>
                             <el-select v-model="form.active" :clearable="true" placeholder="Seleccionar filtro"
@@ -239,6 +249,7 @@ export default {
                 }
             },
             pagination: {},
+            attributes: [],
         }
     },
     created() {
@@ -292,6 +303,7 @@ export default {
                 'filter': '01',
                 'category_id': null,
                 'brand_id': null,
+                'attribute_id': null,
                 active: null
             }
         },
@@ -330,6 +342,7 @@ export default {
                     this.warehouses = response.data.warehouses;
                     this.brands = response.data.brands;
                     this.categories = response.data.categories;
+                    this.attributes = response.data.attributes
                 });
         },
         getQueryParameters() {

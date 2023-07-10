@@ -18,6 +18,7 @@ use App\Models\Tenant\{
     Company,
 };
 use App\Models\Tenant\Catalogs\{
+    AttributeType,
     CatColorsItem
 };
 use App\Exports\GeneralFormatExport;
@@ -41,8 +42,9 @@ class InventoryReviewController extends Controller
         $item_sizes = CatItemSize::get();
         $item_colors = CatColorsItem::get();
         $brands = Brand::get();
+        $attributes = AttributeType::get();
 
-        return compact('warehouses', 'categories', 'item_sizes', 'item_colors', 'brands');
+    return compact('warehouses', 'categories', 'item_sizes', 'item_colors', 'brands', 'attributes');
     }
 
     
@@ -53,6 +55,7 @@ class InventoryReviewController extends Controller
      */
     public function records(Request $request)
     {
+        //Log::info($request);
         $filter_by_variants = $request->has('filter_by_variants') && $request->filter_by_variants === 'true';
 
         $records = ItemWarehouse::with([
@@ -69,6 +72,10 @@ class InventoryReviewController extends Controller
 
                         $brand_id = $request->has('brand_id') && $request->brand_id;
                         if($brand_id) $query->where('brand_id', $request->brand_id);
+                        //Log::info(json_encode($query));
+
+                        $attribute_id = $request->has('attribute_id') && $request->attribute_id;
+                        if($attribute_id) $query->where('attributes','like', '%'.$request->attribute_id.'%');
 
                         // para variantes
                         if($filter_by_variants)
@@ -103,9 +110,10 @@ class InventoryReviewController extends Controller
                             'input_stock' => 0,
                             'difference' => null,
                             'stock_by_variants' => $filter_by_variants ? $row->item->getStockByVariantsInventoryReview($request->establishment_id) : null,
+                            //'attribute_types' => $row->item->attributes
                         ];
                     });
-
+        //Log::info($records);
         
         if($filter_by_variants)
         {
@@ -211,9 +219,11 @@ class InventoryReviewController extends Controller
      */
     public function export(Request $request) 
     {
+        Log::info($request);
         $this->initConfigurations();
         $format = $request->format;
         $records = $request->records;
+        Log::info(json_encode($records));
         $company = Company::getDataForReportHeader();
         $data = compact('records', 'company');
         $view = 'inventory::inventory-review.exports.general_format';

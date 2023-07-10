@@ -272,6 +272,17 @@
                         </div>
                     </div>
 
+                    <div class="col-md-4 col-sm-4">
+                        <div class="form-group">
+                            <label class="control-label">Almacén</label>
+                            <el-select v-model="form.warehouse_id" filterable clearable>
+                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description">
+
+                                </el-option>
+                            </el-select>
+                        </div>
+                    </div>
+
                     <div v-if="showLots"
                          class="col-md-3 col-sm-3"
                          style="padding-top: 1%;">
@@ -715,6 +726,7 @@ export default {
             loading_dialog: false,
             validate_stock_add_item: false,
             //item_unit_type: {}
+            warehouses: [],
         }
     },
     created() {
@@ -855,6 +867,7 @@ export default {
 
         getTables() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
+                console.log('response123456', response)
                 //console.log(`/${this.resource}/item/tables`)
                 //console.log("DATA ITEMS: ",data)
                 let data = response.data
@@ -867,6 +880,9 @@ export default {
                 this.attribute_types = data.attribute_types
                 this.is_client = data.is_client;
                 this.validate_stock_add_item = data.validate_stock_add_item
+                this.warehouses = data.warehouses
+                console.log('HOLAAAAAA')
+                console.log('warehouses', this.warehouses)
 
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1080,7 +1096,8 @@ export default {
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
-                name_product_pdf: ''
+                name_product_pdf: '',
+                warehouse_id: null,
             };
 
             this.activePanel = 0;
@@ -1169,7 +1186,7 @@ export default {
                 this.isUpdateWarehouseId = null
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
-
+            
 
         },
         setPresentationEditItem() {

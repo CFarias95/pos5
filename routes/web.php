@@ -414,6 +414,7 @@ if ($hostname) {
             Route::get('documents/create_tensu', 'Tenant\DocumentController@create_tensu')->name('tenant.documents.create_tensu');
             Route::get('documents/{id}/edit', 'Tenant\DocumentController@edit')->middleware(['redirect.level', 'tenant.internal.mode']);
             Route::get('documents/{id}/show', 'Tenant\DocumentController@show');
+            Route::get('documents/warehouses', 'Tenant\DocumentController@getWarehouses');
 
             Route::get('documents/tables', 'Tenant\DocumentController@tables');
             Route::get('documents/record/{document}', 'Tenant\DocumentController@record');

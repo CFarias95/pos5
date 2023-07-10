@@ -102,7 +102,8 @@ $length = 1;
                 <td align="center">{{ $row['input_stock'] }}</td>
                 <td align="center" style="{{ ($row['difference'] < 0) ? 'color: red;': ''}}">
                     {{ $row['difference'] }}
-                </td>            
+                </td> 
+                <td>{{$records}}</td>           
             </tr>
             @endif
         @endforeach
