@@ -72,11 +72,11 @@ class ReportInventoryController extends Controller
     private function getRecords($warehouse_id = 0, $filter, $request)
     {
         $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
-                                $query->select('id', 'barcode', 'internal_id', 'description', 'name', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
+                                $query->select('id', 'barcode', 'internal_id', 'description', 'name', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due', 'attributes');
                                 $query->with(['category', 'brand']);
                                 $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);                             
                                }])
-                              ->whereHas('item', function ($q) use ($request) { 
+                              ->whereHas('item', function ($q) use ($request) {
                                 $attribute_id = $request->has('attribute_id') && $request->attribute_id;
                                 if($attribute_id) $q->where('attributes','like', '%'.$request->attribute_id.'%');                             
                                   $q->where([
@@ -205,6 +205,7 @@ class ReportInventoryController extends Controller
 
     public function export(Request $request)
     {
+        //Log::info('Request'.$request);
         $host = $request->getHost();
         $tray = DownloadTray::create([
             'user_id' => auth()->user()->id,

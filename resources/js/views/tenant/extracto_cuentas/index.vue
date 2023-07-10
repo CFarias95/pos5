@@ -26,7 +26,7 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label"># Cuenta</label>
-                            <el-select v-model="form.cuenta" clearable>
+                            <el-select v-model="form.cuenta" filterable clearable>
                                 <el-option v-for="codigo in cuentas" :key="codigo" :value="codigo" :label="codigo"></el-option>
                             </el-select>
                         </div>

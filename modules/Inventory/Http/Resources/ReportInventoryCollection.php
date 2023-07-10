@@ -31,7 +31,8 @@ class ReportInventoryCollection extends ResourceCollection
                 'model' => $item->model,
                 'brand_name' => $item->brand->name,
                 'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                'warehouse_name' => $row->warehouse->description
+                'warehouse_name' => $row->warehouse->description,
+                'attributos' => $item->attributes,
             ];
 
         });

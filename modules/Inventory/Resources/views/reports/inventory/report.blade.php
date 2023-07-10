@@ -1,3 +1,6 @@
+@php
+//Log::info($records);
+@endphp
 <!DOCTYPE html>
 <html lang="es">
 <head>

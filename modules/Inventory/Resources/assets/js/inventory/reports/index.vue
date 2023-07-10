@@ -375,8 +375,8 @@ export default {
                 .then(response => {
                     //console.log(`/${this.resource}/records?${this.getQueryParameters()}`)
                     this.records = response.data.data;
-                    /*console.log('records', this.records)
-                    console.log('resource', this.resource)
+                    console.log('records', this.records)
+                    /*console.log('resource', this.resource)
                     console.log('response', response)*/
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
@@ -406,6 +406,7 @@ export default {
                     'warehouse_id': this.form.warehouse_id,
                     brand_id: this.form.brand_id,
                     category_id: this.form.category_id,
+                    attribute_id: this.form.attribute_id
                 },
             })
                 .then(response => {

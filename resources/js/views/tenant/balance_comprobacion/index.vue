@@ -26,13 +26,13 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Inicio</label>
-                            <el-select v-model="form.icuenta" clearable>
+                            <el-select v-model="form.icuenta" filterable clearable>
                                 <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Fin</label>
-                            <el-select v-model="form.fcuenta" clearable>
+                            <el-select v-model="form.fcuenta" filterable clearable>
                                 <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
                             </el-select>
                         </div>

@@ -74,7 +74,7 @@
             $filter = $this->filter;
             if (empty($tray)) {
 
-                \Log::debug("No hay datos
+                Log::debug("No hay datos
                     $ website_id        =>" . var_export($website_id, true) . "
                     $ tray_id       =>" . var_export($tray_id, true) . "
                     $ warehouse_id      =>" . var_export($warehouse_id, true) . "
@@ -94,7 +94,7 @@
                     //ini_set('max_execution_time', 0);
 
                     $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
-
+                    Log::info('mensaje'.json_encode($records));
                     if (!is_object($tray)) {
                         //Log::debug('DE ' . var_export($tray, true));
                     }
@@ -204,6 +204,7 @@
 
             Log::debug("getRecordsTranform init" . date('H:i:s'));
             $records = $this->getRecords($warehouse_id, $filter);
+            Log::info('RECORDS'.$records);
 
             $data = [];
 
@@ -224,13 +225,15 @@
                         'model' => $item->model,
                         'brand_name' => $item->brand->name,
                         'date_of_due' => optional($item->date_of_due)->format('d/m/Y'),
-                        'warehouse_name' => $row->warehouse->description
+                        'warehouse_name' => $row->warehouse->description,
+                        'atributos' => $item->attributes
                     ];
 
                 }
             });
 
             Log::debug("getRecordsTranform finish" . date('H:i:s'));
+            Log::info('Data'.$data);
 
             return $data;
         }
@@ -239,7 +242,7 @@
         {
 
             $query = ItemWarehouse::with(['warehouse', 'item' => function ($query) {
-                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id', 'stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due');
+                $query->select('id', 'barcode', 'internal_id', 'description', 'category_id', 'brand_id', 'stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due', 'attributes');
                 $query->with(['category', 'brand']);
                 $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
             }])

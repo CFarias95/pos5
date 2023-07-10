@@ -105,9 +105,15 @@ $posicion = 0;
                 <td align="center" style="{{ ($row['difference'] < 0) ? 'color: red;': ''}}">
                     {{ $row['difference'] }}
                 </td>
-                 
-                <td align="center">{{$row['attribute_types'][$posicion ++]->attribute_type_id}}</td>  
-                     
+                
+                
+                <td align="center">
+                    @foreach($row['attribute_types'] as $atributo)
+                        <label>{{$atributo["attribute_type_id"]}}<br></label>
+                    @endforeach
+                </td>
+                
+
             </tr>
             @endif
         @endforeach
