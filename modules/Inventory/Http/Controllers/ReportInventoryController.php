@@ -17,7 +17,9 @@ use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Hyn\Tenancy\Models\Hostname;
 use App\Models\System\Client;
+use App\Models\Tenant\Catalogs\AttributeType;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Inventory\Jobs\ProcessInventoryReport;
 use Modules\Inventory\Http\Resources\ReportInventoryCollection;
 
@@ -31,6 +33,7 @@ class ReportInventoryController extends Controller
             'warehouses' => Warehouse::query()->select('id', 'description')->get(),
             'categories' => Category::query()->select('id', 'name')->get(),
             'brands' => Brand::query()->select('id', 'name')->get(),
+            'attributes' => AttributeType::query()->select('id', 'description')->get(),
         ];
     }
 
@@ -55,6 +58,7 @@ class ReportInventoryController extends Controller
         //$date_end = $request->has('date_end') ? $request->date_end : null;
         //$date_start = $request->has('date_start') ? $request->date_start : null;
         $records = $this->getRecords($warehouse_id, $filter, $request);
+        //Log::info($records);
 
         return new ReportInventoryCollection($records->paginate(50), $filter);
 
@@ -70,9 +74,11 @@ class ReportInventoryController extends Controller
         $query = ItemWarehouse::with(['warehouse', 'item'=> function ($query){
                                 $query->select('id', 'barcode', 'internal_id', 'description', 'name', 'category_id', 'brand_id','stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due' );
                                 $query->with(['category', 'brand']);
-                                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
+                                $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);                             
                                }])
-                              ->whereHas('item', function ($q) {
+                              ->whereHas('item', function ($q) use ($request) { 
+                                $attribute_id = $request->has('attribute_id') && $request->attribute_id;
+                                if($attribute_id) $q->where('attributes','like', '%'.$request->attribute_id.'%');                             
                                   $q->where([
                                                 ['item_type_id', '01'],
                                                 ['unit_type_id', '!=', 'ZZ'],

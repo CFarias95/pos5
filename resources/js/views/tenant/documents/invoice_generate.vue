@@ -2331,6 +2331,7 @@ export default {
 
             // item.quantity = itemsParsed.find(ip => ip.item_id == item.id).quantity;
             item.warehouse_id = null;
+            //console.log('idididid'. item)
 
             return item
         },

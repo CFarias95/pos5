@@ -54,6 +54,7 @@ use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
 use App\Models\Tenant\User;
+use App\Models\Tenant\Warehouse;
 use App\Traits\OfflineTrait;
 use Carbon\Carbon;
 use Exception;
@@ -227,7 +228,12 @@ class DocumentController extends Controller
         return view('tenant.documents.form_tensu', compact('is_contingency'));
     }
 
+    public function fetWarehouuses()
+    {
+        $warehouses = Warehouse::get();
+        return compact('warehouses');
 
+    }
     public function tables()
     {
         $customers = $this->table('customers');
@@ -321,7 +327,7 @@ class DocumentController extends Controller
             'payment_destinations',
             'payment_conditions',
             'global_discount_types',
-            'affectation_igv_types'
+            'affectation_igv_types',
         );
 
     }
@@ -342,6 +348,8 @@ class DocumentController extends Controller
         $validate_stock_add_item = InventoryConfiguration::getRecordIndividualColumn('validate_stock_add_item');
 
         $configuration = Configuration::first();
+
+        $warehouses = Warehouse::get();
 
         /** Informacion adicional */
         $colors = collect([]);
@@ -390,7 +398,9 @@ class DocumentController extends Controller
             'CatItemPackageMeasurement',
             'CatItemProductFamily',
             'validate_stock_add_item',
-            'CatItemUnitsPerPackage');
+            'CatItemUnitsPerPackage',
+            'warehouses',
+            );
     }
 
     public function table($table)
