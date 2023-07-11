@@ -764,16 +764,6 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-4">
-                                <div :class="{'has-danger': errors.limit_credit}"
-                                     class="form-group">
-                                    <label class="control-label">Cupo crédito</label>
-                                    <el-input-number v-model="form.limit_credit" :min="0" ></el-input-number>
-                                    <small v-if="errors.contact"
-                                           class="form-control-feedback"
-                                           v-text="errors.limit_credit[0]"></small>
-                                </div>
-                            </div>
                             <div class="col-md-3">
                                 <div :class="{'has-danger': errors.credit_quota}"
                                      class="form-group">

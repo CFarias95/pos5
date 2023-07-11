@@ -643,6 +643,7 @@ export default {
                     let data = response.data
                     this.warehouses = data.warehouses
                     this.items = data.items
+                    console.log('itemsss', this.items)
                     this.machines = data.machines
                     this.records = response.data.state_types_prod;
                 })
@@ -739,6 +740,7 @@ export default {
             console.log("changeIte: ",item )
             this.form.warehouse_id = (item.lugar_produccion)?item.lugar_produccion:item.warehouse_id
             this.supplies = item.supplies
+            console.log('itemssupplui', item.supplies)
         },
 
 

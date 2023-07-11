@@ -721,7 +721,7 @@
                                             </td>
                                         </template>
                                         <template v-else>
-                                            <td class="text-center">  <el-input v-model="row.barcode"></el-input>
+                                            <td class="text-center">  <el-input v-model="row.barcode"></el-input></td>
                                             <td>
                                                 <div class="form-group">
                                                     <el-select v-model="row.unit_type_id"
@@ -1280,7 +1280,7 @@
 <!--                                        <td>{{ row.item_id }}</td>-->
                                         <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
                                         <td>
-                                            <el-input-number v-model="row.percentage_decimal" @change="calcularCantidad" :min="0" :max="1" :step="0.01"></el-input-number>
+                                            <el-input v-model="row.percentage_decimal" @change="calcularCantidad" type="number" :min="0" :max="1" :step="0.00000001"></el-input>
                                         </td>
                                         <td>
                                             <el-input v-model="row.quantity"></el-input>
@@ -1732,7 +1732,7 @@ export default {
                     existe = row.percentage_decimal
                 }
                 row.quantity = _.round(existe * this.form.total_producir, 2)*/
-                row.quantity = _.round(row.percentage_decimal * this.form.total_producir, 2)
+                row.quantity = _.round(row.percentage_decimal * this.form.total_producir, 8)
             })
         },
         clickCancelRate(index) {

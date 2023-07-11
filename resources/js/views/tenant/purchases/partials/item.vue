@@ -235,7 +235,7 @@
                         <div class="col-md-12">
                             <div :class="{'has-danger': errors.warehouse_id}"
                                  class="form-group">
-                                <label class="control-label">Almacén de destino
+                                <label class="control-label">Almacén
                                     <el-tooltip class="item"
                                                 content="Aumenta el stock de ese almacen"
                                                 effect="dark"

@@ -204,7 +204,7 @@
 
             Log::debug("getRecordsTranform init" . date('H:i:s'));
             $records = $this->getRecords($warehouse_id, $filter);
-            Log::info('RECORDS'.$records);
+            Log::info('RECORDS'.json_encode($records));
 
             $data = [];
 

@@ -159,7 +159,7 @@
             <descuento>{{ $row->total_discount }}</descuento>
             <precioTotalSinImpuesto>{{ $row->total_value }}</precioTotalSinImpuesto>
             <impuestos>
-            @if($row->total_base_igv > 0 && $row->affectation_igv_type_id == 10)
+            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 10)
                 <impuesto>
                     <codigo>2</codigo>
                     <codigoPorcentaje>2</codigoPorcentaje>
@@ -168,7 +168,7 @@
                     <valor>{{ $row->total_igv }}</valor>
                 </impuesto>
             @endif
-            @if($row->total_base_igv > 0 && $row->affectation_igv_type_id == 11)
+            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 11)
                 <impuesto>
                     <codigo>2</codigo>
                     <codigoPorcentaje>2</codigoPorcentaje>
@@ -177,7 +177,7 @@
                     <valor>{{ $row->total_igv }}</valor>
                 </impuesto>
             @endif
-            @if($row->total_base_igv > 0 && $row->affectation_igv_type_id == 12)
+            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 12)
                 <impuesto>
                     <codigo>2</codigo>
                     <codigoPorcentaje>3</codigoPorcentaje>
@@ -186,7 +186,7 @@
                     <valor>{{ $row->total_igv }}</valor>
                 </impuesto>
             @endif
-            @if($row->total_base_igv > 0 && $row->affectation_igv_type_id == 30)
+            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 30)
                 <impuesto>
                     <codigo>2</codigo>
                     <codigoPorcentaje>0</codigoPorcentaje>
