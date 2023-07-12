@@ -303,8 +303,9 @@
                         <div class="col-md-8 mt-2 mb-2">
                             <div class="form-group">
                                 <el-checkbox v-model="form.has_payment"
-                                             @change="changeHasPayment">¿Desea agregar pagos a esta compra?
+                                             @change="changeHasPayment">Agregar vencimientos
                                 </el-checkbox>
+                                <small><label style="color: red;">Campo obligatorio!!</label></small>
                             </div>
                         </div>
 

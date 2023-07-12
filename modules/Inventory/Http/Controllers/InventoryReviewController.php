@@ -77,6 +77,10 @@ class InventoryReviewController extends Controller
                         $attribute_id = $request->has('attribute_id') && $request->attribute_id;
                         if($attribute_id) $query->where('attributes','like', '%'.$request->attribute_id.'%');
 
+                        $attribute_descr = $request->has('attribute_descr') && $request->attribute_descr;
+                        if($attribute_id && $attribute_descr) $query->where('attributes','like','%'.$request->attribute_id.'%'.$request->attribute_descr.'%');
+                        if($attribute_descr) $query->where('attributes','like','%'.$request->attribute_descr.'%');
+
                         // para variantes
                         if($filter_by_variants)
                         {   

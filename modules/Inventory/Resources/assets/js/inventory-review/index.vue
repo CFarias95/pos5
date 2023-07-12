@@ -58,6 +58,14 @@
                         </div>
                     </div>
                     <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label font-weight-bold text-info">
+                                Atributos Descripción
+                            </label>
+                            <el-input v-model="form.attribute_descr" clearable></el-input>
+                        </div>
+                    </div>
+                    <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.filter_by_variants}">
                             <el-checkbox class="mt-4" v-model="form.filter_by_variants">Filtrar por variantes </el-checkbox>
                         </div>
@@ -238,6 +246,7 @@
                 init_review: false,
                 loading: false,
                 attributes: [],
+                //attributes_descr: [],
             }
         },
         created() {
@@ -370,6 +379,7 @@
                     item_size_id: null,
                     brand_id: null,
                     attribute_id: null,
+                    attribute_descr: null,
                 }
             },
             filters() 
@@ -383,11 +393,15 @@
                         this.item_sizes = response.data.item_sizes
                         this.brands = response.data.brands
                         this.attributes = response.data.attributes
+                        //this.attributes_descr = response.data.attributes_descr
                         
                         this.form.warehouse_id = this.warehouses.length > 0 ? this.warehouses[0].id : null
                         this.changeWarehouse()
                     })
-            }
+            },
+            /*buscarAtributos(id){
+                this.attributes_descr = _.filter(this.attributes, {'id': id})
+            }*/
         }
     }
 </script>
