@@ -788,7 +788,7 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <el-button v-if="form.items !== undefined && form.items.length > 0 && !hide_button"
+                    <el-button v-if="form.items !== undefined && form.items.length > 0 && !hide_button && form.has_payment"
                                :loading="loading_submit"
                                native-type="submit"
                                type="primary">Generar

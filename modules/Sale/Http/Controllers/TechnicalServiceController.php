@@ -2,7 +2,6 @@
 
 namespace Modules\Sale\Http\Controllers;
 
-use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
 use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
@@ -54,7 +53,7 @@ use Mpdf\Mpdf;
  */
 class TechnicalServiceController extends Controller
 {
-    use StorageDocument;
+    //use StorageDocument;
     use FinanceTrait;
     use OfflineTrait;
 
@@ -522,7 +521,7 @@ class TechnicalServiceController extends Controller
         $technical_service1 = TechnicalService::where('id', $id)->first();
 
         if (!$technical_service1) throw new Exception("El código {$id} es inválido, no se encontro la orden de compra relacionada");
-
+    
         return Storage::disk('tenant')->download('technical_service_attached'.DIRECTORY_SEPARATOR.$technical_service1->upload_filename);
 
     }
