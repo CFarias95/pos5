@@ -327,7 +327,7 @@
                                                     </el-select>
                                                 </td>
                                                 <td>
-                                                    <el-input v-model="row.payment" type="number"
+                                                    <el-input v-model="row.payment"
                                                         @change="changeAdvanceInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
                                                 </td>
                                                 <td class="series-table-actions text-center">
@@ -399,7 +399,7 @@
                                                         value-format="yyyy-MM-dd"></el-date-picker>
                                                 </td>
                                                 <td>
-                                                    <el-input v-model="row.amount" type="number"></el-input>
+                                                    <el-input-number v-model="row.amount"></el-input-number>
                                                 </td>
                                                 <td class="text-center">
                                                     <button v-if="index > 0"
@@ -1644,10 +1644,11 @@ export default {
         validarEntradas() {
             let total = this.form.total
             let suma = 0;
+
             if (this.form.payment_condition_id === '01') {
                 //Contado
                 _.forEach(this.form.payments, row => {
-                    suma += parseFloat(row.payment)
+                    suma += _.round(row.payment,2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1663,7 +1664,7 @@ export default {
             } else {
                 //Credito cuotas
                 _.forEach(this.form.fee, row => {
-                    suma += parseFloat(row.amount)  
+                    suma += _.round( row.amount,2)  
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1676,6 +1677,7 @@ export default {
             }
         },
         async submit() {
+
             let validarMontos = await this.validarEntradas()
             if (!validarMontos.success) {
                 return this.$message.error(validarMontos.message);
