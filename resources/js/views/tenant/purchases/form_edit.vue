@@ -263,9 +263,10 @@
 
                         <div class="col-md-8 mt-2 mb-2">
                             <div class="form-group">
-                                <el-checkbox v-model="form.has_payment" @change="changeHasPayment">¿Desea agregar pagos
-                                    a esta compra?
+                                <el-checkbox v-model="form.has_payment"
+                                             @change="changeHasPayment">Agregar vencimientos
                                 </el-checkbox>
+                                <small><label style="color: red;">Campo obligatorio!!</label></small>
                             </div>
                         </div>
 
@@ -736,7 +737,7 @@
                     </div>
                 </div>
                 <div class="form-actions text-right mt-4">
-                    <el-button @click.prevent="close()">Cancelar</el-button>
+                    <el-button @click.prevent="close()" style="color: red;">Cancelar</el-button>
                     <el-button type="primary" native-type="submit" :loading="loading_submit"
                                v-if="form.items.length > 0 && !hide_button">Guardar cambios
                     </el-button>
@@ -1727,7 +1728,45 @@ export default {
             this.recordItem = row
             this.showDialogAddItem = true
         },
+        validarEntradas() {
+            let total = this.form.total
+            let suma = 0;
+            if (this.form.payment_condition_id === '01') {
+                //Contado
+                _.forEach(this.form.payments, row => {
+                    suma += row.payment
+                })
+                if (total != _.round(suma, 2)) {
+                    //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
+                    return {
+                        success: false,
+                        message: `El total de la compra: ${total} debe ser igual a la suma de los campos: ${suma}!`
+                    }
+                }
+                return { success: true, message: '' }
+            } else if (this.form.payment_condition_id === '02') {
+                //Credito
+                return { success: true, message: '' }
+            } else {
+                //Credito cuotas
+                _.forEach(this.form.fee, row => {
+                    suma += row.amount
+                })
+                if (total != _.round(suma, 2)) {
+                    //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
+                    return {
+                        success: false,
+                        message: `El total de la compra: ${total} debe ser igual a la suma de los campos: ${suma}!`
+                    }
+                }
+                return { success: true, message: '' }
+            }
+        },
         async submit() {
+            let validarMontos = await this.validarEntradas()
+            if (!validarMontos.success) {
+                return this.$message.error(validarMontos.message);
+            }
 
 
             let validate = await this.validate_payments()

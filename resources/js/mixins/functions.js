@@ -201,10 +201,8 @@ export const fnPaymentsFee = {
         calculatePayments() {
             let payment_count = this.form.payments.length
             let total = this.form.total
-
             let payment = 0
-            let amount = _.round(total / payment_count, 2)
-
+            let amount = _.round(total / payment_count, 4)
             _.forEach(this.form.payments, row => {
                 payment += amount
                 if (total - payment < 0) {

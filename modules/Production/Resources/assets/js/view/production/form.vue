@@ -433,11 +433,11 @@
                                     -->
                                 </th>
                                 <th>{{ row.unit_type }}</th>
-                                    <th>
-                                        <!-- {{ row.quantity }} -->
-                                        <el-input-number v-model="row.quantity" :controls="false" :min="0.01" :step="1"
-                                            disabled></el-input-number>
-                                    </th>
+                                <th>
+                                    <!-- {{ row.quantity }} -->
+                                    <el-input-number v-model="row.quantity_per_unit" :controls="false" :min="0.01" :step="1"
+                                        disabled></el-input-number>
+                                </th>
                                 <th>{{ row.unit_type }}</th>
                                 <th>
 
