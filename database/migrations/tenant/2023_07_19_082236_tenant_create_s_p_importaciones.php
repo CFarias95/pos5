@@ -15,7 +15,7 @@ class TenantCreateSPImportaciones extends Migration
     public function up()
     {
         DB::connection("tenant")->statement("DROP PROCEDURE IF EXISTS SP_Reporteimportacion;");
-        DB::connection("tenant")->statement("CREATE DEFINER=`SOPORTEJN`@`181.199.58.11` PROCEDURE `SP_Reporteimportacion`(
+        DB::connection("tenant")->statement("CREATE PROCEDURE `SP_Reporteimportacion`(
             IN `id` INT
         )
         LANGUAGE SQL
@@ -102,7 +102,7 @@ class TenantCreateSPImportaciones extends Migration
 
 
         UPDATE TMP_IMP1
-        SET gastohastafob =  (@hastafob/@fob ) * (fob*unidadestoal)
+        SET gastohastafob = CASE WHEN @fob <=0 THEN 0 ELSE  (@hastafob/@fob ) * (fob*unidadestoal) END
         ;
 
         UPDATE TMP_IMP1
@@ -114,7 +114,7 @@ class TenantCreateSPImportaciones extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET flete =  (@flete/@fob ) * (fob)
+        SET flete =  CASE WHEN @fob <=0 THEN 0 ELSE   (@flete/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -122,7 +122,7 @@ class TenantCreateSPImportaciones extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET seguro =  (@seguro/@fob ) * (fob)
+        SET seguro = CASE WHEN @fob <=0  THEN 0 ELSE  (@seguro/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -136,19 +136,19 @@ class TenantCreateSPImportaciones extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET valoradvaloren = cif*(porcentaje/100)
+        SET valoradvaloren =ISNULL( cif*(porcentaje/100))
         ;
 
         UPDATE TMP_IMP1
-        SET fodinfa = cif*(porcentajef/100)
+        SET fodinfa = ISNULl(cif*(porcentajef/100))
         ;
 
         UPDATE TMP_IMP1
-        SET iva = (cif+valoradvaloren+fodinfa+ice)*0.12
+        SET iva =ISNULL( (cif+valoradvaloren+fodinfa+ice)*0.12)
         ;
 
         UPDATE TMP_IMP1
-        SET gastos =  (@gastos/@fob ) * (fob)
+        SET gastos = CASE WHEN @fob <=0 THEN 0 ELSE  (@gastos/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -165,7 +165,7 @@ class TenantCreateSPImportaciones extends Migration
         SET @costot = (SELECT SUM(Costo) AS C FROM TMP_IMP1 );
 
         UPDATE TMP_IMP1
-        SET interes = ( (@interes/@costot) * costo)/unidadestoal
+        SET interes =  CASE WHEN @costot <=0  THEN 0 ELSE ( (@interes/@costot) * costo)/unidadestoal END
         ;
 
         UPDATE TMP_IMP1
