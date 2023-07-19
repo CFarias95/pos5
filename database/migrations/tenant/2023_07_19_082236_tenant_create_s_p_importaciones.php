@@ -14,6 +14,7 @@ class TenantCreateSPImportaciones extends Migration
      */
     public function up()
     {
+        DB::connection("tenant")->statement("DROP PROCEDURE IF EXISTS SP_Reporteimportacion;");
         DB::connection("tenant")->statement("CREATE PROCEDURE `SP_Reporteimportacion`(
             IN `id` INT
         )
@@ -27,29 +28,29 @@ class TenantCreateSPImportaciones extends Migration
         set @importacion = id ;
 
 
-        SET @fob = (SELECT SUM(b.total_value)
+        SET @fob = ISNULL((SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
           inner JOIN items AS c ON b.item_id = c.id
         WHERE a.import_id =  @importacion
-         AND c.unit_type_id <> 'ZZ' )  ;
+         AND c.unit_type_id <> 'ZZ' ))  ;
 
-        SET @hastafob = ( SELECT SUM(b.total_value)
+        SET @hastafob = ISNULL( ( SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 7 )  ;
+        AND c.concept_id = 7 ) ) ;
 
-        SET @flete = ( SELECT SUM(b.total_value)
+        SET @flete = ISNULL( ( SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 4)  ;
+        AND c.concept_id = 4))  ;
 
-        SET @interes = (SELECT SUM(b.total_value)
+        SET @interes = ISNULL((SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 8)  ;
+        AND c.concept_id = 8))  ;
 
 
         SET @seguro = ISNULL((SELECT SUM(b.total_value)
