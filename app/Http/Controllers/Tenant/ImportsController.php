@@ -221,6 +221,7 @@ class ImportsController extends Controller
         */
 
         $result = DB::connection("tenant")->select("CALL SP_Liquidarimportacion(?)",[$id]);
+        Log::info("valor liquidacion: "+$result[0]->totalimportacion);
         $this->createAccountingEntry($id,$result[0]->totalimportacion);
 
     }
