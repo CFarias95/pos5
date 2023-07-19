@@ -109,7 +109,7 @@ class ReportKardexController extends Controller
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all());
-        //Log::info($records);
+        //Log::info(json_encode($records));
 
         return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -164,6 +164,14 @@ class ReportKardexController extends Controller
             LEFT JOIN inventories i ON ik.inventory_kardexable_id = i.id
             WHERE ik.item_id = :item_id", ['item_id' => $item_id]);*/
         //Log::info($data);
+        /*$motivo = InventoryKardex::where('inventory_kardex.item_id', '=', $item_id)
+            ->leftJoin('inventories', 'inventory_kardex.inventory_kardexable_id', '=', 'inventories.id')
+            ->get();
+        $reason_transfer = [];
+        foreach($motivo as $reason)
+        {
+            array_push($reason_transfer, $reason->detail);
+        }*/
         if($warehouse_id !== 'all') {
             $data->where('warehouse_id', $warehouse_id);
         }
@@ -192,8 +200,7 @@ class ReportKardexController extends Controller
         //     $data = InventoryKardex::with(['inventory_kardexable'])
         //                 ->where([['item_id', $item_id],['warehouse_id', $warehouse->id]])
         //                 ->orderBy('id');
-        // }
-
+        // }       
         $data
             ->orderBy('item_id')
             ->orderBy('id');
@@ -216,21 +223,32 @@ class ReportKardexController extends Controller
 
     private function getData($request)
     {
+        //Log::info($request);
         $company = Company::query()->first();
         $establishment = Establishment::query()->find(auth()->user()->establishment_id);
         $date_start = $request->input('date_start');
         $date_end = $request->input('date_end');
         $item_id = $request->input('item_id');
         $item = Item::query()->findOrFail($request->input('item_id'));
+        /*$data = InventoryKardex::where('inventory_kardex.item_id', '=', $request->item_id)
+            ->leftJoin('inventories', 'inventory_kardex.inventory_kardexable_id', '=', 'inventories.id')
+            ->get();
+        $reason_transfer = [];
+        foreach($data as $reason)
+        {
+            array_push($reason_transfer, $reason->detail);
+        }*/
+        //Log::info($reason_transfer);
+        //$motivo = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->latest();
 
         $warehouse = Warehouse::query()
             ->where('establishment_id', $establishment->id)
             ->first();
-
+        //Log::info($warehouse);
         $query = InventoryKardex::query()
             ->with(['inventory_kardexable'])
             ->where('warehouse_id', $warehouse->id);
-
+        //Log::info(json_encode($query));
         if ($date_start && $date_end) {
             $query->whereBetween('date_of_issue', [$date_start, $date_end])
                 ->orderBy('item_id')->orderBy('id');
@@ -239,11 +257,11 @@ class ReportKardexController extends Controller
         if ($item_id) {
             $query->where('item_id', $item_id);
         }
-
         $records = $query->orderBy('item_id')
             ->orderBy('id')
             ->get();
-
+        //$records->union('reason_transfer', $reason_transfer);
+        //Log::info($records);
         return [
             'company' => $company,
             'establishment' => $establishment,
@@ -255,6 +273,7 @@ class ReportKardexController extends Controller
             'date_end' => $date_end,
             'records' => $records,
             'balance' => 0,
+            //'reason_transfer' => $reason_transfer
         ];
     }
 

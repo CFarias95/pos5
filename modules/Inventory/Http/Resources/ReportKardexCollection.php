@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Modules\Inventory\Models\Devolution;
 use App\Models\Tenant\Dispatch;
+use Illuminate\Support\Facades\Log;
 use Modules\Order\Models\OrderNote;
 
 
@@ -26,6 +27,7 @@ class ReportKardexCollection extends ResourceCollection
 
     public function toArray($request)
     {
+        Log::info($request);
         self::$re = $request;
         $this->calcularRestante(self::$re);
 
@@ -76,6 +78,7 @@ class ReportKardexCollection extends ResourceCollection
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => ($row->quantity < 0) ? "Venta":"Anulación Venta",
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
                     'input' => $cpe_input,
                     'output' => $cpe_output,
@@ -93,6 +96,7 @@ class ReportKardexCollection extends ResourceCollection
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => ($row->quantity < 0) ? "Anulación Compra":"Compra",
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'number' => optional($row->inventory_kardexable)->series.'-'.optional($row->inventory_kardexable)->number,
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
@@ -108,6 +112,7 @@ class ReportKardexCollection extends ResourceCollection
                     'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'type_transaction' => "Nota de venta",
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'number' => optional($row->inventory_kardexable)->number_full,
                     // 'number' => optional($row->inventory_kardexable)->prefix.'-'.optional($row->inventory_kardexable)->id,
@@ -149,6 +154,7 @@ class ReportKardexCollection extends ResourceCollection
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => $row->inventory_kardexable->description,
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'number' => "-",
                     // 'input' => $input,
                     // 'output' => $output,
@@ -175,6 +181,7 @@ class ReportKardexCollection extends ResourceCollection
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'type_transaction' => ($row->quantity < 0) ? "Pedido":"Anulación Pedido",
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'number' => optional($row->inventory_kardexable)->prefix.'-'.optional($row->inventory_kardexable)->id,
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
                     'output' => ($row->quantity < 0) ?  $row->quantity:"-",
@@ -190,6 +197,7 @@ class ReportKardexCollection extends ResourceCollection
                     'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'type_transaction' => "Devolución",
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'number' => optional($row->inventory_kardexable)->number_full,
                     'input' => ($row->quantity > 0) ?  $row->quantity:"-",
@@ -208,6 +216,7 @@ class ReportKardexCollection extends ResourceCollection
                     'item_name' => $row->item->description,
                     'date_time' => $row->created_at->format('Y-m-d H:i:s'),
                     'type_transaction' =>  isset($row->inventory_kardexable->transfer_reason_type->description) ? $row->inventory_kardexable->transfer_reason_type->description : '',
+                    'reason_transfer' => $row->inventory_kardexable->detail,
                     // 'type_transaction' => "Guía",
                     'date_of_issue' => isset($row->inventory_kardexable->date_of_issue) ? $row->inventory_kardexable->date_of_issue->format('Y-m-d') : '',
                     'number' => optional($row->inventory_kardexable)->number_full,

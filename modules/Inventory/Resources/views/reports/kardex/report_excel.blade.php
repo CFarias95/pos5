@@ -81,6 +81,7 @@
                     @endif
                     <th>Fecha y hora transacción</th>
                     <th>Tipo transacción</th>
+                    <th>Motivo Traslado</th>
                     <th>Número</th>
                     <th>NV. Asociada</th>
                     <th>Pedido</th>
@@ -108,6 +109,7 @@
                         <td class="celda">{{$itemKardex['date_time']}}
                         </td>
                         <td class="celda">{{$itemKardex['type_transaction']}}</td>
+                        <td class="celda">{{$value->inventory_kardexable->detail}}</td>
                         <td class="celda">{{$itemKardex['number']}}</td>
                         <td class="celda">
                             {{$itemKardex['sale_note_asoc']}}
