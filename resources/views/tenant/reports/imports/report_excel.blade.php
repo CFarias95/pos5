@@ -57,7 +57,7 @@
                         <tbody>
                             @foreach($records as $key => $value)
                             <tr>
-                                <td class="celda">{{$value->serie}}</td>
+                                <td class="celda">{{$value->series}}</td>
                                 <td class="celda">{{$value->number}}</td>
                                 <td class="celda">{{$value->importacion}}</td>
                                 <td class="celda">{{$value->numeroLinea}}</td>
