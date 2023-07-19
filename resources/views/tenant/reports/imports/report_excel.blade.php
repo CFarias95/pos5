@@ -71,7 +71,7 @@
                                 <td class="celda">{{$value->fob }}</td>
                                 <td class="celda">{{$value->gastohastafob }}</td>
                                 <td class="celda">{{$value->nuevofob }}</td>
-                                <td class="celda">{{$value->fobTotal }}</td>
+                                <td class="celda">{{$value->fobtotal }}</td>
                                 <td class="celda">{{$value->flete }}</td>
                                 <td class="celda">{{$value->fletetotal }}</td>
                                 <td class="celda">{{$value->seguro }}</td>
