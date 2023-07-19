@@ -67,7 +67,7 @@
                                 <td class="celda">{{$value->partidaarancelaria }}</td>
                                 <td class="celda">{{$value->porcentaje }}</td>
                                 <td class="celda">{{$value->porcentajef }}</td>
-                                <td class="celda">{{$value->unidadestotal }}</td>
+                                <td class="celda">{{$value->unidadestoal }}</td>
                                 <td class="celda">{{$value->fob }}</td>
                                 <td class="celda">{{$value->gastohastafob }}</td>
                                 <td class="celda">{{$value->nuevofob }}</td>
