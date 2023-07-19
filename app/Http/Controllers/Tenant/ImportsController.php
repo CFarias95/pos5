@@ -16,6 +16,7 @@ use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\Tariff;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 
 class ImportsController extends Controller
@@ -87,6 +88,7 @@ class ImportsController extends Controller
 
     public function liquidationsReport($id){
 
+        /*
         $records = Purchase::where('import_id',$id)->where('tipo_doc_id',1)
                     ->join('purchase_items',function($join) use($id){
                         $join->on('purchases.id','=','purchase_items.purchase_id')
@@ -136,6 +138,9 @@ class ImportsController extends Controller
 
 
         $source = $this->transformReportImports($records, $totalFlete, $totalSeguro, $totalgasto);
+        */
+
+        $source = DB::connection("tenant")->select("CALL SP_Reporteimportacion(?)",[$id]);
 
         return (new ImportExport)
             ->records($source)

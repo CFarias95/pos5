@@ -27,9 +27,12 @@
                                 <th>Referencia</th>
                                 <th>Descripción</th>
                                 <th>Partida arancelaria</th>
-                                <th>Porcentaje Advaloren</th>
+                                <th>Porcentaje advaloren</th>
+                                <th>Porcentaje fodinfa</th>
                                 <th>Unidades total</th>
                                 <th>FOB</th>
+                                <th>Gasto hasta FOB</th>
+                                <th>Nuevo FOB</th>
                                 <th>FOB total</th>
                                 <th>Flete</th>
                                 <th>Flete total</th>
@@ -38,10 +41,14 @@
                                 <th>CIF</th>
                                 <th>Valor ADVALOREN</th>
                                 <th>FODINFA</th>
+                                <th>ICE</th>
                                 <th>IVA</th>
                                 <th>Gastos</th>
                                 <th>Gastos Total</th>
                                 <th>Costo</th>
+                                <th>Interes</th>
+                                <th>Interes total</th>
+                                <th>Costo calculado</th>
                                 <th>Total linea</th>
                                 <th>Factor</th>
 
@@ -51,29 +58,36 @@
                             @foreach($records as $key => $value)
                             <tr>
                                 <td class="celda">{{$value['serie']}}</td>
-                                <td class="celda">{{$value['numero']}}</td>
+                                <td class="celda">{{$value['number']}}</td>
                                 <td class="celda">{{$value['importacion']}}</td>
-                                <td class="celda">{{$value['numLinea']}}</td>
-                                <td class="celda">{{$value['codArticulo']}}</td>
+                                <td class="celda">{{$value['numeroLinea']}}</td>
+                                <td class="celda">{{$value['codarticulo']}}</td>
                                 <td class="celda">{{$value['referencia'] }}</td>
                                 <td class="celda">{{$value['descripcion'] }}</td>
-                                <td class="celda">{{$value['partidaArancelaria'] }}</td>
-                                <td class="celda">{{$value['porcentajeAdvaloren'] }}</td>
+                                <td class="celda">{{$value['partidaarancelaria'] }}</td>
+                                <td class="celda">{{$value['porcentaje'] }}</td>
+                                <td class="celda">{{$value['porcentajef'] }}</td>
                                 <td class="celda">{{$value['unidadestotal'] }}</td>
                                 <td class="celda">{{$value['fob'] }}</td>
+                                <td class="celda">{{$value['gastohastafob'] }}</td>
+                                <td class="celda">{{$value['nuevofob'] }}</td>
                                 <td class="celda">{{$value['fobTotal'] }}</td>
                                 <td class="celda">{{$value['flete'] }}</td>
-                                <td class="celda">{{$value['fleteTotal'] }}</td>
+                                <td class="celda">{{$value['fletetotal'] }}</td>
                                 <td class="celda">{{$value['seguro'] }}</td>
-                                <td class="celda">{{$value['seguroTotal'] }}</td>
+                                <td class="celda">{{$value['segurototal'] }}</td>
                                 <td class="celda">{{$value['cif'] }}</td>
-                                <td class="celda">{{$value['advaloren'] }}</td>
+                                <td class="celda">{{$value['valoradvaloren'] }}</td>
                                 <td class="celda">{{$value['fodinfa'] }}</td>
+                                <td class="celda">{{$value['Ice'] }}</td>
                                 <td class="celda">{{$value['iva'] }}</td>
                                 <td class="celda">{{$value['gastos'] }}</td>
-                                <td class="celda">{{$value['gastosTotal'] }}</td>
+                                <td class="celda">{{$value['gastostotal'] }}</td>
                                 <td class="celda">{{$value['costo'] }}</td>
-                                <td class="celda">{{$value['totalLinea'] }}</td>
+                                <td class="celda">{{$value['interes'] }}</td>
+                                <td class="celda">{{$value['interestotal'] }}</td>
+                                <td class="celda">{{$value['costocalculado'] }}</td>
+                                <td class="celda">{{$value['totallinea'] }}</td>
                                 <td class="celda">{{$value['factor'] }}</td>
 
                             </tr>
