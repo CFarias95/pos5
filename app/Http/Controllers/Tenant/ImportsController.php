@@ -7,6 +7,8 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Tenant\ImportRequest as TenantImportRequest;
 use App\Http\Resources\Tenant\ImportResource;
 use App\Http\Resources\Tenant\ImportsCollection;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Imports;
@@ -14,10 +16,12 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use App\Models\Tenant\Tariff;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ImportsController extends Controller
 {
@@ -213,15 +217,101 @@ class ImportsController extends Controller
                 ]);
 
             }
-        }*/
+        }
+        */
 
         $result = DB::connection("tenant")->select("CALL SP_Liquidarimportacion (?)",[$id]);
-
-
-
+        $this->createAccountingEntry($id,$result[0]->totalimportacion);
 
     }
 
+    /* CREARE ACCOUNTING ENTRIES IMPORT*/
+    private function createAccountingEntry($document_id,$valor){
+
+        $document = Imports::firstOrNew(['id' => $document_id]);
+        //Log::info('documento created: ' . json_encode($document));
+        $entry = (AccountingEntries::get())->last();
+        //ASIENTO CONTABLE DE FACTURAS
+        try{
+            $idauth = auth()->user()->id;
+            $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+            $ultimo = AccountingEntries::latest('id')->first();
+            $configuration = Configuration::first();
+            if (empty($lista)) {
+                $seat = 1;
+            } else {
+
+                $seat = $lista->seat + 1;
+            }
+
+            if (empty($ultimo)) {
+                $seat_general = 1;
+            } else {
+                $seat_general = $ultimo->seat_general + 1;
+            }
+
+            $comment = 'Importacion '. $document->numeroImportacion ;
+
+            $total_debe = $valor;
+            $total_haber = $valor;
+
+            $cabeceraC = new AccountingEntries();
+            $cabeceraC->user_id = $document->user_id;
+            $cabeceraC->seat = $seat;
+            $cabeceraC->seat_general = $seat_general;
+            $cabeceraC->seat_date = $document->updated_at;
+            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->comment = $comment;
+            $cabeceraC->serie = null;
+            $cabeceraC->number = $seat;
+            $cabeceraC->total_debe = $total_debe;
+            $cabeceraC->total_haber = $total_haber;
+            $cabeceraC->revised1 = 0;
+            $cabeceraC->user_revised1 = 0;
+            $cabeceraC->revised2 = 0;
+            $cabeceraC->user_revised2 = 0;
+            $cabeceraC->currency_type_id = $configuration->currency_type_id;
+            $cabeceraC->doctype = 99;
+            $cabeceraC->is_client = false;
+            $cabeceraC->establishment_id = null;
+            $cabeceraC->establishment = '';
+            $cabeceraC->prefix = 'ASC';
+            $cabeceraC->person_id = null;
+            $cabeceraC->external_id = Str::uuid()->toString();
+            $cabeceraC->document_id = 'I'.$document_id;
+
+            $cabeceraC->save();
+            $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+            $cabeceraC->save();
+
+
+            $detalle = new AccountingEntryItems();
+
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $configuration->cta_purchases;
+            $detalle->seat_line = 1;
+            $detalle->debe = $valor;
+            $detalle->haber = 0;
+            $detalle->save();
+
+            $detalle2 = new AccountingEntryItems();
+
+            $detalle2->accounting_entrie_id = $cabeceraC->id;
+            $detalle2->account_movement_id = (isset($document->cuenta_contable))?$document->cuenta_contable:$configuration->cta_transit_imports;
+            $detalle2->seat_line = 2;
+            $detalle2->debe = 0;
+            $detalle2->haber = $valor;
+            $detalle2->save();
+
+
+        }catch(Exception $ex){
+
+            Log::error('Error al intentar generar el asiento contable');
+            Log::error($ex->getMessage());
+        }
+
+
+    }
     private function transformReportImports($resource, $fleteTotal, $totalSeguro, $totalgasto )
     {
         $totalFOD = $resource->sum('total_value');
