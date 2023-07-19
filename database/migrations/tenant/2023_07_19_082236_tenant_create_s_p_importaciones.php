@@ -15,7 +15,7 @@ class TenantCreateSPImportaciones extends Migration
     public function up()
     {
         DB::connection("tenant")->statement("DROP PROCEDURE IF EXISTS SP_Reporteimportacion;");
-        DB::connection("tenant")->statement("CREATE PROCEDURE `SP_Reporteimportacion`(
+        DB::connection("tenant")->statement("CREATE DEFINER=`SOPORTEJN`@`181.199.58.11` PROCEDURE `SP_Reporteimportacion`(
             IN `id` INT
         )
         LANGUAGE SQL

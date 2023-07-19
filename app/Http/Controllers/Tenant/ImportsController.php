@@ -150,6 +150,7 @@ class ImportsController extends Controller
 
     private function updateItemCost($id){
 
+        /*
         $records = Purchase::where('import_id',$id)->where('tipo_doc_id',1)->get();
 
         $fleteT = Purchase::where('tipo_doc_id',2)
@@ -212,7 +213,12 @@ class ImportsController extends Controller
                 ]);
 
             }
-        }
+        }*/
+
+        $result = DB::connection("tenant")->select("CALL SP_Liquidarimportacion (?)",[$id]);
+
+
+
 
     }
 
