@@ -60,7 +60,7 @@
                                 <td class="celda">{{$value->series}}</td>
                                 <td class="celda">{{$value->number}}</td>
                                 <td class="celda">{{$value->importacion}}</td>
-                                <td class="celda">{{$value->numerolinea}}</td>
+                                <td class="celda">{{$value->Numerolinea}}</td>
                                 <td class="celda">{{$value->codarticulo}}</td>
                                 <td class="celda">{{$value->referencia }}</td>
                                 <td class="celda">{{$value->descripcion }}</td>
