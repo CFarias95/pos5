@@ -25,39 +25,38 @@ class TenantCreateSPLiquidarImport extends Migration
         COMMENT 'Se actualiza el costo de la importacion y se muestrta el valor total de la importacion'
         BEGIN
 
-
         set @importacion = id ;
 
 
-        SET @fob = (SELECT SUM(b.total_value)
+        SET @fob = ISNULL((SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
           inner JOIN items AS c ON b.item_id = c.id
         WHERE a.import_id =  @importacion
-         AND c.unit_type_id <> 'ZZ' )  ;
+         AND c.unit_type_id <> 'ZZ' ))  ;
 
-        SET @hastafob = ( SELECT SUM(b.total_value)
+        SET @hastafob = ISNULL( ( SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 7 )  ;
+        AND c.concept_id = 7 ) ) ;
 
-        SET @flete = ( SELECT SUM(b.total_value)
+        SET @flete = ISNULL( ( SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 4)  ;
+        AND c.concept_id = 4))  ;
 
-        SET @interes = (SELECT SUM(b.total_value)
+        SET @interes = ISNULL((SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
         WHERE  a.import_id =  @importacion
-        AND c.concept_id = 8)  ;
+        AND c.concept_id = 8))  ;
 
 
         SET @seguro = ISNULL((SELECT SUM(b.total_value)
          FROM purchases AS a INNER JOIN purchase_items AS b ON a.id = b.purchase_id
          INNER JOIN items AS c ON b.Item_id = c.id
-        WHERE  b.import  =  @importacion
+        WHERE  b.import =  @importacion
         AND c.concept_id = 5) ) ;
 
         SET @gastos = ISNULL((SELECT SUM(b.total_value)
@@ -72,7 +71,7 @@ class TenantCreateSPLiquidarImport extends Migration
         AS (
         SELECT
         a.series, a.number, e.numeroImportacion importacion,
-         0 Numerolinea, b.item_id AS codarticulo, c.internal_id AS referencia,
+         0 Numerolinea, b.item_id AS codarticulo, c.internal_id AS referencia, c.name descripcion,
         d.tariff partidaarancelaria, d.advaloren AS porcentaje ,d.fodinfa AS porcentajef , b.quantity as unidadestoal ,
         b.unit_value AS fob, CAST(0.0 AS DECIMAL(12,4)) AS gastohastafob,
         CAST(0.0 AS DECIMAL(12,4)) As nuevofob, (b.unit_value*b.quantity ) AS fobtotal,
@@ -103,7 +102,7 @@ class TenantCreateSPLiquidarImport extends Migration
 
 
         UPDATE TMP_IMP1
-        SET gastohastafob =  (@hastafob/@fob ) * (fob*unidadestoal)
+        SET gastohastafob = CASE WHEN @fob <=0 THEN 0 ELSE  (@hastafob/@fob ) * (fob*unidadestoal) END
         ;
 
         UPDATE TMP_IMP1
@@ -115,7 +114,7 @@ class TenantCreateSPLiquidarImport extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET flete =  (@flete/@fob ) * (fob)
+        SET flete =  CASE WHEN @fob <=0 THEN 0 ELSE   (@flete/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -123,7 +122,7 @@ class TenantCreateSPLiquidarImport extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET seguro =  (@seguro/@fob ) * (fob)
+        SET seguro = CASE WHEN @fob <=0  THEN 0 ELSE  (@seguro/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -137,19 +136,19 @@ class TenantCreateSPLiquidarImport extends Migration
         ;
 
         UPDATE TMP_IMP1
-        SET valoradvaloren = cif*(porcentaje/100)
+        SET valoradvaloren =ISNULL( cif*(porcentaje/100))
         ;
 
         UPDATE TMP_IMP1
-        SET fodinfa = cif*(porcentajef/100)
+        SET fodinfa = ISNULl(cif*(porcentajef/100))
         ;
 
         UPDATE TMP_IMP1
-        SET iva = (cif+valoradvaloren+fodinfa+ice)*0.12
+        SET iva =ISNULL( (cif+valoradvaloren+fodinfa+ice)*0.12)
         ;
 
         UPDATE TMP_IMP1
-        SET gastos =  (@gastos/@fob ) * (fob)
+        SET gastos = CASE WHEN @fob <=0 THEN 0 ELSE  (@gastos/@fob ) * (fob) END
         ;
 
         UPDATE TMP_IMP1
@@ -166,7 +165,7 @@ class TenantCreateSPLiquidarImport extends Migration
         SET @costot = (SELECT SUM(Costo) AS C FROM TMP_IMP1 );
 
         UPDATE TMP_IMP1
-        SET interes = ( (@interes/@costot) * costo)/unidadestoal
+        SET interes =  CASE WHEN @costot <=0  THEN 0 ELSE ( (@interes/@costot) * costo)/unidadestoal END
         ;
 
         UPDATE TMP_IMP1
@@ -181,8 +180,9 @@ class TenantCreateSPLiquidarImport extends Migration
         UPDATE TMP_IMP1
         SET totallinea = (costo+interes) *unidadestoal
         ;
-        --
-        -- SELECT * FROM TMP_IMP1
+
+        -- SELECT * FROM TMP_IMP1 ;
+
 
         UPDATE items AS a
         INNER JOIN TMP_IMP1 AS b
