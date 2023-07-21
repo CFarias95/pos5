@@ -8,247 +8,201 @@
                 <div class="form-body">
                     <div class="row">
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.document_type_intern}">
+                            <div class="form-group" :class="{ 'has-danger': errors.document_type_intern }">
                                 <label class="control-label">Tipo comprobante Interno</label>
                                 <el-select v-model="form.document_type_intern" @change="changeDocumentType2">
                                     <el-option v-for="option in document_types2" :key="option.idType" :value="option.idType"
-                                               :label="option.description"></el-option>
+                                        :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.document_type_intern"
-                                       v-text="errors.document_type_intern[0]"></small>
+                                    v-text="errors.document_type_intern[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div class="form-group" :class="{'has-danger': errors.document_type_id}">
+                            <div class="form-group" :class="{ 'has-danger': errors.document_type_id }">
                                 <label class="control-label">Tipo comprobante SRI</label>
                                 <el-select v-model="form.document_type_id" :disabled="true" @change="changeDocumentType">
                                     <el-option v-for="option in document_types" :key="option.id" :value="option.id"
-                                               :label="option.description"></el-option>
+                                        :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.document_type_id"
-                                       v-text="errors.document_type_id[0]"></small>
+                                    v-text="errors.document_type_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-4">
-                            <div :class="{'has-danger': errors.codSustento}"
-                                 class="form-group">
+                            <div :class="{ 'has-danger': errors.codSustento }" class="form-group">
                                 <label class="control-label">Código Tributario</label>
                                 <el-select v-model="form.codSustento" :required="is_countable">
-                                    <el-option v-for="option in codSustentos"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.codSustento"></el-option>
+                                    <el-option v-for="option in codSustentos" :key="option.id" :label="option.description"
+                                        :value="option.codSustento"></el-option>
                                 </el-select>
-                                <small v-if="errors.codSustento"
-                                       class="form-control-feedback"
-                                       v-text="errors.codSustento[0]"></small>
+                                <small v-if="errors.codSustento" class="form-control-feedback"
+                                    v-text="errors.codSustento[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.series}">
+                            <div class="form-group" :class="{ 'has-danger': errors.series }">
                                 <label class="control-label">Serie</label>
-                                <el-input v-model="form.series" :maxlength="4" @input="inputSeries" :disabled="true"></el-input>
+                                <el-input v-model="form.series" :maxlength="4" @input="inputSeries"
+                                    :disabled="true"></el-input>
 
-                                <small class="form-control-feedback" v-if="errors.series"
-                                       v-text="errors.series[0]"></small>
+                                <small class="form-control-feedback" v-if="errors.series" v-text="errors.series[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.number}">
+                            <div class="form-group" :class="{ 'has-danger': errors.number }">
                                 <label class="control-label">Número</label>
                                 <el-input v-model="form.number" :disabled="true"></el-input>
 
-                                <small class="form-control-feedback" v-if="errors.number"
-                                       v-text="errors.number[0]"></small>
+                                <small class="form-control-feedback" v-if="errors.number" v-text="errors.number[0]"></small>
                             </div>
                         </div>
 
 
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
+                            <div class="form-group" :class="{ 'has-danger': errors.date_of_issue }">
                                 <label class="control-label">Fec Emisión</label>
-                                <el-date-picker v-model="form.date_of_issue" :readonly="readonly_date_of_due"
-                                                type="date" value-format="yyyy-MM-dd" :disabled="true" :clearable="false"
-                                                @change="changeDateOfIssue"></el-date-picker>
+                                <el-date-picker v-model="form.date_of_issue" :readonly="readonly_date_of_due" type="date"
+                                    value-format="yyyy-MM-dd" :disabled="true" :clearable="false"
+                                    @change="changeDateOfIssue"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_issue"
-                                       v-text="errors.date_of_issue[0]"></small>
+                                    v-text="errors.date_of_issue[0]"></small>
                             </div>
                         </div>
 
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.date_of_due}">
+                            <div class="form-group" :class="{ 'has-danger': errors.date_of_due }">
                                 <label class="control-label">Fec. Vencimiento</label>
                                 <el-date-picker v-model="form.date_of_due" type="date" :readonly="readonly_date_of_due"
-                                                value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
+                                    value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_due"
-                                       v-text="errors.date_of_due[0]"></small>
+                                    v-text="errors.date_of_due[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2">
-                            <div class="form-group" :class="{'has-danger': errors.currency_type_id}">
+                            <div class="form-group" :class="{ 'has-danger': errors.currency_type_id }">
                                 <label class="control-label">Moneda</label>
                                 <el-select v-model="form.currency_type_id" @change="changeCurrencyType">
                                     <el-option v-for="option in currency_types" :key="option.symbol" :value="option.id"
-                                               :label="option.description"></el-option>
+                                        :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.currency_type_id"
-                                       v-text="errors.currency_type_id[0]"></small>
+                                    v-text="errors.currency_type_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-2" v-if="form.currency_type_id != configuration.currency_type_id">
-                            <div :class="{'has-danger': errors.exchange_rate_sale}"
-                                 class="form-group">
+                            <div :class="{ 'has-danger': errors.exchange_rate_sale }" class="form-group">
                                 <label class="control-label">Tipo de cambio
-                                    <el-tooltip class="item"
-                                                content="Tipo de cambio del día"
-                                                effect="dark"
-                                                placement="top-end">
+                                    <el-tooltip class="item" content="Tipo de cambio del día" effect="dark"
+                                        placement="top-end">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
                                 <el-input v-model="form.exchange_rate_sale" disabled></el-input>
-                                <small v-if="errors.exchange_rate_sale"
-                                       class="form-control-feedback"
-                                       v-text="errors.exchange_rate_sale[0]"></small>
+                                <small v-if="errors.exchange_rate_sale" class="form-control-feedback"
+                                    v-text="errors.exchange_rate_sale[0]"></small>
                             </div>
                         </div>
                     </div>
                     <div class="row">
                         <div class="col-lg-6">
-                            <div class="form-group" :class="{'has-danger': errors.supplier_id}">
+                            <div class="form-group" :class="{ 'has-danger': errors.supplier_id }">
                                 <label class="control-label">
                                     Proveedor
                                     <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>
                                 </label>
                                 <el-select v-model="form.supplier_id" filterable @change="changeSupplier"
-                                           ref="select_person" @keyup.native="keyupSupplier"
-                                           @keyup.enter.native="keyupEnterSupplier">
+                                    ref="select_person" @keyup.native="keyupSupplier"
+                                    @keyup.enter.native="keyupEnterSupplier">
                                     <el-option v-for="option in suppliers" :key="option.id" :value="option.id"
-                                               :label="option.description"></el-option>
+                                        :label="option.description"></el-option>
                                 </el-select>
                                 <small class="form-control-feedback" v-if="errors.supplier_id"
-                                       v-text="errors.supplier_id[0]"></small>
+                                    v-text="errors.supplier_id[0]"></small>
                             </div>
                         </div>
 
-                        <div class="col-lg-2" v-if=" form.purchase_order_id === null">
+                        <div class="col-lg-2" v-if="form.purchase_order_id === null">
                             <div class="form-group">
                                 <label>
                                     Orden de compra
                                 </label>
-                                <el-select v-model="form.purchase_order_id"
-                                           :loading="loading_search"
-                                           clearable
-                                           filterable
-                                           placeholder="Número de documento"
-                                           >
+                                <el-select v-model="form.purchase_order_id" :loading="loading_search" clearable filterable
+                                    placeholder="Número de documento">
                                     <!--
                                     :remote-method="searchPurchaseOrder"
                                     remote-->
-                                    <el-option v-for="option in purchase_order_data"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
+                                    <el-option v-for="option in purchase_order_data" :key="option.id"
+                                        :label="option.description" :value="option.id"></el-option>
                                 </el-select>
                             </div>
                         </div>
-                        <div class="form-group col-sm-12 col-md-6 col-lg-4 "
-                            :class="{ 'has-danger': errors.created_at }"
-                            >
+                        <div class="form-group col-sm-12 col-md-6 col-lg-4 " :class="{ 'has-danger': errors.created_at }">
                             <label class="control-label">
                                 Observaciones
                             </label>
-                            <el-input v-model="form.observation"
-                                      placeholder="Observaciones"></el-input>
+                            <el-input v-model="form.observation" placeholder="Observaciones"></el-input>
                         </div>
                         <!--JOINSOFTWARE-->
                         <div class="form-group col-sm-12 col-md-6 col-lg-2"
-                            :class="{'has-danger': errors.sequential_number}"
-                            >
+                            :class="{ 'has-danger': errors.sequential_number }">
                             <label class="control-label">Secuencial</label>
 
-                            <el-input
-                                v-model="form.sequential_number"
-                                :maxlength="15"
-                                :required="is_countable"
-                                show-word-limit
-                                dusk="sequential_number">
+                            <el-input v-model="form.sequential_number" :maxlength="15" :required="is_countable"
+                                show-word-limit dusk="sequential_number">
                             </el-input>
 
-                            <small v-if="errors.sequential_number"
-                                    class="form-control-feedback"
-                                    v-text="errors.sequential_number[0]"></small>
+                            <small v-if="errors.sequential_number" class="form-control-feedback"
+                                v-text="errors.sequential_number[0]"></small>
                         </div>
                         <!--JOINSOFTWARE-->
-                        <div class="form-group col-sm-12 col-md-6 col-lg-4"
-                            :class="{'has-danger': errors.auth_number}"
-                            >
+                        <div class="form-group col-sm-12 col-md-6 col-lg-4" :class="{ 'has-danger': errors.auth_number }">
                             <label class="control-label">Número autorización</label>
 
-                            <el-input
-                                v-model="form.auth_number"
-                                :maxlength="49"
-                                :required="is_countable"
-                                show-word-limit
+                            <el-input v-model="form.auth_number" :maxlength="50" :required="is_countable" show-word-limit
                                 dusk="auth_number">
                             </el-input>
 
-                            <small v-if="errors.auth_number"
-                                    class="form-control-feedback"
-                                    v-text="errors.auth_number[0]"></small>
+                            <small v-if="errors.auth_number" class="form-control-feedback"
+                                v-text="errors.auth_number[0]"></small>
                         </div>
 
                         <div class="col-lg-2">
-                            <div :class="{'has-danger': errors.import_id}"
-                                 class="form-group">
+                            <div :class="{ 'has-danger': errors.import_id }" class="form-group">
                                 <label class="control-label">Importacion</label>
-                                <el-select v-model="form.import_id" >
-                                    <el-option v-for="option in imports"
-                                               :key="option.id"
-                                               :label="option.numeroImportacion"
-                                               :value="option.id"></el-option>
+                                <el-select v-model="form.import_id">
+                                    <el-option v-for="option in imports" :key="option.id" :label="option.numeroImportacion"
+                                        :value="option.id"></el-option>
                                 </el-select>
-                                <small v-if="errors.import_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.imports_id[0]"></small>
+                                <small v-if="errors.import_id" class="form-control-feedback"
+                                    v-text="errors.imports_id[0]"></small>
                             </div>
                         </div>
                         <div class="col-lg-3">
-                            <div :class="{'has-danger': errors.tipo_doc_id}"
-                                 class="form-group">
+                            <div :class="{ 'has-danger': errors.tipo_doc_id }" class="form-group">
                                 <label class="control-label">Tipo documento</label>
-                                <el-select v-model="form.tipo_doc_id" >
-                                    <el-option v-for="option in type_docs"
-                                               :key="option.id"
-                                               :label="option.description"
-                                               :value="option.id"></el-option>
+                                <el-select v-model="form.tipo_doc_id">
+                                    <el-option v-for="option in type_docs" :key="option.id" :label="option.description"
+                                        :value="option.id"></el-option>
                                 </el-select>
-                                <small v-if="errors.tipo_doc_id"
-                                       class="form-control-feedback"
-                                       v-text="errors.tipo_doc_id[0]"></small>
+                                <small v-if="errors.tipo_doc_id" class="form-control-feedback"
+                                    v-text="errors.tipo_doc_id[0]"></small>
                             </div>
                         </div>
-                        <div class="form-group col-sm-12 col-md-6 col-lg-2"
-                            :class="{'has-danger': errors.afected_document}"
+                        <div class="form-group col-sm-12 col-md-6 col-lg-2" :class="{ 'has-danger': errors.afected_document }"
                             v-if="is_credit_note">
                             <label class="control-label">Documento Afectado</label>
-                            <el-input
-                                v-model="form.afected_document"
-                                dusk="afected_document"
-                                :required="is_credit_note"
-                                >
+                            <el-input v-model="form.afected_document" dusk="afected_document" :required="is_credit_note">
                             </el-input>
-                            <small v-if="errors.afected_document"
-                                    class="form-control-feedback"
-                                    v-text="errors.afected_document[0]"></small>
+                            <small v-if="errors.afected_document" class="form-control-feedback"
+                                v-text="errors.afected_document[0]"></small>
                         </div>
 
                         <div class="col-12">&nbsp;</div>
 
-                         <div class="col-md-8 mt-2">
+                        <div class="col-md-8 mt-2">
                             <div class="form-group">
-                                <el-checkbox v-model="form.is_aproved"
-                                            >¿Desea Autorizar las retenciones de esta compra?
+                                <el-checkbox v-model="form.is_aproved">¿Desea Autorizar las retenciones de esta compra?
                                 </el-checkbox>
                             </div>
                         </div>
@@ -263,8 +217,7 @@
 
                         <div class="col-md-8 mt-2 mb-2">
                             <div class="form-group">
-                                <el-checkbox v-model="form.has_payment"
-                                             @change="changeHasPayment">Agregar vencimientos
+                                <el-checkbox v-model="form.has_payment" @change="changeHasPayment">Agregar vencimientos
                                 </el-checkbox>
                                 <small><label style="color: red;">Campo obligatorio!!</label></small>
                             </div>
@@ -274,12 +227,11 @@
                         <div class="col-md-8 mt-2 mb-2" v-if="configuration.enabled_global_igv_to_purchase">
                             <div class="form-group">
                                 <el-checkbox v-model="localHasGlobalIgv"
-                                             :disabled="(form.items.length != 0 && configuration.enabled_global_igv_to_purchase)"
-                                             @change="changeHasGlobalIgv">¿La compra tiene igv?
+                                    :disabled="(form.items.length != 0 && configuration.enabled_global_igv_to_purchase)"
+                                    @change="changeHasGlobalIgv">¿La compra tiene igv?
                                     <el-tooltip class="item"
-                                                content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
-                                                effect="dark"
-                                                placement="top-end">
+                                        content="Al estar la configuracion activa, sobreescribe el igv del item. Si no esta checado, el producto no tendra igv."
+                                        effect="dark" placement="top-end">
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </el-checkbox>
@@ -292,13 +244,11 @@
                                     Clientes
                                 </label>
 
-                                <el-select v-model="form.customer_id" filterable remote
-                                           popper-class="el-select-customers" clearable
-                                           placeholder="Nombre o número de documento"
-                                           :remote-method="searchRemotePersons"
-                                           :loading="loading_search">
+                                <el-select v-model="form.customer_id" filterable remote popper-class="el-select-customers"
+                                    clearable placeholder="Nombre o número de documento"
+                                    :remote-method="searchRemotePersons" :loading="loading_search">
                                     <el-option v-for="option in customers" :key="option.id" :value="option.id"
-                                               :label="option.description"></el-option>
+                                        :label="option.description"></el-option>
                                 </el-select>
 
                             </div>
@@ -310,19 +260,14 @@
                         <template v-if="form.has_payment">
 
                             <div class="col-lg-2 col-md-2">
-                                <div :class="{'has-danger': errors.payment_condition_id}"
-                                     class="form-group">
+                                <div :class="{ 'has-danger': errors.payment_condition_id }" class="form-group">
                                     <label class="control-label">Condición de pago</label>
-                                    <el-select v-model="form.payment_condition_id"
-                                               @change="changePaymentCondition">
-                                        <el-option v-for="option in payment_conditions"
-                                                   :key="option.id"
-                                                   :label="option.name"
-                                                   :value="option.id"></el-option>
+                                    <el-select v-model="form.payment_condition_id" @change="changePaymentCondition">
+                                        <el-option v-for="option in payment_conditions" :key="option.id"
+                                            :label="option.name" :value="option.id"></el-option>
                                     </el-select>
-                                    <small v-if="errors.payment_condition_id"
-                                           class="form-control-feedback"
-                                           v-text="errors.payment_condition_id[0]"></small>
+                                    <small v-if="errors.payment_condition_id" class="form-control-feedback"
+                                        v-text="errors.payment_condition_id[0]"></small>
                                 </div>
                             </div>
 
@@ -331,133 +276,103 @@
                                 <template v-if="form.payment_condition_id === '01'">
                                     <table>
                                         <thead>
-                                        <tr width="100%">
-                                            <th v-if="form.payments.length>0"
-                                                class="pb-2">Forma de pago
-                                            </th>
-                                            <th v-if="form.payments.length>0"
-                                                class="pb-2">Desde
-                                                <el-tooltip class="item"
-                                                            content="Aperture caja o cuentas bancarias"
-                                                            effect="dark"
-                                                            placement="top-start">
-                                                    <i class="fa fa-info-circle"></i>
-                                                </el-tooltip>
-                                            </th>
-                                            <th v-if="form.payments.length>0"
-                                                class="pb-2">Referencia/Anticipo
-                                            </th>
-                                            <th v-if="form.payments.length>0"
-                                                class="pb-2">Monto
-                                            </th>
-                                            <th width="15%"><a class="text-center font-weight-bold text-info"
-                                                            href="#"
-                                                            @click.prevent="clickAddPayment">[+ Agregar]</a>
-                                            </th>
-                                        </tr>
+                                            <tr width="100%">
+                                                <th v-if="form.payments.length > 0" class="pb-2">Forma de pago
+                                                </th>
+                                                <th v-if="form.payments.length > 0" class="pb-2">Desde
+                                                    <el-tooltip class="item" content="Aperture caja o cuentas bancarias"
+                                                        effect="dark" placement="top-start">
+                                                        <i class="fa fa-info-circle"></i>
+                                                    </el-tooltip>
+                                                </th>
+                                                <th v-if="form.payments.length > 0" class="pb-2">Referencia/Anticipo
+                                                </th>
+                                                <th v-if="form.payments.length > 0" class="pb-2">Monto
+                                                </th>
+                                                <th width="15%"><a class="text-center font-weight-bold text-info" href="#"
+                                                        @click.prevent="clickAddPayment">[+ Agregar]</a>
+                                                </th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(row, index) in form.payments"
-                                            :key="index">
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_method_type_id"
+                                            <tr v-for="(row, index) in form.payments" :key="index">
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_method_type_id"
                                                             @change="changePaymentMethodType(index)">
-                                                        <el-option v-for="option in cashPaymentMethod"
-                                                                :key="option.id"
-                                                                :label="option.description"
+                                                            <el-option v-for="option in cashPaymentMethod" :key="option.id"
+                                                                :label="option.description" :value="option.id"></el-option>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td>
+                                                    <div class="form-group mb-2 mr-2">
+                                                        <el-select v-model="row.payment_destination_id" filterable>
+                                                            <el-option v-for="option in payment_destinations"
+                                                                :key="option.id" :label="option.description"
                                                                 :value="option.id"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td>
-                                                <div class="form-group mb-2 mr-2">
-                                                    <el-select v-model="row.payment_destination_id"
-                                                            filterable>
-                                                        <el-option v-for="option in payment_destinations"
-                                                                :key="option.id"
-                                                                :label="option.description"
-                                                                :value="option.id"></el-option>
-                                                    </el-select>
-                                                </div>
-                                            </td>
-                                            <td v-if="!row.payment_method_type_id_desc">
-                                                <el-input
-                                                    v-model="row.reference"></el-input>
+                                                        </el-select>
+                                                    </div>
+                                                </td>
+                                                <td v-if="!row.payment_method_type_id_desc">
+                                                    <el-input v-model="row.reference"></el-input>
 
-                                            </td>
-                                            <td v-else>
-                                                <el-select
-                                                    v-model="row.reference"
-                                                    @change="changeAdvance(index,$event)">
-                                                    <el-option
-                                                        v-for="option in advances"
-                                                        :key="option.id"
-                                                        :label="option.id"
-                                                        :value="option.id"></el-option>
-                                                </el-select>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.payment"  @change="changeAdvanceInput(index,$event,row.payment_method_type_id,row.reference)"></el-input>
-                                            </td>
-                                            <td class="series-table-actions text-center">
-                                                <button class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        type="button"
-                                                        @click.prevent="clickCancel(index)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                            <br>
-                                        </tr>
+                                                </td>
+                                                <td v-else>
+                                                    <el-select v-model="row.reference"
+                                                        @change="changeAdvance(index, $event)">
+                                                        <el-option v-for="option in advances" :key="option.id"
+                                                            :label="option.id" :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.payment"
+                                                        @change="changeAdvanceInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                </td>
+                                                <td class="series-table-actions text-center">
+                                                    <button class="btn waves-effect waves-light btn-xs btn-danger"
+                                                        type="button" @click.prevent="clickCancel(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                                <br>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </template>
 
                                 <!-- Credito -->
                                 <template v-else-if="form.payment_condition_id === '02'">
-                                    <table v-if="form.fee.length>0">
+                                    <table v-if="form.fee.length > 0">
                                         <thead>
-                                        <tr width="100%">
-                                            <th class="pb-2" v-if="form.fee.length>0"
-                                            >Método de pago
-                                            </th>
-                                            <th class="pb-2"
-                                            >Fecha
-                                            </th>
-                                            <th class="pb-2"
-                                            >Monto
-                                            </th>
-                                            <th class="pb-2"></th>
-                                        </tr>
+                                            <tr width="100%">
+                                                <th class="pb-2" v-if="form.fee.length > 0">Método de pago
+                                                </th>
+                                                <th class="pb-2">Fecha
+                                                </th>
+                                                <th class="pb-2">Monto
+                                                </th>
+                                                <th class="pb-2"></th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(row, index) in form.fee"
-                                            :key="index">
-                                            <td>
-                                                <el-select
-                                                    v-model="row.payment_method_type_id"
-                                                    @change="changePaymentMethodType(index)">
-                                                    <el-option
-                                                        v-for="option in creditPaymentMethod"
-                                                        :key="option.id"
-                                                        :label="option.description"
-                                                        :value="option.id"
-                                                    ></el-option>
-                                                </el-select>
-                                            </td>
-                                            <td>
-                                                <el-date-picker
-                                                    v-model="row.date"
-                                                    :clearable="false"
-                                                    format="dd/MM/yyyy"
-                                                    type="date"
-                                                    :readonly="readonly_date_of_due"
-                                                    value-format="yyyy-MM-dd"></el-date-picker>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.amount"></el-input>
-                                            </td>
-                                        </tr>
+                                            <tr v-for="(row, index) in form.fee" :key="index">
+                                                <td>
+                                                    <el-select v-model="row.payment_method_type_id"
+                                                        @change="changePaymentMethodType(index)">
+                                                        <el-option v-for="option in creditPaymentMethod" :key="option.id"
+                                                            :label="option.description" :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+                                                <td>
+                                                    <el-date-picker v-model="row.date" :clearable="false"
+                                                        format="dd/MM/yyyy" type="date" :readonly="readonly_date_of_due"
+                                                        value-format="yyyy-MM-dd"></el-date-picker>
+                                                </td>
+                                                <td>
+                                                    <el-input v-model="row.amount"></el-input>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
 
@@ -467,47 +382,41 @@
                                 <template v-else>
                                     <table v-if="form.fee.length > 0">
                                         <thead>
-                                        <tr width="100%">
-                                            <th class="pb-2">Fecha
-                                            </th>
-                                            <th class="pb-2">Monto
-                                            </th>
-                                            <th class="pb-2"></th>
-                                        </tr>
+                                            <tr width="100%">
+                                                <th class="pb-2">Fecha
+                                                </th>
+                                                <th class="pb-2">Monto
+                                                </th>
+                                                <th class="pb-2"></th>
+                                            </tr>
                                         </thead>
                                         <tbody>
-                                        <tr v-for="(row, index) in form.fee"
-                                            :key="index">
-                                            <td>
-                                                <el-date-picker v-model="row.date"
-                                                                :clearable="false"
-                                                                format="dd/MM/yyyy"
-                                                                type="date"
-                                                                value-format="yyyy-MM-dd"></el-date-picker>
-                                            </td>
-                                            <td>
-                                                <el-input v-model="row.amount"></el-input>
-                                            </td>
-                                            <td class="text-center">
-                                                <button v-if="index > 0"
-                                                        class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        type="button"
-                                                        @click.prevent="clickRemoveFee(index)">
-                                                    <i class="fa fa-trash"></i>
-                                                </button>
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td colspan="5">
-                                                <label class="control-label">
-                                                    <a class=""
-                                                       href="#"
-                                                       @click.prevent="clickAddFee"><i
-                                                        class="fa fa-plus font-weight-bold text-info"></i>
-                                                        <span style="color: #777777">Agregar cuota</span></a>
-                                                </label>
-                                            </td>
-                                        </tr>
+                                            <tr v-for="(row, index) in form.fee" :key="index">
+                                                <td>
+                                                    <el-date-picker v-model="row.date" :clearable="false"
+                                                        format="dd/MM/yyyy" type="date"
+                                                        value-format="yyyy-MM-dd"></el-date-picker>
+                                                </td>
+                                                <td>
+                                                    <el-input-number v-model="row.amount" @change="recalcularValores"></el-input-number>
+                                                </td>
+                                                <td class="text-center">
+                                                    <button v-if="index > 0"
+                                                        class="btn waves-effect waves-light btn-xs btn-danger" type="button"
+                                                        @click.prevent="removerCuotas(index)">
+                                                        <i class="fa fa-trash"></i>
+                                                    </button>
+                                                </td>
+                                            </tr>
+                                            <tr>
+                                                <td colspan="5">
+                                                    <label class="control-label">
+                                                        <a class="" href="#" @click.prevent="clickAddFee"><i
+                                                                class="fa fa-plus font-weight-bold text-info"></i>
+                                                            <span style="color: #777777">Agregar cuota</span></a>
+                                                    </label>
+                                                </td>
+                                            </tr>
                                         </tbody>
                                     </table>
                                 </template>
@@ -520,7 +429,7 @@
                         <div class="col-lg-12 col-md-6 d-flex align-items-end mt-4">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary"
-                                        @click.prevent="showDialogAddItem = true">+ Agregar Producto
+                                    @click.prevent="showDialogAddItem = true">+ Agregar Producto
                                 </button>
                             </div>
                         </div>
@@ -530,59 +439,57 @@
                             <div class="table-responsive">
                                 <table class="table">
                                     <thead>
-                                    <tr>
-                                        <th>#</th>
-                                        <th>Descripción</th>
-                                        <th>Almacén</th>
-                                        <th>Lote</th>
-                                        <th class="text-center">Unidad</th>
-                                        <th class="text-right">Cantidad</th>
-                                        <th class="text-right">Valor Unitario</th>
-                                        <th class="text-right">Precio Unitario</th>
-                                        <th class="text-right">Descuento</th>
-                                        <th class="text-right">Cargo</th>
-                                        <th class="text-right">Total</th>
-                                        <th></th>
-                                    </tr>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>Descripción</th>
+                                            <th>Almacén</th>
+                                            <th>Lote</th>
+                                            <th class="text-center">Unidad</th>
+                                            <th class="text-right">Cantidad</th>
+                                            <th class="text-right">Valor Unitario</th>
+                                            <th class="text-right">Precio Unitario</th>
+                                            <th class="text-right">Descuento</th>
+                                            <th class="text-right">Cargo</th>
+                                            <th class="text-right">Total</th>
+                                            <th></th>
+                                        </tr>
                                     </thead>
                                     <tbody>
-                                    <tr v-for="(row, index) in form.items" :key="index">
-                                        <td>{{ index + 1 }}</td>
-                                        <td>{{
+                                        <tr v-for="(row, index) in form.items" :key="index">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>{{
                                                 row.item.description
-                                            }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
-                                        <td class="text-left">{{ getWarehouseDescription(row) }}</td>
-                                        <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
-                                        <td class="text-left">{{ row.item.lot_code }}</td>
-                                        <td class="text-center">{{ row.item.unit_type_id }}</td>
-                                        <td class="text-right">{{ row.quantity }}</td>
-                                        <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
-                                        <td class="text-right">{{ currency_type.symbol }}
-                                            {{ getFormatUnitPriceRow(row.unit_value) }}
-                                        </td>
-                                        <td class="text-right">{{ currency_type.symbol }}
-                                            {{ getFormatUnitPriceRow(row.unit_price) }}
-                                        </td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
-                                        <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
-                                        <td class="text-right">
-                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                            }}<br /><small>{{ row.affectation_igv_type.description }}</small></td>
+                                            <td class="text-left">{{ getWarehouseDescription(row) }}</td>
+                                            <!-- <td class="text-left">{{ (row.warehouse_description) ? row.warehouse_description : row.warehouse.description  }}</td> -->
+                                            <td class="text-left">{{ row.item.lot_code }}</td>
+                                            <td class="text-center">{{ row.item.unit_type_id }}</td>
+                                            <td class="text-right">{{ row.quantity }}</td>
+                                            <!-- <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td> -->
+                                            <td class="text-right">{{ currency_type.symbol }}
+                                                {{ getFormatUnitPriceRow(row.unit_value) }}
+                                            </td>
+                                            <td class="text-right">{{ currency_type.symbol }}
+                                                {{ getFormatUnitPriceRow(row.unit_price) }}
+                                            </td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ row.total_discount }}</td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>
+                                            <td class="text-right">{{ currency_type.symbol }} {{ row.total }}</td>
+                                            <td class="text-right">
+                                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                     @click.prevent="clickRemoveItem(index)">x
-                                            </button>
-                                            <button class="btn waves-effect waves-light btn-xs btn-info"
-                                                type="button"
-                                                @click="ediItem(row, index)">
-                                            <span style='font-size:10px;'>&#9998;</span></button>
-                                        </td>
-                                    </tr>
+                                                </button>
+                                                <button class="btn waves-effect waves-light btn-xs btn-info" type="button"
+                                                    @click="ediItem(row, index)">
+                                                    <span style='font-size:10px;'>&#9998;</span></button>
+                                            </td>
+                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <p v-if="form.total_ret > 0"
-                               class="text-left" >RETENCIONES</p>
+                            <p v-if="form.total_ret > 0" class="text-left">RETENCIONES</p>
                             <div class="table-responsive" v-if="form.total_ret > 0">
                                 <table class="table table-bordered table-sm">
                                     <thead>
@@ -595,13 +502,12 @@
                                         </tr>
                                     </thead>
                                     <tbody>
-                                        <tr v-for="(row, index) in form.ret"
-                                            :key="index">
+                                        <tr v-for="(row, index) in form.ret" :key="index">
                                             <td>{{ index + 1 }}</td>
-                                            <td>{{ row.tipo}}</td>
-                                            <td>{{ row.code}}</td>
-                                            <td>{{ row.desciption}}</td>
-                                            <td>{{ row.valor}}</td>
+                                            <td>{{ row.tipo }}</td>
+                                            <td>{{ row.code }}</td>
+                                            <td>{{ row.desciption }}</td>
+                                            <td>{{ row.valor }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -612,66 +518,59 @@
 
                             <!-- descuentos -->
 
-                            <div class="row mt-1 mb-2"  v-if="form.total_discount > 0">
+                            <div class="row mt-1 mb-2" v-if="form.total_discount > 0">
 
                                 <div class="col-lg-10 float-right">
                                     <label class="float-right control-label">
 
-                                        <el-tooltip class="item"
-                                            :content="global_discount_type.description"
-                                            effect="dark"
+                                        <el-tooltip class="item" :content="global_discount_type.description" effect="dark"
                                             placement="top">
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
 
                                         DESCUENTO {{ is_amount ? 'MONTO' : '%' }}
-                                        <el-checkbox v-model="is_amount" class="ml-1 mr-1" @change="changeTypeDiscount"></el-checkbox>
+                                        <el-checkbox v-model="is_amount" class="ml-1 mr-1"
+                                            @change="changeTypeDiscount"></el-checkbox>
                                         :
                                     </label>
                                 </div>
 
                                 <div class="col-lg-2 float-right">
-                                    <el-input-number v-model="total_global_discount"
-                                                        :min="0"
-                                                        class="input-custom"
-                                                        controls-position="right"
-                                                        @change="changeTotalGlobalDiscount"></el-input-number>
+                                    <el-input-number v-model="total_global_discount" :min="0" class="input-custom"
+                                        controls-position="right" @change="changeTotalGlobalDiscount"></el-input-number>
                                 </div>
 
                             </div>
 
                             <!-- descuentos -->
 
-                            <p v-if="form.total_exportation > 0"
-                               class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol }}
-                                                                 {{ form.total_exportation }}</p>
-                            <p v-if="form.total_free > 0"
-                               class="text-right">OP.GRATUITAS: {{ currency_type.symbol }} {{
-                                    form.total_free
-                                                          }}</p>
-                            <p v-if="form.total_unaffected > 0"
-                               class="text-right">SUBTOTAL 0%: {{ currency_type.symbol }}
-                                                                {{ form.total_unaffected }}</p>
-                            <p v-if="form.total_exonerated > 0"
-                               class="text-right">OP.EXONERADAS: {{ currency_type.symbol }}
-                                                                {{ form.total_exonerated }}</p>
-                            <p v-if="form.total_taxed > 0"
-                               class="text-right">SUBTOTAL 12%: {{ currency_type.symbol }} {{
-                                    form.total_taxed
-                                                           }}</p>
-                            <p v-if="form.total_igv > 0"
-                               class="text-right">IVA: {{ currency_type.symbol }} {{ form.total_igv }}</p>
+                            <p v-if="form.total_exportation > 0" class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol
+                            }}
+                                {{ form.total_exportation }}</p>
+                            <p v-if="form.total_free > 0" class="text-right">OP.GRATUITAS: {{ currency_type.symbol }} {{
+                                form.total_free
+                            }}</p>
+                            <p v-if="form.total_unaffected > 0" class="text-right">SUBTOTAL 0%: {{ currency_type.symbol }}
+                                {{ form.total_unaffected }}</p>
+                            <p v-if="form.total_exonerated > 0" class="text-right">OP.EXONERADAS: {{ currency_type.symbol }}
+                                {{ form.total_exonerated }}</p>
+                            <p v-if="form.total_taxed > 0" class="text-right">SUBTOTAL 12%: {{ currency_type.symbol }} {{
+                                form.total_taxed
+                            }}</p>
+                            <p v-if="form.total_igv > 0" class="text-right">IVA: {{ currency_type.symbol }} {{
+                                form.total_igv }}</p>
 
-                            <p v-if="form.total_isc > 0"
-                               class="text-right">ISC: {{ currency_type.symbol }} {{ form.total_isc }}</p>
+                            <p v-if="form.total_isc > 0" class="text-right">ISC: {{ currency_type.symbol }} {{
+                                form.total_isc }}</p>
 
-                            <p v-if="form.total_ret > 0"
-                               class="text-right" >RETENIDO: {{ currency_type.symbol }} {{ form.total_ret }}</p>
+                            <p v-if="form.total_ret > 0" class="text-right">RETENIDO: {{ currency_type.symbol }} {{
+                                form.total_ret }}</p>
 
-                            <p v-if="form.total_discount > 0" class="text-right">DESCUENTOS TOTALES: {{ currency_type.symbol }} {{ form.total_discount }}</p>
+                            <p v-if="form.total_discount > 0" class="text-right">DESCUENTOS TOTALES: {{ currency_type.symbol
+                            }} {{ form.total_discount }}</p>
 
-                            <h3 v-if="form.total > 0"
-                                class="text-right"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{ form.total }}
+                            <h3 v-if="form.total > 0" class="text-right"><b>TOTAL COMPRAS: </b>{{ currency_type.symbol }} {{
+                                form.total }}
                             </h3>
 
                             <template v-if="is_perception_agent">
@@ -681,12 +580,10 @@
                                         <label class="float-right control-label">NÚMERO PERCEPCIÓN: </label>
                                     </div>
                                     <div class="col-lg-2 float-right">
-                                        <div :class="{'has-danger': errors.perception_number}"
-                                             class="form-group">
+                                        <div :class="{ 'has-danger': errors.perception_number }" class="form-group">
                                             <el-input v-model="form.perception_number"></el-input>
-                                            <small v-if="errors.perception_number"
-                                                   class="form-control-feedback"
-                                                   v-text="errors.perception_number[0]"></small>
+                                            <small v-if="errors.perception_number" class="form-control-feedback"
+                                                v-text="errors.perception_number[0]"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -696,17 +593,12 @@
                                         <label class="float-right control-label">FEC EMISIÓN PERCEPCIÓN: </label>
                                     </div>
                                     <div class="col-lg-2 float-right">
-                                        <div :class="{'has-danger': errors.perception_date}"
-                                             class="form-group">
-                                            <el-date-picker v-model="form.perception_date"
-                                                            :clearable="false"
-                                                            type="date"
-                                                            value-format="yyyy-MM-dd"
-                                                            @change="changeDateOfIssue"></el-date-picker>
+                                        <div :class="{ 'has-danger': errors.perception_date }" class="form-group">
+                                            <el-date-picker v-model="form.perception_date" :clearable="false" type="date"
+                                                value-format="yyyy-MM-dd" @change="changeDateOfIssue"></el-date-picker>
 
-                                            <small v-if="errors.perception_date"
-                                                   class="form-control-feedback"
-                                                   v-text="errors.perception_date[0]"></small>
+                                            <small v-if="errors.perception_date" class="form-control-feedback"
+                                                v-text="errors.perception_date[0]"></small>
                                         </div>
                                     </div>
                                 </div>
@@ -716,20 +608,17 @@
                                         <label class="float-right control-label">IMPORTE PERCEPCIÓN: </label>
                                     </div>
                                     <div class="col-lg-2 float-right">
-                                        <div :class="{'has-danger': errors.total_perception}"
-                                             class="form-group">
-                                            <el-input v-model="form.total_perception"
-                                                      :readonly="true"
-                                                      @input="inputTotalPerception"></el-input>
+                                        <div :class="{ 'has-danger': errors.total_perception }" class="form-group">
+                                            <el-input v-model="form.total_perception" :readonly="true"
+                                                @input="inputTotalPerception"></el-input>
 
-                                            <small v-if="errors.total_perception"
-                                                   class="form-control-feedback"
-                                                   v-text="errors.total_perception[0]"></small>
+                                            <small v-if="errors.total_perception" class="form-control-feedback"
+                                                v-text="errors.total_perception[0]"></small>
                                         </div>
                                     </div>
                                 </div>
-                                <h3 v-if="form.total > 0 && !hide_button"
-                                    class="text-right"><b>MONTO TOTAL : </b>{{ currency_type.symbol }} {{ total_amount }}
+                                <h3 v-if="form.total > 0 && !hide_button" class="text-right"><b>MONTO TOTAL : </b>{{
+                                    currency_type.symbol }} {{ total_amount }}
                                 </h3>
                             </template>
                         </div>
@@ -739,28 +628,21 @@
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()" style="color: red;">Cancelar</el-button>
                     <el-button type="primary" native-type="submit" :loading="loading_submit"
-                               v-if="form.items.length > 0 && !hide_button">Guardar cambios
+                        v-if="form.items.length > 0 && !hide_button">Guardar cambios
                     </el-button>
                 </div>
             </form>
         </div>
 
-        <purchase-form-item :showDialog.sync="showDialogAddItem"
-                            :currency-type-id-active="form.currency_type_id"
-                            :exchange-rate-sale="form.exchange_rate_sale"
-                            :record-item="recordItem"
-                            :localHasGlobalIgv="localHasGlobalIgv"
-                            :percentage-igv="percentage_igv"
-                            @add="addRow"></purchase-form-item>
+        <purchase-form-item :showDialog.sync="showDialogAddItem" :currency-type-id-active="form.currency_type_id"
+            :exchange-rate-sale="form.exchange_rate_sale" :record-item="recordItem" :localHasGlobalIgv="localHasGlobalIgv"
+            :percentage-igv="percentage_igv" @add="addRow"></purchase-form-item>
 
-        <person-form :showDialog.sync="showDialogNewPerson"
-                     type="suppliers"
-                     :input_person="input_person"
-                     :external="true"></person-form>
+        <person-form :showDialog.sync="showDialogNewPerson" type="suppliers" :input_person="input_person"
+            :external="true"></person-form>
 
-        <purchase-options :type="type" :showDialog.sync="showDialogOptions"
-                          :recordId="purchaseNewId"
-                          :showClose="false"></purchase-options>
+        <purchase-options :type="type" :showDialog.sync="showDialogOptions" :recordId="purchaseNewId"
+            :showClose="false"></purchase-options>
     </div>
 </template>
 <script>
@@ -768,8 +650,8 @@
 import PurchaseFormItem from './partials/item.vue'
 import PersonForm from '../persons/form.vue'
 import PurchaseOptions from './partials/options.vue'
-import {functions, exchangeRate, fnPaymentsFee} from '../../../mixins/functions'
-import {calculateRowItem} from '../../../helpers/functions'
+import { functions, exchangeRate, fnPaymentsFee } from '../../../mixins/functions'
+import { calculateRowItem } from '../../../helpers/functions'
 
 export default {
     props: {
@@ -778,7 +660,7 @@ export default {
             default: 0
         }
     },
-    components: {PurchaseFormItem, PersonForm, PurchaseOptions},
+    components: { PurchaseFormItem, PersonForm, PurchaseOptions },
     mixins: [functions, exchangeRate, fnPaymentsFee],
     data() {
         return {
@@ -824,15 +706,15 @@ export default {
             retention_types_income: [],
             retention_types_iva: [],
             retencionesActuales: [],
-            imports:[],
-            type_docs:[],
-            codSustentos:[],
-            codSustentos_all:[],
+            imports: [],
+            type_docs: [],
+            codSustentos: [],
+            codSustentos_all: [],
             haveRetentions: false,
-            advances:[],
+            advances: [],
 
-            is_countable:false,
-            is_credit_note:false,
+            is_countable: false,
+            is_credit_note: false,
         }
     },
     async created() {
@@ -896,10 +778,10 @@ export default {
     },
     computed: {
         creditPaymentMethod: function () {
-            return _.filter(this.payment_method_types, {'is_credit': true})
+            return _.filter(this.payment_method_types, { 'is_credit': true })
         },
         cashPaymentMethod: function () {
-            return _.filter(this.payment_method_types, {'is_credit': false})
+            return _.filter(this.payment_method_types, { 'is_credit': false })
         },
         isCreditPaymentCondition: function () {
             return ['02', '03'].includes(this.form.payment_condition_id)
@@ -907,7 +789,7 @@ export default {
     },
     methods: {
         getWarehouse(id) {
-            return _.find(this.warehouses, {id: id})
+            return _.find(this.warehouses, { id: id })
         },
         getWarehouseDescription(row) {
 
@@ -971,6 +853,51 @@ export default {
         getFormatUnitPriceRow(unit_price) {
             return _.round(unit_price, 6)
             // return unit_price.toFixed(6)
+        },
+        agregarCuotas() {
+
+            this.form.date_of_due = moment().format('YYYY-MM-DD');
+            this.form.fee.push({
+                id: null,
+                date: moment().format('YYYY-MM-DD'),
+                currency_type_id: this.form.currency_type_id,
+                amount: 0,
+            });
+            this.calcularCuotas()
+
+        },
+        calcularCuotas() {
+            if (this.form.fee.length == 0) {
+                this.form.fee[0].amount = this.form.total
+            }
+
+        },
+        recalcularValores() {
+            let fee_count = this.form.fee.length;
+            let total = this.form.total;
+            let accumulated = 0;
+
+            if (this.form.fee.length === 0) {
+                this.form.fee.push({ amount: this.form.total });
+            }
+
+            this.form.fee.forEach((row) => {
+                accumulated += row.amount;
+            });
+
+            if (this.form.fee.length > 0) {
+                let diferencia = total - accumulated + this.form.fee[fee_count - 1].amount;
+
+                if (diferencia >= 0) {
+                    this.form.fee[fee_count - 1].amount = diferencia;
+                } else {
+                    this.form.fee[fee_count - 1].amount = 0;
+                }
+            }
+        },
+        removerCuotas(index) {
+            this.form.fee.splice(index, 1)
+            this.recalcularValores()
         },
         async validate_payments() {
 
@@ -1062,7 +989,7 @@ export default {
 
             if (this.configuration.destination_sale && this.payment_destinations.length > 0) {
 
-                let cash = _.find(this.payment_destinations, {id: 'cash'})
+                let cash = _.find(this.payment_destinations, { id: 'cash' })
 
                 return (cash) ? cash.id : this.payment_destinations[0].id
 
@@ -1126,14 +1053,14 @@ export default {
 
         },
         setCurrencyType() {
-            this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            this.currency_type = _.find(this.currency_types, { 'id': this.form.currency_type_id })
         },
         async initRecord() {
             await this.$http.get(`/${this.resource}/record/${this.resourceId}`)
                 .then(response => {
                     //console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
-                    console.log('RESPONSE LOAD DATA EDIT: ',dato.items)
+                    console.log('RESPONSE LOAD DATA EDIT: ', dato.items)
                     this.form.id = dato.id
                     this.form.document_type_intern = dato.document_type_intern
                     this.form.document_type_id = dato.document_type_id
@@ -1156,7 +1083,7 @@ export default {
                     this.form.auth_number = dato.auth_number
                     this.form.sequential_number = dato.sequential_number
                     this.form.observation = dato.observation
-                    this.form.is_aproved = (dato.is_aproved && dato.is_aproved > 0) ? true:false
+                    this.form.is_aproved = (dato.is_aproved && dato.is_aproved > 0) ? true : false
                     this.form.import_id = dato.import_id
                     this.form.tipo_doc_id = dato.tipo_doc_id
                     //this.form.haveRetentions = dato.haveRetentions
@@ -1194,28 +1121,28 @@ export default {
 
             return payments
         },
-        changeAdvanceInput(index,event,methodType, id){
+        changeAdvanceInput(index, event, methodType, id) {
 
-            let selectedAdvance = _.find(this.advances,{'id':id})
-            let payment_method_type = _.find(this.payment_method_types, {'id': methodType});
-            if(payment_method_type.description.includes('Anticipo')){
+            let selectedAdvance = _.find(this.advances, { 'id': id })
+            let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
+            if (payment_method_type.description.includes('Anticipo')) {
 
                 let maxAmount = selectedAdvance.valor
 
-                if(maxAmount >= event){
+                if (maxAmount >= event) {
                     /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
 
-                }else{
+                } else {
                     this.form.payments[index].payment = maxAmount
-                    let message = 'El monto maximo del anticipo es de '+maxAmount
+                    let message = 'El monto maximo del anticipo es de ' + maxAmount
                     this.$message.warning(message)
 
                 }
             }
         },
-        changeAdvance(index, id){
+        changeAdvance(index, id) {
 
-            let selectedAdvance = _.find(this.advances,{'id':id})
+            let selectedAdvance = _.find(this.advances, { 'id': id })
             let maxAmount = selectedAdvance.valor
 
             let payment_count = this.form.payments.length;
@@ -1225,18 +1152,18 @@ export default {
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
 
-            if(maxAmount >= amount ){
+            if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
-            }else if(amount > maxAmount ){
+            } else if (amount > maxAmount) {
 
                 this.form.payments[index].payment = maxAmount
-                let message = 'El monto maximo del anticipo es de '+maxAmount
+                let message = 'El monto maximo del anticipo es de ' + maxAmount
                 this.$message.warning(message)
             }
 
 
         },
-        addAdvancesCustomer(){
+        addAdvancesCustomer() {
 
             this.$http.get(`/documents/advance/${this.form.supplier_id}`).then(
                 response => {
@@ -1255,7 +1182,7 @@ export default {
                 id = this.form.fee[index].payment_method_type_id
             }
 
-            let payment_method_type = _.find(this.payment_method_types, {'id': id})
+            let payment_method_type = _.find(this.payment_method_types, { 'id': id })
 
             if (payment_method_type.number_days) {
 
@@ -1298,7 +1225,7 @@ export default {
         },
         selectSupplier() {
 
-            let supplier = _.find(this.suppliers, {'id': this.aux_supplier_id})
+            let supplier = _.find(this.suppliers, { 'id': this.aux_supplier_id })
             this.form.supplier_id = (supplier) ? supplier.id : null
             this.aux_supplier_id = null
 
@@ -1352,12 +1279,12 @@ export default {
                 has_payment: false,
                 payment_condition_id: '01',
                 fee: [],
-                ret:[],
+                ret: [],
                 codSustento: '',
                 auth_number: '',
                 sequential_number: '',
                 observation: '',
-                is_aproved:false,
+                is_aproved: false,
 
             }
 
@@ -1414,13 +1341,13 @@ export default {
             this.filterSuppliers()
         },
         changeDocumentType2() {
-            var document = _.find(this.document_types2,{'idType': this.form.document_type_intern})
+            var document = _.find(this.document_types2, { 'idType': this.form.document_type_intern })
             //console.log('documento seleccionado',document.DocumentTypeID)
             this.form.document_type_id = document.DocumentTypeID
             //this.codSustentos = _.find(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
-            this.codSustentos = _.filter(this.codSustentos_all,{'idTipoComprobante':this.form.document_type_id})
+            this.codSustentos = _.filter(this.codSustentos_all, { 'idTipoComprobante': this.form.document_type_id })
 
-            this.is_countable  = (document.accountant > 0)
+            this.is_countable = (document.accountant > 0)
             this.is_credit_note = (document.DocumentTypeID == '04')
         },
         addRow(row) {
@@ -1441,7 +1368,7 @@ export default {
             this.calculateTotal()
         },
         changeCurrencyType() {
-            this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            this.currency_type = _.find(this.currency_types, { 'id': this.form.currency_type_id })
             let items = []
             this.form.items.forEach((row) => {
                 items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv))
@@ -1449,31 +1376,31 @@ export default {
             this.form.items = items
             this.calculateTotal()
         },
-        addRetenciones(){
+        addRetenciones() {
             this.form.ret = []
             let total = this.form.total_taxed + this.form.total_unaffected + this.form.total_igv
             let retenido = 0
-            this.retencionesActuales.forEach((row) =>{
+            this.retencionesActuales.forEach((row) => {
 
                 let retencionLocal = {}
-                retencionLocal.valor  = parseFloat(row.valorRet)
-                const retIvaDesc = _.find(this.retention_types_income, {'code': row.codRetencion})
-                if(retIvaDesc){
+                retencionLocal.valor = parseFloat(row.valorRet)
+                const retIvaDesc = _.find(this.retention_types_income, { 'code': row.codRetencion })
+                if (retIvaDesc) {
                     retencionLocal.tipo = 'RENTA'
-                    retencionLocal.desciption  = retIvaDesc.description
-                    retencionLocal.code  = retIvaDesc.code
-                    retencionLocal.porcentajeRet  = retIvaDesc.percentage
+                    retencionLocal.desciption = retIvaDesc.description
+                    retencionLocal.code = retIvaDesc.code
+                    retencionLocal.porcentajeRet = retIvaDesc.percentage
                     retenido += parseFloat(row.valorRet)
-                }else{
-                    const retIvaDesc = _.find(this.retention_types_iva, {'code': row.codRetencion})
+                } else {
+                    const retIvaDesc = _.find(this.retention_types_iva, { 'code': row.codRetencion })
                     retencionLocal.tipo = 'IVA'
-                    retencionLocal.desciption  = retIvaDesc.description
-                    retencionLocal.code  = retIvaDesc.code
-                    retencionLocal.porcentajeRet  = retIvaDesc.percentage
+                    retencionLocal.desciption = retIvaDesc.description
+                    retencionLocal.code = retIvaDesc.code
+                    retencionLocal.porcentajeRet = retIvaDesc.percentage
                     retenido += parseFloat(row.valorRet)
                 }
 
-                retencionLocal.base  = row.unit_value
+                retencionLocal.base = row.unit_value
                 this.form.ret.push(retencionLocal)
             })
 
@@ -1503,28 +1430,28 @@ export default {
             this.form.items.forEach((row) => {
 
                 //console.log('Rows: ',row)
-                if(row.iva_retention > 0 || row.income_retention > 0){
+                if (row.iva_retention > 0 || row.income_retention > 0) {
 
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
 
                     toal_retenido += (retention_iva + retention_renta)
 
-                    if(this.form.ret.length > 0){
+                    if (this.form.ret.length > 0) {
                         let nuevaRet = true
 
                         this.form.ret.forEach((data) => {
-                            if(row.iva_retention > 0 ){
-                                const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
-                                if(data.tipo == 'IVA' && data.desciption == retIvaDesc.description){
+                            if (row.iva_retention > 0) {
+                                const retIvaDesc = _.find(this.retention_types_iva, { 'id': row.retention_type_id_iva })
+                                if (data.tipo == 'IVA' && data.desciption == retIvaDesc.description) {
                                     data.valor += parseFloat(row.iva_retention)
                                     dato.base += row.total_taxes
                                     nuevaRet = false
                                 }
                             }
-                            if(row.income_retention > 0 ){
-                                const retIncomeDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
-                                if(data.tipo == 'RENTA' && data.desciption == retIncomeDesc.description){
+                            if (row.income_retention > 0) {
+                                const retIncomeDesc = _.find(this.retention_types_income, { 'id': row.retention_type_id_income })
+                                if (data.tipo == 'RENTA' && data.desciption == retIncomeDesc.description) {
                                     data.valor += parseFloat(row.income_retention)
                                     dato.base += row.unit_value * row.quantity
                                     nuevaRet = false
@@ -1534,59 +1461,59 @@ export default {
 
                         });
 
-                        if(nuevaRet){
+                        if (nuevaRet) {
                             //console.log('Nueva Retencion')
 
-                            if(row.iva_retention > 0 ){
+                            if (row.iva_retention > 0) {
                                 let retencionLocal = {}
                                 retencionLocal.tipo = 'IVA'
-                                retencionLocal.valor  = parseFloat(row.iva_retention)
-                                const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
+                                retencionLocal.valor = parseFloat(row.iva_retention)
+                                const retIvaDesc = _.find(this.retention_types_iva, { 'id': row.retention_type_id_iva })
                                 //console.log('Tipo retencion IVA: '+retIvaDesc.description)
-                                retencionLocal.desciption  = retIvaDesc.description
-                                retencionLocal.code  = retIvaDesc.code
-                                retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                                retencionLocal.base  = row.total_taxes
+                                retencionLocal.desciption = retIvaDesc.description
+                                retencionLocal.code = retIvaDesc.code
+                                retencionLocal.porcentajeRet = retIvaDesc.percentage
+                                retencionLocal.base = row.total_taxes
                                 this.form.ret.push(retencionLocal)
                             }
-                            if(row.income_retention > 0 ){
+                            if (row.income_retention > 0) {
                                 let retencionLocal = {}
                                 retencionLocal.tipo = 'RENTA'
-                                retencionLocal.valor  = parseFloat(row.income_retention)
-                                const retIvaDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
+                                retencionLocal.valor = parseFloat(row.income_retention)
+                                const retIvaDesc = _.find(this.retention_types_income, { 'id': row.retention_type_id_income })
                                 //console.log('Tipo retencion RENTA: '+retIvaDesc.description)
-                                retencionLocal.desciption  = retIvaDesc.description
-                                retencionLocal.code  = retIvaDesc.code
-                                retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                                retencionLocal.base  = row.unit_value * row.quantity
+                                retencionLocal.desciption = retIvaDesc.description
+                                retencionLocal.code = retIvaDesc.code
+                                retencionLocal.porcentajeRet = retIvaDesc.percentage
+                                retencionLocal.base = row.unit_value * row.quantity
                                 this.form.ret.push(retencionLocal)
                             }
                         }
 
-                    }else{
+                    } else {
                         //console.log('Retencion Inicial')
-                        if(row.iva_retention > 0 ){
+                        if (row.iva_retention > 0) {
                             let retencionLocal = {}
                             retencionLocal.tipo = 'IVA'
-                            retencionLocal.valor  = parseFloat(row.iva_retention)
-                            const retIvaDesc = _.find(this.retention_types_iva, {'id': row.retention_type_id_iva})
+                            retencionLocal.valor = parseFloat(row.iva_retention)
+                            const retIvaDesc = _.find(this.retention_types_iva, { 'id': row.retention_type_id_iva })
                             //console.log('Tipo retencion : '+retIvaDesc.description)
-                            retencionLocal.desciption  = retIvaDesc.description
-                            retencionLocal.code  = retIvaDesc.code
-                            retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                            retencionLocal.base  = row.total_taxes
+                            retencionLocal.desciption = retIvaDesc.description
+                            retencionLocal.code = retIvaDesc.code
+                            retencionLocal.porcentajeRet = retIvaDesc.percentage
+                            retencionLocal.base = row.total_taxes
                             this.form.ret.push(retencionLocal)
                         }
-                        if(row.income_retention > 0 ){
+                        if (row.income_retention > 0) {
                             let retencionLocal = {}
                             retencionLocal.tipo = 'RENTA'
-                            retencionLocal.valor  = parseFloat(row.income_retention)
-                            const retIvaDesc = _.find(this.retention_types_income, {'id': row.retention_type_id_income})
+                            retencionLocal.valor = parseFloat(row.income_retention)
+                            const retIvaDesc = _.find(this.retention_types_income, { 'id': row.retention_type_id_income })
                             //console.log('Tipo retencion : '+retIvaDesc.description)
-                            retencionLocal.desciption  = retIvaDesc.description
-                            retencionLocal.code  = retIvaDesc.code
-                            retencionLocal.porcentajeRet  = retIvaDesc.percentage
-                            retencionLocal.base  = row.unit_value * row.quantity
+                            retencionLocal.desciption = retIvaDesc.description
+                            retencionLocal.code = retIvaDesc.code
+                            retencionLocal.porcentajeRet = retIvaDesc.percentage
+                            retencionLocal.base = row.unit_value * row.quantity
                             this.form.ret.push(retencionLocal)
                         }
 
@@ -1622,7 +1549,7 @@ export default {
                     total_exportation += parseFloat(row.total_value)
                 }
 
-                if (['10','11','12', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                if (['10', '11', '12', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
                     total_free += parseFloat(row.total_value)
                 }
 
@@ -1657,11 +1584,11 @@ export default {
             // this.form.total_taxes = _.round(total_igv, 2)
             //impuestos (isc + igv)
             this.form.total_taxes = _.round(total_igv + total_isc, 2)
-            this.form.total_ret =  _.round(toal_retenido, 2)
+            this.form.total_ret = _.round(toal_retenido, 2)
 
             total = total - toal_retenido
 
-            this.form.total =  _.round(total, 2)
+            this.form.total = _.round(total, 2)
 
             //console.log("items calculados prev",this.form.items)
 
@@ -1670,11 +1597,11 @@ export default {
             this.calculateFee()
             this.recordItem = null
 
-            console.log("items calculados final",this.form.items)
+            console.log("items calculados final", this.form.items)
         },
         calculatePerception() {
 
-            let supplier = _.find(this.all_suppliers, {'id': this.form.supplier_id})
+            let supplier = _.find(this.all_suppliers, { 'id': this.form.supplier_id })
 
             if (supplier) {
 

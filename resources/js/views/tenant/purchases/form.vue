@@ -399,12 +399,13 @@
                                                         value-format="yyyy-MM-dd"></el-date-picker>
                                                 </td>
                                                 <td>
-                                                    <el-input-number v-model="row.amount"></el-input-number>
+                                                    <el-input-number v-model="row.amount"
+                                                        @change="recalcularValores"></el-input-number>
                                                 </td>
                                                 <td class="text-center">
                                                     <button v-if="index > 0"
                                                         class="btn waves-effect waves-light btn-xs btn-danger" type="button"
-                                                        @click.prevent="clickRemoveFee(index)">
+                                                        @click.prevent="removerCuotas(index)">
                                                         <i class="fa fa-trash"></i>
                                                     </button>
                                                 </td>
@@ -412,7 +413,7 @@
                                             <tr>
                                                 <td colspan="5">
                                                     <label class="control-label">
-                                                        <a class="" href="#" @click.prevent="clickAddFee"><i
+                                                        <a class="" href="#" @click.prevent="agregarCuotas"><i
                                                                 class="fa fa-plus font-weight-bold text-info"></i>
                                                             <span style="color: #777777">Agregar cuota</span></a>
                                                     </label>
@@ -1313,6 +1314,53 @@ export default {
             }
 
         },
+        agregarCuotas() {
+
+            this.form.date_of_due = moment().format('YYYY-MM-DD');
+            this.form.fee.push({
+                id: null,
+                date: moment().format('YYYY-MM-DD'),
+                currency_type_id: this.form.currency_type_id,
+                amount: 0,
+            });
+            this.calcularCuotas()
+
+        },
+        calcularCuotas() {
+            if (this.form.fee.length == 0) {
+                this.form.fee[0].amount = this.form.total
+            }
+
+        },
+        recalcularValores() {
+            let fee_count = this.form.fee.length;
+            let total = this.form.total;
+            let accumulated = 0;
+
+            if (this.form.fee.length === 0) {
+                this.form.fee.push({ amount: this.form.total });
+            }
+
+            this.form.fee.forEach((row) => {
+                accumulated += row.amount;
+            });
+
+            if (this.form.fee.length > 0) {
+                let diferencia = total - accumulated + this.form.fee[fee_count - 1].amount;
+
+                if (diferencia >= 0) {
+                    this.form.fee[fee_count - 1].amount = diferencia;
+                } else {
+                    this.form.fee[fee_count - 1].amount = 0;
+                }
+            }
+        },
+
+        removerCuotas(index) {
+            this.form.fee.splice(index, 1);
+            this.recalcularValores();
+        },
+
         async changeDateOfIssue() {
             this.form.date_of_due = this.form.date_of_issue
             await this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
@@ -1402,7 +1450,7 @@ export default {
 
                     this.haveRetentions = true
                     this.maxLength1 = 15
-                    this.maxLength2 = 45
+                    this.maxLength2 = 46
 
                     if (this.form.ret.length > 0) {
 
@@ -1648,7 +1696,7 @@ export default {
             if (this.form.payment_condition_id === '01') {
                 //Contado
                 _.forEach(this.form.payments, row => {
-                    suma += _.round(row.payment,2)
+                    suma += _.round(row.payment, 2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1664,7 +1712,7 @@ export default {
             } else {
                 //Credito cuotas
                 _.forEach(this.form.fee, row => {
-                    suma += _.round( row.amount,2)  
+                    suma += _.round(row.amount, 2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
