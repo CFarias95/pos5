@@ -1323,12 +1323,23 @@ export default {
                 currency_type_id: this.form.currency_type_id,
                 amount: 0,
             });
+            console.log('Bandera 1')
             this.calcularCuotas()
+            //this.recalcularValores()
 
         },
         calcularCuotas() {
             if (this.form.fee.length == 0) {
-                this.form.fee[0].amount = this.form.total
+                if(this.form.fee[0].amount == this.form.total)
+                {
+                    this.form.fee[0].amount = this.form.total
+                    console.log('fee1', this.form.fee[0].amount)
+                }else{
+                    this.form.fee[0].amount = this.form.fee[0].amount
+                    console.log('fee2', this.form.fee[0].amount)
+                    this.recalcularValores()
+                }
+                
             }
 
         },
