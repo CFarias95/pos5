@@ -18,40 +18,45 @@
                 <div class=" ">
                     <table class="">
                         <thead>
+                            <tr style="align-content: center; text-align: center; align-items: center">
+                                <th rowspan="2">Serie</th>
+                                <th rowspan="2">Número</th>
+                                <th rowspan="2">Importacion</th>
+                                <th rowspan="2">Numero línea</th>
+                                <th rowspan="2">Código artículo</th>
+                                <th rowspan="2">Referencia</th>
+                                <th rowspan="2">Descripción</th>
+                                <th rowspan="2">Partida arancelaria</th>
+                                <th rowspan="2">Porcentaje advaloren</th>
+                                <th rowspan="2">Porcentaje fodinfa</th>
+                                <th rowspan="2">Unidades total</th>
+                                <th rowspan="1" colspan="2">FOB FACTURA</th>
+                                <th rowspan="2">Gasto hasta FOB</th>
+                                <th rowspan="1" colspan="2">FOB FINAL</th>
+                                <th rowspan="2">Flete</th>
+                                <th rowspan="2">Seguro</th>
+                                <th rowspan="2">TOTAL CIF</th>
+                                <th rowspan="2">ADVALOREN</th>
+                                <th rowspan="2">FODINFA</th>
+                                <th rowspan="2">ICE</th>
+                                <th rowspan="2">IVA</th>
+                                <th rowspan="2">TOTAL IMPUESTOS Y TRIBUTOS</th>
+                                <th rowspan="1" colspan="2">Intereses</th>
+                                <th rowspan="2">Gastos locales</th>
+                                <th rowspan="2">Impuesto Salida Divisas</th>
+                                <th rowspan="2">Comunicaciones</th>
+                                <th rowspan="2">Total Gastos</th>
+                                <th rowspan="2">Factor Importacion</th>
+                                <th rowspan="2">Unitario</th>
+                                <th rowspan="2">Total</th>
+                            </tr>
                             <tr>
-                                <th>Serie</th>
-                                <th>Número</th>
-                                <th>Importacion</th>
-                                <th>Numero línea</th>
-                                <th>Código artículo</th>
-                                <th>Referencia</th>
-                                <th>Descripción</th>
-                                <th>Partida arancelaria</th>
-                                <th>Porcentaje advaloren</th>
-                                <th>Porcentaje fodinfa</th>
-                                <th>Unidades total</th>
-                                <th>FOB</th>
-                                <th>Gasto hasta FOB</th>
-                                <th>Nuevo FOB</th>
-                                <th>FOB total</th>
-                                <th>Flete</th>
-                                <th>Flete total</th>
-                                <th>Seguro</th>
-                                <th>Seguro total</th>
-                                <th>CIF</th>
-                                <th>Valor ADVALOREN</th>
-                                <th>FODINFA</th>
-                                <th>ICE</th>
-                                <th>IVA</th>
-                                <th>Gastos</th>
-                                <th>Gastos Total</th>
-                                <th>Costo</th>
-                                <th>Interes</th>
-                                <th>Interes total</th>
-                                <th>Costo calculado</th>
-                                <th>Total linea</th>
-                                <th>Factor</th>
-
+                                <th>Unitario</th>
+                                <th>Total</th>
+                                <th>Unitario</th>
+                                <th>Total</th>
+                                <th>Unitario</th>
+                                <th>Total</th>
                             </tr>
                         </thead>
                         <tbody>
@@ -69,26 +74,27 @@
                                 <td class="celda">{{$value->porcentajef }}</td>
                                 <td class="celda">{{$value->unidadestoal }}</td>
                                 <td class="celda">{{$value->fob }}</td>
-                                <td class="celda">{{$value->gastohastafob }}</td>
-                                <td class="celda">{{$value->nuevofob }}</td>
                                 <td class="celda">{{$value->fobtotal }}</td>
-                                <td class="celda">{{$value->flete }}</td>
+                                <td class="celda">{{$value->gastohastafob }}</td>
+                                <td class="celda">{{$value->fob_finalunit }}</td>
+                                <td class="celda">{{$value->fob_finaltotal }}</td>
                                 <td class="celda">{{$value->fletetotal }}</td>
-                                <td class="celda">{{$value->seguro }}</td>
                                 <td class="celda">{{$value->segurototal }}</td>
                                 <td class="celda">{{$value->cif }}</td>
                                 <td class="celda">{{$value->valoradvaloren }}</td>
                                 <td class="celda">{{$value->fodinfa }}</td>
                                 <td class="celda">{{$value->Ice }}</td>
                                 <td class="celda">{{$value->iva }}</td>
-                                <td class="celda">{{$value->gastos }}</td>
-                                <td class="celda">{{$value->gastostotal }}</td>
-                                <td class="celda">{{$value->costo }}</td>
+                                <td class="celda">{{$value->total_impuestos_tributos }}</td>
                                 <td class="celda">{{$value->interes }}</td>
                                 <td class="celda">{{$value->interestotal }}</td>
-                                <td class="celda">{{$value->costocalculado }}</td>
-                                <td class="celda">{{$value->totallinea }}</td>
-                                <td class="celda">{{$value->factor }}</td>
+                                <td class="celda">{{$value->gastos }}</td>
+                                <td class="celda">{{$value->isd }}</td>
+                                <td class="celda">{{$value->comunicaciones }}</td>
+                                <td class="celda">{{$value->totalgastos }}</td>
+                                <td class="celda">{{$value->FACTOR }}</td>
+                                <td class="celda">{{$value->costo_unitario }}</td>
+                                <td class="celda">{{$value->costototal }}</td>
 
                             </tr>
                             @endforeach
