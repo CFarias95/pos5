@@ -155,7 +155,7 @@ class ImportsController extends Controller
     private function updateItemCost($id){
 
         $result = DB::connection("tenant")->select("CALL SP_Liquidarimportacion(?)",[$id]);
-        Log::info("valor liquidacion: "+$result[0]->totalimportacion);
+        Log::info("valor liquidacion: ".$result[0]->totalimportacion);
         $this->createAccountingEntry($id,$result[0]->totalimportacion);
 
     }
@@ -191,7 +191,7 @@ class ImportsController extends Controller
             $total_haber = $valor;
 
             $cabeceraC = new AccountingEntries();
-            $cabeceraC->user_id = $document->user_id;
+            $cabeceraC->user_id = auth()->user()->id;
             $cabeceraC->seat = $seat;
             $cabeceraC->seat_general = $seat_general;
             $cabeceraC->seat_date = $document->updated_at;
