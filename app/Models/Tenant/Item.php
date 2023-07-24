@@ -1126,7 +1126,9 @@ class Item extends ModelTenant
         $itemSupply = $this->supplies;
         if(!empty($itemSupply)){
             $itemSupply = $itemSupply->transform(function (ItemSupply $row ){
-                return $row-> getCollectionData();
+
+                $data = $row-> getCollectionData();
+                return $data;
             });
         }
         $salePriceWithIgv = ($has_igv == true)?$this->sale_unit_price:($this->sale_unit_price * $igv);

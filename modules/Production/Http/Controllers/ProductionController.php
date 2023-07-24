@@ -190,6 +190,7 @@ class ProductionController extends Controller
                     $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                     $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                     $production_supply->quantity = (float) $qty;
+                    $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
                     $production_supply->save();
 
                     $lots_group = $item["lots_group"];
@@ -867,6 +868,7 @@ class ProductionController extends Controller
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
+                        'cost_per_unit' => $value["cost"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],

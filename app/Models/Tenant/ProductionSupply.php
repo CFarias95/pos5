@@ -6,10 +6,10 @@ use Illuminate\Database\Eloquent\Model;
 use Modules\Production\Models\Production;
 
 class ProductionSupply extends ModelTenant
-{   
+{
 
     protected $table = 'production_supplies';
-    protected $fillable = ['production_name','production_id', 'item_supply_id',  'item_supply_name', 'quantity'];
+    protected $fillable = ['production_name','production_id', 'item_supply_id',  'item_supply_name', 'quantity', 'cost_per_unit'];
 
     public function production()
     {
