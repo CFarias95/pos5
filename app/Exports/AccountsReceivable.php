@@ -33,11 +33,20 @@ class AccountsReceivable implements FromView
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
 
+        $document_payments_fee = DB::table('document_payments')
+            ->select('fee_id', DB::raw('SUM(payment) as total_payment_fee'))
+            ->groupBy('fee_id');
+
+        $document_fee = DB::table('document_fee');
+
         $documents = DB::connection('tenant')
             ->table('documents')
             ->join('persons', 'persons.id', '=', 'documents.customer_id')
             ->leftJoinSub($document_payments, 'payments', function ($join) {
                 $join->on('documents.id', '=', 'payments.document_id');
+            })
+            ->leftJoinSub($document_fee, 'fee', function ($join) {
+                $join->on('documents.id', '=', 'fee.document_id');
             })
             ->leftJoinSub(Document::getQueryCreditNotes(), 'credit_notes', function ($join) {
                 $join->on('documents.id', '=', 'credit_notes.affected_document_id');
@@ -51,6 +60,7 @@ class AccountsReceivable implements FromView
                 "documents.total as total, " .
                 "IFNULL(credit_notes.total_credit_notes, 0) as total_credit_notes, " .
                 "IFNULL(payments.total_payment, 0) as total_payment, " .
+                " fee.amount as amount, " . " DATE_FORMAT(fee.date, '%Y/%m/%d') date, "." fee.id as fee_id, " .
                 "'document' AS 'type', " . "documents.currency_type_id, " . "documents.exchange_rate_sale", "companies.trade_name"))
             ->where('total_canceled', 0);
 
@@ -75,6 +85,7 @@ class AccountsReceivable implements FromView
                 "sale_notes.total as total, " .
                 "null as total_credit_notes," .
                 "IFNULL(payments.total_payment, 0) as total_payment, " .
+                " 0 as amount, " ." null as date, " ." null as fee_id, " .
                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
             ->where('sale_notes.changed', false)
             ->where('sale_notes.total_canceled', false);
@@ -85,7 +96,7 @@ class AccountsReceivable implements FromView
 
 
         $collection = collect($records)->transform(function ($row) {
-            
+
             $total_to_pay = $this->getTotalToPay($row);
             // $total_to_pay = (float)$row->total - (float)$row->total_payment;
             $delay_payment = null;
@@ -142,6 +153,10 @@ class AccountsReceivable implements FromView
             } else {
                 $web_platforms = new \Illuminate\Database\Eloquent\Collection();
             }
+            $to_pay_fee = 0;
+            if($row->fee_id){
+                $to_pay_fee = (DocumentPayment::where('fee_id',$row->fee_id)->get())->sum('payment');
+            }
             return [
                 'id' => $row->id,
                 'date_of_issue' => $row->date_of_issue,
@@ -149,16 +164,17 @@ class AccountsReceivable implements FromView
                 'customer_id' => $row->customer_id,
                 'number_full' => $row->number_full,
                 'total' => number_format((float)$row->total, 2, ".", ""),
-                'total_to_pay' => number_format($total_to_pay, 2, ".", ""),
+                'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
                 'type' => $row->type,
                 'guides' => $guides,
                 'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
                 'delay_payment' => $delay_payment,
-                'date_of_due' => $date_of_due,
+                'date_of_due' => ($row->date)?$row->date:$date_of_due,
                 'currency_type_id' => $row->currency_type_id,
                 'exchange_rate_sale' => (float)$row->exchange_rate_sale,
                 "purchase_order" => $purchase_order,
                 "web_platforms" => $web_platforms ,
+                "fee_id" => $row->fee_id,
             ];
 //            }
         });

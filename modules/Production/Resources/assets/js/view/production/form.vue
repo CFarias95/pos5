@@ -711,7 +711,7 @@ export default {
                 if(this.form.records_id == '03' && this.form.lot_code == null){
 
                     let loteSugerido = this.form.item_id + this.form.date_end + this.form.production_order
-                    alert("Se asiganar de forma automatica el lote : "+loteSugerido);
+                    alert("Se asignar de forma automática el lote : "+loteSugerido);
                     this.form.lot_code = loteSugerido
 
                 }
