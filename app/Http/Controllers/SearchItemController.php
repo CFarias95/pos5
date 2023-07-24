@@ -527,7 +527,7 @@
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
             $item_not_service = Item::with('warehousePrices')
                 ->whereIsActive()
-            ->orderBy('description');
+                ->orderBy('description');
             $service_item = Item::with('warehousePrices')
                 ->where('items.unit_type_id', 'ZZ')
                 ->whereIsActive()

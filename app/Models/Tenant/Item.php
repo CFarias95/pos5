@@ -1041,6 +1041,10 @@ class Item extends ModelTenant
 
         // El nombre de producto, por defecto, sera la misma descripcion.
         $data['name_product_pdf']="<p>".$data['description']."</p>";
+        $data['percentage_decimal']=0;
+        $data['quantity']=0;
+        $data['modifiable']=false;
+
 
         return $data;
     }

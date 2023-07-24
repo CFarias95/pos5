@@ -320,8 +320,6 @@
                                         </div>
                                     </div>
                                 </div>
-
-
                                 <div class="col-sm-12 col-md-4">
                                     <div :class="{ 'has-danger': errors.mix_collaborator }" class="form-group">
                                         <label class="control-label">Colaborador de Mezcla</label>
@@ -407,7 +405,7 @@
                                 <th>Nombre</th>
                                 <th>Cantidad a descargar</th>
                                 <th>Unidad de medida</th>
-                                <th>Cantidad</th>
+                                <th>Cantidad base</th>
                                 <th>Unidad de medida</th>
                                 <th class="text-center">Almacen</th>
                             </tr>
@@ -434,7 +432,6 @@
                                 </th>
                                 <th>{{ row.unit_type }}</th>
                                 <th>
-                                    <!-- {{ row.quantity }} -->
                                     <el-input-number v-model="row.quantity_per_unit" :controls="false" :min="0.01" :step="1"
                                         disabled></el-input-number>
                                 </th>
@@ -540,7 +537,7 @@ export default {
             }
         },
         clickLotGroup(row) {
-            console.log("row", row)
+            //console.log("row", row)
             let donwloadQuantity = row.quantity * this.form.quantity
             this.selectSupply.supply_id = row.individual_item_id
             this.selectSupply.lots_group = row.lots_group;
@@ -579,7 +576,7 @@ export default {
                     .then(response => {
                         this.title = "Editar producto fabricado";
                         this.form = response.data
-                        console.log("DATA: ",response.data)
+                        //console.log("DATA: ",response.data)
 
                         let currentStatus = this.form.records_id;
                         switch (currentStatus) {
@@ -639,11 +636,11 @@ export default {
         async getTable() {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
-                    console.log(`/${this.resource}/tables`,response)
+                    //console.log(`/${this.resource}/tables`,response)
                     let data = response.data
                     this.warehouses = data.warehouses
                     this.items = data.items
-                    console.log('itemsss', this.items)
+                    //console.log('itemsss', this.items)
                     this.machines = data.machines
                     this.records = response.data.state_types_prod;
                 })
@@ -682,7 +679,7 @@ export default {
             this.form.supplies = this.supplies;
 
             // Si no existe un ID, estás creando un nuevo registro
-            console.log("submit production",this.form)
+            //console.log("submit production",this.form)
 
             if (!this.form.id) {
 
@@ -737,10 +734,10 @@ export default {
             this.form.item_extra_data = {}
             this.form.item_extra_data.color = null
             this.item = item
-            console.log("changeIte: ",item )
+            //console.log("changeIte: ",item )
             this.form.warehouse_id = (item.lugar_produccion)?item.lugar_produccion:item.warehouse_id
             this.supplies = item.supplies
-            console.log('itemssupplui', item.supplies)
+            //console.log('itemssupplui', item.supplies)
         },
 
 

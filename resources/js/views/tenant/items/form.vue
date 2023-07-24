@@ -1234,7 +1234,7 @@
                             </div>
                             <button class="btn waves-effect waves-light btn-primary"
                                 type="button"
-                                @click.prevent="clickAddSupply">
+                                @click.prevent="clickAddSupply()">
                                 + Agregar Producto
                             </button>
                             <br>
@@ -1242,10 +1242,10 @@
                             <el-select v-model="form.lugar_produccion" clearable>
                                 <el-option v-for="warehouse in warehouses" :key="warehouse.id" :value="warehouse.id" :label="warehouse.description"></el-option>
                             </el-select>
-                            
+
                             <label>Cantidad a producir:</label>
-                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir" @change="calcularCantidad" :min="0"></el-input-number>
-                            
+                            <el-input-number placeholder="Cantidad Total" width="25%" v-model="form.total_producir" @change="calcularCantidad()" :min="0"></el-input-number>
+
 
                         </div>
                         <div class="col-md-7 col-lg-7 col-xl-7 col-sm-7 " style="    margin-top: 1rem !important;">
@@ -1266,7 +1266,7 @@
                                         <th>#</th>
 <!--                                        <th>item_id</th>-->
                                         <th>Insumo</th>
-                                        <th>Porcentaje (decimal)</th>
+                                        <th>Porcentaje</th>
                                         <th>Cantidad</th>
                                         <th>Unidades de medida</th>
                                         <th>Modificable?</th>
@@ -1278,12 +1278,13 @@
                                     <tr v-for="(row, index) in form.supplies" :key="index">
                                         <td>{{ index + 1 }}</td>
 <!--                                        <td>{{ row.item_id }}</td>-->
-                                        <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td>
+                                        <!-- <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td> -->
+                                        <td>{{ row.description}}</td>
                                         <td>
-                                            <el-input v-model="row.percentage_decimal" @change="calcularCantidad" type="number" :min="0" :max="1" :step="0.00000001"></el-input>
+                                            <el-input-number v-model="row.percentage_decimal" @change="calcularCantidad()"></el-input-number>
                                         </td>
                                         <td>
-                                            <el-input v-model="row.quantity"></el-input>
+                                            <el-input-number v-model="row.quantity" real-number></el-input-number>
                                         </td>
 
                                         <td v-if="row.tipoDato != null || row.tipoDato != undefined">
@@ -1315,6 +1316,13 @@
                                         -->
                                     </tr>
                                     </tbody>
+                                    <tfoot>
+                                        <tr>
+                                            <td colspan="2">Porcentaje Total</td>
+                                            <td v-if="noSaveForm == true" style="color: red;">{{ porcentajeT }}</td>
+                                            <td v-else style="color: green;">{{ porcentajeT }}</td>
+                                        </tr>
+                                    </tfoot>
                                 </table>
                                 <!--<div>
                                     <label><strong>Total a producir:</strong></label>
@@ -1453,6 +1461,7 @@
             <div class="form-actions text-right pt-2 mt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button :loading="loading_submit"
+                           :disabled="noSaveForm"
                            native-type="submit"
                            type="primary">Guardar
                 </el-button>
@@ -1610,6 +1619,8 @@ export default {
             concepts : [],
             accounts: [],
             rates: [],
+            porcentajeT: 0,
+            noSaveForm:false,
             /*total: null,
             cantidad_producir: [],*/
         }
@@ -1724,16 +1735,28 @@ export default {
             })
         },
         calcularCantidad(){
-           
+
+            let total = 0
             this.form.supplies.forEach((row) =>{
-                /*let existe = 0
-                if(row.percentage_decimal != null || row.percentage_decimal != undefined)
-                {
-                    existe = row.percentage_decimal
-                }
-                row.quantity = _.round(existe * this.form.total_producir, 2)*/
-                row.quantity = _.round(row.percentage_decimal * this.form.total_producir, 8)
+
+
+                row.quantity = (row.percentage_decimal/100) * this.form.total_producir
+
+                total += row.percentage_decimal
+
             })
+
+            if(total > 100){
+
+                this.$message.warning('El porcentaje de suministros no debe superar el 100 %');
+                this.noSaveForm = true;
+
+            }else{
+
+                this.noSaveForm = false;
+            }
+            this.porcentajeT = total;
+
         },
         clickCancelRate(index) {
             this.form.item_rate.splice(index, 1)
@@ -2252,21 +2275,9 @@ export default {
         changeItem() {
             //this.getItems();
             this.item_suplly = _.find(this.items, {'id': this.item_suplly});
+            console.log("item suppli: ",this.item_suplly);
             //this.item_suplly.percentage_decimal = 0
             //this.clickAddSupply();
-            /*
-            this.form.unit_price = this.item_suplly.sale_unit_price;
-
-            this.lots = this.item_suplly.lots
-
-            this.form.has_igv = this.item_suplly.has_igv;
-
-            this.form.affectation_igv_type_id = this.item_suplly.sale_affectation_igv_type_id;
-            this.form.quantity = 1;
-            this.item_unit_types = this.item_suplly.item_unit_types;
-
-            (this.item_unit_types.length > 0) ? this.has_list_prices = true : this.has_list_prices = false;
-            */
 
         },
         focusSelectItem() {
@@ -2298,21 +2309,10 @@ export default {
             item.tipoDato = {
                 'tipo' :item.unit_type_id,
             },
-            item.total_producir = this.form.supplies.total_producir
-            //item.percentage_decimal = 0
-            //item.quantity = 0
-            //item.individual_item = item
-            // item.quantity = 0
-            //if(isNaN(item.quantity)) item.quantity = 0 ;
+            //item.total_producir = this.form.supplies.total_producir
             this.form.supplies.push(item);
-            this.calcularCantidad()
-            /*if (this.external) {
-                this.$eventHub.$emit('reloadDataItems', response.data.id)
-            } else {
-                this.$eventHub.$emit('reloadData')
-            }*/
-            this.changeItem()
-
+            this.calcularCantidad();
+            //this.changeItem()
 
         },
     }
