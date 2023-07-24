@@ -674,12 +674,13 @@ export default {
                 return this.$message.error('La cantidad debe ser mayor a 0');
             }
 
+
             this.loading_submit = true;
 
             this.form.supplies = this.supplies;
 
             // Si no existe un ID, estás creando un nuevo registro
-            //console.log("submit production",this.form)
+            //console.log("submit production",this.form.records_id == )
 
             if (!this.form.id) {
 
@@ -706,6 +707,14 @@ export default {
                     });
             } else {
                 // Si existe un ID, estás actualizando un registro existente
+                //VALIDAMOS SI YA SE LE ASIGNO UN LOTE Y SI VA A ESTADO FINALIZADO
+                if(this.form.records_id == '03' && this.form.lot_code == null){
+
+                    let loteSugerido = this.form.item_id + this.form.date_end + this.form.production_order
+                    alert("Se asiganar de forma automatica el lote : "+loteSugerido);
+                    this.form.lot_code = loteSugerido
+
+                }
                 await this.$http.put(`/${this.resource}/update/${this.form.id}`, this.form)
                     .then(response => {
                         if (response.data.success) {
