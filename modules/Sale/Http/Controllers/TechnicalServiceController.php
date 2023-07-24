@@ -43,6 +43,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
+use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 
 
 /**
@@ -53,7 +54,7 @@ use Mpdf\Mpdf;
  */
 class TechnicalServiceController extends Controller
 {
-    //use StorageDocument;
+    use StorageDocument;
     use FinanceTrait;
     use OfflineTrait;
 
@@ -521,7 +522,7 @@ class TechnicalServiceController extends Controller
         $technical_service1 = TechnicalService::where('id', $id)->first();
 
         if (!$technical_service1) throw new Exception("El código {$id} es inválido, no se encontro la orden de compra relacionada");
-    
+
         return Storage::disk('tenant')->download('technical_service_attached'.DIRECTORY_SEPARATOR.$technical_service1->upload_filename);
 
     }
