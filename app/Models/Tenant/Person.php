@@ -599,7 +599,6 @@
                 'nationality_id' => $this->nationality_id,
                 'department_id' => $department['id']??null,
                 'department' => $department,
-                'account' => $this->account,
                 'province_id' => $province['id']??null,
                 'province' => $province,
                 'district_id' => $district['id']??null,
@@ -627,6 +626,10 @@
                 'discount_type' => $this->discount_type,
                 'discount_amount' => $this->discount_amount,
                 'credit_quota' => (int)$this->credit_quota,
+                'pagoLocExtDoc' => $this->pagoLocExtDoc,
+                'parteRel' => $this->parteRel,
+                'pagoLocExt' => $this->pagoLocExt,
+                'account' => $this->account,
 
             ];
             if ($childrens == true) {
