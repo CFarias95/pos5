@@ -2128,7 +2128,7 @@ export default {
             }
             if (this.form.has_perception && !this.form.percentage_perception) return this.$message.error('Ingrese un porcentaje');
 
-            if (this.form.lots_enabled && stock > 0) {
+            if (!this.recordId  && this.form.lots_enabled && this.form.stock > 0) {
 
                 if (!this.form.lot_code)
                     return this.$message.error('Código de lote es requerido');

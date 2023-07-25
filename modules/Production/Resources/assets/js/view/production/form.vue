@@ -404,7 +404,6 @@
                             <tr>
                                 <th>Nombre</th>
                                 <th>Cantidad a descargar</th>
-                                <th>Unidad de medida</th>
                                 <th>Cantidad base</th>
                                 <th>Unidad de medida</th>
                                 <th class="text-center">Almacen</th>
@@ -415,11 +414,8 @@
                                 <th> {{ row.description }}</th>
                                 <th>
                                     <!-- {{ row.quantity }} -->
-                                    <el-input-number v-if="form.quantity != 0 && form.quantity != null"
-                                        :value="row.quantity * form.quantity" :controls="false"
-                                        :disabled="row.modificable == 0"></el-input-number>
-                                    <el-input-number v-else :value="row.quantity" :controls="false"
-                                        :disabled="row.modificable == 0"></el-input-number>
+                                    <el-input-number v-model="row.quantityD" :disabled="row.modificable == 0 || form.records_id != '01'"></el-input-number>
+
                                     <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
                                         <a class="text-center font-weight-bold text-info" href="#"
                                             @click.prevent="clickLotGroup(row)">[&#10004;
@@ -430,9 +426,8 @@
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
                                     -->
                                 </th>
-                                <th>{{ row.unit_type }}</th>
                                 <th>
-                                    <el-input-number v-model="row.quantity" :controls="false"
+                                    <el-input-number :value="row.quantity" :controls="false"
                                         disabled></el-input-number>
                                 </th>
                                 <th>{{ row.unit_type }}</th>
@@ -538,11 +533,11 @@ export default {
         },
         clickLotGroup(row) {
             //console.log("row", row)
-            let donwloadQuantity = row.quantity * this.form.quantity
-            this.selectSupply.supply_id = row.individual_item_id
+            let donwloadQuantity = row.quantityD;
+            this.selectSupply.supply_id = row.individual_item_id;
             this.selectSupply.lots_group = row.lots_group;
             this.selectSupply.quantity = donwloadQuantity;
-            this.showDialogLots = true
+            this.showDialogLots = true;
         },
         deleteStatus(id) {
             const index = this.records.findIndex((estado) => estado.id === id);
@@ -648,13 +643,16 @@ export default {
         },
         //JOINSOFTWARE
         handleChange(value) {
+
             if (value > 0) {
                 this.quantityD = value
-                if (this.form.supplies) {
-                    for (let i = 0; i < this.supplies.length; i++) {
-
+                this.supplies.forEach(row => {
+                    if(value > 0 ){
+                        row.quantityD = value * row.quantity;
+                    }else{
+                        row.quantityD = row.quantity ;
                     }
-                }
+                });
             } else {
                 return this.$message.error('La cantidad debe ser mayor a 0');
             }
@@ -745,10 +743,25 @@ export default {
             this.item = item
             //console.log("changeIte: ",item )
             this.form.warehouse_id = (item.lugar_produccion)?item.lugar_produccion:item.warehouse_id
+            item.supplies.forEach(row => {
+
+                if(this.form.quantity > 0 ){
+
+                    row.quantityD = this.form.quantity * row.quantity;
+                }else{
+
+                    row.quantityD = row.quantity ;
+                }
+            });
+
             this.supplies = item.supplies
-            //console.log('itemssupplui', item.supplies)
+            console.log('itemssupplui', item.supplies)
         },
 
+        changeQuantityForm(){
+
+
+        }
 
     }
 }

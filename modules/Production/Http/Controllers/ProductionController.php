@@ -182,7 +182,7 @@ class ProductionController extends Controller
                     $sitienelote = false;
                     $production_supply = new ProductionSupply();
                     $production_id = $production->id;
-                    $qty = $item['quantity'] ?? 0;
+                    $qty = $item['quantityD'] ?? 0;
                     $production_supply->production_name = $production->name;
                     $production_supply->production_id = $production_id;
                     $production_supply->item_supply_name = $item['description'];
@@ -537,7 +537,7 @@ class ProductionController extends Controller
 
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
-                        $qty = $item['quantity'] ?? 0;
+                        $qty = $item['quantityD'] ?? 0;
                         $production_supply->production_name = $production->name;
                         $production_supply->production_id = $production_id;
                         $production_supply->item_supply_name = $item['description'];
@@ -598,7 +598,7 @@ class ProductionController extends Controller
 
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
-                        $qty = $item['quantity'] ?? 0;
+                        $qty = $item['quantityD'] ?? 0;
                         $production_supply->production_name = $production->name;
                         $production_supply->production_id = $production_id;
                         $production_supply->item_supply_name = $item['description'];
@@ -993,6 +993,7 @@ class ProductionController extends Controller
                 'id' => $item_supply_id,
                 'description' => $supply->item_supply_name ?? '',
                 'item_id' => $supply->itemSupply->individual_item->id,
+                'quantityD' => $supply->quantity,
                 'quantity' => $supply->quantity,
                 'unit_type' => $supply->itemSupply->individual_item->unit_type->description,
                 'quantity_per_unit' => $supply->quantity,
