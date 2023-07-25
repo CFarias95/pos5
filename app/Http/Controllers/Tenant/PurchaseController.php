@@ -11,9 +11,9 @@
     use App\Http\Requests\Tenant\PurchaseRequest;
     use App\Http\Resources\Tenant\PurchaseCollection;
     use App\Http\Resources\Tenant\PurchaseResource;
-use App\Models\Tenant\AccountingEntries;
-use App\Models\Tenant\AccountingEntryItems;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
+    use App\Models\Tenant\AccountingEntries;
+    use App\Models\Tenant\AccountingEntryItems;
+    use App\Models\Tenant\Catalogs\AffectationIgvType;
     use App\Models\Tenant\Catalogs\AttributeType;
     use App\Models\Tenant\Catalogs\ChargeDiscountType;
     use App\Models\Tenant\Catalogs\CurrencyType;
@@ -378,7 +378,7 @@ use Modules\Sale\Models\SaleOpportunity;
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
 
-            Log::info(json_encode($data));
+            //Log::info(json_encode($data));
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();

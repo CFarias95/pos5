@@ -173,6 +173,11 @@ class Firma {
             //servidor linux ejecutar comando openssl ///
             $salida = shell_exec('/usr/local/ssl/bin/openssl pkcs12 -in ' . $pfx . ' -nocerts -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
 
+            if(str_contains(strtoupper(php_uname("s")),"WINDOWS")){
+
+                $salida = shell_exec('C:\openssl-0.9.8k_X64\bin\openssl.exe pkcs12 -in ' . $pfx . ' -nocerts -out ' . $nombreKey . ' -passin pass:' . $password . ' -passout pass:' . $password . ' 2>&1');
+            }
+
             if (strpos($salida, 'verified OK') !== false) {
 
                 $pemChain = file_get_contents($nombreKey);
