@@ -144,7 +144,7 @@
                                 <th>Colaborador de mezcla</th>
                                 <th>Comentario</th>
                                 <th>Fecha de registro</th>
-                                
+
                                 <th></th>
                                 <th>Atributos PDF</th>
                                 <th>Etiquetas</th>
@@ -231,7 +231,7 @@
                                     <button
                                         class="btn waves-effect waves-light btn-xs btn-info"
                                         type="button"
-                                        @click.prevent="clickEtiqueta(row.item_id)">Etiqueta
+                                        @click.prevent="clickEtiqueta(row.id)">Etiqueta
                                     </button>
                                 </td>
                             </tr>

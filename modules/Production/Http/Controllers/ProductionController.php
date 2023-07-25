@@ -1193,17 +1193,17 @@ class ProductionController extends Controller
 
     public function etiqueta($recordId)
     {
-
+        $produccion =  Production::find($recordId);
         $company = Company::first();
-        $records = Item::find($recordId);
+        $records = Item::find($produccion->item_id)->getCollectionData();
         //$usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
-        $fechas =  Production::where('item_id', '=', $recordId)->get();
-        $produccion =  Production::where('item_id', '=', $recordId)->get();
 
-        $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion", "fechas"));
+        Log::info("rtiquetas".json_encode($records));
+        $recordId = $produccion->item_id;
+        $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
 
-        $filename = 'Etiquetas_' . date('YmdHis');
+        $filename = 'Etiquetas_'.$produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }
