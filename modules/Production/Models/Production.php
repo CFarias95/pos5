@@ -108,6 +108,7 @@ use App\Models\Tenant\Warehouse;
             'production_collaborator',
             'mix_collaborator',
             'soap_type_id',
+            'cost_supplies',
         ];
 
         /**
@@ -141,7 +142,7 @@ use App\Models\Tenant\Warehouse;
         {
             return $this->belongsTo(StateTypeProduction::class);
         }
-        
+
         /**
          *
          * @return string

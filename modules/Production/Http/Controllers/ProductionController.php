@@ -527,11 +527,13 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
+            $costoT= 0;
 
-            if ($production->state_type_id == '02') {
+            if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 try {
                     foreach ($items_supplies as $item) {
                         $sitienelote = false;
+
 
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
@@ -543,8 +545,10 @@ class ProductionController extends Controller
                         $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
-                        $production_supply->save();
+                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
 
+                        $production_supply->save();
+                        $costoT += ($qty * $production_supply->cost_per_unit);
                         $lots_group = $item["lots_group"];
 
                         foreach ($lots_group as $lots) {
@@ -576,6 +580,9 @@ class ProductionController extends Controller
                             }
                         }
                     }
+                    $production->cost_supplies = $costoT;
+                    $production->save();
+
                 } catch (Exception $ex2) {
                     $production->delete();
                     return [
@@ -599,6 +606,8 @@ class ProductionController extends Controller
                         $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
+                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
+
                         $production_supply->save();
 
                         $lots_group = $item["lots_group"];
@@ -610,11 +619,14 @@ class ProductionController extends Controller
                             //$item_lots_groups->lot_id = (isset($lots["lot_id"]))?$lots["lot_id"]:null;
                             $item_lots_groups->production_name = $production->name;
                             $item_lots_groups->production_id = $production_id;
-                            $item_lots_groups->quantity = $lots["compromise_quantity"];
+                            $item_lots_groups->quantity = (isset($lots["compromise_quantity"]))?$lots["compromise_quantity"]:0;
                             $item_lots_groups->expiration_date = $lots["date_of_due"];
                             $item_lots_groups->save();
                         }
 
+                        $costoT += ($qty * $production_supply->cost_per_unit);
+                        $production->cost_supplies = $costoT;
+                        $production->save();
                     }
 
                 } catch (Exception $ex2) {
@@ -635,7 +647,11 @@ class ProductionController extends Controller
             if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
                 //cuando pasa a terminado se aumenta el inventario del producto terminado
                 $inventory_transaction_item = InventoryTransaction::findOrFail(19);
+                $inventory_transaction_item_imperfect = InventoryTransaction::findOrFail('105');
+
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item);
+                $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
+
             }
             if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
                 //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
@@ -655,6 +671,30 @@ class ProductionController extends Controller
         return $result;
     }
 
+    public function inventoryImperfectProduct($production,$inventory_transaction_item){
+        // esta funcion genera salida de inventario por porductos defectuosos
+        if(isset($production->imperfect) && $production->imperfect > 0){
+            try{
+
+                Log::info("production imperfect: ".json_encode($production));
+                $inventory_it = new Inventory();
+                $inventory_it->type = null;
+                $inventory_it->description = $inventory_transaction_item->name;
+                $inventory_it->item_id = $production->item_id;
+                $inventory_it->warehouse_id = $production->warehouse_id;
+                $inventory_it->quantity = (float) $production->imperfect;
+                $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
+                $inventory_it->save();
+
+            }catch(Exception $ex){
+
+                throw $ex;
+            }
+        }
+
+
+    }
     public function inventoryFinishedProduct($production, $inventory_transaction_item)
     {
         try {
