@@ -1915,7 +1915,7 @@ export default {
         this.$store.commit('setConfiguration', this.configuration)
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
-            .then(response => {
+        .then(response => {
                 this.document_types = response.data.document_types_invoice;
                 this.document_types_guide = response.data.document_types_guide;
                 this.currency_types = response.data.currency_types
@@ -1961,7 +1961,9 @@ export default {
                 this.changeCurrencyType()
                 this.setDefaultDocumentType();
                 this.setConfigGlobalDiscountType()
-            })
+        })
+
+
         await this.getPercentageIgv();
         this.loading_form = true
         this.$eventHub.$on('reloadDataPersons', (customer_id) => {
@@ -1970,96 +1972,101 @@ export default {
         this.$eventHub.$on('initInputPerson', () => {
             this.initInputPerson()
         });
+
         if (this.documentId) {
             this.btnText = 'Actualizar';
             this.loading_submit = true;
             await this.$http.get(`/documents/${this.documentId}/show`).then(response => {
-
                 this.onSetFormData(response.data.data);
             }).finally(() => this.loading_submit = false);
-        }
 
-        /*
-         * #830
-         */
-        if (this.table) {
-            await this.$http.get(`/store/record/${this.table}/${this.tableId}`)
-                .then(response => {
-                    this.onSetFormData(response.data.data);
-                })
-                .finally(() => this.loading_submit = false);
-        }
-        /*
-         * #830
-         */
+        }else{
 
-        const itemsFromDispatches = localStorage.getItem('items');
-        if (itemsFromDispatches) {
-            const itemsParsed = JSON.parse(itemsFromDispatches);
-            const items = itemsParsed.map(i => i.item_id);
-            const params = {
-                items_id: items
+            /*
+            * #830
+            */
+            if (this.table) {
+                await this.$http.get(`/store/record/${this.table}/${this.tableId}`)
+                    .then(response => {
+                        this.onSetFormData(response.data.data);
+                    })
+                    .finally(() => this.loading_submit = false);
+                }
+            /*
+            * #830
+            */
+
+            const itemsFromDispatches = localStorage.getItem('items');
+            if (itemsFromDispatches) {
+                const itemsParsed = JSON.parse(itemsFromDispatches);
+                const items = itemsParsed.map(i => i.item_id);
+                const params = {
+                    items_id: items
+                }
+                localStorage.removeItem('items');
+                await this.$http.get('/documents/search-items', {params}).then(response => {
+                    const itemsResponse = response.data.items.map(i => {
+                        return this.setItemFromResponse(i, itemsParsed, true);
+                    });
+                    this.form.items = itemsResponse.map(i => {
+                        return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
+                    });
+                });
             }
-            localStorage.removeItem('items');
-            await this.$http.get('/documents/search-items', {params}).then(response => {
-                const itemsResponse = response.data.items.map(i => {
-                    return this.setItemFromResponse(i, itemsParsed, true);
-                });
-                this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
-                });
-            });
-        }
 
-        const itemsFromNotes = localStorage.getItem('itemsForNotes');
-        if (itemsFromNotes) {
-            const itemsParsed = JSON.parse(itemsFromNotes);
-            const items = itemsParsed.map(i => i.id);
-            const params = {
-                items_id: items
+            const itemsFromNotes = localStorage.getItem('itemsForNotes');
+            if (itemsFromNotes) {
+                const itemsParsed = JSON.parse(itemsFromNotes);
+                const items = itemsParsed.map(i => i.id);
+                const params = {
+                    items_id: items
+                }
+                localStorage.removeItem('itemsForNotes');
+                await this.$http.get('/documents/search-items', {params}).then(response => {
+                    const itemsResponse = response.data.items.map(i => {
+                        return this.setItemFromResponse(i, itemsParsed);
+                    });
+                    this.form.items = itemsResponse.map(i => {
+                        return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
+                    });
+                });
             }
-            localStorage.removeItem('itemsForNotes');
-            await this.$http.get('/documents/search-items', {params}).then(response => {
-                const itemsResponse = response.data.items.map(i => {
-                    return this.setItemFromResponse(i, itemsParsed);
-                });
-                this.form.items = itemsResponse.map(i => {
-                    return calculateRowItem(i, this.form.currency_type_id, this.form.exchange_rate_sale, this.percentage_igv)
-                });
-            });
-        }
 
-        //parse items from multiple sale notes not group
-        this.processItemsForNotesNotGroup()
+            //parse items from multiple sale notes not group
+            this.processItemsForNotesNotGroup()
 
-        const clientfromDispatchesOrNotes = localStorage.getItem('client');
-        if (clientfromDispatchesOrNotes) {
-            const client = JSON.parse(clientfromDispatchesOrNotes);
-            if (client.identity_document_type_id == 1) {
-                this.form.document_type_id = '03'
-            } else if (client.identity_document_type_id == 6) {
-                this.form.document_type_id = '01'
+            const clientfromDispatchesOrNotes = localStorage.getItem('client');
+            if (clientfromDispatchesOrNotes) {
+                const client = JSON.parse(clientfromDispatchesOrNotes);
+                if (client.identity_document_type_id == 1) {
+                    this.form.document_type_id = '03'
+                } else if (client.identity_document_type_id == 6) {
+                    this.form.document_type_id = '01'
+                }
+                this.searchRemoteCustomers(client.number);
+                this.form.customer_id = client.id;
+                this.changeEstablishment();
+                this.filterSeries();
+                this.filterCustomers();
+                this.changeCurrencyType()
+                localStorage.removeItem('client');
             }
-            this.searchRemoteCustomers(client.number);
-            this.form.customer_id = client.id;
-            this.changeEstablishment();
-            this.filterSeries();
-            this.filterCustomers();
-            this.changeCurrencyType()
-            localStorage.removeItem('client');
-        }
-        const dispatchesNumbersFromDispatches = localStorage.getItem('dispatches');
-        if (dispatchesNumbersFromDispatches) {
-            this.form.dispatches_relateds = JSON.parse(dispatchesNumbersFromDispatches);
-            localStorage.removeItem('dispatches')
-        }
-        const notesNumbersFromNotes = localStorage.getItem('notes');
-        if (notesNumbersFromNotes) {
-            this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
-            localStorage.removeItem('notes')
+            const dispatchesNumbersFromDispatches = localStorage.getItem('dispatches');
+            if (dispatchesNumbersFromDispatches) {
+                this.form.dispatches_relateds = JSON.parse(dispatchesNumbersFromDispatches);
+                localStorage.removeItem('dispatches')
+            }
+            const notesNumbersFromNotes = localStorage.getItem('notes');
+            if (notesNumbersFromNotes) {
+                this.form.sale_notes_relateds = JSON.parse(notesNumbersFromNotes);
+                localStorage.removeItem('notes')
+            }
+
+            this.startConnectionQzTray()
         }
 
-        this.startConnectionQzTray()
+
+
 
     },
     methods: {
@@ -2174,6 +2181,7 @@ export default {
 
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
+                aproved:false,
             }
 
             this.form_cash_document = {
@@ -2411,7 +2419,7 @@ export default {
             this.form.pending_amount_prepayment = data.pending_amount_prepayment || 0;
             this.form.payment_method_type_id = data.payment_method_type_id;
             this.form.charges = data.charges || [];
-
+            this.form.aproved = data.aproved;
             this.form.discounts = this.prepareDataGlobalDiscount(data)
             // this.form.discounts = data.discounts || [];
 
@@ -2485,7 +2493,7 @@ export default {
 
             this.establishment = data.establishment;
 
-            this.changeDateOfIssue();
+            //this.changeDateOfIssue();
             this.updateChangeDestinationSale();
             this.prepareDataCustomer()
             //this.calculateTotal();
@@ -3923,7 +3931,7 @@ export default {
 
                     //impuestos (isc + igv + icbper)
                     this.form.total_taxes = _.round(this.form.total_igv + this.form.total_isc + this.form.total_plastic_bag_taxes + this.form.total_service_taxes, 2);
-                    this.form.total = _.round(this.form.total_taxed + this.form.total_taxes, 2)
+                    this.form.total = _.round(this.form.total_tsetGlobalDiscountaxed + this.form.total_taxes, 2)
                     this.form.subtotal = this.form.total
 
                     if (this.form.total <= 0) this.$message.error("El total debe ser mayor a 0, verifique el tipo de descuento asignado (Configuración/Avanzado/Contable)")

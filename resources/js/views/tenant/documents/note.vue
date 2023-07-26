@@ -120,6 +120,23 @@
                                        v-text="errors.purchase_order[0]"></small>
                             </div>
                         </div>
+                        <div class="col-lg-2 align-self-end" v-if=" ! configuration.send_auto">
+                                <div :class="{'has-danger': errors.aproved}"
+                                     class="form-group">
+                                    <label class="control-label">Mandar a Autorizar? </label>
+                                    <el-switch
+                                        v-model="form.aproved"
+                                        class="ml-2"
+                                        inline-prompt
+                                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                                        active-text="Si"
+                                        inactive-text="No"
+                                    />
+                                    <small v-if="errors.aproved"
+                                           class="form-control-feedback"
+                                           v-text="errors.aproved[0]"></small>
+                                </div>
+                            </div>
                         <!-- JOINSOFTWARE
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
@@ -251,7 +268,8 @@
                                 {{ form.total_isc }}</p>
                             <p class="text-right" v-if="form.total_charge > 0">OTROS CARGOS: {{ currency_type.symbol }}
                                 {{ form.total_charge }}</p>
-
+                            <p class="text-right" v-if="form.total_discount > 0">DESCUENTO: {{ currency_type.symbol }}
+                                {{ form.total_discount }}</p>
                             <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                                 <h3 class="text-right"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}
                                 </h3>
@@ -642,7 +660,7 @@ export default {
             this.form.exchange_rate_sale = this.document.exchange_rate_sale
             this.form.total_prepayment = this.document.total_prepayment
             this.form.total_charge = this.document.total_charge
-            // this.form.total_discount= this.document.total_discount
+            this.form.total_discount= this.document.total_discount
             this.form.total_exportation = this.document.total_exportation
             this.form.total_free = this.document.total_free
             this.form.total_taxed = this.document.total_taxed
@@ -697,7 +715,7 @@ export default {
                 exchange_rate_sale: 0,
                 total_prepayment: this.document.total_prepayment,
                 total_charge: this.document.total_charge,
-                // total_discount: this.document.total_discount,
+                total_discount: this.document.total_discount,
                 total_exportation: this.document.total_exportation,
                 total_free: this.document.total_free,
                 total_taxed: this.document.total_taxed,
@@ -975,6 +993,7 @@ export default {
             this.form.total_plastic_bag_taxes = _.round(total_plastic_bag_taxes, 2)
             // this.form.total = _.round(total, 2)
             this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
+            this.form.total_discount = total_discount
 
         },
         checkPercentageIgvDebitNote()

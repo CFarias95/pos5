@@ -519,8 +519,8 @@ class DocumentUpdateInput
     private static function note($inputs)
     {
         $document_type_id = $inputs['document_type_id'];
-        $note_credit_or_debit_type_id = $inputs['note_credit_or_debit_type_id'];
-        $note_description = $inputs['note_description'];
+        $note_credit_or_debit_type_id = (isset($inputs['note_credit_or_debit_type_id']))?$inputs['note_credit_or_debit_type_id']:'';
+        $note_description = (isset($inputs['note_description'])?$inputs['note_description']:'');
         $affected_document_id = $inputs['affected_document_id'];
 
         $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
@@ -541,7 +541,7 @@ class DocumentUpdateInput
             'group_id' => $group_id,
             'note' => [
                 'note_type' => $type,
-                'note_credit_type_id' => ($type === 'credit') ? $note_credit_or_debit_type_id : null,
+                'note_credit_type_id' => ($type === 'credit') ? $note_credit_or_debit_type_id : 'devolución total',
                 'note_debit_type_id' => ($type === 'debit') ? $note_credit_or_debit_type_id : null,
                 'note_description' => $note_description,
                 'affected_document_id' => $affected_document_id,
