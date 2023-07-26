@@ -135,8 +135,8 @@ foreach ($atributos as $key => $value) {
         </div>
         <div>
             <label><strong>Ingregientes/Insumos: </strong></label>
-            @foreach($insumos as $insumo)
-                <label>{{$insumo->name}};</label>
+            @foreach($records['supplies'] as $ingre)
+                <label>{{$ingre['individual_item']['second_name']}};</label>
             @endforeach
         </div>
         </div>

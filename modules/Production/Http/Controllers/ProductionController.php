@@ -1183,11 +1183,11 @@ class ProductionController extends Controller
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $insumos = ItemSupply::where('item_id', '=', $fechas->item_id)
-            ->leftJoin('items', 'item_supplies.individual_item_id','=','items.id')->get();
-        Log::info($fechas);
+        //$insumos = ItemSupply::where('item_id', '=', $fechas->item_id)
+        //    ->leftJoin('items', 'item_supplies.individual_item_id','=','items.id')->get();
+        //Log::info($fechas);
 
-        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "insumos", "fechas"));
+        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "fechas"));
 
         $filename = 'Certifiicado_Calidad_' . date('YmdHis');
 

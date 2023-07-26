@@ -218,7 +218,7 @@
                 </div>
             </div>
         </div>
-        
+
         <div>
             <div>
                 <DxChart ref="chart">
@@ -239,7 +239,7 @@
         </div>
 
         <div>
-            <div class="col-md-12">
+            <div class="col-md-12" hidden>
                 <div class="table-responsive">
                     <table class="table">
                         <thead>
@@ -658,8 +658,8 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                this.pagination = response.data.meta
-                this.pagination.per_page = parseInt(response.data.meta.per_page)
+                //this.pagination = response.data.meta
+                //this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false
                 this.dataTable()
                 if (this.resource == 'reports/sales' || this.resource == 'reports/purchases' || this.resource == 'reports/fixed-asset-purchases' || this.resource === 'reports/state-account') this.getTotals(response.data.data)
@@ -739,7 +739,7 @@ export default {
                     dataType: 'String',
                     area: 'row',
                 }, {
-                    caption: '# Comprobante',
+                    caption: 'Comprobante No.',
                     width: 120,
                     dataField: 'number',
                     dataType: 'String',

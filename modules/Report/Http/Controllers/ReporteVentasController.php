@@ -76,7 +76,8 @@ class ReporteVentasController extends Controller
             if ($classType == SaleNote::class) {
                 return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
             } else {
-                return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
+                //return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
+                return new DocumentCollection($records->paginate());
             };
         } else {
             $records_documents = $this->getRecords($request->all(), Document::class)->select(
@@ -139,9 +140,10 @@ class ReporteVentasController extends Controller
             }])->with(['user' => function ($y) {
                 $y->select('id', 'name');
             }])->with('items');
-            
+
             $records_all = $records_documents->unionAll($records_sales);
-            return new ReporteVentasCollection($records_all->paginate(config('tenant.items_per_page')));
+            //return new ReporteVentasCollection($records_all->paginate(config('tenant.items_per_page')));
+            return new ReporteVentasCollection($records_all->get());
         }
     }
 
