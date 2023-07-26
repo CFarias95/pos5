@@ -90,7 +90,7 @@ foreach ($atributos as $key => $value) {
         </style>
     </head>
     <body>
-        <table class="table">
+        <table class="table" style="border: 1px solid black;">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -134,6 +134,46 @@ foreach ($atributos as $key => $value) {
 
         <br>
         <br>
+        <table class="table" style="border: 1px solid black;">
+            <thead style="align-content: center; text-align: center;">
+                <tr>
+                    <th>
+                    @php
+                    if(isset($logo) && $logo != '' ){
+                        echo '<img src = "data:{{mime_content_type(public_path("{'.$logo.'}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" class="" style="max-width: 150px" >';
+                    }
+                    @endphp
+                    </th>
+                    <th><p><strong>{{$company->name}}</strong></p></th>
+                </tr>
+                <tr>
+                    <th colspan="2"><p><strong>{{$records['name']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
+                </tr>
 
+                <tr>
+                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                </tr>
+
+                <tr>
+                    <th colspan="2">Ingredientes:{{$ingredientes}}</th>
+                </tr>
+                <tr>
+                    <th colspan="2"></th>
+                </tr>
+                <tr>
+                    <th colspan="2">
+                    Modo de conservación:{{$bpm}} <br/>
+                    Peso: {{$psn}} <br/>
+                    Lote: {{$produccion->lot_code}} <br/>
+                    Fecha de Producción: {{$produccion->date_start}} <br/>
+                    Fecha de Caducidad: {{$produccion->date_of_due}} <br/><br/>
+                    </th>
+                </tr>
+                <tr>
+                    <th colspan="2"> PRODUCTO IMPORTADO, DISTRIBUIDO, Y COMERCIALIZADO POR {{$company->name}}</th>
+                <tr>
+
+            </thead>
+        </table>
     </body>
 </html>

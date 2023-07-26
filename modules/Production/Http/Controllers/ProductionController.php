@@ -1176,14 +1176,17 @@ class ProductionController extends Controller
 
     public function pdf_Atributos($recordId)
     {
+        $fechas =  Production::find($recordId);
         $company = Company::first();
-        $records = Item::find($recordId);
+        $records = Item::find($fechas->item_id);
+
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
-        $fechas =  Production::where('item_id', '=', $recordId)->get();
-        $insumos = ItemSupply::where('item_id', '=', $recordId)
+
+        $insumos = ItemSupply::where('item_id', '=', $fechas->item_id)
             ->leftJoin('items', 'item_supplies.individual_item_id','=','items.id')->get();
         Log::info($fechas);
+
         $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "insumos", "fechas"));
 
         $filename = 'Certifiicado_Calidad_' . date('YmdHis');

@@ -1,5 +1,9 @@
 @php
-$logo = "storage/uploads/logos/{$company->logo}";
+$logo = "";
+
+if(isset($company->logo)){
+    $logo = "storage/uploads/logos/{$company->logo}";
+}
 $atributos = $records->attributes;
 $bpm = null;
 $psn = null;
@@ -21,11 +25,11 @@ foreach ($atributos as $key => $value) {
     }
     if(starts_with($value->attribute_type_id, 'ET'))
     {
-        $array1[] = $value; 
+        $array1[] = $value;
     }
     if(starts_with($value->attribute_type_id, 'CM'))
     {
-        
+
         $value->resultdo = str_before($value->value, ' || ');
         $value->metodo = str_after($value->value, ' || ');
         $array2[] = $value;
@@ -46,38 +50,38 @@ foreach ($atributos as $key => $value) {
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: center;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -108,7 +112,11 @@ foreach ($atributos as $key => $value) {
     <body>
         <div class="container">
             <div id="column_1">
-                <img src = "data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 0px; max-width: 150px" >
+                @php
+                if(isset($logo) && $logo != ''){
+                    echo '<img src = "data:{{mime_content_type(public_path("{'.$logo.'}"))}};base64, {{base64_encode(file_get_contents(public_path("{'.$logo.'}")))}}" alt="company logo" class="company_logo" style="margin-left: 50px; padding-bottom: 0px; max-width: 150px" >';
+                }
+                @endphp
             </div>
         </div>
         <div>
@@ -118,11 +126,11 @@ foreach ($atributos as $key => $value) {
         <div>
             <label><strong>Producto:</strong> {{$records->name}}</label>
             <br>
-            <label><strong>Lote:</strong> {{$records->lot_code}}</label>
+            <label><strong>Lote:</strong> {{$fechas->lot_code}}</label>
             <br>
-            <label><strong>F. Elaboracion:</strong> {{$fechas[0]->date_start}}</label>
+            <label><strong>F. Elaboracion:</strong> {{$fechas->date_start}}</label>
             <br>
-            <label><strong>F. Vencimiento:</strong> {{$fechas[0]->date_end}}</label>
+            <label><strong>F. Vencimiento:</strong> {{$fechas->date_end}}</label>
             <br>
             <label><strong>BPM:</strong>{{$bpm}}</label>
             <br>
@@ -150,7 +158,7 @@ foreach ($atributos as $key => $value) {
                             @foreach($array1 as $row)
                                 <tr>
                                     <td class="celda">{{$row->description}}</td>
-                                    <td class="celda">{{$row->value}}</td> 
+                                    <td class="celda">{{$row->value}}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -171,8 +179,8 @@ foreach ($atributos as $key => $value) {
                             @foreach($array2 as $row)
                                 <tr>
                                     <td class="celda">{{$row->description}}</td>
-                                    <td class="celda">{{$row->resultdo}}</td> 
-                                    <td class="celda">{{$row->metodo}}</td> 
+                                    <td class="celda">{{$row->resultdo}}</td>
+                                    <td class="celda">{{$row->metodo}}</td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -224,7 +224,7 @@
                                     <button
                                         class="btn waves-effect waves-light btn-xs btn-info"
                                         type="button"
-                                        @click.prevent="clickPDF(row.item_id)">PDF
+                                        @click.prevent="clickPDF(row.id)">PDF
                                     </button>
                                 </td>
                                 <td>
