@@ -2,7 +2,8 @@
 $logo = "";
 
 if(isset($company->logo)){
-    $logo = "storage/uploads/logos/{$company->logo}";
+
+    $logo = "storage/uploads/logos/$company->logo";
 }
 
 $ingredientes = "";
@@ -94,13 +95,11 @@ foreach ($atributos as $key => $value) {
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
-                    @php
-                    if(isset($logo) && $logo != '' ){
-                        echo '<img src = "data:{{mime_content_type(public_path("{'.$logo.'}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" class="" style="max-width: 150px" >';
-                    }
-                    @endphp
+                    @if(isset($logo) && $logo != '' )
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 150px" >
+                    @endif
                     </th>
-                    <th><p><strong>{{$company->name}}</strong></p></th>
+                    <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
                 </tr>
                 <tr>
                     <th colspan="2"><p><strong>{{$records['name']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
@@ -138,13 +137,13 @@ foreach ($atributos as $key => $value) {
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
-                    @php
-                    if(isset($logo) && $logo != '' ){
-                        echo '<img src = "data:{{mime_content_type(public_path("{'.$logo.'}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" class="" style="max-width: 150px" >';
-                    }
-                    @endphp
+
+                    @if(isset($logo) && $logo != '' )
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 150px" >
+                    @endif
+
                     </th>
-                    <th><p><strong>{{$company->name}}</strong></p></th>
+                    <th style="text-align: left"><p><strong>{{$company->name}}</strong></p></th>
                 </tr>
                 <tr>
                     <th colspan="2"><p><strong>{{$records['name']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>

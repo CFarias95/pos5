@@ -112,11 +112,9 @@ foreach ($atributos as $key => $value) {
     <body>
         <div class="container">
             <div id="column_1">
-                @php
-                if(isset($logo) && $logo != ''){
-                    echo '<img src = "data:{{mime_content_type(public_path("{'.$logo.'}"))}};base64, {{base64_encode(file_get_contents(public_path("{'.$logo.'}")))}}" alt="company logo" class="company_logo" style="margin-left: 50px; padding-bottom: 0px; max-width: 150px" >';
-                }
-                @endphp
+                @if(isset($logo) && $logo != '' )
+                <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 150px" >
+                @endif
             </div>
         </div>
         <div>
