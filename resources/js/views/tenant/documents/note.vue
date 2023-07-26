@@ -744,10 +744,10 @@ export default {
 
             if (this.isCreditNote && this.hasDiscounts) {
 
-                this.$message.error('El comprobante relacionado tiene descuentos, debe agregar los productos');
-                this.form.items = []
-                this.calculateTotal()
-                this.apply_change_has_discounts = true
+                this.$message.warning('El comprobante relacionado tiene descuentos');
+                //this.form.items = []
+                //this.calculateTotal()
+                //this.apply_change_has_discounts = true
 
             } else {
                 //inicializar data cuando se haya aplicado modificacion a los items por descuento

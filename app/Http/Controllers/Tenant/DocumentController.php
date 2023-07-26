@@ -1051,7 +1051,7 @@ class DocumentController extends Controller
                     if($impuesto->account){
                         if(array_key_exists($impuesto->account,$arrayEntrys)){
 
-                            $arrayEntrys[$impuesto->account]['haber'] += floatval($value->total_taxes);
+                            $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
 
                         }
                         if(!array_key_exists($impuesto->account,$arrayEntrys)){
@@ -1071,7 +1071,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($configuration->cta_taxes,$arrayEntrys)){
 
-                            $arrayEntrys[$configuration->cta_taxes]['haber'] += floatval($value->total_taxes);
+                            $arrayEntrys[$configuration->cta_taxes]['debe'] += floatval($value->total_taxes);
 
                         }
                         if(!array_key_exists($configuration->cta_taxes,$arrayEntrys)){
