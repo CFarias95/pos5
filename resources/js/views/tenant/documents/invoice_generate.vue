@@ -1952,15 +1952,6 @@ export default {
 
                 // this.default_document_type = response.data.document_id;
                 // this.default_series_type = response.data.series_id;
-                this.selectDocumentType()
-
-                this.changeEstablishment()
-                this.changeDateOfIssue()
-                this.changeDocumentType()
-                this.changeDestinationSale()
-                this.changeCurrencyType()
-                this.setDefaultDocumentType();
-                this.setConfigGlobalDiscountType()
         })
 
 
@@ -1981,6 +1972,16 @@ export default {
             }).finally(() => this.loading_submit = false);
 
         }else{
+
+            this.selectDocumentType()
+
+            this.changeEstablishment()
+            this.changeDateOfIssue()
+            this.changeDocumentType()
+            this.changeDestinationSale()
+            this.changeCurrencyType()
+            this.setDefaultDocumentType();
+            this.setConfigGlobalDiscountType()
 
             /*
             * #830
@@ -2064,10 +2065,6 @@ export default {
 
             this.startConnectionQzTray()
         }
-
-
-
-
     },
     methods: {
         changeDataTip(tip)
@@ -2391,6 +2388,7 @@ export default {
         },
         async onSetFormData(data) {
 
+            //console.log("onSetFormData",data)
             this.currency_type = await _.find(this.currency_types, {'id': data.currency_type_id})
             this.form.establishment_id = data.establishment_id;
             this.form.document_type_id = data.document_type_id;
@@ -3187,6 +3185,12 @@ export default {
             this.calculatePayments()
         },
         async ediItem(row, index) {
+
+            if(this.form.operationTypeId == '' || this.form.operationTypeId == undefined || this.form.operationTypeId == null){
+                this.$message.warning("selecciona un tipo de operacion antes de editar un item");
+                return false
+            }
+
             row.indexi = index
             this.recordItem = row
             this.showDialogAddItem = true
@@ -4086,9 +4090,11 @@ export default {
 
             this.loading_submit = true
             let path = `/${this.resource}`;
+
             if (this.isUpdate) {
                 path = `/${this.resource}/${this.form.id}/update`;
             }
+
             let temp = this.form.payment_condition_id;
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';

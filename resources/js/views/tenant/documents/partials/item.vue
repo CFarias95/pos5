@@ -881,8 +881,7 @@ export default {
                 this.is_client = data.is_client;
                 this.validate_stock_add_item = data.validate_stock_add_item
                 this.warehouses = data.warehouses
-                console.log('HOLAAAAAA')
-                console.log('warehouses', this.warehouses)
+                //console.log('warehouses', this.warehouses)
 
                 if (this.canShowExtraData) {
                     this.$store.commit('setColors', data.colors);
@@ -1110,16 +1109,14 @@ export default {
         //     this.form.affectation_igv_type_id = this.affectation_igv_types[0].id
         // },
         async create() {
+
             this.extra_temp = undefined;
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
-            //console.log("tipo de operacion : ",this.operationTypeId)
-            //console.log("tipos de operaciones", this.operation_types)
 
             let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
-//
 
             if (this.recordItem) {
 
@@ -1186,7 +1183,7 @@ export default {
                 this.isUpdateWarehouseId = null
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
-            
+
 
         },
         setPresentationEditItem() {

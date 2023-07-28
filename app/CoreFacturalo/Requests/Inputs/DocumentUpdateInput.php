@@ -35,7 +35,7 @@ class DocumentUpdateInput
         // $customer = PersonInput::set($inputs['customer_id']);
         $customer = PersonInput::set($inputs['customer_id'], isset($inputs['customer_address_id']) ? $inputs['customer_address_id'] : null);
 
-        if (in_array($document_type_id, ['01', '03'])) {
+        if (in_array($document_type_id, ['01', '03','07'])) {
             $array_partial = self::invoice($inputs);
             $invoice = $array_partial['invoice'];
             $note = null;
@@ -518,36 +518,39 @@ class DocumentUpdateInput
 
     private static function note($inputs)
     {
-        $document_type_id = $inputs['document_type_id'];
-        $note_credit_or_debit_type_id = (isset($inputs['note_credit_or_debit_type_id']))?$inputs['note_credit_or_debit_type_id']:'';
-        $note_description = (isset($inputs['note_description'])?$inputs['note_description']:'');
-        $affected_document_id = $inputs['affected_document_id'];
+        if(isset($inputs['affected_document_id'])){
 
-        $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
+            $document_type_id = $inputs['document_type_id'];
+            $note_credit_or_debit_type_id = (isset($inputs['note_credit_or_debit_type_id']))?$inputs['note_credit_or_debit_type_id']:'';
+            $note_description = (isset($inputs['note_description'])?$inputs['note_description']:'');
+            $affected_document_id = $inputs['affected_document_id'];
 
-        $type = ($document_type_id === '07') ? 'credit' : 'debit';
+            $data_affected_document = Functions::valueKeyInArray($inputs, 'data_affected_document');
 
-        if (!$data_affected_document) {
-            $affected_document = Document::find($affected_document_id);
-            $group_id = $affected_document->group_id;
-            $$affected_document_id = $affected_document->id;
-        } else {
-            $affected_document_id = null;
-            $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+            $type = ($document_type_id === '07') ? 'credit' : 'debit';
+
+            if (!$data_affected_document) {
+                $affected_document = Document::find($affected_document_id);
+                $group_id = $affected_document->group_id;
+                $$affected_document_id = $affected_document->id;
+            } else {
+                $affected_document_id = null;
+                $group_id = ($data_affected_document['document_type_id'] == '01') ? '01' : '02';
+            }
+
+            return [
+                'type' => $type,
+                'group_id' => $group_id,
+                'note' => [
+                    'note_type' => $type,
+                    'note_credit_type_id' => ($type === 'credit') ? $note_credit_or_debit_type_id : 'devolución total',
+                    'note_debit_type_id' => ($type === 'debit') ? $note_credit_or_debit_type_id : null,
+                    'note_description' => $note_description,
+                    'affected_document_id' => $affected_document_id,
+                    'data_affected_document' => $data_affected_document,
+                ],
+            ];
         }
-
-        return [
-            'type' => $type,
-            'group_id' => $group_id,
-            'note' => [
-                'note_type' => $type,
-                'note_credit_type_id' => ($type === 'credit') ? $note_credit_or_debit_type_id : 'devolución total',
-                'note_debit_type_id' => ($type === 'debit') ? $note_credit_or_debit_type_id : null,
-                'note_description' => $note_description,
-                'affected_document_id' => $affected_document_id,
-                'data_affected_document' => $data_affected_document,
-            ],
-        ];
     }
 
     private static function retention($inputs)
