@@ -867,7 +867,7 @@ export default {
 
         getTables() {
             this.$http.get(`/${this.resource}/item/tables`).then(response => {
-                console.log('response123456', response)
+                //console.log('response123456', response)
                 //console.log(`/${this.resource}/item/tables`)
                 //console.log("DATA ITEMS: ",data)
                 let data = response.data

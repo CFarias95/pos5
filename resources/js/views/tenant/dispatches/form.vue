@@ -32,7 +32,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.date_of_issue}" class="form-group">
-                                <label class="control-label">Fecha de emisión<span class="text-danger"> *</span></label>
+                                <label class="control-label">Fecha de inicio transporte<span class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_issue" :clearable="false" type="date"
                                                 value-format="yyyy-MM-dd"></el-date-picker>
                                 <small v-if="errors.date_of_issue" class="form-control-feedback"
@@ -41,7 +41,7 @@
                         </div>
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.date_of_shipping}" class="form-group">
-                                <label class="control-label">Fecha de traslado<span
+                                <label class="control-label">Fecha fin transporte<span
                                     class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_shipping" :clearable="false" type="date"
                                                 value-format="yyyy-MM-dd"></el-date-picker>
@@ -495,7 +495,7 @@
                                 <template v-if="!filterIndex(index)">
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>
-                                
+
                                 <template v-if="filterIndex(index)">
                                     <el-input
                                         :tabindex="'2'"
@@ -506,7 +506,7 @@
                                                 :disabled="row.quantity < 0.01"
                                                 icon="el-icon-minus"
                                                 style="padding-right: 5px ;padding-left: 12px"
-                                                
+
                                                 @click="clickDecrease(index)"></el-button>
                                         <el-button slot="append"
                                                 icon="el-icon-plus"
@@ -1033,14 +1033,14 @@ export default {
             if (this.form.items[index].quantity <= this.getMinQuantity()) {
                 await this.setMinQuantity(index)
             }
-            
+
             if (this.form.items[index].quantity >= this.getMaxQuantity(index)) {
                 await this.setMaxQuantity(index)
             }
 
         },
         async clickEditSuccess(index){
-            
+
             await this.indexAffect.splice(this.indexAffect.indexOf(index), 1);
         },
         filterIndex(index){

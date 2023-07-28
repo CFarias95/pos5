@@ -9,8 +9,19 @@
                             <el-input v-model="form.name"></el-input>
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
-                    </div> 
-                </div> 
+                        <div class="form-group" :class="{'has-danger': errors.parent_id}">
+                            <label class="control-label">Categoria Padre</label>
+                            <el-select v-model="form.parent_id"
+                                       filterable>
+                                <el-option
+                                    v-for="option in categories"
+                                    :key="option.id"
+                                    :label="option.name"
+                                    :value="option.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
@@ -19,9 +30,9 @@
         </form>
     </el-dialog>
 </template>
- 
+
 <script>
- 
+
 
     export default {
         props: ['showDialog', 'recordId'],
@@ -29,36 +40,40 @@
             return {
                 loading_submit: false,
                 titleDialog: null,
-                resource: 'categories', 
-                errors: {}, 
-                form: {}, 
+                resource: 'categories',
+                errors: {},
+                form: {},
+                categories:[],
             }
         },
         created() {
-            this.initForm() 
+            this.initForm()
         },
         methods: {
-            initForm() { 
-                this.errors = {} 
+            initForm() {
+                this.errors = {}
 
                 this.form = {
                     id: null,
-                    name: null, 
+                    name: null,
                 }
             },
             create() {
 
                 this.titleDialog = (this.recordId)? 'Editar categoría':'Nueva categoría'
+                this.$http.get(`/${this.resource}/tables`).then(response => {
+                            this.categories = response.data.categories
+                        })
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.form = response.data
                         })
                 }
             },
-            submit() {   
- 
+            submit() {
 
-                this.loading_submit = true  
+
+                this.loading_submit = true
                 this.$http.post(`${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
@@ -71,7 +86,7 @@
                     })
                     .catch(error => {
                         if (error.response.status === 422) {
-                            this.errors = error.response.data 
+                            this.errors = error.response.data
                         } else {
                             console.log(error.response)
                         }
@@ -79,8 +94,8 @@
                     .then(() => {
                         this.loading_submit = false
                     })
-                    
-            },  
+
+            },
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()

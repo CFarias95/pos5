@@ -109,6 +109,10 @@ class CategoryController extends Controller
 
     }
 
+    public function tables(){
+        $categories = Category::get();
+        return compact('categories');
+    }
 
 
 

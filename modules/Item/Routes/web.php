@@ -13,6 +13,7 @@ if($hostname) {
             Route::get('categories/record/{category}', 'CategoryController@record');
             Route::post('categories', 'CategoryController@store');
             Route::delete('categories/{category}', 'CategoryController@destroy');
+            Route::get('categories/tables', 'CategoryController@tables');
 
             Route::get('brands', 'BrandController@index')->name('tenant.brands.index')->middleware('redirect.level');
             Route::get('brands/records', 'BrandController@records');
@@ -43,7 +44,7 @@ if($hostname) {
 
             Route::get('items/barcode/{item}', 'ItemController@generateBarcode');
 
-            
+
 
             Route::post('items/import/item-price-lists', 'ItemController@importItemPriceLists');
             Route::post('items/import/item-with-extra-data', 'ItemController@importItemWithExtraData');
@@ -84,7 +85,7 @@ if($hostname) {
 
             Route::post('items/import/items-update-prices', 'ItemController@importItemUpdatePrices');
 
-            
+
             Route::prefix('item-lots-group')->group(function () {
 
                 Route::get('available-data/{item_id}', 'ItemLotsGroupController@getAvailableItemLotsGroup');

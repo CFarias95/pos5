@@ -19,6 +19,7 @@
         {
             return $this->collection->transform(function (Category $row, $key) {
 
+                
                 return [
                     'id' => $row->id,
                     'name' => $row->name,

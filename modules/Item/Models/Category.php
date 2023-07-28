@@ -8,15 +8,17 @@ use App\Models\Tenant\ModelTenant;
 class Category extends ModelTenant
 {
 
-    protected $fillable = [ 
+    protected $fillable = [
+        'id',
         'name',
+        'parent_id',
     ];
- 
+
     public function items()
     {
         return $this->hasMany(Item::class);
     }
- 
+
     public function scopeFilterForTables($query)
     {
         return $query->select('id', 'name')->orderBy('name');
@@ -31,9 +33,9 @@ class Category extends ModelTenant
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Data para filtros - select
      *
      * @return array
