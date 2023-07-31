@@ -68,7 +68,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items','purchase_payments'/*, 'retention_type'*/];
+protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'document_type2','currency_type', 'group', 'items','purchase_payments'/*, 'retention_type'*/];
 
     protected $fillable = [
         'user_id',
@@ -305,6 +305,10 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type', 'currency
         return $this->belongsTo(PurchaseDocumentType::class, 'document_type_id');
     }
 
+    public function document_type2()
+    {
+        return $this->belongsTo(PurchaseDocumentTypes2::class, 'document_type_intern','idType');
+    }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */

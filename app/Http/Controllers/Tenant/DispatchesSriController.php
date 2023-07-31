@@ -14,6 +14,8 @@ use App\CoreFacturalo\WS\Services\SunatEndpoints;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\Tenant\DocumentEmail;
+use App\Models\Tenant\Catalogs\DocumentType;
+use App\Models\Tenant\Catalogs\IdentityDocumentType;
 use App\Models\Tenant\Catalogs\RetentionType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
@@ -44,8 +46,9 @@ use Swift_SmtpTransport;
 class DispatchesSriController extends Controller
 {
     const REGISTRADA = '01';
-    const GENERADA = '02';
+    const FIRMADO = '02';
     const ENVIADA = '03';
+    const ERROR = '04';
     const DEVUELTA = '30';
     const AUTORIZADA = '05';
     const NOAUTORIZADA = '09';
@@ -73,6 +76,7 @@ class DispatchesSriController extends Controller
     protected $document;
     protected $doc_type;
     protected $email;
+    protected $file_name;
 
     public function __construct()
     {
@@ -100,15 +104,19 @@ class DispatchesSriController extends Controller
 
         if($dispatch->count() > 0  && $dispatchD->count() > 0){
 
+            $this->file_name = $dispatch->filename;
             $establecimiento = Establishment::findOrFail($dispatch->establishment_id);
             $secuencial = $establecimiento->code.''.str_replace('G','',$dispatch->series).str_pad($dispatch->number, '9', '0', STR_PAD_LEFT);
-            $clave = "" . date('dmY', strtotime($dispatch->created_at)) . "06" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".$secuencial."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
+            $clave = "" . date('dmY', strtotime($dispatch->date_of_issue)) . "06" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".$secuencial."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
             $digito_verificador_clave = $this->validar_clave($clave);
             $this->clave_acceso = $clave . "" . $digito_verificador_clave . "";
 
-            $docSustento = Document::findOrFail($dispatch->reference_document_id);
+            $docSustento = null;
+            if(isset($dispatch->reference_document_id)){
+                $docSustento = Document::findOrFail($dispatch->reference_document_id);
+            }
 
-            $retencion = [
+            $guia = [
                 'ambiente'=>$this->ambienteLocal,
                 'tipoEmision' => 1,
                 'razonSocial' => $this->company->name,
@@ -120,10 +128,10 @@ class DispatchesSriController extends Controller
                 'ptoEmision'=> str_replace('G','',$dispatch->series),
                 'secuencial'=>str_pad($dispatch->number, '9', '0', STR_PAD_LEFT),
                 'dirMatriz' => $establecimiento->address,
-                'disEstablecimiento' => $establecimiento->address,
+                'dirEstablecimiento' => $establecimiento->address,
                 'dirPartida' => $dispatch->origin->address,
                 'razonSocialTransportista' => $dispatch->dispatcher->name,
-                'tipoIdentificacionTransportista' => $dispatch->dispatcher->identity_document_type_id,
+                'tipoIdentificacionTransportista' => (IdentityDocumentType::find($dispatch->dispatcher->identity_document_type_id))->codeSri,
                 'rucTransportista' => $dispatch->dispatcher->number,
                 'rise' => $this->company->rise,
                 'obligadoContabilidad' => ($this->company->obligado_contabilidad > 0)?'SI':'NO',
@@ -136,19 +144,17 @@ class DispatchesSriController extends Controller
                 'dirDestinatario' => $dispatch->delivery->address,
                 'motivoTraslado' => $dispatch->transfer_reason_type->description,
                 'docAduaneroUnico' => null,
-                'codDocSustento' => ($docSustento->count() > 0 )?$docSustento->document_type_id:null,
-                'numDocSustento' => ($docSustento->count() > 0 )?($docSustento->establishment->code.'-'.str_replace('F','',$docSustento->series).str_pad($docSustento->number, '9', '0', STR_PAD_LEFT)):null,
-                'numAutDocSustento' => ($docSustento->count() > 0 )?$docSustento->clave_SRI:null,
-                'fechaEmisionDocSustento' => ($docSustento->count() > 0 )?$docSustento->date_of_issue->format('d/m/Y'):null,
+                'codDocSustento' => (isset($docSustento) && $docSustento->count() > 0 )?$docSustento->document_type_id:null,
+                'numDocSustento' => (isset($docSustento) && $docSustento->count() > 0 )?($docSustento->establishment->code.'-'.str_replace('F','',$docSustento->series).'-'.str_pad($docSustento->number, '9', '0', STR_PAD_LEFT)):null,
+                'numAutDocSustento' => (isset($docSustento) && $docSustento->count() > 0 )?$docSustento->clave_SRI:null,
+                'fechaEmisionDocSustento' => (isset($docSustento) && $docSustento->count() > 0 )?$docSustento->date_of_issue->format('d/m/Y'):null,
                 'detalles' => $dispatchD->transform(function($row, $key) {
                     $item = Item::find($row->item_id);
                     return [
                         'codigoInterno' => isset($item->internal_id)?$item->internal_id:$item->id,
                         'codigoAdicional' => isset($item->item_code)?$item->item_code:null,
                         'descripcion' => $item->description,
-                        'cantidad' => $row->quantity,
-                        'porcentajeRetener' => $row->porcentajeRet,
-                        'valorRetenido' => $row->valorRet,
+                        'cantidad' => $row->quantity
                     ];
                 }),
                 'adicionales'=>$dispatch->aditional_data
@@ -157,16 +163,10 @@ class DispatchesSriController extends Controller
             $qr = $this->getQr($this->clave_acceso);
 
             $dispatch->update([
-
-                'clave_SRI'=>$this->clave_acceso,
-                'filename'=>$this->clave_acceso,
-                'external_id'=>$this->clave_acceso,
-                'status_id' => Self::REGISTRADA,
                 'barCode' => $qr,
-
             ]);
 
-            return $retencion;
+            return $guia;
         }else{
             return false;
         }
@@ -188,7 +188,7 @@ class DispatchesSriController extends Controller
 
         $request = new AuthSri();
         $authSRI = $request->send($url,$clave);
-        $retencion = Dispatch::find($id);
+        $dispatch = Dispatch::find($id);
 
         try{
 
@@ -216,39 +216,31 @@ class DispatchesSriController extends Controller
                     $estateId = self::AUTORIZADA;
                     $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
                     $documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                    $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
+                    $nombre= 'autorizado/'.$dispatch->filename.'.xml';
 
                     Storage::disk('tenant')->put($nombre, $documento);
 
-                    $tipodoc = 'retention';
-                    $this->doc_type = '03';
+                    $tipodoc = 'dispatchEC';
+                    $this->doc_type = '06';
                     $this->actions['format_pdf'] = 'blank';
 
-                    $this->createPdf($retencion, $tipodoc, 'a4');
+                    $this->createPdf($dispatch, $tipodoc, 'a4');
 
                     $this->sendEmail2($id);
 
                 }elseif($estado == 'NO AUTORIZADO'){
-
-                    $valor = array_filter($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes'], function($B,$k){
-
-                        return array_filter($B,function ($key, $value) use($k){
-                            return preg_replace("/[\r\n|\n|\r]+/", '', $key);
-
-                        },ARRAY_FILTER_USE_BOTH);
-
-                    },ARRAY_FILTER_USE_BOTH);
 
                     $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
                     $mensajeAuth = 'DOCUMENTO NO AUTORIZADO POR EL SRI';
                     $estateId = self::NOAUTORIZADA;
                     $fechaAuth = null;
 
+
                 }elseif($estado == 'EN PROCESO'){
 
                     $responseAuth = json_encode($authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']);
-                    $mensajeAuth = 'DOCUEMNTO EN PROCESO DE VALIDACIÓN';
-                    $estateId = self::ENPROCESO;
+                    $mensajeAuth = 'DOCUMENTO EN PROCESO DE VALIDACIÓN';
+                    $estateId = self::FIRMADO;
                     $fechaAuth = null;
 
                 }
@@ -258,14 +250,14 @@ class DispatchesSriController extends Controller
 
                         $mensajeAuth = 'SIN ESTADO POR EL SRI';
                         $responseAuth = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['mensajes']['mensaje']['mensaje'];
-                        $estateId = self::ENPROCESO;
+                        $estateId = self::FIRMADO;
                         $fechaAuth = null;
 
                     }else{
 
                         $mensajeAuth = 'NO SE ENCONTRO EL DOCUMENTO EN EL SISTEMA DEL SRI';
                         $responseAuth = NULL;
-                        $estateId = self::ENPROCESO;
+                        $estateId = self::FIRMADO;
                         $fechaAuth = null;
 
                     }
@@ -273,26 +265,27 @@ class DispatchesSriController extends Controller
                 }
 
                 $dispatch = Dispatch::find($id);
+                //Log::info($responseAuth);
                 $dispatch->update([
 
                     'state_type_id' => $estateId,
                     'response_verification' => $mensajeAuth,
-                    'DateTimeAutorization' => $fechaAuth,
-                    'response_message_verification' => $responseAuth,
+                    'dateTimeAutorization' => $fechaAuth,
+                    'response_verification_msg' => $responseAuth,
                     'verificated' => 1,
                 ]);
 
             }else{
 
-                $retencion->update([
-                    'status_id' => self::DEVUELTA,
+                $dispatch->update([
+                    'state_type_id' => self::FIRMADO,
                     'response_verification' => 'NO SE PUDO VERIFICAR EL DOCUMENTO',
                     'verificated' => 0,
                 ]);
             }
         }
         catch(Exception $ex){
-            Log::error('Error al porcesar una retencion: '.$ex->getMessage());
+            Log::error('Error al procesar la guia de remision: '.$ex->getMessage());
         }
 
 
@@ -334,43 +327,23 @@ class DispatchesSriController extends Controller
 
         $format_pdf = $this->actions['format_pdf'] ?? null;
 
-        $documentoEnviar = ($document != null) ? $document : $this->document;
+        $document = ($document != null) ? $document : $this->document;
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
         $base_pdf_template = ($type != null && $type == 'retention') ? 'default': Establishment::find($this->document->establishment_id)->template_pdf;
-
-        if (($format_pdf === 'ticket') OR
-            ($format_pdf === 'ticket_58') OR
-            ($format_pdf === 'ticket_50'))
-        {
-            $base_pdf_template = Establishment::find($this->document->establishment_id)->template_ticket_pdf;
-        }
-
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
-        $purchase = Purchase::find($documentoEnviar->idDocumento);
-        $detalles = RetentionsDetailEC::where('idRetencion',$documentoEnviar->idRetencion)->get();
-        $establecimiento = Establishment::find($purchase->establishment_id);
+        $detalles = DispatchItem::where('dispatch_id',$document->id)->get();
+        $establecimiento = Establishment::find($document->establishment_id);
 
-        $detalles->transform(function($row){
+        $document->detalles = $detalles;
+        $this->email = $document->customer->email;
 
-            $code = RetentionType::where('code',$row->codRetencion)->get();
-            $row['code'] = ( $code->count() > 0 && $code[0]->type_id == '01') ? 'RENTA':'IVA';
-            return $row;
-
-        });
-
-        $documentoEnviar->purchase = $purchase;
-        $documentoEnviar->detalles = $detalles;
-        $documentoEnviar->establecimiento = $establecimiento;
-
-        $this->email = $purchase->supplier->email;
-
-        $html = $template->pdf($base_pdf_template, $this->type, $this->company, $documentoEnviar, $format_pdf);
+        $html = $template->pdf($base_pdf_template, $this->type, $this->company, $document, $format_pdf);
 
         if (($format_pdf === 'ticket') OR
             ($format_pdf === 'ticket_58') OR
@@ -543,7 +516,7 @@ class DispatchesSriController extends Controller
                 $pdf_margin_top = 93.7;
                 $pdf_margin_bottom = 74;
             }
-            if ($base_pdf_template === 'blank' && in_array($documentoEnviar->document_type_id, ['09'])) {
+            if ($base_pdf_template === 'blank' && in_array($document->document_type_id, ['09'])) {
                 $pdf_margin_top = 110;
                 $pdf_margin_bottom = 125;
             }
@@ -599,13 +572,13 @@ class DispatchesSriController extends Controller
         if(config('tenant.pdf_template_footer')) {
             $html_footer = '';
             if (($format_pdf != 'ticket') AND ($format_pdf != 'ticket_58') AND ($format_pdf != 'ticket_50')) {
-                $html_footer = $template->pdfFooter($base_pdf_template, in_array($documentoEnviar->document_type_id, ['09']) ? null : $documentoEnviar);
+                $html_footer = $template->pdfFooter($base_pdf_template, in_array($document->document_type_id, ['09']) ? null : $document);
                 $html_footer_legend = "";
             }
             // dd($this->configuration->legend_footer && in_array($this->document->document_type_id, ['01', '03']));
             // se quiere visuzalizar ahora la legenda amazona en todos los formatos
             $html_footer_legend = '';
-            if($this->configuration->legend_footer && in_array($documentoEnviar->document_type_id, ['01', '03'])){
+            if($this->configuration->legend_footer && in_array($document->document_type_id, ['01', '03'])){
                 $html_footer_legend = $template->pdfFooterLegend($base_pdf_template, $document);
             }
 
@@ -628,10 +601,8 @@ class DispatchesSriController extends Controller
             $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
         }
 
-        //$this->uploadFile($pdf->output('', 'S'), 'pdf');
-        Storage::disk('tenant')->put('pdf/'.$documentoEnviar->claveAcceso.'.pdf',$pdf->output('', 'S'));
+        Storage::disk('tenant')->put('pdf/'.$document->filename.'.pdf',$pdf->output('', 'S'));
 
-        //return $this;
     }
 
     public function sendXmlSigned($id ,$file)
@@ -641,7 +612,7 @@ class DispatchesSriController extends Controller
         $sender = new BillSender();
         $this->loadXmlSigned($file);
         $res =  $sender->send($this->urlSri, $this->xmlSigned);
-        $Retencion = RetentionsEC::find($id);
+        $dispatch = Dispatch::find($id);
 
         if($res) {
 
@@ -659,7 +630,7 @@ class DispatchesSriController extends Controller
 
                     $IdEstado = (self::DEVUELTA);
                     $mensajeEstado = 'DOCUMENTO DEVUELTO POR EL SRI';
-                    $mensajesRespuesta = json_encode($responseSRI['RespuestaRecepcionComprobante']['comprobantes']['comprobante']['mensajes']);
+                    $mensajesRespuesta = ($responseSRI['RespuestaRecepcionComprobante']['comprobantes']['comprobante']['mensajes']);
 
                 }elseif($estado == 'RECIBIDA'){
 
@@ -669,15 +640,18 @@ class DispatchesSriController extends Controller
 
                 }else{
 
-                    $IdEstado = (self::GENERADA);
+                    $IdEstado = (self::FIRMADO);
                     $mensajeEstado = 'ERROR AL PROCESAR LA RESPUESTA DEL SRI';
                     $mensajesRespuesta = json_encode($res);
                 }
 
-               $Retencion->update([
-                    'status_id' => $IdEstado,
-                    'response_envio' => $mensajeEstado,
-                    'response_message_envio' => $mensajesRespuesta,
+                $dispatch->update([
+
+                    'state_type_id' => $IdEstado,
+                    'soap_shipping_response' => $mensajeEstado,
+                    'send_to_pse' => true,
+                    'response_send_cdr_pse' => $mensajesRespuesta
+
                ]);
 
 
@@ -694,25 +668,28 @@ class DispatchesSriController extends Controller
                 }
 
 
-                $Retencion->update([
+                $dispatch->update([
 
-                    'status_id' => $IdEstado,
-                    'response_envio' => $mensajeEstado,
-                    'response_message_envio' => $mensajesRespuesta,
+                    'state_type_id' => $IdEstado,
+                    'soap_shipping_response' => $mensajeEstado,
+                    'send_to_pse' => false,
+                    'response_send_crd_pse' => $mensajesRespuesta
 
                ]);
             }
 
         } else {
 
-            $IdEstado = self::GENERADA;
+            $IdEstado = self::FIRMADO;
             $mensajeEstado = 'SIN RESPUESTA DEL SRI';
-            $mensajesRespuesta = json_encode($res);
+            $mensajesRespuesta = ($res);
 
-            $Retencion->update([
-                'status_id' => $IdEstado,
-                'response_envio' => $mensajeEstado,
-                'response_message_envio' => $mensajesRespuesta,
+            $dispatch->update([
+
+                'state_type_id' => $IdEstado,
+                'soap_shipping_response' => $mensajeEstado,
+                'send_to_pse' => false,
+                'response_send_crd_pse' => $mensajesRespuesta,
            ]);
         }
     }
@@ -720,21 +697,32 @@ class DispatchesSriController extends Controller
     public function createXML($id){
 
         $documento = $this->prepareDocument($id);
+
         if($documento){
             $template = new Template();
             $this->xmlUnsigned = XmlFormat::format($template->xml($this->type, $this->company, $documento,null));
-            $nombre = "unsigned/" . $this->clave_acceso . ".xml";
+            $nombre = "unsigned/" . $this->file_name . ".xml";
             Storage::disk('tenant')->put($nombre, $this->xmlUnsigned);
             $this->firmarXML();
-            $nombre2 = "signed/" . $this->clave_acceso . ".xml";
+            $nombre2 = "signed/" . $this->file_name . ".xml";
             Storage::disk('tenant')->put($nombre2, $this->xmlSigned);
 
+            $this->updateDocumentXML($id);
             return $this->clave_acceso;
 
         }else{
-            return 'No se pueden generar retenciones del documento: ' . $id;
+            return 'No se puede generar el XML/firmardo de la guia de remision:  ' . $id;
         }
+    }
 
+    public function updateDocumentXML($id){
+
+        $dispatch = Dispatch::findOrFail($id);
+        $dispatch->update([
+            'clave_SRI'=>$this->clave_acceso,
+            'state_type_id' => Self::FIRMADO,
+            'has_xml'=>true,
+        ]);
     }
 
     private function firmarXML(){
@@ -888,7 +876,7 @@ class DispatchesSriController extends Controller
     {
 
         $company = $this->company;
-        $document = RetentionsEC::find($id);
+        $document = Dispatch::find($id);
         $email = $this->email;
         $mailable =new DocumentEmail($company, $document);
         $id =  $id;

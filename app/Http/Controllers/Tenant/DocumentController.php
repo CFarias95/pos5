@@ -617,6 +617,7 @@ class DocumentController extends Controller
         //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
         //ASIENTO CONTABLE DE FACTURAS
+        
         if($document && $document->document_type_id == '01'){
 
             try{

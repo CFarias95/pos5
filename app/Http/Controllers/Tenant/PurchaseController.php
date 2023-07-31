@@ -579,8 +579,7 @@ use Modules\Sale\Models\SaleOpportunity;
         private function createAccountingEntry($document_id,$ret){
 
             $document = Purchase::find($document_id);
-            //Log::info('compra: '.json_encode($document));
-            //Log::info('retenciones: ',$ret);
+            $documentoInterno = $document->document_type2;
 
             $entry = (AccountingEntries::get())->last();
             $iva = 0;
@@ -601,7 +600,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
             }
 
-            if($document && $document->document_type_id == '01'){
+            if($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0){
 
                 try{
                     $idauth = auth()->user()->id;
@@ -668,8 +667,8 @@ use Modules\Sale\Models\SaleOpportunity;
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id =($importCTA != '')? $importCTA: (($customer->account) ? $customer->account : $configuration->cta_suppliers);
                     $detalle->seat_line = 1;
-                    $detalle->haber = $document->total;
-                    $detalle->debe = 0;
+                    $detalle->haber = ($documentoInterno->sign > 0)?:0;
+                    $detalle->debe = ($documentoInterno->sign > 0)?0:$document->total;
                     $detalle->save();
 
                     $arrayEntrys = [];
@@ -688,7 +687,7 @@ use Modules\Sale\Models\SaleOpportunity;
                         $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
 
                         //CONTABILIDAD PARA VALORES POSITIVOS
-                        if($value->quantity > 0){
+                        if($documentoInterno->sign > 0){
 
                             if($itemCTA == "" && $item->purchase_cta){
 
@@ -825,13 +824,13 @@ use Modules\Sale\Models\SaleOpportunity;
                             }
                         }
                         //CONTABILIDAD PARA VALORES NEGATIVOS
-                        if($value->quantity < 0 ){
+                        if($documentoInterno->sign > 1 ){
 
                             if($itemCTA != "" && !$item->purchase_cta){
 
                                 if(array_key_exists($itemCTA ,$arrayEntrys)){
 
-                                    $arrayEntrys[$itemCTA ]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$itemCTA ]['haber'] += floatval($value->total_value);
 
                                 }
                                 if(!array_key_exists($itemCTA ,$arrayEntrys)){
@@ -849,7 +848,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($item->purchase_cta,$arrayEntrys)){
 
-                                    $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$item->purchase_cta]['haber'] += floatval($value->total_value);
 
                                 }
                                 if(!array_key_exists($item->purchase_cta,$arrayEntrys)){
@@ -867,7 +866,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
 
-                                    $arrayEntrys[$configuration->cta_purchases]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$configuration->cta_purchases]['haber'] += floatval($value->total_value);
 
                                 }
                                 if(!array_key_exists($configuration->cta_purchases,$arrayEntrys)){
@@ -885,7 +884,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($impuesto->account,$arrayEntrys)){
 
-                                    $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
+                                    $arrayEntrys[$impuesto->account]['haber'] += floatval($value->total_taxes);
 
                                 }
                                 if(!array_key_exists($impuesto->account,$arrayEntrys)){
@@ -905,7 +904,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($configuration->cta_taxes,$arrayEntrys)){
 
-                                    $arrayEntrys[$configuration->cta_taxes]['debe'] += floatval($value->total_taxes);
+                                    $arrayEntrys[$configuration->cta_taxes]['haber'] += floatval($value->total_taxes);
 
                                 }
                                 if(!array_key_exists($configuration->cta_taxes,$arrayEntrys)){
@@ -925,7 +924,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
 
-                                    $arrayEntrys[$configuration->cta_iva_tax]['haber'] += $iva;
+                                    $arrayEntrys[$configuration->cta_iva_tax]['debe'] += $iva;
 
                                 }
                                 if(!array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
@@ -945,7 +944,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 if(array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
 
-                                    $arrayEntrys[$configuration->cta_income_tax]['haber'] += $renta;
+                                    $arrayEntrys[$configuration->cta_income_tax]['debe'] += $renta;
 
                                 }
                                 if(!array_key_exists($configuration->cta_income_tax,$arrayEntrys)){

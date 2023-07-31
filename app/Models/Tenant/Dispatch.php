@@ -130,7 +130,13 @@
             'order_form_external',
 
             'terms_condition',
-            'additional_data'
+            'additional_data',
+            'is_aproved',
+
+            'response_verification',
+            'dateTimeAutorization',
+            'response_verification_msg',
+            'verificated',
         ];
 
         protected $casts = [
@@ -526,6 +532,7 @@
                 'transfer_reason_description' => $this->transfer_reason_description,
                 'documents' => $documents,
                 'order_form_description' => $this->getOrderFormDescription(),
+                'is_aproved'=>$this->is_aproved,
             ];
 
         }

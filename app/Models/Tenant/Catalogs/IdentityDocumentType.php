@@ -52,7 +52,8 @@
         protected $fillable = [
             'id',
             'active',
-            'description'
+            'description',
+            'codeSri'
         ];
 
         /**
@@ -102,10 +103,10 @@
         {
             return $this->hasMany(Person::class, 'identity_document_type_id', 'id');
         }
-        
-        
+
+
         /**
-         * 
+         *
          * Filtrar tipos de documentos para usuarios
          *
          * @param  Builder $query
