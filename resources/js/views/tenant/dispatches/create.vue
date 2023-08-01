@@ -42,7 +42,7 @@
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.date_of_issue}"
                                  class="form-group">
-                                <label class="control-label">Fecha de emisión<span class="text-danger"> *</span></label>
+                                <label class="control-label">Fecha inicio transporte<span class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_issue"
                                                 :clearable="false"
                                                 type="date"
@@ -55,8 +55,7 @@
                         <div class="col-lg-2">
                             <div :class="{'has-danger': errors.date_of_shipping}"
                                  class="form-group">
-                                <label class="control-label">Fecha de
-                                                             traslado<span class="text-danger"> *</span></label>
+                                <label class="control-label">Fecha fin transporte<span class="text-danger"> *</span></label>
                                 <el-date-picker v-model="form.date_of_shipping"
                                                 :clearable="false"
                                                 type="date"
