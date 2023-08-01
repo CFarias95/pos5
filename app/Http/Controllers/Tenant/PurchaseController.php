@@ -667,7 +667,7 @@ use Modules\Sale\Models\SaleOpportunity;
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id =($importCTA != '')? $importCTA: (($customer->account) ? $customer->account : $configuration->cta_suppliers);
                     $detalle->seat_line = 1;
-                    $detalle->haber = ($documentoInterno->sign > 0)?:0;
+                    $detalle->haber = ($documentoInterno->sign > 0)?$document->total:0;
                     $detalle->debe = ($documentoInterno->sign > 0)?0:$document->total;
                     $detalle->save();
 
@@ -824,7 +824,7 @@ use Modules\Sale\Models\SaleOpportunity;
                             }
                         }
                         //CONTABILIDAD PARA VALORES NEGATIVOS
-                        if($documentoInterno->sign > 1 ){
+                        if($documentoInterno->sign < 1 ){
 
                             if($itemCTA != "" && !$item->purchase_cta){
 

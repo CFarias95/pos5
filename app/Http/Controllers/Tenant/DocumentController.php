@@ -617,7 +617,7 @@ class DocumentController extends Controller
         //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
         //ASIENTO CONTABLE DE FACTURAS
-        
+
         if($document && $document->document_type_id == '01'){
 
             try{
@@ -941,7 +941,7 @@ class DocumentController extends Controller
                     if($item->sale_cost_cta){
                         if(array_key_exists($item->sale_cost_cta,$arrayEntrys)){
 
-                            $arrayEntrys[$item->sale_cost_cta]['debe'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$item->sale_cost_cta]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
 
                         }
                         if(!array_key_exists($item->sale_cost_cta,$arrayEntrys)){
@@ -959,7 +959,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($configuration->cta_sale_costs,$arrayEntrys)){
 
-                            $arrayEntrys[$configuration->cta_sale_costs]['debe'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$configuration->cta_sale_costs]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
 
                         }
                         if(!array_key_exists($configuration->cta_sale_costs,$arrayEntrys)){
@@ -977,7 +977,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($item->purchase_cta,$arrayEntrys)){
 
-                            $arrayEntrys[$item->purchase_cta]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$item->purchase_cta]['debe'] += ($item->purchase_unit_price * intval($value->quantity));
 
                         }
                         if(!array_key_exists($item->purchase_cta,$arrayEntrys)){
@@ -996,7 +996,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($configuration->cta_purchases,$arrayEntrys)){
 
-                            $arrayEntrys[$configuration->cta_purchases]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$configuration->cta_purchases]['debe'] += ($item->purchase_unit_price * intval($value->quantity));
 
                         }
                         if(!array_key_exists($configuration->cta_purchases,$arrayEntrys)){
@@ -1015,7 +1015,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($item->income_cta,$arrayEntrys)){
 
-                            $arrayEntrys[$item->income_cta]['haber'] += floatval($value->total_value);
+                            $arrayEntrys[$item->income_cta]['debe'] += floatval($value->total_value);
 
                         }
                         if(!array_key_exists($item->income_cta,$arrayEntrys)){
@@ -1034,7 +1034,7 @@ class DocumentController extends Controller
 
                         if(array_key_exists($configuration->cta_incomes,$arrayEntrys)){
 
-                            $arrayEntrys[$configuration->cta_incomes]['haber'] += floatval($value->total_value);
+                            $arrayEntrys[$configuration->cta_incomes]['debe'] += floatval($value->total_value);
 
                         }
                         if(!array_key_exists($configuration->cta_incomes,$arrayEntrys)){
