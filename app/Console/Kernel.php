@@ -36,6 +36,9 @@ class Kernel extends ConsoleKernel
         $schedule->command('tenancy:run retentions:xml')->everyMinute()->withoutOverlapping();
         $schedule->command('tenancy:run retentions:send')->everyMinute()->withoutOverlapping();
         $schedule->command('tenancy:run retentions:see')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run dispatch:xml')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run dispatch:send')->everyMinute()->withoutOverlapping();
+        $schedule->command('tenancy:run dispatch:see')->everyMinute()->withoutOverlapping();
     }
 
     /**

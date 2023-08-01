@@ -599,7 +599,7 @@ use Modules\Sale\Models\SaleOpportunity;
                 }
 
             }
-
+            Log::info($documentoInterno->accountant);
             if($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0){
 
                 try{
@@ -996,8 +996,9 @@ use Modules\Sale\Models\SaleOpportunity;
 
             $document = Purchase::find($document_id);
             $entry = (AccountingEntries::get())->last();
+            $documentoInterno = $document->document_type2;
 
-            if($document && $document->document_type_id == '01'){
+            if($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0){
 
                 foreach($document->payments as $payment){
                     try{
