@@ -512,6 +512,7 @@
                 'date_of_shipping' => $this->date_of_shipping->format('Y-m-d'),
                 'state_type_id' => $this->state_type_id,
                 'state_type_description' => $this->state_type->description,
+                'state_type_message' => (isset($this->response_verification_msg))?json_decode($this->response_verification_msg,true):json_decode($this->response_send_cdr_pse,true),
                 'has_xml' => $this->has_xml,
                 'has_pdf' => $this->has_pdf,
                 // 'has_cdr' => $this->has_cdr,

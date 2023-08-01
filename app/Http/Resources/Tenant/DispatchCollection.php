@@ -44,6 +44,7 @@ class DispatchCollection extends ResourceCollection
 				'date_of_shipping'       => $row->date_of_shipping->format('Y-m-d'),
 				'state_type_id'          => $row->state_type_id,
 				'state_type_description' => $row->state_type->description,
+                'state_type_message'     => $row->state_type_message,
 				'has_xml'                => $row->has_xml,
 				'has_pdf'                => $row->has_pdf,
 				// 'has_cdr' => $row->has_cdr,

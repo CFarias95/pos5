@@ -14,13 +14,13 @@ class DispatchResource extends JsonResource
      */
     public function toArray($request)
     {
-        
+
         $response_message = null;
         $response_type = null;
         $code = null;
 
         if($this->soap_shipping_response){
-            if($this->soap_shipping_response->sent){
+            if(isset($this->soap_shipping_response->sent)){
 
                 $response_message = $this->soap_shipping_response->description;
                 $code =  (int) $this->soap_shipping_response->code;
@@ -34,7 +34,7 @@ class DispatchResource extends JsonResource
                 } else {
                     $response_type = 'warning';
                 }
- 
+
             }
 
         }
@@ -58,7 +58,7 @@ class DispatchResource extends JsonResource
             'response_type' => $response_type,
             'download_cdr' => $this->download_external_cdr,
             'message_text' => "Su guía {$this->number_full} ha sido generada correctamente, puede revisarla en el siguiente enlace: ".url('')."/downloads/dispatch/pdf/{$this->external_id}"."",
-            
+
             'send_to_pse' => $this->send_to_pse,
             'response_signature_pse' => optional($this->response_signature_pse)->message,
             'response_send_cdr_pse' => optional($this->response_send_cdr_pse)->message,

@@ -31,6 +31,15 @@
                         <td>{{ row.number }}</td>
                         <td>
                             <span class="badge bg-secondary text-white" :class="{'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09')}">{{row.state_type_description}}</span>
+                            <template v-if="row.state_type_message && row.state_type_id != '01' && row.state_type_id != '02' && row.state_type_id != '05' && row.state_type_id != '11'">
+                                <el-tooltip class="item"
+                                            effect="dark"
+                                            :content="row.state_type_message.mensaje.mensaje"
+                                            placement="top-start">
+                                    <i class="fas fa-exclamation-triangle fa-lg"
+                                       style="color: #e4da1d !important"></i>
+                                </el-tooltip>
+                            </template>
                         </td>
                         <td class="text-center">{{ row.date_of_shipping }}</td>
 
@@ -41,15 +50,14 @@
                         </td>
 
                         <td class="text-center">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_xml)">XML</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
+                            <button v-if="row.has_xml" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_xml)">XML</button>
+                            <button v-if="row.has_pdf" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
                         </td>
                         <td class="text-center">
                             <button v-if="row.btn_generate_document" type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                 @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
-                            <button v-if="showSentSunat(row)" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="sendSunat(row.id)">Enviar a Sunat</button>
                         </td>
                     </tr>
                 </data-table>
