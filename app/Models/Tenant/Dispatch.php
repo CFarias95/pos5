@@ -495,6 +495,18 @@
             if ($this->generate_document) $documents [] = ['description' => $this->generate_document->number_full];
             if ($this->reference_document) $documents [] = ['description' => $this->reference_document->number_full];
 
+            $edit = 'create/undefined/undefined/'.$this->id;
+
+            if(isset($this->reference_document_id)){
+                $edit = 'create/'.$this->reference_document_id.'/i/'.$this->id;
+            }
+            if(isset($this->reference_order_note_id)){
+                $edit = 'create/'.$this->reference_order_note_id.'/on/'.$this->id;
+            }
+            if(isset( $this->reference_quotation_id)){
+                $edit = 'create/'.$this->reference_quotation_id.'/q/'.$this->id;
+            }
+
 
             //
             return [
@@ -534,6 +546,7 @@
                 'documents' => $documents,
                 'order_form_description' => $this->getOrderFormDescription(),
                 'is_aproved'=>$this->is_aproved,
+                'edit' =>$edit,
             ];
 
         }

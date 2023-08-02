@@ -44,6 +44,7 @@ use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\PaymentCondition;
 use App\Models\Tenant\Catalogs\RelatedDocumentType;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 
@@ -138,29 +139,46 @@ class DispatchController extends Controller
             $document = Quotation::find($document_id);
         } elseif ($type == 'on') {
             $document = OrderNote::find($document_id);
-        } else {
+        } elseif($type == 'i') {
             $type = 'i';
             $document = Document::find($document_id);
+        } else{
+
+            $type = null;
+            $document = null;
         }
 
-        if (!$document) {
+        if (!$document && !$dispatch_id) {
             return view('tenant.dispatches.create');
         }
 
         $configuration = Configuration::query()->first();
         $items = [];
-        foreach ($document->items as $item) {
-            $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
-            $items[] = [
-                'item_id' => $item->item_id,
-                'item' => $item,
-                'quantity' => $item->quantity,
-                'description' => $item->item->description,
-                'name_product_pdf' => $name_product_pdf
-            ];
-        }
-
         $dispatch = Dispatch::find($dispatch_id);
+        Log::info("Dispatch a editar ".$dispatch->id);
+        if(isset($document)){
+            foreach ($document->items as $item) {
+                $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+                $items[] = [
+                    'item_id' => $item->item_id,
+                    'item' => $item,
+                    'quantity' => $item->quantity,
+                    'description' => $item->item->description,
+                    'name_product_pdf' => $name_product_pdf
+                ];
+            }
+        }elseif(isset($dispatch)){
+            foreach ($dispatch->items as $item) {
+                $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+                $items[] = [
+                    'item_id' => $item->item_id,
+                    'item' => $item,
+                    'quantity' => $item->quantity,
+                    'description' => $item->item->description,
+                    'name_product_pdf' => $name_product_pdf
+                ];
+            }
+        }
         return view('tenant.dispatches.form', compact('document', 'items', 'type', 'dispatch'));
     }
 
@@ -210,6 +228,7 @@ class DispatchController extends Controller
     {
 
         $configuration = Configuration::first();
+
         if ($request->series[0] == 'T') {
             /** @var Facturalo $fact */
             $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
@@ -249,7 +268,7 @@ class DispatchController extends Controller
 
         return [
             'success' => true,
-            'message' => "Se creo la guía de remisión {$document->series}-{$document->number}",
+            'message' => ($request->id)?("Se actualizo la guía de remisión {$document->series}-{$document->number}"):("Se creo la guía de remisión {$document->series}-{$document->number}"),
             'data'    => [
                 'id' => $document->id,
             ],

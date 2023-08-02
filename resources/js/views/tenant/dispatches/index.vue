@@ -58,6 +58,11 @@
                             <button v-if="row.btn_generate_document" type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                 @click.prevent="onGenerateDocument(row.id)">Generar comprobante</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickOptions(row.id)">Opciones</button>
+                            <a :href="`/dispatches/${row.edit}`"
+                                class="btn waves-effect waves-light btn-xs btn-info"
+                                v-if="row.state_type_id != '05' && row.state_type_id != '07'">
+                                Editar
+                            </a>
                         </td>
                     </tr>
                 </data-table>
@@ -142,6 +147,9 @@ export default {
                 window.open(download, '_blank');
             },
             clickPrint(external_id){
+                window.open(`/print/dispatch/${external_id}/a4`, '_blank');
+            },
+            clickEdit(url){
                 window.open(`/print/dispatch/${external_id}/a4`, '_blank');
             },
         }

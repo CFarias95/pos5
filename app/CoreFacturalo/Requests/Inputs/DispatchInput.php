@@ -21,15 +21,20 @@ class DispatchInput
 
         $company = Company::active();
         $soap_type_id = $company->soap_type_id;
-        $number = Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
+        $number = (isset($inputs['number']) && $inputs['number'] != '#')?$number:Functions::newNumber($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
 
-        Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
+        if(isset($inputs['id']) == false && $inputs['number'] == '#'){
+
+            Functions::validateUniqueDocument($soap_type_id, $document_type_id, $series, $number, Dispatch::class);
+        }
+
 
         $filename = Functions::filename($company, $document_type_id, $series, $number);
         $establishment = EstablishmentInput::set($inputs['establishment_id']);
         $customer = PersonInput::set($inputs['customer_id']);
         $inputs['type'] = 'dispatch';
         $data =  [
+            'id' => isset($inputs['id']) ? $inputs['id'] :null,
             'type' => $inputs['type'],
             'user_id' => auth()->id(),
             'external_id' => Str::uuid()->toString(),

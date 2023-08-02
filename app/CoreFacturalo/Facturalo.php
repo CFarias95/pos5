@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Log;
 use App\CoreFacturalo\WS\Services\AuthSri;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\DispatchItem;
 use App\Models\Tenant\Person;
 
 /**
@@ -201,12 +202,36 @@ class Facturalo
                 $this->document = PurchaseSettlement::find($document->id);
                 break;
             default:
-                $document = Dispatch::create($inputs);
-                foreach ($inputs['items'] as $row) {
-                    $document->items()->create($row);
+                //$document = Dispatch::create($inputs);
+                Log::info("Dispatch ID: ".$inputs['id']);
+
+                if(isset($inputs['id'])){
+                    $document = Dispatch::find($inputs['id']);
+                    //$document->update($inputs);
+
+                    foreach ($document->items as $item) {
+                        $itemD = DispatchItem::find($item->id);
+                        $itemD->delete();
+                    }
+
+                    foreach ($inputs['items'] as $row) {
+                        $document->items()->create($row);
+                    }
+
+                    //$document->save();
+                    $this->document = $document;
+
+                }else{
+                    $document = Dispatch::create($inputs);
+                    foreach ($inputs['items'] as $row) {
+                        $document->items()->create($row);
+                    }
+                    $document->save();
+                    $this->document = Dispatch::find($document->id);
+
                 }
-                $this->document = Dispatch::find($document->id);
                 break;
+
         }
         return $this;
     }

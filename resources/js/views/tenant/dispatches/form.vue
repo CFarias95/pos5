@@ -648,6 +648,7 @@ export default {
         this.initForm();
     },
     mounted() {
+
         this.$http.post(`/${this.resource}/tables`).then(response => {
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;
@@ -666,70 +667,127 @@ export default {
             this.related_document_types = response.data.related_document_types
 
         }).then(() => {
-            this.form.establishment_id = this.document.establishment_id
-            this.form.date_of_issue = this.document.date_of_issue
-            this.form.date_of_shipping = this.form.date_of_issue
-            this.form.customer_id = this.document.customer_id
-            this.form.transfer_reason_type_id = '01'
-            this.form.transport_mode_type_id = '02'
-            this.form.items = this.document.items
-            if(this.documentItems !== undefined){
-                this.form.items = this.documentItems
-            }
-            this.form.origin.country_id = this.document.establishment.country_id
+            if(this.document != null){
+                console.log("existe un documento",this.document)
 
-            if(this.configuration.set_address_by_establishment)
-            {
-                this.setOriginAddressByEstablishment()
-            }else
-            {
-                this.form.origin.location_id = [
-                    this.document.establishment.department_id,
-                    this.document.establishment.province_id,
-                    this.document.establishment.district_id
-                ]
-                this.form.origin.address = this.document.establishment.address
-            }
-
-
-            this.form.delivery.country_id = this.document.customer.country_id
-            this.form.delivery.location_id = [
-                this.document.customer.department_id,
-                this.document.customer.province_id,
-                this.document.customer.district_id
-            ]
-            this.form.delivery.address = this.document.customer.address
-
-            this.form.packages_number = _.sumBy(this.document.items, (o) => {
-                return parseFloat(o.quantity)
-            })
-
-            let total_weight = 0
-
-            this.form.items.forEach(element => {
-                if (element.attributes) {
-
-                    Object.values(element.attributes).forEach(attr => {
-                        if (attr.attribute_type_id === '5032') {
-                            total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
-                        }
-                    });
+                this.form.establishment_id = this.document.establishment_id
+                this.form.date_of_issue = this.document.date_of_issue
+                this.form.date_of_shipping = this.form.date_of_issue
+                this.form.customer_id = this.document.customer_id
+                this.form.transfer_reason_type_id = '01'
+                this.form.transport_mode_type_id = '02'
+                this.form.items = this.document.items
+                if(this.documentItems !== undefined){
+                    this.form.items = this.documentItems
                 }
-            })
+                this.form.origin.country_id = this.document.establishment.country_id
 
-            this.form.total_weight = total_weight
+                if(this.configuration.set_address_by_establishment)
+                {
+                    this.setOriginAddressByEstablishment()
+                }else
+                {
+                    this.form.origin.location_id = [
+                        this.document.establishment.department_id,
+                        this.document.establishment.province_id,
+                        this.document.establishment.district_id
+                    ]
+                    this.form.origin.address = this.document.establishment.address
+                }
 
 
-            if (this.dispatch) {
+                this.form.delivery.country_id = this.document.customer.country_id
+                this.form.delivery.location_id = [
+                    this.document.customer.department_id,
+                    this.document.customer.province_id,
+                    this.document.customer.district_id
+                ]
+                this.form.delivery.address = this.document.customer.address
+
+                this.form.packages_number = _.sumBy(this.document.items, (o) => {
+                    return parseFloat(o.quantity)
+                })
+
+                let total_weight = 0
+
+                this.form.items.forEach(element => {
+                    if (element.attributes) {
+
+                        Object.values(element.attributes).forEach(attr => {
+                            if (attr.attribute_type_id === '5032') {
+                                total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
+                            }
+                        });
+                    }
+                })
+
+                this.form.total_weight = total_weight
+            }
+
+            if (this.dispatch != null) {
+                console.log("es un dispatch",this.dispatch)
+                //datos en base a dispatch generados
+                this.form.establishment_id = this.dispatch.establishment_id
+                this.form.date_of_issue = this.dispatch.date_of_issue
+                this.form.date_of_shipping = this.dispatch.date_of_issue
+                this.form.customer_id = this.dispatch.customer_id
+                this.form.transfer_reason_type_id = this.dispatch.transfer_reason_type_id
+                this.form.transport_mode_type_id = this.dispatch.transport_mode_type_id
+                this.form.items = this.dispatch.items
+                if(this.documentItems !== undefined){
+                    this.form.items = this.documentItems
+                }
+                this.form.origin.country_id = this.dispatch.establishment.country_id
+
+                if(this.configuration.set_address_by_establishment)
+                {
+                    this.setOriginAddressByEstablishment()
+                }else
+                {
+                    this.form.origin.location_id = [
+                        this.dispatch.establishment.department_id,
+                        this.dispatch.establishment.province_id,
+                        this.dispatch.establishment.district_id
+                    ]
+                    this.form.origin.address = this.dispatch.establishment.address
+                }
+
+
+                this.form.delivery.country_id = this.dispatch.customer.country_id
+                this.form.delivery.location_id = [
+                    this.dispatch.customer.department_id,
+                    this.dispatch.customer.province_id,
+                    this.dispatch.customer.district_id
+                ]
+                this.form.delivery.address = this.dispatch.customer.address
+
+                this.form.packages_number = _.sumBy(this.dispatch.items, (o) => {
+                    return parseFloat(o.quantity)
+                })
+
+                let total_weight = 0
+
+                this.form.items.forEach(element => {
+                    if (element.attributes) {
+
+                        Object.values(element.attributes).forEach(attr => {
+                            if (attr.attribute_type_id === '5032') {
+                                total_weight += parseFloat(attr.value) * parseFloat(element.quantity)
+                            }
+                        });
+                    }
+                })
+
+                this.form.total_weight = total_weight
 
                 this.form.transfer_reason_description = this.dispatch.transfer_reason_description
                 this.form.unit_type_id = this.dispatch.unit_type_id
                 this.form.total_weight = this.dispatch.total_weight
                 this.form.packages_number = this.dispatch.packages_number
                 this.form.observations = this.dispatch.observations
-
-                this.form.origin.address = (!this.document.establishment.address || this.document.establishment.address == '-') ? this.dispatch.origin.address : this.document.establishment.address
-                this.form.delivery.address = (!this.document.customer.address || this.document.customer.address == '-') ? this.dispatch.delivery.address : this.document.customer.address
+                this.form.id = this.dispatch.id
+                this.form.origin.address = this.dispatch.origin.address
+                this.form.delivery.address =  this.dispatch.delivery.address
 
                 this.form.dispatcher = this.dispatch.dispatcher
                 this.form.driver = this.dispatch.driver
@@ -740,12 +798,10 @@ export default {
                 }
 
             }
+
         }).then(() => {
             this.changeEstablishment()
         });
-
-
-        // console.log(this.dispatch)
 
     },
     methods: {
@@ -813,6 +869,7 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
+                id:this.dispatch.id ? this.dispatch.id : null,
                 reference_document_id: this.typeDocument == 'i' ? this.document.id : null,
                 reference_quotation_id: this.typeDocument == 'q' ? this.document.id : null,
                 reference_order_note_id: this.typeDocument == 'on' ? this.document.id : null,
@@ -820,7 +877,7 @@ export default {
                 establishment_id: null,
                 document_type_id: '09',
                 series_id: null,
-                number: '#',
+                number:this.dispatch.number ? this.dispatch.number :'#',
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
                 date_of_shipping: moment().format('YYYY-MM-DD'),
@@ -854,7 +911,7 @@ export default {
                     address: null,
                 },
                 optional: {
-                    invoice_number: this.document.series + '-' + this.document.number
+                    invoice_number: (this.document)?this.document.series + '-' + this.document.number:null
                 },
                 items: [],
                 secondary_license_plates: {
@@ -954,7 +1011,7 @@ export default {
             }
 
             this.loading_submit = true;
-
+            console.log("a enviar", this.form)
             this.$http.post(`/${this.resource}`, this.form).then(response => {
                 if (response.data.success) {
 
