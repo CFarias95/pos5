@@ -23,6 +23,7 @@
                     Route::post('/', 'WarehouseController@store');
                     Route::get('initialize', 'WarehouseController@initialize');
                 });
+
                 /**
                  * extra_info_items
                  * extra_info_items/colors
@@ -172,6 +173,14 @@
                         Route::post('export', 'ReportInventoryController@export');
                     });
 
+                    Route::prefix('transactions')->group(function () {
+                        Route::get('/', 'InventoryTransactionsController@index')->name('transactions.index');
+                        Route::get('records', 'InventoryTransactionsController@records');
+                        Route::get('tables', 'InventoryTransactionsController@tables');
+                        Route::get('record/{id}', 'InventoryTransactionsController@record');
+                        Route::post('/', 'InventoryTransactionsController@store');
+                    });
+
                 });
 
                 Route::prefix('reports')->group(function () {
@@ -309,7 +318,7 @@
 
                 });
 
-                
+
                 Route::prefix('inventory-review')->group(function () {
 
                     Route::get('', 'InventoryReviewController@index')->name('tenant.inventory-review.index');
