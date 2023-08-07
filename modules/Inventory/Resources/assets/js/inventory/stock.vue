@@ -27,7 +27,18 @@
                             <el-input v-model="form.quantity_real"></el-input>
                         </div>
                     </div>
-                    
+                    <div class="col-md-8">
+                        <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
+                            <label class="control-label">Motivo ajuste</label>
+                            <el-select v-model="form.inventory_transaction_id" filterable>
+                                <el-option v-for="option in inventory_transactions" :key="option.id" :value="option.id"
+                                           :label="option.name"></el-option>
+                            </el-select>
+                            <small class="form-control-feedback" v-if="errors.inventory_transaction_id"
+                                   v-text="errors.inventory_transaction_id[0]"></small>
+                        </div>
+                    </div>
+
                     <div class="col-md-4 mt-4" v-if="form.item_id && form.warehouse_id && form.series_enabled">
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
@@ -63,6 +74,7 @@
                 errors: {},
                 form: {},
                 warehouses: [],
+                inventory_transactions:[],
             }
         },
         created() {
@@ -70,6 +82,7 @@
             this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
                     this.warehouses = response.data.warehouses
+                    this.inventory_transactions = response.data.inventory_transactions
                 })
         },
         methods: {
@@ -91,6 +104,7 @@
                     quantity_real: null,
                     lots_enabled:false,
                     series_enabled:false,
+                    inventory_transaction_id:null,
                     lots:[],
                 }
             },

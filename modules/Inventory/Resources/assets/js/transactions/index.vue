@@ -30,7 +30,7 @@
                         <td class="text-right">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                            <button hidden v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                     @click.prevent="clickRemove(row.id)">Remover</button>
                         </td>
                     </tr>
@@ -65,7 +65,7 @@
                 showDialogRemove: false,
                 showDialogOutput: false,
                 resource: 'inventory/transactions',
-                recordId: null,
+                idTransaction: null,
                 typeTransaction:null,
                 showDialogMovementReport:false,
                 showDialogStock: false,
@@ -80,11 +80,11 @@
         },
         methods: {
             clickCreate(id) {
-                this.recordId = id
+                this.idTransaction = id
                 this.showDialog = true
             },
             clickRemove(recordId) {
-                this.recordId = recordId
+                this.idTransaction = recordId
                 this.showDialogRemove = true
             },
             async onOpenModalStockGlobal() {

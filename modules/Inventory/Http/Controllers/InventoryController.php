@@ -92,7 +92,8 @@ class InventoryController extends Controller
 	{
 		return [
 			'items'      => $this->optionsItem(),
-			'warehouses' => $this->optionsWarehouse()
+			'warehouses' => $this->optionsWarehouse(),
+            'inventory_transactions' => InventoryTransaction::get(),
 		];
 	}
 
@@ -492,10 +493,12 @@ class InventoryController extends Controller
 
 			$inventory = new Inventory();
 			$inventory->type = $type;
-			$inventory->description = 'STock Real';
+			$inventory->description = 'Stock Real';
+            $inventory->inventory_transaction_id = $request->inventory_transaction_id;
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
 			$inventory->quantity = $quantity_new;
+
 			if ($quantity_real<$quantity) {
 				$inventory->inventory_transaction_id = 28;
 			}

@@ -913,7 +913,7 @@ class DocumentController extends Controller
                 $cabeceraC->prefix = 'ASC';
                 $cabeceraC->person_id = $document->customer_id;
                 $cabeceraC->external_id = Str::uuid()->toString();
-                $cabeceraC->document_id = 'F'.$document_id;
+                $cabeceraC->document_id = 'NC'.$document_id;
 
                 $cabeceraC->save();
                 $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
@@ -926,8 +926,8 @@ class DocumentController extends Controller
                 $detalle->accounting_entrie_id = $cabeceraC->id;
                 $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_clients;
                 $detalle->seat_line = 1;
-                $detalle->debe = $document->total;
-                $detalle->haber = 0;
+                $detalle->debe = 0;
+                $detalle->haber = $document->total;
                 $detalle->save();
 
                 $arrayEntrys = [];
@@ -1102,11 +1102,7 @@ class DocumentController extends Controller
                         $detalle->haber = $value['haber'];
                         $detalle->save();
                     }
-
                 }
-
-                Log::info('arreglo de items cuentas',$arrayEntrys);
-
             }catch(Exception $ex){
 
                 Log::error('Error al intentar generar el asiento contable de nota de crédito');

@@ -132,17 +132,19 @@ use Illuminate\Support\Facades\Log;
         public function deleteAllPayments($payments)
         {
 
+            Log::info('PAYMENTS '.json_encode($payments));
+
             if(count($payments) > 0 ){
 
                 foreach ($payments as $payment) {
 
-
+                    /*
                     $records2 = AccountingEntries::where('document_id','PC'.$payment['id'])->get();
                     //Log::info('PC: : '.json_encode($records2));
                     foreach($records2 as $record){
                         $record->delete();
                     }
-
+                    */
                     if($payment['document_id']){
 
                         $records = AccountingEntries::where('document_id','CF'.$payment['id'])->get();
@@ -159,7 +161,7 @@ use Illuminate\Support\Facades\Log;
                     if(isset($payment['purchase_id'])){
 
                         $records = AccountingEntries::where('document_id','PC'.$payment['id'])->get();
-                        //Log::info('CF: : '.json_encode($records));
+                        Log::info('PC: : '.json_encode($records));
                         foreach($records as $record){
                             $record->delete();
                         }

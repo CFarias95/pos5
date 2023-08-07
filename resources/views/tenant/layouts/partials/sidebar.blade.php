@@ -708,7 +708,7 @@
                                 </a>
                                 <ul class="nav nav-children">
                                     @if(in_array('inventory', $vc_module_levels))
-                                        <li class="{{ ($firstLevel === 'inventory')?'nav-active':'' }}">
+                                        <li class="{{ (($firstLevel === 'inventory') && (!$secondLevel))?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('inventory.index')}}">Movimientos</a>
                                         </li>
@@ -717,6 +717,12 @@
                                         <li class="{{ ($firstLevel === 'transfers')?'nav-active':'' }}">
                                             <a class="nav-link"
                                                href="{{route('transfers.index')}}">Traslados</a>
+                                        </li>
+                                    @endif
+                                    @if(in_array('inventory', $vc_module_levels))
+                                        <li class="{{ (($firstLevel === 'inventory') && ($secondLevel === 'transactions'))?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('transactions.index')}}">Motivos</a>
                                         </li>
                                     @endif
                                     @if(in_array('inventory_devolutions', $vc_module_levels))
@@ -1070,7 +1076,7 @@
                                             <li class="{{ ($firstLevel === 'mayor-contable')?'nav-active':'' }}">
                                                 <a class="nav-link"
                                                    href="{{route('tenant.mayor_contable.index')}}">Libro mayor contable</a>
-                                            </li>                                   
+                                            </li>
                                         </ul>
                                     </li>
                                 @endif

@@ -8,7 +8,6 @@ use App\Models\Tenant\ModelTenant;
 
 class InventoryTransaction extends ModelTenant
 {
-
     public $incrementing = false;
     public $timestamps = false;
 

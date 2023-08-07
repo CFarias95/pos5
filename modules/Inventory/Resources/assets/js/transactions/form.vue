@@ -4,17 +4,17 @@
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-8">
-                        <div class="form-group" :class="{'has-danger': errors.description}">
+                        <div class="form-group" :class="{'has-danger': errors.name}">
                             <label class="control-label">Descripcion</label>
-                            <el-input v-model="form.description"></el-input>
-                            <small class="form-control-feedback" v-if="errors.description"
-                                   v-text="errors.description[0]"></small>
+                            <el-input v-model="form.name" required ></el-input>
+                            <small class="form-control-feedback" v-if="errors.name"
+                                   v-text="errors.name[0]"></small>
                         </div>
                     </div>
                     <div class="col-md-4">
                         <div class="form-group" :class="{'has-danger': errors.type}">
                             <label class="control-label">Tipo</label>
-                            <el-select v-model="form.type" filterable>
+                            <el-select v-model="form.type" filterable required >
                                 <el-option value="input"
                                            label="input"></el-option>
                                 <el-option value="output"
@@ -27,7 +27,7 @@
                     </div>
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.cta_account}">
-                            <label class="control-label">Almacén</label>
+                            <label class="control-label">Cuenta contable</label>
                             <el-select v-model="form.cta_account" filterable >
                                 <el-option v-for="option in accounts" :key="option.id" :value="option.id"
                                            :label="option.code + ' - ' + option.description"></el-option>
@@ -115,9 +115,10 @@ export default {
         async submit() {
 
             this.loading_submit = true
-            // console.log(this.form)
-            await this.$http.post(`/${this.resource}/`, this.form)
+            //console.log(this.form)
+            await this.$http.post(`/inventory/transactions/create`, this.form)
                 .then(response => {
+                    console.log("data response",response)
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.$eventHub.$emit('reloadData')
@@ -127,16 +128,12 @@ export default {
                     }
                 })
                 .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data
-                        // console.log(error.response.data)
-                    } else {
-                        console.log(error)
-                    }
+                    console.log(error)
                 })
                 .then(() => {
                     this.loading_submit = false
                 })
+
         },
         close() {
             this.$emit('update:showDialog', false)

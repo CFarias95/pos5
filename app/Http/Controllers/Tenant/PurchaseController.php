@@ -585,8 +585,8 @@ use Modules\Sale\Models\SaleOpportunity;
             $iva = 0;
             $renta = 0;
 
+            //Log::info("retenciones: ".json_encode($ret));
             if(count($ret) > 0){
-
 
                foreach($ret as $rett){
 
@@ -782,46 +782,6 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 }
                             }
-
-                            if($iva > 0 && $configuration->cta_iva_tax){
-
-                                if(array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
-
-                                    $arrayEntrys[$configuration->cta_iva_tax]['haber'] += $iva;
-
-                                }
-                                if(!array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
-
-                                    $n += 1;
-
-                                    $arrayEntrys[$configuration->cta_iva_tax] = [
-                                        'seat_line' => $n,
-                                        'haber' => floatval($iva),
-                                        'debe' => 0,
-                                    ];
-
-                                }
-                            }
-
-                            if($renta > 0 && $configuration->cta_income_tax){
-
-                                if(array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
-
-                                    $arrayEntrys[$configuration->cta_income_tax]['haber'] += $renta;
-
-                                }
-                                if(!array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
-
-                                    $n += 1;
-
-                                    $arrayEntrys[$configuration->cta_income_tax] = [
-                                        'seat_line' => $n,
-                                        'haber' => floatval($renta),
-                                        'debe' => 0,
-                                    ];
-
-                                }
-                            }
                         }
                         //CONTABILIDAD PARA VALORES NEGATIVOS
                         if($documentoInterno->sign < 1 ){
@@ -919,46 +879,6 @@ use Modules\Sale\Models\SaleOpportunity;
 
                                 }
                             }
-
-                            if($iva > 0 && $configuration->cta_iva_tax){
-
-                                if(array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
-
-                                    $arrayEntrys[$configuration->cta_iva_tax]['debe'] += $iva;
-
-                                }
-                                if(!array_key_exists($configuration->cta_iva_tax,$arrayEntrys)){
-
-                                    $n += 1;
-
-                                    $arrayEntrys[$configuration->cta_iva_tax] = [
-                                        'seat_line' => $n,
-                                        'haber' => 0,
-                                        'debe' => floatval($iva),
-                                    ];
-
-                                }
-                            }
-
-                            if($renta > 0 && $configuration->cta_income_tax){
-
-                                if(array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
-
-                                    $arrayEntrys[$configuration->cta_income_tax]['debe'] += $renta;
-
-                                }
-                                if(!array_key_exists($configuration->cta_income_tax,$arrayEntrys)){
-
-                                    $n += 1;
-
-                                    $arrayEntrys[$configuration->cta_income_tax] = [
-                                        'seat_line' => $n,
-                                        'haber' => 0,
-                                        'debe' => floatval($renta),
-                                    ];
-
-                                }
-                            }
                         }
 
                     }
@@ -978,6 +898,29 @@ use Modules\Sale\Models\SaleOpportunity;
 
                     }
 
+                    if($iva > 0 && $configuration->cta_iva_tax){
+                        $n += 1;
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $configuration->cta_iva_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0)?0:floatval($iva);
+                        $detalle->haber = ($documentoInterno->sign > 0)?floatval($iva):0;
+                        $detalle->save();
+                    }
+
+                    if($renta > 0 && $configuration->cta_income_tax){
+                        $n += 1;
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $configuration->cta_income_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0)?0:floatval($renta);
+                        $detalle->haber = ($documentoInterno->sign > 0)?floatval($renta):0;
+                        $detalle->save();
+                    }
+
+
                 }catch(Exception $ex){
 
                     Log::error('Error al intentar generar el asiento contable');
@@ -985,7 +928,6 @@ use Modules\Sale\Models\SaleOpportunity;
                 }
 
             }else{
-
                 Log::info('tipo de documento no genera asiento contable de momento');
             }
 
@@ -1327,7 +1269,8 @@ use Modules\Sale\Models\SaleOpportunity;
 
                 $this->deleteAllPayments($doc->purchase_payments);
 
-                $asientos = AccountingEntries::where('document_id',$request['document_id'])->get();
+                $asientos = AccountingEntries::where('document_id','C'.$request['id'])->get();
+
                 foreach($asientos as $ass){
                     $ass->delete();
                 }
@@ -1347,7 +1290,7 @@ use Modules\Sale\Models\SaleOpportunity;
                     }
 
 
-                    $this->createAccountingEntryPayment($doc->id,$payment['payment']);
+                    //$this->createAccountingEntryPayment($doc->id,$payment['payment']);
                 }
 
                 $doc->fee()->delete();

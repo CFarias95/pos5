@@ -178,7 +178,7 @@
                         Route::get('records', 'InventoryTransactionsController@records');
                         Route::get('tables', 'InventoryTransactionsController@tables');
                         Route::get('record/{id}', 'InventoryTransactionsController@record');
-                        Route::post('/', 'InventoryTransactionsController@store');
+                        Route::post('create', 'InventoryTransactionsController@store');
                     });
 
                 });
