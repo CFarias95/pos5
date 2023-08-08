@@ -190,7 +190,7 @@ class ProductionController extends Controller
                     $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                     $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                     $production_supply->quantity = (float) $qty;
-                    $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
+                    $production_supply->cost_per_unit = (isset($item['cost_per_unit']))?$item['cost_per_unit']:null ;
                     $production_supply->save();
 
                     $lots_group = $item["lots_group"];
@@ -309,13 +309,13 @@ class ProductionController extends Controller
 
                     $item = Item::find($value->item_supply_id);
 
-                    $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
+                    $debeGlobal += ($value->cost_per_unit * $value->quantity);
 
                     if ($item->purchase_cta) {
 
                         if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
-                            $arrayEntrys[$item->purchase_cta]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$item->purchase_cta]['haber'] += ($value->cost_per_unit * $value->quantity);
                         }
                         if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
@@ -323,7 +323,7 @@ class ProductionController extends Controller
 
                             $arrayEntrys[$item->purchase_cta] = [
                                 'seat_line' => $n,
-                                'haber' => ($item->purchase_unit_price * intval($value->quantity)),
+                                'haber' => ($value->cost_per_unit * $value->quantity),
                                 'debe' => 0,
                             ];
                         }
@@ -333,7 +333,7 @@ class ProductionController extends Controller
 
                         if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
 
-                            $arrayEntrys[$configuration->cta_purchases]['haber'] += ($item->purchase_unit_price * intval($value->quantity));
+                            $arrayEntrys[$configuration->cta_purchases]['haber'] += ($value->cost_per_unit * $value->quantity);
                         }
                         if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
 
@@ -341,7 +341,7 @@ class ProductionController extends Controller
 
                             $arrayEntrys[$configuration->cta_purchases] = [
                                 'seat_line' => $n,
-                                'haber' => ($item->purchase_unit_price * intval($value->quantity)),
+                                'haber' => ($value->cost_per_unit * $value->quantity),
                                 'debe' => 0,
                             ];
                         }
@@ -439,14 +439,7 @@ class ProductionController extends Controller
                 $arrayEntrys = [];
                 $n = 1;
 
-                $debeGlobal = 0;
-
-                foreach ($itemSuppliers as $key => $value) {
-
-                    $item = Item::find($value->item_supply_id);
-
-                    $debeGlobal += ($item->purchase_unit_price * intval($value->quantity));
-                }
+                $debeGlobal = $document->cost_supplies;
 
                 $detalle1 = new AccountingEntryItems();
                 $detalle1->accounting_entrie_id = $cabeceraC->id;
@@ -533,8 +526,6 @@ class ProductionController extends Controller
                 try {
                     foreach ($items_supplies as $item) {
                         $sitienelote = false;
-
-
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
                         $qty = $item['quantityD'] ?? 0;
@@ -545,7 +536,7 @@ class ProductionController extends Controller
                         $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
-                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
+                        $production_supply->cost_per_unit = (isset($item['cost_per_unit']))?$item['cost_per_unit']:null ;
 
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
@@ -591,43 +582,16 @@ class ProductionController extends Controller
                     ];
                 }
             }
-            else{
+            elseif($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
                 try {
-                    foreach ($items_supplies as $item) {
-                        $sitienelote = false;
 
-                        $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
-                        $production_id = $production->id;
-                        $qty = $item['quantityD'] ?? 0;
-                        $production_supply->production_name = $production->name;
-                        $production_supply->production_id = $production_id;
-                        $production_supply->item_supply_name = $item['description'];
-                        $production_supply->item_supply_id = $item['id'];
-                        $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
-                        $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
-                        $production_supply->quantity = (float) $qty;
-                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])?$item['cost_per_unit']:null) ;
-
-                        $production_supply->save();
-
-                        $lots_group = $item["lots_group"];
-                        foreach ($lots_group as $lots) {
-                            $item_lots_groups = ItemSupplyLot::where('production_id', $production->id)->where("item_supply_id", $production_supply->item_supply_id)->where("lot_id", $lots["lot_id"])->first();
-                            $item_lots_groups->item_supply_id = $production_supply->item_supply_id;
-                            $item_lots_groups->item_supply_name = $item['description'];
-                            $item_lots_groups->lot_code = ($lots["code"])?$lots["code"]:null;
-                            //$item_lots_groups->lot_id = (isset($lots["lot_id"]))?$lots["lot_id"]:null;
-                            $item_lots_groups->production_name = $production->name;
-                            $item_lots_groups->production_id = $production_id;
-                            $item_lots_groups->quantity = (isset($lots["compromise_quantity"]))?$lots["compromise_quantity"]:0;
-                            $item_lots_groups->expiration_date = $lots["date_of_due"];
-                            $item_lots_groups->save();
-                        }
-
-                        $costoT += ($qty * $production_supply->cost_per_unit);
-                        $production->cost_supplies = $costoT;
-                        $production->save();
+                    $totalSupply = ProductionSupply::where('production_id', $production->id)->get();
+                    foreach($totalSupply as $supp){
+                        $costoT += ($supp->quantity * $supp->cost_per_unit);
                     }
+
+                    $production->cost_supplies = $costoT;
+                    $production->save();
 
                 } catch (Exception $ex2) {
                     //$production->delete();
@@ -643,6 +607,7 @@ class ProductionController extends Controller
                 //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                 $inventory_transaction_item = InventoryTransaction::findOrFail(101);
                 $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
+                $this->createAccountingEntry($production->id);
             }
             if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
                 //cuando pasa a terminado se aumenta el inventario del producto terminado
@@ -651,6 +616,7 @@ class ProductionController extends Controller
 
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item);
                 $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
+                $this->createAccountingEntry($production->id);
 
             }
             if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
@@ -660,14 +626,13 @@ class ProductionController extends Controller
                 $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                 $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
             }
-            $this->createAccountingEntry($production->id);
+
             return [
                 'success' => true,
                 'message' => 'Registro actualizado correctamente'
             ];
         });
 
-        $this->createAccountingEntry($id);
         return $result;
     }
 
@@ -894,7 +859,7 @@ class ProductionController extends Controller
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
                 $transformed_supplies = [];
-                Log::info("INFO ".json_encode($supplies));
+                Log::info("optionsItemProduction ".json_encode($supplies));
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
 
@@ -908,7 +873,7 @@ class ProductionController extends Controller
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
-                        'cost_per_unit' => $value["cost"],
+                        'cost_per_unit' => $value["individual_item"]["purchase_unit_price"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],

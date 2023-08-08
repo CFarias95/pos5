@@ -1126,7 +1126,6 @@ class Item extends ModelTenant
         $itemSupply = $this->supplies;
         if(!empty($itemSupply)){
             $itemSupply = $itemSupply->transform(function (ItemSupply $row ){
-
                 $data = $row-> getCollectionData();
                 return $data;
             });

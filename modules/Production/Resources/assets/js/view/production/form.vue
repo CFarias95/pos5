@@ -631,7 +631,7 @@ export default {
         async getTable() {
             await this.$http.get(`/${this.resource}/tables`)
                 .then(response => {
-                    //console.log(`/${this.resource}/tables`,response)
+
                     let data = response.data
                     this.warehouses = data.warehouses
                     this.items = data.items
@@ -678,7 +678,7 @@ export default {
             this.form.supplies = this.supplies;
 
             // Si no existe un ID, estás creando un nuevo registro
-            //console.log("submit production",this.form.records_id == )
+            console.log("submit production",this.form)
 
             if (!this.form.id) {
 
@@ -755,7 +755,7 @@ export default {
             });
 
             this.supplies = item.supplies
-            console.log('itemssupplui', item.supplies)
+            console.log('itemssupplui', this.supplies)
         },
 
         changeQuantityForm(){

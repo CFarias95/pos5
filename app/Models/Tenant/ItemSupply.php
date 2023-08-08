@@ -159,10 +159,10 @@
         }
         public function getCollectionData(){
 
-            $itemSupp = Item::find($this->individual_item_id);
+            //$itemSupp = Item::find($this->individual_item_id);
             $data = $this->toArray();
             $data['item'] = $this->item;
-            $data['cost'] = $itemSupp->purchase_unit_price;
+            //$data['cost'] = $this->individual_item->purchase_unit_price;
             $data['modificable'] = ($this->modifiable)?$this->modifiable:0;
             $data['individual_item'] = $this->individual_item;
             $data['individual_item']['lots_group'] = $this->individual_item->lots_group;
