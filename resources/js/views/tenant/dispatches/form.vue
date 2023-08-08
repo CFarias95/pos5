@@ -668,7 +668,7 @@ export default {
 
         }).then(() => {
             if(this.document != null){
-                console.log("existe un documento",this.document)
+                //console.log("existe un documento",this.document)
 
                 this.form.establishment_id = this.document.establishment_id
                 this.form.date_of_issue = this.document.date_of_issue
@@ -869,7 +869,7 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
-                id:this.dispatch.id ? this.dispatch.id : null,
+                id:this.dispatch? this.dispatch.id : null,
                 reference_document_id: this.typeDocument == 'i' ? this.document.id : null,
                 reference_quotation_id: this.typeDocument == 'q' ? this.document.id : null,
                 reference_order_note_id: this.typeDocument == 'on' ? this.document.id : null,
@@ -877,7 +877,7 @@ export default {
                 establishment_id: null,
                 document_type_id: '09',
                 series_id: null,
-                number:this.dispatch.number ? this.dispatch.number :'#',
+                number:this.dispatch ? this.dispatch.number :'#',
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
                 date_of_shipping: moment().format('YYYY-MM-DD'),
@@ -939,68 +939,6 @@ export default {
             })
             this.form.series_id = (this.series.length > 0) ? this.series[0].id : null
         },
-
-//            changeEstablishment() {
-//                this.series = _.filter(this.seriesAll, {
-//                    'establishment_id': this.form.establishment_id,
-//                    'document_type_id': this.form.document_type_id
-//                });
-//                this.form.series_id = this.series.id
-////                this.code = this.form.establishment_id;
-////                this.establishment_id = this.form.establishment_id;
-//            },
-//            filterProvince(origin = true) {
-//                if (origin) {
-//                    this.provincesOrigin = _.filter(this.provincesAll, {
-//                        'department_id': this.form.origin.department_id
-//                    });
-//
-//                    this.$set(this.form.origin, 'province_id', null);
-//                    this.$set(this.form.origin, 'location_id', null);
-//
-//                    return;
-//                }
-//
-//                this.provincesDelivery = _.filter(this.provincesAll, {
-//                    'department_id': this.form.delivery.department_id
-//                });
-//
-//                this.$set(this.form.delivery, 'province_id', null);
-//                this.$set(this.form.delivery, 'location_id', null);
-//            },
-//            filterDistrict(origin = true) {
-//                if (origin) {
-//                    this.districtsOrigin = _.filter(this.districtsAll, {
-//                        'province_id': this.form.origin.province_id
-//                    });
-//
-//                    this.$set(this.form.origin, 'location_id', null);
-//
-//                    return;
-//                }
-//
-//                this.districtsDelivery = _.filter(this.districtsAll, {
-//                    'province_id': this.form.delivery.province_id
-//                });
-//
-//                this.$set(this.form.delivery, 'location_id', null);
-//            },
-//            addItem(form) {
-//                let exist = this.form.items.find((item) => item.internal_id == form.item.internal_id);
-//
-//                if (exist) {
-//                    exist.quantity += form.quantity;
-//
-//                    return;
-//                }
-//
-//                this.form.items.push({
-//                    'description': form.item.description,
-//                    'internal_id': form.item.internal_id,
-//                    'quantity': form.quantity,
-//                    'id': form.item.id
-//                });
-//            },
         clickRemoveItem(index) {
             this.form.items.splice(index, 1);
         },

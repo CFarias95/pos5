@@ -135,6 +135,7 @@ class DispatchController extends Controller
 
     public function create($document_id = null, $type = null, $dispatch_id = null)
     {
+
         if ($type == 'q') {
             $document = Quotation::find($document_id);
         } elseif ($type == 'on') {
@@ -142,8 +143,12 @@ class DispatchController extends Controller
         } elseif($type == 'i') {
             $type = 'i';
             $document = Document::find($document_id);
-        } else{
+        } elseif(isset($document_id) && !isset( $type)){
 
+            $type = 'i';
+            $document = Document::find($document_id);
+
+        }else{
             $type = null;
             $document = null;
         }
@@ -155,7 +160,6 @@ class DispatchController extends Controller
         $configuration = Configuration::query()->first();
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
-        Log::info("Dispatch a editar ".$dispatch->id);
         if(isset($document)){
             foreach ($document->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
