@@ -197,11 +197,12 @@ class AdvanceController extends Controller
             if($document->is_supplier > 0){
 
                 $cuentaPerson = ($document->payment->countable_acount_payment)?$document->payment->countable_acount_payment:null;
-                $cuentaAnticipo = ($document->methosType->countable_acount)?$document->methosType->countable_acount:$configuration->cta_suppliers_advances;
+                $cuentaAnticipo = $configuration->cta_suppliers_advances;
 
             }else{
+
                 $cuentaPerson = ($document->payment->countable_acount)?$document->payment->countable_acount:null;
-                $cuentaAnticipo = ($document->methosType->countable_acount)?$document->methosType->countable_acount:$configuration->cta_client_advances;
+                $cuentaAnticipo = $configuration->cta_client_advances;
             }
 
             $detalle = new AccountingEntryItems();
