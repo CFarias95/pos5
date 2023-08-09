@@ -502,16 +502,16 @@ class ProductionController extends Controller
                     $detalle1->accounting_entrie_id = $cabeceraC->id;
                     $detalle1->account_movement_id = ($itemP->purchase_cta) ? $itemP->purchase_cta : $configuration->cta_purchases;
                     $detalle1->seat_line = 1;
-                    $detalle1->debe = $contoUnitarioProd;
-                    $detalle1->haber = 0;
+                    $detalle1->haber = $contoUnitarioProd;
+                    $detalle1->debe = 0;
                     $detalle1->save();
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id = ($motivoSalida)?$motivoSalida->cta_account:null;
                     $detalle->seat_line = 2;
-                    $detalle->debe = 0;
-                    $detalle->haber = $contoUnitarioProd;
+                    $detalle->haber = 0;
+                    $detalle->debe = $contoUnitarioProd;
                     $detalle->save();
 
                 }
