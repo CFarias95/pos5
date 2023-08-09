@@ -510,8 +510,8 @@ class ProductionController extends Controller
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id = ($motivoSalida)?$motivoSalida->cta_account:null;
                     $detalle->seat_line = 2;
-                    $detalle->haber = 0;
-                    $detalle->debe = $contoUnitarioProd;
+                    $detalle->debe = 0;
+                    $detalle->haber = $contoUnitarioProd;
                     $detalle->save();
 
                 }
