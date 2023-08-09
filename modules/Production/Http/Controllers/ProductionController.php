@@ -458,7 +458,63 @@ class ProductionController extends Controller
                 $detalle->save();
 
 
-                //Log::info('arreglo de items cuentas',$arrayEntrys);
+                if(isset($document->imperfect) && $document->imperfect > 0){
+
+                    $contoUnitarioProd = ($debeGlobal / $document->quantity) * $document->imperfect;
+
+                    $comment = 'Salida defectuosos Orden de Producción ' . $document->name;
+
+                    $total_debe = 0;
+                    $total_haber = 0;
+
+                    $cabeceraC = new AccountingEntries();
+                    $cabeceraC->user_id = $document->user_id;
+                    $cabeceraC->seat = ($seat+1);
+                    $cabeceraC->seat_general = ($seat_general+1);
+                    $cabeceraC->seat_date = $document->date_end;
+                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->comment = $comment;
+                    $cabeceraC->serie = null;
+                    $cabeceraC->number = ($seat+1);
+                    $cabeceraC->total_debe = $contoUnitarioProd;
+                    $cabeceraC->total_haber = $contoUnitarioProd;
+                    $cabeceraC->revised1 = 0;
+                    $cabeceraC->user_revised1 = 0;
+                    $cabeceraC->revised2 = 0;
+                    $cabeceraC->user_revised2 = 0;
+                    $cabeceraC->currency_type_id = $configuration->currency_type_id;
+                    $cabeceraC->doctype = 10;
+                    $cabeceraC->is_client = ($document->customer) ? true : false;
+                    $cabeceraC->establishment_id = null;
+                    $cabeceraC->establishment = '';
+                    $cabeceraC->prefix = 'ASC';
+                    $cabeceraC->person_id = null;
+                    $cabeceraC->external_id = Str::uuid()->toString();
+                    $cabeceraC->document_id = 'OPS' . $document_id;
+
+                    $cabeceraC->save();
+                    $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
+                    $cabeceraC->save();
+
+                    $motivoSalida = InventoryTransaction::findOrFail('105');
+
+                    $detalle1 = new AccountingEntryItems();
+                    $detalle1->accounting_entrie_id = $cabeceraC->id;
+                    $detalle1->account_movement_id = ($itemP->item_process_cta) ? $itemP->item_process_cta : $configuration->cta_item_process;
+                    $detalle1->seat_line = 1;
+                    $detalle1->debe = $contoUnitarioProd;
+                    $detalle1->haber = 0;
+                    $detalle1->save();
+
+                    $detalle = new AccountingEntryItems();
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = ($motivoSalida)?$motivoSalida->cta_account:null;
+                    $detalle->seat_line = 2;
+                    $detalle->debe = 0;
+                    $detalle->haber = $contoUnitarioProd;
+                    $detalle->save();
+
+                }
 
             } catch (Exception $ex) {
 
@@ -641,7 +697,6 @@ class ProductionController extends Controller
         if(isset($production->imperfect) && $production->imperfect > 0){
             try{
 
-                Log::info("production imperfect: ".json_encode($production));
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
@@ -651,6 +706,8 @@ class ProductionController extends Controller
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
                 $inventory_it->save();
+
+
 
             }catch(Exception $ex){
 

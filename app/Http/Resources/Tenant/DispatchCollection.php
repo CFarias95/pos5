@@ -47,7 +47,6 @@ class DispatchCollection extends ResourceCollection
                 'state_type_message'     => $row->state_type_message,
 				'has_xml'                => $row->has_xml,
 				'has_pdf'                => $row->has_pdf,
-				// 'has_cdr' => $row->has_cdr,
 				'has_cdr'               => $has_cdr,
 				'download_external_xml' => $row->download_external_xml,
 				'download_external_pdf' => $row->download_external_pdf,

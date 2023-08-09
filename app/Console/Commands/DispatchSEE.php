@@ -45,11 +45,11 @@ class DispatchSEE extends Command
             $documents = null;
             if(Configuration::firstOrFail()->send_auto){
                 $documents = Dispatch::query()
-                ->whereIn('state_type_id', ['07'])
+                ->whereIn('state_type_id', ['07','30'])
                 ->get();
             }else{
                 $documents = Dispatch::query()
-                ->whereIn('state_type_id', ['07'])
+                ->whereIn('state_type_id', ['07','30'])
                 ->where('is_aproved',1)
                 ->get();
             }

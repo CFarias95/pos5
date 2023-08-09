@@ -25,8 +25,12 @@ use App\Models\Tenant\Company;
 use Modules\Finance\Traits\FinanceTrait;
 use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Advance;
+use App\Models\Tenant\Configuration;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Http\Resources\AdvanceCollection;
 use Modules\Finance\Http\Resources\AdvanceResource;
@@ -114,9 +118,13 @@ class AdvanceController extends Controller
         $advance->fill($data);
         $advance->save();
 
+
         $msg = '';
         $msg = ($id) ? 'Anticipo editado con éxito' : 'Anticipo registrado con éxito';
 
+        if(!$id){
+            $this->createAccountingEntry($advance->id);
+        }
         return [
             'success' => true,
             'message' => $msg,
@@ -124,7 +132,100 @@ class AdvanceController extends Controller
         ];
     }
 
+    //CREA El ASIENTO CONTABLE DE ANTICIPOS
+    public function createAccountingEntry($id){
+        try {
 
+            $idauth = auth()->user()->id;
+            $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+            $ultimo = AccountingEntries::latest('id')->first();
+            $configuration = Configuration::first();
+
+            $document = Advance::find($id);
+
+            if (empty($lista)) {
+                $seat = 1;
+            } else {
+
+                $seat = $lista->seat + 1;
+            }
+
+            if (empty($ultimo)) {
+                $seat_general = 1;
+            } else {
+                $seat_general = $ultimo->seat_general + 1;
+            }
+
+            $comment = 'Anticipo  ' . $document->person->name;
+
+            $cabeceraC = new AccountingEntries();
+            $cabeceraC->user_id = $idauth;
+            $cabeceraC->seat = $seat;
+            $cabeceraC->seat_general = $seat_general;
+            $cabeceraC->seat_date = $document->created_at;
+            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->comment = $comment;
+            $cabeceraC->serie = null;
+            $cabeceraC->number = $seat;
+            $cabeceraC->total_debe = $document->valor;
+            $cabeceraC->total_haber = $document->valor;
+            $cabeceraC->revised1 = 0;
+            $cabeceraC->user_revised1 = 0;
+            $cabeceraC->revised2 = 0;
+            $cabeceraC->user_revised2 = 0;
+            $cabeceraC->currency_type_id = $configuration->currency_type_id;
+            $cabeceraC->doctype = 10;
+            $cabeceraC->is_client = ($document->is_supplier) ? false : true;
+            $cabeceraC->establishment_id = null;
+            $cabeceraC->establishment = '';
+            $cabeceraC->prefix = 'ASC';
+            $cabeceraC->person_id = null;
+            $cabeceraC->external_id = Str::uuid()->toString();
+            $cabeceraC->document_id = 'AD' . $document->id;
+
+            $cabeceraC->save();
+            $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
+            $cabeceraC->save();
+
+            $arrayEntrys = [];
+            $n = 1;
+
+            $debeGlobal = 0;
+
+            $cuentaPerson = null;
+            $cuentaAnticipo = null;
+            if($document->is_supplier > 0){
+
+                $cuentaPerson = ($document->person->account)?$document->person->account:$configuration->cta_suppliers;
+                $cuentaAnticipo = ($document->methosType->countable_acount)?$document->methosType->countable_acount:$configuration->cta_suppliers_advances;
+            }else{
+                $cuentaPerson = ($document->person->account)?$document->person->account:$configuration->cta_clients;
+                $cuentaAnticipo = ($document->methosType->countable_acount)?$document->methosType->countable_acount:$configuration->cta_client_advances;
+            }
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $cuentaAnticipo;
+            $detalle->seat_line = 1;
+            $detalle->debe = $document->valor;
+            $detalle->haber = 0;
+            $detalle->save();
+
+            $detalle2 = new AccountingEntryItems();
+            $detalle2->accounting_entrie_id = $cabeceraC->id;
+            $detalle2->account_movement_id = $cuentaPerson;
+            $detalle2->seat_line = 2;
+            $detalle2->debe = 0;
+            $detalle2->haber = $document->valor;
+            $detalle2->save();
+
+
+        } catch (Exception $ex) {
+
+            Log::error('Error al intentar generar el asiento contable');
+            Log::error($ex->getMessage());
+        }
+    }
     /**
      *
      * Imprimir ingreso

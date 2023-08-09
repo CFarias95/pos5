@@ -489,8 +489,6 @@ export default {
             isCreating: false,
             title: "Nuevo producto fabricado",
             item: {
-
-
             },
             supplies: {},
             form: {

@@ -52,7 +52,7 @@
                         <td class="text-center">
                             <button v-if="row.has_xml" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_xml)">XML</button>
                             <button v-if="row.has_pdf" type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickDownload(row.download_external_cdr)" v-if="row.has_cdr">CDR</button>
+
                         </td>
                         <td class="text-center">
                             <button v-if="row.btn_generate_document" type="button" class="btn waves-effect waves-light btn-xs btn-info"

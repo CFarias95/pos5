@@ -189,6 +189,7 @@ class DispatchesSriController extends Controller
         $request = new AuthSri();
         $authSRI = $request->send($url,$clave);
         $dispatch = Dispatch::find($id);
+        $has_pdf= false;
 
         try{
 
@@ -226,6 +227,8 @@ class DispatchesSriController extends Controller
 
                     $this->createPdf($dispatch, $tipodoc, 'a4');
 
+                    $has_pdf= true;
+
                     $this->sendEmail2($id);
 
                 }elseif($estado == 'NO AUTORIZADO'){
@@ -243,8 +246,7 @@ class DispatchesSriController extends Controller
                     $estateId = self::FIRMADO;
                     $fechaAuth = null;
 
-                }
-                else{
+                }else{
 
                     if($authSRI['RespuestaAutorizacionComprobante']['numeroComprobantes'] > 0){
 
@@ -273,10 +275,10 @@ class DispatchesSriController extends Controller
                     'dateTimeAutorization' => $fechaAuth,
                     'response_verification_msg' => $responseAuth,
                     'verificated' => 1,
+                    'has_pdf'=>$has_pdf
                 ]);
 
             }else{
-
                 $dispatch->update([
                     'state_type_id' => self::FIRMADO,
                     'response_verification' => 'NO SE PUDO VERIFICAR EL DOCUMENTO',
@@ -331,13 +333,14 @@ class DispatchesSriController extends Controller
         $format_pdf = ($format != null) ? $format : $format_pdf;
         $this->type = ($type != null) ? $type : $this->type;
 
-        $base_pdf_template = ($type != null && $type == 'retention') ? 'default': Establishment::find($this->document->establishment_id)->template_pdf;
+        $base_pdf_template = ($type != null && $type == 'retention') ? 'default': Establishment::find($document->establishment_id)->template_pdf;
         $pdf_margin_top = 15;
         $pdf_margin_right = 15;
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
         $detalles = DispatchItem::where('dispatch_id',$document->id)->get();
+
         $establecimiento = Establishment::find($document->establishment_id);
 
         $document->detalles = $detalles;
