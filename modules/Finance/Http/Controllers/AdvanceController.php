@@ -199,27 +199,45 @@ class AdvanceController extends Controller
                 $cuentaPerson = ($document->payment->countable_acount_payment)?$document->payment->countable_acount_payment:null;
                 $cuentaAnticipo = $configuration->cta_suppliers_advances;
 
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $cuentaAnticipo;
+                $detalle->seat_line = 1;
+                $detalle->debe = $document->valor;
+                $detalle->haber = 0;
+                $detalle->save();
+
+                $detalle2 = new AccountingEntryItems();
+                $detalle2->accounting_entrie_id = $cabeceraC->id;
+                $detalle2->account_movement_id = $cuentaPerson;
+                $detalle2->seat_line = 2;
+                $detalle2->debe = 0;
+                $detalle2->haber = $document->valor;
+                $detalle2->save();
+
             }else{
 
                 $cuentaPerson = ($document->payment->countable_acount)?$document->payment->countable_acount:null;
                 $cuentaAnticipo = $configuration->cta_client_advances;
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $cuentaAnticipo;
+                $detalle->seat_line = 1;
+                $detalle->haber = $document->valor;
+                $detalle->debe = 0;
+                $detalle->save();
+
+                $detalle2 = new AccountingEntryItems();
+                $detalle2->accounting_entrie_id = $cabeceraC->id;
+                $detalle2->account_movement_id = $cuentaPerson;
+                $detalle2->seat_line = 2;
+                $detalle2->haber = 0;
+                $detalle2->debe = $document->valor;
+                $detalle2->save();
             }
 
-            $detalle = new AccountingEntryItems();
-            $detalle->accounting_entrie_id = $cabeceraC->id;
-            $detalle->account_movement_id = $cuentaAnticipo;
-            $detalle->seat_line = 1;
-            $detalle->debe = $document->valor;
-            $detalle->haber = 0;
-            $detalle->save();
 
-            $detalle2 = new AccountingEntryItems();
-            $detalle2->accounting_entrie_id = $cabeceraC->id;
-            $detalle2->account_movement_id = $cuentaPerson;
-            $detalle2->seat_line = 2;
-            $detalle2->debe = 0;
-            $detalle2->haber = $document->valor;
-            $detalle2->save();
 
 
         } catch (Exception $ex) {
