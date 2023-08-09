@@ -443,7 +443,7 @@ class ProductionController extends Controller
 
                 $detalle1 = new AccountingEntryItems();
                 $detalle1->accounting_entrie_id = $cabeceraC->id;
-                $detalle1->account_movement_id = ($itemP->item_finish_cta) ? $itemP->item_finish_cta : $configuration->cta_item_finish;
+                $detalle1->account_movement_id = ($itemP->purchase_cta) ? $itemP->purchase_cta : $configuration->cta_purchases;
                 $detalle1->seat_line = 1;
                 $detalle1->debe = $debeGlobal;
                 $detalle1->haber = 0;

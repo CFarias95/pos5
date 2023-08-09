@@ -8,7 +8,7 @@ use Illuminate\Database\Eloquent\Model;
 class Advance extends ModelTenant
 {
     protected $table = 'advances';
-    protected $with = ['person','methosType'];
+    protected $with = ['person','methosType','payment'];
     protected $fillable = [
         'id',
         'idMethodType',
@@ -28,5 +28,9 @@ class Advance extends ModelTenant
     public function methosType(){
 
         return $this->belongsTo(PaymentMethodType::class,'idMethodType');
+    }
+    public function payment(){
+
+        return $this->belongsTo(PaymentMethodType::class,'id_payment');
     }
 }
