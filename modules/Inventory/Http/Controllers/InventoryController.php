@@ -285,6 +285,9 @@ class InventoryController extends Controller
             $configuration = Configuration::first();
 
             $valor = ($inventory->item->purchase_unit_price * $inventory->quantity);
+            if($valor < 0){
+                $valor = ($valor * -1);
+            }
 
             if (empty($lista)) {
                 $seat = 1;
@@ -299,7 +302,7 @@ class InventoryController extends Controller
                 $seat_general = $ultimo->seat_general + 1;
             }
 
-            $comment = ($transaction->type == 'input')?'Ingreso de producto'.$inventory->item->description:'Salida de producto'.$inventory->item->description;
+            $comment = ($transaction->type == 'input')?'Ingreso de producto '.$inventory->item->description:'Salida de producto '.$inventory->item->description;
 
             $cabeceraC = new AccountingEntries();
             $cabeceraC->user_id = $idauth;
@@ -363,6 +366,7 @@ class InventoryController extends Controller
         }
 
     }
+
 	public function moveMultiples(Request $request)
 	{
         $request->validate([
@@ -598,9 +602,14 @@ class InventoryController extends Controller
 
 			return  [
 				'success' => true,
-				'message' => 'Cantidad de stock actualizado con éxito'
+				'message' => 'Cantidad de stock actualizado con éxito',
+                'id'=>$inventory->id
 			];
 		});
+
+        $inventory = Inventory::find($result['id']);
+        $transaction = InventoryTransaction::find($inventory->inventory_transaction_id);
+        $this->createAccountingEntryTransactions($inventory,$transaction);
 
 		return $result;
 	}
