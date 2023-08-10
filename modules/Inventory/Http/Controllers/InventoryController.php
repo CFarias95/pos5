@@ -19,7 +19,12 @@ use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use App\Imports\StockImport;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
+use Illuminate\Support\Str;
 
 class InventoryController extends Controller
 {
@@ -222,13 +227,6 @@ class InventoryController extends Controller
 
 			if ($type == 'input') {
 				foreach ($lots as $lot) {
-					/*$inventory->lots()->create([
-						'date' => $lot['date'],
-						'series' => $lot['series'],
-						'item_id' => $item_id,
-						'warehouse_id' => $warehouse_id,
-						'has_sale' => false
-					]);*/
 
 					$inventory->lots()->create([
 						'date'         => $lot['date'],
@@ -266,6 +264,8 @@ class InventoryController extends Controller
 				}
 			}
 
+            $this->createAccountingEntryTransactions($inventory,$inventory_transaction);
+
 			return  [
 				'success' => true,
 				'message' => ($type == 'input') ? 'Ingreso registrado correctamente' : 'Salida registrada correctamente'
@@ -274,7 +274,95 @@ class InventoryController extends Controller
 
 		return $result;
 	}
+    //CREAMOS EL ASIENTO CONTABLE DE UN INGRESO O SALIDA POR AJUSTE
+    public function createAccountingEntryTransactions($inventory,$transaction){
 
+        try {
+
+            $idauth = auth()->user()->id;
+            $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+            $ultimo = AccountingEntries::latest('id')->first();
+            $configuration = Configuration::first();
+
+            $valor = ($inventory->item->purchase_unit_price * $inventory->quantity);
+
+            if (empty($lista)) {
+                $seat = 1;
+            } else {
+
+                $seat = $lista->seat + 1;
+            }
+
+            if (empty($ultimo)) {
+                $seat_general = 1;
+            } else {
+                $seat_general = $ultimo->seat_general + 1;
+            }
+
+            $comment = ($transaction->type == 'input')?'Ingreso de producto'.$inventory->item->description:'Salida de producto'.$inventory->item->description;
+
+            $cabeceraC = new AccountingEntries();
+            $cabeceraC->user_id = $idauth;
+            $cabeceraC->seat = $seat;
+            $cabeceraC->seat_general = $seat_general;
+            $cabeceraC->seat_date = $inventory->date_of_issue;
+            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->comment = $comment;
+            $cabeceraC->serie = null;
+            $cabeceraC->number = $seat;
+            $cabeceraC->total_debe = $valor;
+            $cabeceraC->total_haber = $valor;
+            $cabeceraC->revised1 = 0;
+            $cabeceraC->user_revised1 = 0;
+            $cabeceraC->revised2 = 0;
+            $cabeceraC->user_revised2 = 0;
+            $cabeceraC->currency_type_id = $configuration->currency_type_id;
+            $cabeceraC->doctype = 10;
+            $cabeceraC->is_client = false;
+            $cabeceraC->establishment_id = null;
+            $cabeceraC->establishment = $inventory->warehouse;
+            $cabeceraC->prefix = 'ASC';
+            $cabeceraC->person_id = null;
+            $cabeceraC->external_id = Str::uuid()->toString();
+            $cabeceraC->document_id = 'AS' . $inventory->id;
+
+            $cabeceraC->save();
+            $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
+            $cabeceraC->save();
+
+            $arrayEntrys = [];
+            $n = 1;
+
+            $debeGlobal = 0;
+
+            $cuentaPerson = null;
+            $cuentaAnticipo = null;
+            $cuentaItem = ($inventory->item->purchase_cta)?$inventory->item->purchase_cta:$configuration->cta_purchases;
+            $cuentaMotivo = $transaction->cta_account;
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = ($transaction->type == 'input')?$cuentaItem:$cuentaMotivo;
+            $detalle->seat_line = 1;
+            $detalle->debe = $valor;
+            $detalle->haber =0;
+            $detalle->save();
+
+            $detalle2 = new AccountingEntryItems();
+            $detalle2->accounting_entrie_id = $cabeceraC->id;
+            $detalle2->account_movement_id = ($transaction->type == 'input')?$cuentaMotivo:$cuentaItem;
+            $detalle2->seat_line = 2;
+            $detalle2->debe = 0;
+            $detalle2->haber = $valor;
+            $detalle2->save();
+
+        } catch (Exception $ex) {
+
+            Log::error('Error al intentar generar el asiento contable');
+            Log::error($ex->getMessage());
+        }
+
+    }
 	public function moveMultiples(Request $request)
 	{
         $request->validate([
