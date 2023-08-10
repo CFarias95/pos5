@@ -267,7 +267,7 @@ class ProductionController extends Controller
 
                 $total_debe = 0;
                 $total_haber = 0;
-
+                
                 $cabeceraC = new AccountingEntries();
                 $cabeceraC->user_id = $document->user_id;
                 $cabeceraC->seat = $seat;
@@ -347,8 +347,6 @@ class ProductionController extends Controller
                         }
                     }
                 }
-
-
 
                 $detalle = new AccountingEntryItems();
                 $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -706,8 +704,6 @@ class ProductionController extends Controller
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
                 $inventory_it->save();
-
-
 
             }catch(Exception $ex){
 

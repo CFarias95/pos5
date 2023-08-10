@@ -462,26 +462,28 @@
         <div class="container text-left" style=" background: #eaeaea; padding-top: 5px; padding-bottom: 5px; padding-left: 15px; padding-right: 15px;">
             <table class="full-width">
                 <tbody>
+
                     <tr>
                         <td style="text-transform: uppercase;" >
                             <strong>Comprobante de venta: </strong>
                         </td>
                         <td style="text-transform: uppercase;">
-                            @if($destinos->cat_document_types)
-                            {{ $destinos->cat_document_types->description }}
-                            @else
-
+                            @if($document->reference_document)
+                            FACTURA ELECTRÓNICA
                             @endif
-
                         </td>
                         <td style="text-transform: uppercase;">
-                            {{ $destinos->numDocSustento }}
+                            @if($document->reference_document)
+                            {{sub_str($document->reference_document->clave_SRI,22,15)}}
+                            @endif
                         </td>
                         <td style="text-transform: uppercase;">
                             <strong>Fecha emision: </strong>
                         </td>
                         <td style="text-transform: uppercase;">
-                            {{ $destinos->fechaEmisionDocSustento }}
+                            @if($document->reference_document)
+                            {{$document->reference_document->date_of_issue}}
+                            @endif
                         </td>
                     </tr>
                     <tr>
@@ -489,9 +491,12 @@
                             <strong>Número autorización </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3" >
-                            {{ $destinos->numAutDocSustento }}
+                            @if($document->reference_document)
+                            {{$document->reference_document->clave_SRI}}
+                            @endif
                         </td>
                     </tr>
+                    @endif
                     <tr>
                         <td style="text-transform: uppercase;" colspan="2">
                             <strong>Motivo traslado: </strong>
@@ -505,7 +510,7 @@
                             <strong>Destino(punto de llegada): </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3" >
-                            {{$destinos->direccion}}
+                            {{$document->delivery->address}}
                         </td>
                     </tr>
                     <tr>
@@ -513,7 +518,7 @@
                             <strong>Identificación(Destinatario): </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3">
-                            {{$destinos->identificacion}}
+                            {{$document->customer->number}}
                         </td>
                     </tr>
                     <tr>
@@ -521,7 +526,7 @@
                             <strong>Razón Social/Nombres y Apellidos: </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3">
-                            {{$destinos->razon_social}}
+                            {{$document->customer->name}}
                         </td>
                     </tr>
                     <tr>
@@ -529,15 +534,7 @@
                             <strong>Documento aduanero: </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3">
-                            {{$destinos->docAduaneroUnico}}
-                        </td>
-                    </tr>
-                    <tr>
-                        <td style="text-transform: uppercase;" colspan="2">
-                            <strong>Código establecimiento destino: </strong>
-                        </td>
-                        <td style="text-transform: uppercase;" colspan="3">
-                            {{$destinos->codEstablecimiento}}
+                            {{$document->container_number}}
                         </td>
                     </tr>
                     <tr>
@@ -545,7 +542,7 @@
                             <strong>Ruta: </strong>
                         </td>
                         <td style="text-transform: uppercase;" colspan="3">
-                            {{$destinos->ruta}}
+                            {{$document->optional}}
                         </td>
                     </tr>
                     <tr>
@@ -560,19 +557,19 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                @foreach($destinos->destinatarios_detalle as $detalle)
+                                @foreach($document->items as $detalle)
                                     <tr style="background: #f7f7f5;">
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->cantidad}}
+                                            {{$detalle->quantity}}
                                         </td>
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->item}}
+                                            {{$detalle->item->description}}
                                         </td>
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->codItem}}
+                                            {{$detalle->item_id}}
                                         </td>
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->codAdicional}}
+                                            {{$detalle->item->internal_id}}
                                         </td>
                                     </tr>
                                 @endforeach
