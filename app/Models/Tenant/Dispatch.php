@@ -137,6 +137,7 @@
             'dateTimeAutorization',
             'response_verification_msg',
             'verificated',
+            'barCode',
         ];
 
         protected $casts = [

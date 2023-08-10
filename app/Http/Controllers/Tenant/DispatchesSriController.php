@@ -339,11 +339,6 @@ class DispatchesSriController extends Controller
         $pdf_margin_bottom = 15;
         $pdf_margin_left = 15;
 
-        $detalles = DispatchItem::where('dispatch_id',$document->id)->get();
-
-        $establecimiento = Establishment::find($document->establishment_id);
-
-        $document->detalles = $detalles;
         $this->email = $document->customer->email;
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $document, $format_pdf);

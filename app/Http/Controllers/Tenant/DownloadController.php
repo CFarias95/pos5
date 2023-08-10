@@ -87,7 +87,7 @@ class DownloadController extends Controller
         }
         $type = 'invoice';
         if ($document_type == 'dispatch') {
-            $type = 'dispatch';
+            $type = 'dispatchEC';
         }
         if($document->document_type_id === '07') {
             $type = 'credit';

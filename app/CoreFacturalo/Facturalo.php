@@ -207,7 +207,9 @@ class Facturalo
 
                 if(isset($inputs['id'])){
                     $document = Dispatch::find($inputs['id']);
-                    //$document->update($inputs);
+                    $inputs['response_verification_msg']=null;
+                    $inputs['response_send_cdr_pse']=null;
+                    $document->fill($inputs);
 
                     foreach ($document->items as $item) {
                         $itemD = DispatchItem::find($item->id);
@@ -218,7 +220,7 @@ class Facturalo
                         $document->items()->create($row);
                     }
 
-                    //$document->save();
+                    $document->save();
                     $this->document = $document;
 
                 }else{
