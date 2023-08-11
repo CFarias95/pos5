@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantALterToDispatches extends Migration
+class Altertable2ToProductionSupplies extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,10 @@ class TenantALterToDispatches extends Migration
      */
     public function up()
     {
-        Schema::table('dispatches', function (Blueprint $table) {
-            $table->longText('barCode')->nullable()->change();
+        Schema::table('production_supplies', function (Blueprint $table) {
+
+            $table->decimal('cost_per_unit', 15, 8)->nullable();
+
         });
     }
 
@@ -25,8 +27,9 @@ class TenantALterToDispatches extends Migration
      */
     public function down()
     {
-        Schema::table('dispatches', function (Blueprint $table) {
-            $table->dropColumn('barCode');
+        Schema::table('production_supplies', function (Blueprint $table) {
+            //
+            $table->dropColumn('cost_per_unit');
         });
     }
 }

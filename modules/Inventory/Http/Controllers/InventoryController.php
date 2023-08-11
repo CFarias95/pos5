@@ -612,6 +612,7 @@ class InventoryController extends Controller
         $this->createAccountingEntryTransactions($inventory,$transaction);
 
 		return $result;
+
 	}
 
 	public function stockMultiples(Request $request)
