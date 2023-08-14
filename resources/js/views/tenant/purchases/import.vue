@@ -88,17 +88,20 @@ export default {
             'loadAllItems'
         ]),
         handleChange(file) {
+
+            console.log("File: ",file)
             const self = this;
             const reader = new FileReader();
             reader.onload = e => self.parseXml(e.target.result);
             reader.readAsText(file.raw);
+
         },
         MensajeError(campo) {
             this.$message.error(`${campo} No se ha encontrado en el xml, no se puede continuar`);
             console.error(`${campo} no se encuentra en el xml`)
         },
         RetornoIndexIndefinido(array, index) {
-            if (!(array[index] !== undefined && array[index]["_text"] !== undefined)) {
+            if (!(array[index] !== undefined)) {
                 this.MensajeError(index)
                 return false;
             }
@@ -113,49 +116,45 @@ export default {
             this.loading_submit = false;
         },
         async setdataForm() {
-            let Invoice = this.formXmlJson.Invoice;
+
+            let convert = require("xml-js");
+
+            let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"],{compact: true, spaces: 4});
+            console.log("setdataForm",Invoice)
+
             let evalu = '';
             let ID = [];
+
             if (Invoice === undefined) {
                 this.$message.error('No se encuentra datos de XML');
                 console.error('No se encuentra datos de XML')
                 return false;
             }
 
-            evalu = 'cbc:DueDate';
+            evalu = 'factura';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_due = Invoice["cbc:DueDate"]["_text"];
-            evalu = 'cbc:IssueDate';
+            this.form.date_of_due = Invoice.factura.infoFactura.fechaEmision["_text"];
+            //evalu = 'cbc:IssueDate';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_issue = Invoice[evalu]["_text"];
-            evalu = 'cbc:IssueTime';
+            this.form.date_of_issue = Invoice.factura.infoFactura.fechaEmision["_text"]
+            //evalu = 'cbc:IssueTime';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.time_of_issue = Invoice[evalu]["_text"];
-            evalu = 'cbc:ID';
+            //this.form.time_of_issue = Invoice[evalu]["_text"];
+            //evalu = 'cbc:ID';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            ID = Invoice[evalu]["_text"].split("-");
-            this.form.series = ID[0];
-            this.form.number = ID[1];
+            //ID = Invoice[evalu]["_text"].split("-");
+            //this.form.series = ID[0];
+            //this.form.number = ID[1];
 
-            evalu = '["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"]["_text"]';
-            if (
-                Invoice["cac:AccountingCustomerParty"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"]["_text"] !== undefined
-            ) {
-                this.form.supplier_ruc =
-                    Invoice["cac:AccountingCustomerParty"]
-                        ["cac:Party"]
-                        ["cac:PartyIdentification"]
-                        ["cbc:ID"]
-                        ["_text"];
+            evalu = '[factura][infoTributaria][ruc]';
+            if (Invoice.factura.infoTributaria.ruc) {
+                this.form.supplier_ruc = Invoice.factura.infoTributaria.ruc["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
             }
 
+            /*
             evalu = 'cac:InvoiceLine';
             if (Invoice["cac:InvoiceLine"] !== undefined) {
                 await this.setFormItems(Invoice["cac:InvoiceLine"]);
@@ -164,35 +163,27 @@ export default {
                 return false;
             }
 
+            */
 
-            evalu = 'cac:InvoiceLine';
+            evalu = '[factura][infoFactura][importeTotal]';
             if (
-                Invoice["cac:LegalMonetaryTotal"] !== undefined
+                Invoice.factura.infoFactura.importeTotal !== undefined
             ) {
-                evalu = '["cac:LegalMonetaryTotal"]["cbc:PayableAmount"]["_text"]';
-                if (
-                    Invoice["cac:LegalMonetaryTotal"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:PayableAmount"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:PayableAmount"]["_text"] !== undefined
-                ) {
-                    this.form.total =
-                        Invoice
-                            ["cac:LegalMonetaryTotal"]
-                            ["cbc:PayableAmount"]
-                            ["_text"];
+                evalu = '[factura][infoFactura][pagos]';
+                if (Invoice.factura.infoFactura.pagos) {
+                    this.form.total = Invoice.factura.infoFactura.importeTotal["_text"];
                 } else {
                     this.MensajeError(evalu)
                     return false;
                 }
                 /****/
                 /****/
-                evalu = '["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"]';
+                evalu = '[factura][infoFactura][totalSinImpuestos]';
                 if (
-                    Invoice["cac:LegalMonetaryTotal"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"] !== undefined
+                    Invoice.factura.infoFactura.totalSinImpuestos !== undefined && Invoice.factura.infoFactura.importeTotal !== undefined
                 ) {
-                    this.form.total_taxed = Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"]
+                    let impuestos = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]) - (parseFloat(Invoice.factura.infoFactura.totalSinImpuestos["_text"]))
+                    this.form.total_taxes = impuestos
 
                 } else {
                     this.MensajeError(evalu)
@@ -206,17 +197,9 @@ export default {
             }
 
 
-            evalu = '["cac:TaxTotal"]["cbc:TaxAmount"]["_text"]';
-            if (
-                Invoice["cac:TaxTotal"] !== undefined &&
-                Invoice["cac:TaxTotal"]["cbc:TaxAmount"] !== undefined &&
-                Invoice["cac:TaxTotal"]["cbc:TaxAmount"]["_text"] !== undefined
-
-            ) {
-                this.form.total_taxes = Invoice
-                    ["cac:TaxTotal"]
-                    ["cbc:TaxAmount"]
-                    ["_text"];
+            evalu = '[factura][infoFactura][totalSinImpuestos]';
+            if (Invoice.factura.infoFactura.totalSinImpuestos !== undefined) {
+                this.form.total_taxed = Invoice.factura.infoFactura.totalSinImpuestos["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
