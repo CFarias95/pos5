@@ -1319,7 +1319,7 @@ export default {
                 this.row.indexi = this.recordItem.indexi
             }
             this.initForm()
-            //console.log('row: ',this.row);
+            console.log('row: ',this.row);
             this.$emit('add', this.row)
         },
         changeWarehouse(row) {

@@ -1853,10 +1853,19 @@ use Modules\Sale\Models\SaleOpportunity;
                     'state_type_id' => '01'
                 ];
 
+                $numero = Purchase::where('establishment_id',$model['establishment_id'])->where('series',$model['series'])->count();
+
+
                 $data = array_merge($model, $values);
 
+                $data['number'] = $numero + 1;
+
+                Log::info("importPurchase: ".json_encode($data));
+
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+
                     $doc = Purchase::create($data);
+
                     foreach ($data['items'] as $row) {
                         $doc->items()->create($row);
                     }
@@ -1880,6 +1889,8 @@ use Modules\Sale\Models\SaleOpportunity;
 
 
             } catch (Exception $e) {
+                Log::error("Error al generar Purchase Import: ".$e->getMessage());
+
                 return [
                     'success' => false,
                     'message' => $e->getMessage()

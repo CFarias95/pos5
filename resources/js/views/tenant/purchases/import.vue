@@ -25,6 +25,27 @@
                             <small v-if="errors.file" class="form-control-feedback" v-text="errors.file[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-12 mt-12" v-if="has_file && form.items && form.items.length > 0" style="align-content: center;">
+                        <div style="text-align: center;"><h3>Lista de productos</h3></div>
+                        <div>
+                            <table bordered style="align-content: center; text-align: center;">
+                                <tr slot="heading">
+                                    <th>Original</th>
+                                    <th>Cantidad</th>
+                                    <th>Interno</th>
+                                </tr>
+                                <tr v-for="(item,index) in form.items" style="text-align: center;">
+                                    <td style="text-align: left;">{{ item.desciption }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td style="align-content: center;">
+                                        <el-select  required v-model="item.item_id" @change="changeItem(event,index)" filterable>
+                                            <el-option v-for="(prod,index) in items" :key="index" :value="prod.id" :label="prod.name"></el-option>
+                                        </el-select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -37,6 +58,7 @@
 </template>
 
 <script>
+import { event } from "jquery";
 import {calculateRowItem} from "../../../helpers/functions";
 import {mapActions, mapState} from "vuex";
 
@@ -58,6 +80,7 @@ export default {
             discount_types: [],
             charge_types: [],
             attribute_types: [],
+            purchaseItems:[],
         };
     },
     created() {
@@ -154,16 +177,36 @@ export default {
                 return false;
             }
 
-            /*
-            evalu = 'cac:InvoiceLine';
-            if (Invoice["cac:InvoiceLine"] !== undefined) {
-                await this.setFormItems(Invoice["cac:InvoiceLine"]);
+            evalu = '[factura][infoTributaria][claveAcceso]';
+            if (Invoice.factura.infoTributaria.claveAcceso) {
+                this.form.auth_number = Invoice.factura.infoTributaria.claveAcceso["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
             }
 
-            */
+            evalu = '[factura][infoTributaria][claveAcceso]';
+            if (Invoice.factura.infoTributaria.secuencial) {
+                this.form.sequential_number = Invoice.factura.infoTributaria.estab["_text"]+"-"+Invoice.factura.infoTributaria.ptoEmi["_text"]+"-"+Invoice.factura.infoTributaria.secuencial["_text"];
+            } else {
+                this.MensajeError(evalu)
+                return false;
+            }
+
+ /*
+            evalu = '[factura][detalles][detalle]';
+
+            if (Invoice.factura.detalles.detalle !== undefined) {
+
+                await this.setFormItems(Invoice.factura.detalles.detalle);
+
+            } else {
+
+                this.MensajeError(evalu)
+                return false;
+            }
+
+*/
 
             evalu = '[factura][infoFactura][importeTotal]';
             if (
@@ -171,7 +214,7 @@ export default {
             ) {
                 evalu = '[factura][infoFactura][pagos]';
                 if (Invoice.factura.infoFactura.pagos) {
-                    this.form.total = Invoice.factura.infoFactura.importeTotal["_text"];
+                    this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
                 } else {
                     this.MensajeError(evalu)
                     return false;
@@ -209,162 +252,66 @@ export default {
             this.has_file = true;
 
         },
-        findItem( search){
+        findItem(search){
+
             if (search === '') return undefined;
-            let item = this.all_items.find(obj => obj.item_code == search || obj.model == search||obj.internal_id == search)
+            let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
 
             console.error(item)
             console.error(this.all_items)
+
             if (item !== undefined) return item
 
             return item
         },
-        async setFormItems(items) {
+        setFormItems(items) {
             const self = this;
-            console.error(items)
-            if (Array.isArray(items)) {
-                items.forEach(element => {
-                    let code = '';
-                    let unit_price = 0
-                    let affectation_igv_code = '';
+            //console.info(items)
+            self.purchaseItems = [];
 
+            items.forEach(element => {
+                //console.log(element['descripcion']["_text"])
+                let formItem = self.initFormItem();
+                formItem.item_id = null;
+                formItem.desciption = element['descripcion']["_text"];
+                formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                formItem.quantity = parseFloat(element['cantidad']["_text"]);
 
-                    if(
-                        element["cac:Item"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"] !== undefined
-                    ){
-                        code = element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"]
-                    }
+                self.form.items.push(formItem);
+            });
+        },
+        async changeItem(id, index){
 
-                    if(code == null &&
-                        items["cac:Item"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]  !== undefined
-                    ){
-                        code =  items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]
-                    }
-                    if(
-                        element["cac:PricingReference"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"] !== undefined
+            let item = this.findItem(id)
+            let itemActual = self.form.items[index]
 
-                    ){
-                        unit_price = element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"];
-                    }
+            if(item !== undefined) {
 
-                    if(
-                        element["cac:TaxTotal"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"] !== undefined
+                let formItem = self.initFormItem();
+                formItem.item = item;
+                formItem.unit_price = formItem.item.purchase_unit_price;
+                formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
+                formItem.item_unit_types = formItem.item.item_unit_types;
+                formItem.item.unit_price = itemActual.unit_price;
+                formItem.item.quantity = itemActual.quantity;
+                formItem.item.presentation = {};
+                //formItem.affectation_igv_type = affectation_igv_code;
+                let row = calculateRowItem(formItem, this.config.currency_type_id, 1);
+                row.warehouse_id = 1;
+                row.warehouse_description = "Almacén Oficina Principal";
 
-                    ){
-                        affectation_igv_code = element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"]
-                    }
-
-                    // let item =  _.find(this.all_items, {item_code: code});
-                    let item = this.findItem(code)
-                    if(item !== undefined) {
-                        let formItem = self.initFormItem();
-                        formItem.item = item
-                        formItem.unit_price = formItem.item.purchase_unit_price;
-                        formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
-                        formItem.item_unit_types = formItem.item.item_unit_types;
-                        formItem.item.unit_price = unit_price;
-                        formItem.item.presentation = {};
-                        formItem.affectation_igv_type = affectation_igv_code;
-                        let row = calculateRowItem(formItem, "PEN", 3.393);
-                        row.warehouse_id = 1;
-                        row.warehouse_description = "Almacén Oficina Principal";
-                        self.form.items.push(row);
-                    }
-                    console.error(item)
-                });
-            } else {
-                let code = null;
-                let unit_price = 0
-                let affectation_igv_code = '';
-                if(
-                    items["cac:Item"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"] !== undefined
-                ){
-                    code = items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"]
-                }
-
-                if(code == null &&
-                    items["cac:Item"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]  !== undefined
-                ){
-                    code =  items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]
-                }
-                if(
-                    items["cac:PricingReference"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"] !== undefined
-
-                ){
-                    unit_price = items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"];
-                }
-
-                if(
-                    items["cac:TaxTotal"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"] !== undefined
-
-                ){
-                    affectation_igv_code = items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"]
-                }
-
-
-
-                //let item =  _.find(this.all_items, {item_code: code});
-                let item = this.findItem(code)
-                if(item !== undefined) {
-                        let formItem = self.initFormItem();
-                        formItem.item = item;
-                        formItem.unit_price = formItem.item.purchase_unit_price;
-                        formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
-                        formItem.item_unit_types = formItem.item.item_unit_types;
-                        formItem.item.unit_price = unit_price;
-                        formItem.item.presentation = {};
-                        formItem.affectation_igv_type = affectation_igv_code;
-                        let row = calculateRowItem(formItem, "PEN", 3.393);
-                        row.warehouse_id = 1;
-                        row.warehouse_description = "Almacén Oficina Principal";
-                        self.form.items.push(row);
-                    }
-                console.error(item)
+                self.form.items[index]=row;
             }
         },
-
         initFormItem() {
             return {
                 item_id: null,
-                warehouse_id: 1,
-                warehouse_description: null,
-                item: {},
-                affectation_igv_type_id: null,
-                affectation_igv_type: {},
-                has_isc: false,
-                system_isc_type_id: null,
-                percentage_isc: 0,
-                suggested_price: 0,
-                quantity: 1,
-                unit_price: 0,
-                charges: [],
-                discounts: [],
-                attributes: [],
-                item_unit_types: []
+                quantity:0,
+                descuento:0,
+                unit_price:0,
+                unt_price_without_taxes:0,
+                iva:null,
+                taxes:0
             };
         },
 
@@ -373,15 +320,18 @@ export default {
             this.form = {
                 establishment_id: 1,
                 document_type_id: "01",
-                series: null,
-                number: null,
-                date_of_issue: null,
-                time_of_issue: null,
+                document_type_intern: '01',
+                series: 'CC',
+                number: 0,
+                sequential_number: '',
+                auth_number: '',
+                date_of_issue: moment().format('YYYY-MM-DD'),
+                time_of_issue: moment().format('HH:mm:ss'),
                 supplier_id: null,
-                payment_method_type_id: "01",
-                currency_type_id: "PEN",
+                payment_method_type_id: '01',
+                currency_type_id: this.config.currency_type_id,
                 purchase_order: null,
-                exchange_rate_sale: 3.393,
+                exchange_rate_sale: 1,
                 total_prepayment: 0,
                 total_charge: 0,
                 total_discount: 0,
@@ -397,16 +347,25 @@ export default {
                 total_other_taxes: 0,
                 total_taxes: 0,
                 total_value: 0,
+                total_ret: 0,
                 total: 0,
                 perception_date: null,
                 perception_number: null,
                 total_perception: 0,
-                date_of_due: null,
+                date_of_due: moment().format('YYYY-MM-DD'),
                 items: [],
                 charges: [],
                 discounts: [],
                 attributes: [],
-                guides: []
+                guides: [],
+                payments: [],
+                customer_id: null,
+                has_client: false,
+                has_payment: false,
+                payment_condition_id: '02',
+                fee: [],
+                ret: [],
+                is_aproved: false,
             };
 
             //this.initInputPerson();
