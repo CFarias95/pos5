@@ -1,25 +1,12 @@
 import { isArray } from "lodash";
 
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null ) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv = null, currency_type_id_def = null ) {
     //console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
     let currency_type_id_old = row_old.item.currency_type_id
-    let unit_price = parseFloat(row_old.item.unit_price)
+    let unit_price = parseFloat(row_old.unit_price)
     let unit_value_est = parseFloat(row_old.item.sale_unit_price)
-    // } else {
-    //     unit_price = parseFloat(row_old.item.unit_price) * 1.18
-    // }
     let warehouse_id = row_old.warehouse_id
-
-    //console.log(row_old)
-
-    //if (currency_type_id_old === 'PEN' && currency_type_id_old !== currency_type_id_new) {
-    //    unit_price = unit_price / exchange_rate_sale;
-    //}
-
-    //if (currency_type_id_new === 'PEN' && currency_type_id_old !== currency_type_id_new) {
-    //    unit_price = unit_price * exchange_rate_sale;
-    //}
 
     if (currency_type_id_old === currency_type_id_def && currency_type_id_old !== currency_type_id_new) {
         unit_price = unit_price / exchange_rate_sale;
@@ -43,7 +30,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    //console.log(row_old)
+    console.log("OLD ROW: ",row_old)
 
     let row = {
         item_id: row_old.item.id,
@@ -106,21 +93,44 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     //END SERVICIO
 
-    let percentage_igv = pigv * 100
+    let percentage_igv = pigv;
+    if(pigv == null){
 
-    if(row.affectation_igv_type_id === '11'){
-        percentage_igv = 8
-    }else if (row.affectation_igv_type_id === '12'){
-        percentage_igv = 14
-    }else if(row.affectation_igv_type_id === '10'){
-        percentage_igv = 12
-    }
-    else if(row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20' ){
-        percentage_igv = 0
+        if(row.affectation_igv_type_id === '11'){
+            percentage_igv = 8
+        }else if (row.affectation_igv_type_id === '12'){
+            percentage_igv = 14
+        }else if(row.affectation_igv_type_id === '10'){
+            percentage_igv = 12
+        }
+        else if(row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20' ){
+            percentage_igv = 0
+        }else{
+            percentage_igv = 18
+        }
+
     }else{
-        percentage_igv = 18
-    }
 
+        if(percentage_igv == 8){
+
+            row.affectation_igv_type_id = '11';
+        }
+
+        if(percentage_igv = 14){
+            row.affectation_igv_type_id = '12';
+        }
+
+        if(percentage_igv = 12){
+
+            row.affectation_igv_type_id = '10';
+        }
+
+        if(percentage_igv = 0){
+
+            row.affectation_igv_type_id = '30';
+        }
+
+    }
     row.percentage_igv = percentage_igv;
 
     let unit_value = row.unit_price

@@ -38,8 +38,8 @@
                                     <td style="text-align: left;">{{ item.desciption }}</td>
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
-                                        <el-select  required v-model="item.item_id" @change="changeItem(event,index)" filterable>
-                                            <el-option v-for="(prod,index) in items" :key="index" :value="prod.id" :label="prod.name"></el-option>
+                                        <el-select  required v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable>
+                                            <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.name"></el-option>
                                         </el-select>
                                     </td>
                                 </tr>
@@ -156,10 +156,11 @@ export default {
 
             evalu = 'factura';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_due = Invoice.factura.infoFactura.fechaEmision["_text"];
+            this.form.date_of_due = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
             //evalu = 'cbc:IssueDate';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_issue = Invoice.factura.infoFactura.fechaEmision["_text"]
+            this.form.date_of_issue = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
+            this.form.time_of_issue = "00:00:00";
             //evalu = 'cbc:IssueTime';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
             //this.form.time_of_issue = Invoice[evalu]["_text"];
@@ -193,7 +194,7 @@ export default {
                 return false;
             }
 
- /*
+
             evalu = '[factura][detalles][detalle]';
 
             if (Invoice.factura.detalles.detalle !== undefined) {
@@ -206,7 +207,7 @@ export default {
                 return false;
             }
 
-*/
+
 
             evalu = '[factura][infoFactura][importeTotal]';
             if (
@@ -215,6 +216,19 @@ export default {
                 evalu = '[factura][infoFactura][pagos]';
                 if (Invoice.factura.infoFactura.pagos) {
                     this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
+                    //PAYMENTS
+                    this.form.payments = [
+                        {
+                            id: null,
+                            purchase_id:null,
+                            date_of_payment:new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca'),
+                            payment_method_type_id:"01",
+                            reference:null,
+                            payment_destination_id:"cash",
+                            payment:this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
+
+                        }
+                    ];
                 } else {
                     this.MensajeError(evalu)
                     return false;
@@ -257,8 +271,8 @@ export default {
             if (search === '') return undefined;
             let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
 
-            console.error(item)
-            console.error(this.all_items)
+            //console.error(item)
+            //console.error(this.all_items)
 
             if (item !== undefined) return item
 
@@ -267,7 +281,7 @@ export default {
         setFormItems(items) {
             const self = this;
             //console.info(items)
-            self.purchaseItems = [];
+            self.form.items = [];
 
             items.forEach(element => {
                 //console.log(element['descripcion']["_text"])
@@ -276,42 +290,54 @@ export default {
                 formItem.desciption = element['descripcion']["_text"];
                 formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
                 formItem.quantity = parseFloat(element['cantidad']["_text"]);
-
+                formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
+                //formItem.total_discount = parseFloat(element['descuento']['_text']);
                 self.form.items.push(formItem);
             });
         },
         async changeItem(id, index){
 
-            let item = this.findItem(id)
-            let itemActual = self.form.items[index]
+            console.log("CHANGEITEM "+id+"-"+index)
+            let formItem = this.findItem(id)
+            let itemActual = this.form.items[index]
+            if(formItem !== undefined) {
 
-            if(item !== undefined) {
-
-                let formItem = self.initFormItem();
-                formItem.item = item;
-                formItem.unit_price = formItem.item.purchase_unit_price;
-                formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
-                formItem.item_unit_types = formItem.item.item_unit_types;
-                formItem.item.unit_price = itemActual.unit_price;
-                formItem.item.quantity = itemActual.quantity;
-                formItem.item.presentation = {};
-                //formItem.affectation_igv_type = affectation_igv_code;
-                let row = calculateRowItem(formItem, this.config.currency_type_id, 1);
+                itemActual.item = formItem;
+                //itemActual.unit_price = formItem.item.purchase_unit_price;
+                //itemActual.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
+                itemActual.item_unit_types = formItem.item_unit_types;
+                //formItem.item.unit_price = itemActual.unit_price;
+                //formItem.item.quantity = itemActual.quantity;
+                itemActual.item.presentation = {};
+                //formItem.affectation_igv_type_id = formItem.affectation_igv_type_id;
+                //formItem.affectation_igv_type = formItem.affectation_igv_type;
+                let row = calculateRowItem(itemActual, this.config.currency_type_id,itemActual.iva);
                 row.warehouse_id = 1;
                 row.warehouse_description = "Almacén Oficina Principal";
 
-                self.form.items[index]=row;
+                //console.warn("row",row)
+
+                this.form.items[index] = row;
             }
         },
         initFormItem() {
             return {
                 item_id: null,
-                quantity:0,
-                descuento:0,
-                unit_price:0,
-                unt_price_without_taxes:0,
-                iva:null,
-                taxes:0
+                warehouse_id: 1,
+                warehouse_description: null,
+                item: {},
+                affectation_igv_type_id: null,
+                affectation_igv_type: {},
+                has_isc: false,
+                system_isc_type_id: null,
+                percentage_isc: 0,
+                suggested_price: 0,
+                quantity: 1,
+                unit_price: 0,
+                charges: [],
+                discounts: [],
+                attributes: [],
+                item_unit_types: []
             };
         },
 
@@ -320,8 +346,9 @@ export default {
             this.form = {
                 establishment_id: 1,
                 document_type_id: "01",
-                series: null,
-                number: null,
+                document_type_intern:"01",
+                series: "cc",
+                number: 0,
                 date_of_issue: null,
                 time_of_issue: null,
                 supplier_id: null,
@@ -353,7 +380,13 @@ export default {
                 charges: [],
                 discounts: [],
                 attributes: [],
-                guides: []
+                guides: [],
+                is_aproved:false,
+                codSustento:"01",
+                customer_id:null,
+                has_client:false,
+                has_payment:true,
+                payment_condition_id:"01",
             };
 
             //this.initInputPerson();

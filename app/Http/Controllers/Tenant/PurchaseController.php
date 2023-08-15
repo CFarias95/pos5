@@ -378,7 +378,8 @@ use Modules\Sale\Models\SaleOpportunity;
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
 
-            //Log::info(json_encode($data));
+            Log::info("CREATE PURCHASE".json_encode($data));
+
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();
@@ -1864,28 +1865,44 @@ use Modules\Sale\Models\SaleOpportunity;
 
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
 
-                    $doc = Purchase::create($data);
+                    try{
+                        $doc = new Purchase();
+                        $doc->fill($data);
+                        $doc->save();
 
-                    foreach ($data['items'] as $row) {
-                        $doc->items()->create($row);
+                        foreach ($data['items'] as $row) {
+                            $doc->items()->create($row);
+                        }
+
+                        $doc->purchase_payments()->create([
+                            'date_of_payment' => $data['date_of_issue'],
+                            'payment_method_type_id' => $data['payment_method_type_id'],
+                            'payment' => $data['total'],
+                        ]);
+
+                        return $doc;
+
+                    }catch(Exception $ex){
+                        Log::error($ex->getMessage());
+                        return false;
                     }
-
-                    $doc->purchase_payments()->create([
-                        'date_of_payment' => $data['date_of_issue'],
-                        'payment_method_type_id' => $data['payment_method_type_id'],
-                        'payment' => $data['total'],
-                    ]);
-
-                    return $doc;
                 });
 
-                return [
-                    'success' => true,
-                    'message' => 'Xml cargado correctamente.',
-                    'data' => [
-                        'id' => $purchase->id,
-                    ],
-                ];
+                if($purchase){
+                    return [
+                        'success' => true,
+                        'message' => 'Xml cargado correctamente.',
+                        'data' => [
+                            'id' => $purchase->id,
+                        ],
+                    ];
+                }else{
+                    return [
+                        'success' => false,
+                        'message' => 'Xml No cargado correctamente.',
+                    ];
+                }
+
 
 
             } catch (Exception $e) {
