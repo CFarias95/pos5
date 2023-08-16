@@ -1863,6 +1863,12 @@ use Modules\Sale\Models\SaleOpportunity;
 
                 Log::info("importPurchase: ".json_encode($data));
 
+                foreach($data['items'] as $item){
+
+                    $data['total_igv'] += $item['total_igv'];
+
+                }
+
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
 
                     try{

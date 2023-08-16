@@ -1,10 +1,10 @@
 import { isArray } from "lodash";
 
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv = null, currency_type_id_def = null ) {
-    //console.log("porcentage ICG: "+pigv);
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null ) {
+    console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
     let currency_type_id_old = row_old.item.currency_type_id
-    let unit_price = parseFloat(row_old.unit_price)
+    let unit_price = parseFloat(row_old.unit_price )
     let unit_value_est = parseFloat(row_old.item.sale_unit_price)
     let warehouse_id = row_old.warehouse_id
 
@@ -30,7 +30,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    console.log("OLD ROW: ",row_old)
+    console.log("OLD ROW: ",row_old);
 
     let row = {
         item_id: row_old.item.id,
@@ -42,7 +42,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,
         total_base_igv: 0,
-        percentage_igv: pigv * 100,
+        percentage_igv: pigv,
         total_igv: 0,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
         // system_isc_type_id: null,
@@ -89,54 +89,66 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         data_item_lot_group: getDataItemLotGroup(row_old)
     };
 
+    let percentage_igv_a = pigv;
 
+    //console.log("percentage_igv: "+ percentage_igv_a );
 
-    //END SERVICIO
-
-    let percentage_igv = pigv;
     if(pigv == null){
 
         if(row.affectation_igv_type_id === '11'){
-            percentage_igv = 8
+
+            row.percentage_igv = 8;
+
         }else if (row.affectation_igv_type_id === '12'){
-            percentage_igv = 14
+
+            row.percentage_igv = 14;
+
         }else if(row.affectation_igv_type_id === '10'){
-            percentage_igv = 12
+
+            row.percentage_igv = 12;
         }
         else if(row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20' ){
-            percentage_igv = 0
+
+            row.percentage_igv = 0;
+
         }else{
-            percentage_igv = 18
+
+            row.percentage_igv = 18;
         }
 
     }else{
 
-        if(percentage_igv == 8){
+        if(percentage_igv_a === 8){
 
             row.affectation_igv_type_id = '11';
         }
 
-        if(percentage_igv = 14){
+        if(percentage_igv_a === 14){
+
             row.affectation_igv_type_id = '12';
         }
 
-        if(percentage_igv = 12){
+        if(percentage_igv_a === 12){
 
             row.affectation_igv_type_id = '10';
         }
 
-        if(percentage_igv = 0){
+        if(percentage_igv_a === 0){
 
             row.affectation_igv_type_id = '30';
         }
 
     }
-    row.percentage_igv = percentage_igv;
+
+    //row.percentage_igv = percentage_igv_a;
+
+    //console.log("Affectation_igv_type_id: "+ row.affectation_igv_type_id);
+    //console.log("percentage_igv 2: "+ row.percentage_igv );
 
     let unit_value = row.unit_price
 
     if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-        unit_value = row.unit_price / (1 + percentage_igv / 100)
+        unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
     }
 
     // row.unit_value = _.round(unit_value, 4)
@@ -217,7 +229,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
             } else {
 
-                if (discount.discount_type.base) {
+                if (discount.discount_type && discount.discount_type.base) {
 
                     discount.percentage = parseFloat(discount.percentage)
                     discount.factor = discount.percentage / 100
@@ -290,12 +302,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
 
-    // console.log(total_base_igv, total_value)
+    console.log(total_base_igv , (row.percentage_igv / 100))
+    console.log( row.affectation_igv_type_id)
 
     let total_igv = 0
 
     if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12' ) {
-        total_igv = total_base_igv * percentage_igv / 100
+        total_igv = (total_base_igv * (row.percentage_igv / 100))
     }
     if (row.affectation_igv_type_id === '20') { //Exonerated
         total_igv = 0
@@ -304,6 +317,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         total_igv = 0
     }
 
+    console.log("TOTAL IGV: ", total_igv)
 
     let total_plastic_bag_taxes = 0
 
@@ -344,7 +358,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         total_base_igv += row.total_isc
         row.total_base_igv = _.round(total_base_igv, 2)
 
-        total_igv = total_base_igv * (percentage_igv / 100)
+        total_igv = total_base_igv * (row.percentage_igv / 100)
         row.total_igv = _.round(total_igv, 2)
 
         //asignar nuevo total impuestos, si tiene descuentos se usa total_taxes para calcular el precio unitario
