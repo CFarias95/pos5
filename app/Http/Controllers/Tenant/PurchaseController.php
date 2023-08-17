@@ -1895,6 +1895,12 @@ use Modules\Sale\Models\SaleOpportunity;
                 });
 
                 if($purchase){
+
+                    if((Company::active())->countable > 0){
+                        $this->createAccountingEntry($purchase->id, null);
+                        $this->createAccountingEntryPayment($purchase->id);
+                    }
+
                     return [
                         'success' => true,
                         'message' => 'Xml cargado correctamente.',
