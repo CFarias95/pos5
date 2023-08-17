@@ -293,7 +293,7 @@ import {mapActions, mapState} from 'vuex'
                     this.$eventHub.$emit('reloadData')
                 )
             },
-             clickImport() {
+            clickImport() {
                 this.showImportDialog = true
             },
             getDocumentTypes(){

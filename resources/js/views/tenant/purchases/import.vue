@@ -25,6 +25,27 @@
                             <small v-if="errors.file" class="form-control-feedback" v-text="errors.file[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-12 mt-12" v-if="has_file && form.items && form.items.length > 0" style="align-content: center;">
+                        <div style="text-align: center;"><h3>Lista de productos</h3></div>
+                        <div>
+                            <table bordered style="align-content: center; text-align: center;">
+                                <tr slot="heading">
+                                    <th>Original</th>
+                                    <th>Cantidad</th>
+                                    <th>Interno</th>
+                                </tr>
+                                <tr v-for="(item,index) in form.items" style="text-align: center;">
+                                    <td style="text-align: left;">{{ item.desciption }}</td>
+                                    <td>{{ item.quantity }}</td>
+                                    <td style="align-content: center;">
+                                        <el-select  required v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable>
+                                            <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.name"></el-option>
+                                        </el-select>
+                                    </td>
+                                </tr>
+                            </table>
+                        </div>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -37,6 +58,7 @@
 </template>
 
 <script>
+import { event } from "jquery";
 import {calculateRowItem} from "../../../helpers/functions";
 import {mapActions, mapState} from "vuex";
 
@@ -58,6 +80,7 @@ export default {
             discount_types: [],
             charge_types: [],
             attribute_types: [],
+            purchaseItems:[],
         };
     },
     created() {
@@ -88,17 +111,20 @@ export default {
             'loadAllItems'
         ]),
         handleChange(file) {
+
+            console.log("File: ",file)
             const self = this;
             const reader = new FileReader();
             reader.onload = e => self.parseXml(e.target.result);
             reader.readAsText(file.raw);
+
         },
         MensajeError(campo) {
             this.$message.error(`${campo} No se ha encontrado en el xml, no se puede continuar`);
             console.error(`${campo} no se encuentra en el xml`)
         },
         RetornoIndexIndefinido(array, index) {
-            if (!(array[index] !== undefined && array[index]["_text"] !== undefined)) {
+            if (!(array[index] !== undefined)) {
                 this.MensajeError(index)
                 return false;
             }
@@ -113,86 +139,120 @@ export default {
             this.loading_submit = false;
         },
         async setdataForm() {
-            let Invoice = this.formXmlJson.Invoice;
+
+            let convert = require("xml-js");
+
+            let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"],{compact: true, spaces: 4});
+            console.log("setdataForm",Invoice)
+
             let evalu = '';
             let ID = [];
+
             if (Invoice === undefined) {
                 this.$message.error('No se encuentra datos de XML');
                 console.error('No se encuentra datos de XML')
                 return false;
             }
 
-            evalu = 'cbc:DueDate';
+            evalu = 'factura';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_due = Invoice["cbc:DueDate"]["_text"];
-            evalu = 'cbc:IssueDate';
+            this.form.date_of_due = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
+            //evalu = 'cbc:IssueDate';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_issue = Invoice[evalu]["_text"];
-            evalu = 'cbc:IssueTime';
+            this.form.date_of_issue = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
+            this.form.time_of_issue = "00:00:00";
+            //evalu = 'cbc:IssueTime';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.time_of_issue = Invoice[evalu]["_text"];
-            evalu = 'cbc:ID';
+            //this.form.time_of_issue = Invoice[evalu]["_text"];
+            //evalu = 'cbc:ID';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            ID = Invoice[evalu]["_text"].split("-");
-            this.form.series = ID[0];
-            this.form.number = ID[1];
+            //ID = Invoice[evalu]["_text"].split("-");
+            //this.form.series = ID[0];
+            //this.form.number = ID[1];
 
-            evalu = '["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"]["_text"]';
-            if (
-                Invoice["cac:AccountingCustomerParty"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"] !== undefined &&
-                Invoice["cac:AccountingCustomerParty"]["cac:Party"]["cac:PartyIdentification"]["cbc:ID"]["_text"] !== undefined
-            ) {
-                this.form.supplier_ruc =
-                    Invoice["cac:AccountingCustomerParty"]
-                        ["cac:Party"]
-                        ["cac:PartyIdentification"]
-                        ["cbc:ID"]
-                        ["_text"];
+            evalu = '[factura][infoTributaria][ruc]';
+            if (Invoice.factura.infoTributaria.ruc) {
+                this.form.supplier_ruc = Invoice.factura.infoTributaria.ruc["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
             }
 
-            evalu = 'cac:InvoiceLine';
-            if (Invoice["cac:InvoiceLine"] !== undefined) {
-                await this.setFormItems(Invoice["cac:InvoiceLine"]);
+            evalu = '[factura][infoTributaria][claveAcceso]';
+            if (Invoice.factura.infoTributaria.claveAcceso) {
+                this.form.auth_number = Invoice.factura.infoTributaria.claveAcceso["_text"];
+            } else {
+                this.MensajeError(evalu)
+                return false;
+            }
+
+            evalu = '[factura][infoTributaria][claveAcceso]';
+            if (Invoice.factura.infoTributaria.secuencial) {
+                this.form.sequential_number = Invoice.factura.infoTributaria.estab["_text"]+Invoice.factura.infoTributaria.ptoEmi["_text"]+Invoice.factura.infoTributaria.secuencial["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
             }
 
 
-            evalu = 'cac:InvoiceLine';
+            evalu = '[factura][detalles][detalle]';
+
+            if (Invoice.factura.detalles.detalle !== undefined) {
+
+                await this.setFormItems(Invoice.factura.detalles.detalle);
+
+            } else {
+
+                this.MensajeError(evalu)
+                return false;
+            }
+
+            evalu = '[factura][infoFactura][totalDescuento]';
+
+            if (Invoice.factura.infoFactura.totalDescuento !== undefined) {
+
+                this.form.total_discount = parseFloat(Invoice.factura.infoFactura.totalDescuento);
+
+            } else {
+
+                this.MensajeError(evalu)
+                return false;
+            }
+
+
+
+            evalu = '[factura][infoFactura][importeTotal]';
             if (
-                Invoice["cac:LegalMonetaryTotal"] !== undefined
+                Invoice.factura.infoFactura.importeTotal !== undefined
             ) {
-                evalu = '["cac:LegalMonetaryTotal"]["cbc:PayableAmount"]["_text"]';
-                if (
-                    Invoice["cac:LegalMonetaryTotal"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:PayableAmount"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:PayableAmount"]["_text"] !== undefined
-                ) {
-                    this.form.total =
-                        Invoice
-                            ["cac:LegalMonetaryTotal"]
-                            ["cbc:PayableAmount"]
-                            ["_text"];
+                evalu = '[factura][infoFactura][pagos]';
+                if (Invoice.factura.infoFactura.pagos) {
+                    this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
+                    //PAYMENTS
+                    this.form.payments = [
+                        {
+                            id: null,
+                            purchase_id:null,
+                            date_of_payment:new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca'),
+                            payment_method_type_id:"01",
+                            reference:null,
+                            payment_destination_id:"cash",
+                            payment:this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
+
+                        }
+                    ];
                 } else {
                     this.MensajeError(evalu)
                     return false;
                 }
                 /****/
                 /****/
-                evalu = '["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"]';
+                evalu = '[factura][infoFactura][totalSinImpuestos]';
                 if (
-                    Invoice["cac:LegalMonetaryTotal"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"] !== undefined &&
-                    Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"] !== undefined
+                    Invoice.factura.infoFactura.totalSinImpuestos !== undefined && Invoice.factura.infoFactura.importeTotal !== undefined
                 ) {
-                    this.form.total_taxed = Invoice["cac:LegalMonetaryTotal"]["cbc:LineExtensionAmount"]["_text"]
+                    let impuestos = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]) - (parseFloat(Invoice.factura.infoFactura.totalSinImpuestos["_text"]))
+                    this.form.total_taxes = impuestos
 
                 } else {
                     this.MensajeError(evalu)
@@ -206,17 +266,9 @@ export default {
             }
 
 
-            evalu = '["cac:TaxTotal"]["cbc:TaxAmount"]["_text"]';
-            if (
-                Invoice["cac:TaxTotal"] !== undefined &&
-                Invoice["cac:TaxTotal"]["cbc:TaxAmount"] !== undefined &&
-                Invoice["cac:TaxTotal"]["cbc:TaxAmount"]["_text"] !== undefined
-
-            ) {
-                this.form.total_taxes = Invoice
-                    ["cac:TaxTotal"]
-                    ["cbc:TaxAmount"]
-                    ["_text"];
+            evalu = '[factura][infoFactura][totalSinImpuestos]';
+            if (Invoice.factura.infoFactura.totalSinImpuestos !== undefined) {
+                this.form.total_taxed = Invoice.factura.infoFactura.totalSinImpuestos["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
@@ -226,144 +278,74 @@ export default {
             this.has_file = true;
 
         },
-        findItem( search){
-            if (search === '') return undefined;
-            let item = this.all_items.find(obj => obj.item_code == search || obj.model == search||obj.internal_id == search)
+        findItem(search){
 
-            console.error(item)
-            console.error(this.all_items)
+            if (search === '') return undefined;
+            let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
+
+            //console.error(item)
+            //console.error(this.all_items)
+
             if (item !== undefined) return item
 
             return item
         },
-        async setFormItems(items) {
+        setFormItems(items) {
             const self = this;
-            console.error(items)
-            if (Array.isArray(items)) {
-                items.forEach(element => {
-                    let code = '';
-                    let unit_price = 0
-                    let affectation_igv_code = '';
+            //console.info(items)
+            self.form.items = [];
 
+            items.forEach(element => {
+                console.log(element['impuestos']['impuesto']['tarifa']["_text"])
+                let formItem = self.initFormItem();
+                formItem.item_id = null;
+                formItem.desciption = element['descripcion']["_text"];
+                formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                formItem.quantity = parseFloat(element['cantidad']["_text"]);
+                formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
+                //formItem.total_discount = parseFloat(element['descuento']['_text']);
+                formItem.discounts = [{
+                    amount:parseInt(element['descuento']["_text"]),
+                    base:parseFloat(element['precioUnitario']["_text"]),
+                    discount_type_id:'00',
+                    discount_type:{
+                        active:1,
+                        base:1,
+                        descripcion:'Descuentos que afectan la base imponible',
+                        id:'00',
+                        level:'item',
+                        type:'discount'
+                    },
+                    description:'Descuento',
+                    factor:0.1,
+                }];
+                self.form.items.push(formItem);
+            });
+        },
+        async changeItem(id, index){
 
-                    if(
-                        element["cac:Item"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"] !== undefined &&
-                        element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"] !== undefined
-                    ){
-                        code = element["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"]
-                    }
+            console.log("CHANGEITEM "+id+"-"+index)
+            let formItem = this.findItem(id)
+            let itemActual = this.form.items[index]
+            if(formItem !== undefined) {
 
-                    if(code == null &&
-                        items["cac:Item"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"] !== undefined &&
-                        items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]  !== undefined
-                    ){
-                        code =  items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]
-                    }
-                    if(
-                        element["cac:PricingReference"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"] !== undefined &&
-                        element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"] !== undefined
+                itemActual.item = formItem;
+                //itemActual.unit_price = formItem.item.purchase_unit_price;
+                //itemActual.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
+                itemActual.item_unit_types = formItem.item_unit_types;
+                itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva/100));
+                //formItem.item.quantity = itemActual.quantity;
+                itemActual.item.presentation = {};
+                //formItem.affectation_igv_type_id = formItem.affectation_igv_type_id;
+                //formItem.affectation_igv_type = formItem.affectation_igv_type;
+                let row = calculateRowItem(itemActual, this.config.currency_type_id,1,itemActual.iva,null);
+                row.warehouse_id = 1;
+                row.warehouse_description = "Almacén Oficina Principal";
 
-                    ){
-                        unit_price = element["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"];
-                    }
+                this.form.items[index] = row;
 
-                    if(
-                        element["cac:TaxTotal"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"] !== undefined &&
-                        element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"] !== undefined
-
-                    ){
-                        affectation_igv_code = element["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"]
-                    }
-
-                    // let item =  _.find(this.all_items, {item_code: code});
-                    let item = this.findItem(code)
-                    if(item !== undefined) {
-                        let formItem = self.initFormItem();
-                        formItem.item = item
-                        formItem.unit_price = formItem.item.purchase_unit_price;
-                        formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
-                        formItem.item_unit_types = formItem.item.item_unit_types;
-                        formItem.item.unit_price = unit_price;
-                        formItem.item.presentation = {};
-                        formItem.affectation_igv_type = affectation_igv_code;
-                        let row = calculateRowItem(formItem, "PEN", 3.393);
-                        row.warehouse_id = 1;
-                        row.warehouse_description = "Almacén Oficina Principal";
-                        self.form.items.push(row);
-                    }
-                    console.error(item)
-                });
-            } else {
-                let code = null;
-                let unit_price = 0
-                let affectation_igv_code = '';
-                if(
-                    items["cac:Item"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"] !== undefined &&
-                    items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"] !== undefined
-                ){
-                    code = items["cac:Item"]["cac:CommodityClassification"]["cbc:ItemClassificationCode"]["_text"]
-                }
-
-                if(code == null &&
-                    items["cac:Item"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"] !== undefined &&
-                    items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]  !== undefined
-                ){
-                    code =  items["cac:Item"]["cac:SellersItemIdentification"]["cbc:ID"]["_text"]
-                }
-                if(
-                    items["cac:PricingReference"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"] !== undefined &&
-                    items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"] !== undefined
-
-                ){
-                    unit_price = items["cac:PricingReference"]["cac:AlternativeConditionPrice"]["cbc:PriceAmount"]["_text"];
-                }
-
-                if(
-                    items["cac:TaxTotal"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"] !== undefined &&
-                    items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"] !== undefined
-
-                ){
-                    affectation_igv_code = items["cac:TaxTotal"]["cac:TaxSubtotal"]["cbc:TaxExemptionReasonCode"]["_text"]
-                }
-
-
-
-                //let item =  _.find(this.all_items, {item_code: code});
-                let item = this.findItem(code)
-                if(item !== undefined) {
-                        let formItem = self.initFormItem();
-                        formItem.item = item;
-                        formItem.unit_price = formItem.item.purchase_unit_price;
-                        formItem.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
-                        formItem.item_unit_types = formItem.item.item_unit_types;
-                        formItem.item.unit_price = unit_price;
-                        formItem.item.presentation = {};
-                        formItem.affectation_igv_type = affectation_igv_code;
-                        let row = calculateRowItem(formItem, "PEN", 3.393);
-                        row.warehouse_id = 1;
-                        row.warehouse_description = "Almacén Oficina Principal";
-                        self.form.items.push(row);
-                    }
-                console.error(item)
             }
         },
-
         initFormItem() {
             return {
                 item_id: null,
@@ -390,15 +372,16 @@ export default {
             this.form = {
                 establishment_id: 1,
                 document_type_id: "01",
-                series: null,
-                number: null,
+                document_type_intern:"01",
+                series: "cc",
+                number: 0,
                 date_of_issue: null,
                 time_of_issue: null,
                 supplier_id: null,
                 payment_method_type_id: "01",
-                currency_type_id: "PEN",
+                currency_type_id:this.config.currency_type_id,
                 purchase_order: null,
-                exchange_rate_sale: 3.393,
+                exchange_rate_sale: 1,
                 total_prepayment: 0,
                 total_charge: 0,
                 total_discount: 0,
@@ -423,7 +406,13 @@ export default {
                 charges: [],
                 discounts: [],
                 attributes: [],
-                guides: []
+                guides: [],
+                is_aproved:false,
+                codSustento:"01",
+                customer_id:null,
+                has_client:false,
+                has_payment:true,
+                payment_condition_id:"01",
             };
 
             //this.initInputPerson();

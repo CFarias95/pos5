@@ -378,7 +378,8 @@ use Modules\Sale\Models\SaleOpportunity;
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
 
-            //Log::info(json_encode($data));
+            Log::info("CREATE PURCHASE".json_encode($data));
+
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();
@@ -1853,33 +1854,72 @@ use Modules\Sale\Models\SaleOpportunity;
                     'state_type_id' => '01'
                 ];
 
+                $numero = Purchase::where('establishment_id',$model['establishment_id'])->where('series',$model['series'])->count();
+
+
                 $data = array_merge($model, $values);
 
+                $data['number'] = $numero + 1;
+
+                Log::info("importPurchase: ".json_encode($data));
+
+                foreach($data['items'] as $item){
+
+                    $data['total_igv'] += $item['total_igv'];
+
+                }
+
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
-                    $doc = Purchase::create($data);
-                    foreach ($data['items'] as $row) {
-                        $doc->items()->create($row);
+
+                    try{
+                        $doc = new Purchase();
+                        $doc->fill($data);
+                        $doc->save();
+
+                        foreach ($data['items'] as $row) {
+                            $doc->items()->create($row);
+                        }
+
+                        $doc->purchase_payments()->create([
+                            'date_of_payment' => $data['date_of_issue'],
+                            'payment_method_type_id' => $data['payment_method_type_id'],
+                            'payment' => $data['total'],
+                        ]);
+
+                        return $doc;
+
+                    }catch(Exception $ex){
+                        Log::error($ex->getMessage());
+                        return false;
                     }
-
-                    $doc->purchase_payments()->create([
-                        'date_of_payment' => $data['date_of_issue'],
-                        'payment_method_type_id' => $data['payment_method_type_id'],
-                        'payment' => $data['total'],
-                    ]);
-
-                    return $doc;
                 });
 
-                return [
-                    'success' => true,
-                    'message' => 'Xml cargado correctamente.',
-                    'data' => [
-                        'id' => $purchase->id,
-                    ],
-                ];
+                if($purchase){
+
+                    if((Company::active())->countable > 0){
+                        $this->createAccountingEntry($purchase->id, null);
+                        $this->createAccountingEntryPayment($purchase->id);
+                    }
+
+                    return [
+                        'success' => true,
+                        'message' => 'Xml cargado correctamente.',
+                        'data' => [
+                            'id' => $purchase->id,
+                        ],
+                    ];
+                }else{
+                    return [
+                        'success' => false,
+                        'message' => 'Xml No cargado correctamente.',
+                    ];
+                }
+
 
 
             } catch (Exception $e) {
+                Log::error("Error al generar Purchase Import: ".$e->getMessage());
+
                 return [
                     'success' => false,
                     'message' => $e->getMessage()
