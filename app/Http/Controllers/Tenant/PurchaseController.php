@@ -313,7 +313,7 @@ use Modules\Sale\Models\SaleOpportunity;
         {
 
             // $items = $this->table('items');
-            $items = SearchItemController::getItemToPurchase();
+            $items = Item::all();
             $categories = [];
             $affectation_igv_types = AffectationIgvType::whereActive()->get();
             $system_isc_types = SystemIscType::whereActive()->get();
@@ -587,7 +587,7 @@ use Modules\Sale\Models\SaleOpportunity;
             $renta = 0;
 
             //Log::info("retenciones: ".json_encode($ret));
-            if(count($ret) > 0){
+            if($ret && count($ret) > 0){
 
                foreach($ret as $rett){
 

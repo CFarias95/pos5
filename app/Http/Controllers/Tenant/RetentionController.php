@@ -8,7 +8,7 @@ use App\Http\Resources\Tenant\RetentionCollection;
 use App\Http\Resources\Tenant\RetentionResource;
 use App\Models\Tenant\Catalogs\Code;
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\Series; 
+use App\Models\Tenant\Series;
 use App\Models\Tenant\Retention;
 use App\Models\Tenant\Supplier;
 use Exception;
@@ -19,13 +19,21 @@ use App\Models\Tenant\Catalogs\CurrencyType;
 use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Facturalo;
+use App\CoreFacturalo\WS\Services\AuthSri;
+use App\Models\Tenant\Company;
+use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Log;
 
 class RetentionController extends Controller
 {
     use StorageDocument;
-    
+    private $config;
+    private $company;
+
     public function __construct() {
         $this->middleware('input.request:retention,web', ['only' => ['store']]);
+        $this->config = Configuration::first();
+        $this->company = Company::first();
     }
 
     public function index()
@@ -76,7 +84,7 @@ class RetentionController extends Controller
 
     public function table($table)
     {
-        if ($table === 'suppliers') { 
+        if ($table === 'suppliers') {
 
             $suppliers = Person::whereType('suppliers')->where('identity_document_type_id', '6')->orderBy('name')->get()->transform(function($row) {
                 return [
@@ -100,7 +108,7 @@ class RetentionController extends Controller
 
         return $record;
     }
- 
+
 
     public function store(RetentionRequest $request)
     {
@@ -152,5 +160,68 @@ class RetentionController extends Controller
         }
 
         return $this->downloadStorage($retention->filename, $folder);
+    }
+
+    public function import(Request $request){
+
+        try{
+
+            $data = $request['data'];
+            $dataArray = explode("\n",$data);
+
+            if(count($dataArray) > 1){
+                $message = 'Retenciones procesadas \n';
+                foreach($dataArray as $ret){
+
+                    $ret = explode("\t",$ret);
+
+                    if($ret['1'] != "SERIE_COMPROBANTE"){
+
+                        $message .= '\n'.$ret['10'];
+                        $claveAcceso = $ret['10'];
+                        $rucProveedor = $ret['2'];
+
+                        $url = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+
+                        if($this->company->soap_type_id == '01'){
+
+                            $url = 'https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+                        }
+
+                        $get = new AuthSri();
+                        $documento = $get->send($url,$claveAcceso);
+
+                        $comporbante = $documento['RespuestaAutorizacionComprobante']['numeroComprobantes'];
+                        if($comporbante > 0){
+
+                            $retencion = $documento['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
+                            
+
+                        }else{
+
+                            Log::error("No se encontro la retencion : ".$ret['10']);
+
+                        }
+                    }
+                }
+                return [
+                    'success' => true,
+                    'message' => $message
+                ];
+
+
+            }else{
+                return [
+                    'success' => false,
+                    'message' => "EL archivo TXT no tiene retenciones para procesar"
+                ];
+            }
+
+        }catch(Exception $e){
+            return [
+                'success' => false,
+                'message' => $e->getMessage()
+            ];
+        }
     }
 }

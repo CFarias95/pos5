@@ -35,11 +35,11 @@
                                     <th>Interno</th>
                                 </tr>
                                 <tr v-for="(item,index) in form.items" style="text-align: center;">
-                                    <td style="text-align: left;">{{ item.desciption }}</td>
+                                    <td style="text-align: left;">{{ (item.desciption)?item.desciption:item.item.name }}</td>
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
-                                        <el-select  required v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable>
-                                            <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.name"></el-option>
+                                        <el-select  :disabled="item.item_id != null" required v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable>
+                                            <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.internal_id + '-'+  prod.name"></el-option>
                                         </el-select>
                                     </td>
                                 </tr>
@@ -88,6 +88,7 @@ export default {
         this.loadAllItems(this.$store)
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
+            console.log("item: ",response.data.items)
             this.items = response.data.items;
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
@@ -228,6 +229,7 @@ export default {
                 evalu = '[factura][infoFactura][pagos]';
                 if (Invoice.factura.infoFactura.pagos) {
                     this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
+                    this.form.total_discount = parseFloat(Invoice.factura.infoFactura.totalDescuento["_text"]);
                     //PAYMENTS
                     this.form.payments = [
                         {
@@ -296,7 +298,8 @@ export default {
             self.form.items = [];
 
             items.forEach(element => {
-                console.log(element['impuestos']['impuesto']['tarifa']["_text"])
+
+                //console.log(element['impuestos']['impuesto']['tarifa']["_text"])
                 let formItem = self.initFormItem();
                 formItem.item_id = null;
                 formItem.desciption = element['descripcion']["_text"];
@@ -304,46 +307,59 @@ export default {
                 formItem.quantity = parseFloat(element['cantidad']["_text"]);
                 formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
                 //formItem.total_discount = parseFloat(element['descuento']['_text']);
-                formItem.discounts = [{
-                    amount:parseInt(element['descuento']["_text"]),
-                    base:parseFloat(element['precioUnitario']["_text"]),
-                    discount_type_id:'00',
-                    discount_type:{
-                        active:1,
-                        base:1,
-                        descripcion:'Descuentos que afectan la base imponible',
-                        id:'00',
-                        level:'item',
-                        type:'discount'
-                    },
-                    description:'Descuento',
-                    factor:0.1,
-                }];
+                if(parseFloat(element['descuento']["_text"]) > 0 ){
+
+                    formItem.discounts = [{
+                        amount:parseInt(element['descuento']["_text"]),
+                        base:parseFloat(element['precioUnitario']["_text"]),
+                        discount_type_id:'00',
+                        discount_type:{
+                            active:1,
+                            base:1,
+                            descripcion:'Descuentos que afectan la base imponible',
+                            id:'00',
+                            level:'item',
+                            type:'discount'
+                        },
+                        description:'Descuento',
+                        factor:0.1,
+                    }];
+
+                }
+
                 self.form.items.push(formItem);
             });
         },
         async changeItem(id, index){
 
             console.log("CHANGEITEM "+id+"-"+index)
-            let formItem = this.findItem(id)
+
+            let formItem = this.findItem(id);
             let itemActual = this.form.items[index]
+
             if(formItem !== undefined) {
 
+                this.form.items[index].item_id = id;
+
                 itemActual.item = formItem;
-                //itemActual.unit_price = formItem.item.purchase_unit_price;
+                itemActual.unit_price = itemActual.unit_price;
                 //itemActual.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
                 itemActual.item_unit_types = formItem.item_unit_types;
                 itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva/100));
-                //formItem.item.quantity = itemActual.quantity;
+                itemActual.quantity = itemActual.quantity;
                 itemActual.item.presentation = {};
                 //formItem.affectation_igv_type_id = formItem.affectation_igv_type_id;
                 //formItem.affectation_igv_type = formItem.affectation_igv_type;
                 let row = calculateRowItem(itemActual, this.config.currency_type_id,1,itemActual.iva,null);
                 row.warehouse_id = 1;
                 row.warehouse_description = "Almacén Oficina Principal";
-
+                row.iva = itemActual.iva;
+                row.desciption = itemActual.desciption;
                 this.form.items[index] = row;
 
+            }else{
+                this.$message.error("No se encontro el item en la lista disponible");
+                this.form.items[index].item_id = null;
             }
         },
         initFormItem() {

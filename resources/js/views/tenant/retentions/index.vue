@@ -7,6 +7,7 @@
             </ol>
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <button   @click.prevent="clickImport()" type="button" class="btn btn-custom btn-sm  mt-2 mr-2" ><i class="fa fa-upload"></i> Importar TXT</button>
             </div>
         </div>
         <div class="card mb-0">
@@ -38,7 +39,7 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_external_pdf)">PDF</button>
 
-                                    
+
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptions(row.id)"
                                     v-if="row.has_cdr">CDR</button>
@@ -49,7 +50,7 @@
                     </tr>
                 </data-table>
             </div>
-            
+            <retention-import :showDialog.sync="showImportDialog"></retention-import>
             <retention-options :showDialog.sync="showDialogOptions"
                               :recordId="recordId"
                               :showClose="true"></retention-options>
@@ -61,13 +62,14 @@
 
     import DataTable from '../../../components/DataTable.vue'
     import RetentionOptions from './partials/options.vue'
-
+    import RetentionImport from './import.vue'
     export default {
-        components: {DataTable, RetentionOptions},
+        components: {DataTable, RetentionOptions, RetentionImport},
         data() {
             return {
                 resource: 'retentions',
                 showDialogOptions: false,
+                showImportDialog:false,
                 recordId: null,
             }
         },
@@ -80,6 +82,9 @@
             },
             clickDownload(download) {
                 window.open(download, '_blank');
+            },
+            clickImport() {
+                this.showImportDialog = true
             },
         }
     }
