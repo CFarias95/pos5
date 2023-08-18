@@ -22,6 +22,7 @@ use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\WS\Services\AuthSri;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use DOMDocument;
 use Illuminate\Support\Facades\Log;
 
 class RetentionController extends Controller
@@ -195,7 +196,9 @@ class RetentionController extends Controller
                         if($comporbante > 0){
 
                             $retencion = $documento['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                            
+                            $xml = new DOMDocument();
+                            $xml->loadXML($retencion);
+
 
                         }else{
 

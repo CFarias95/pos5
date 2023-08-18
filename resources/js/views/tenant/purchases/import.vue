@@ -38,7 +38,7 @@
                                     <td style="text-align: left;">{{ (item.desciption)?item.desciption:item.item.name }}</td>
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
-                                        <el-select  :disabled="item.item_id != null" required v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable>
+                                        <el-select  :disabled="item.item_id != null" v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable required="true">
                                             <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.internal_id + '-'+  prod.name"></el-option>
                                         </el-select>
                                     </td>
