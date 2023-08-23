@@ -2,7 +2,7 @@
 
     namespace Modules\Finance\Traits;
 
-    use App\Models\Tenant\{AccountingEntries, DocumentPayment, PurchasePayment, SaleNotePayment, PurchaseSettlementPayment};
+    use App\Models\Tenant\{AccountingEntries, DocumentPayment, PurchasePayment, SaleNotePayment, PurchaseSettlementPayment, Retention};
     use App\Models\Tenant\BankAccount;
     use App\Models\Tenant\Cash;
     use App\Models\Tenant\Company;
@@ -132,19 +132,29 @@ use Illuminate\Support\Facades\Log;
         public function deleteAllPayments($payments)
         {
 
-            Log::info('PAYMENTS '.json_encode($payments));
+            //Log::info('PAYMENTS '.json_encode($payments));
 
             if(count($payments) > 0 ){
 
                 foreach ($payments as $payment) {
 
-                    /*
-                    $records2 = AccountingEntries::where('document_id','PC'.$payment['id'])->get();
-                    //Log::info('PC: : '.json_encode($records2));
-                    foreach($records2 as $record){
-                        $record->delete();
+
+                    if($payment['payment_method_type_id'] == '99'){
+
+
+                        $reference = $payment['reference'];
+                        $monto = floatval($payment['payment']);
+
+                        $retention = Retention::find($reference);
+                        $valor = $retention->total_used;
+                        $montoUsado = $valor - $monto;
+                        $retention->total_used = $montoUsado;
+
+                        $retention->in_use = ($montoUsado > 0 )?true:false;
+                        
+                        $retention->save();
                     }
-                    */
+
                     if($payment['document_id']){
 
                         $records = AccountingEntries::where('document_id','CF'.$payment['id'])->get();

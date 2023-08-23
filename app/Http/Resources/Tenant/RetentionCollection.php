@@ -19,7 +19,7 @@ class RetentionCollection extends ResourceCollection
             $has_cdr = false;
 
             if (in_array($row->state_type_id, ['05', '07', '09'])) {
-                $has_cdr = true;
+                $has_cdr = false;
             }
 
             return [
@@ -35,6 +35,8 @@ class RetentionCollection extends ResourceCollection
                 'has_xml' => $row->has_xml,
                 'has_pdf' => $row->has_pdf,
                 'has_cdr' => $has_cdr,
+                'in_use' =>$row->in_use,
+                'total_used' =>($row->total_used)?$row->total_used:0,
                 'download_external_xml' => $row->download_external_xml,
                 'download_external_pdf' => $row->download_external_pdf,
                 'download_external_cdr' => $row->download_external_cdr,

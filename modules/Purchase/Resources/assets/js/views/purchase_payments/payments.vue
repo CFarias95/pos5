@@ -85,17 +85,25 @@
                                             </div>
                                         </td>
                                         <td>
-
-
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
-                                                v-if="row.payment_method_type_id_desc">
+                                                v-if="row.payment_method_type_id_desc && row.payment_method_type_id != '99'">
                                                 <el-select v-model="row.reference" @change="changeAdvance(index, $event)">
                                                     <el-option v-for="option in advances" :key="option.id"
                                                         :label="option.id" :value="option.id"></el-option>
                                                 </el-select>
                                                 <small class="form-control-feedback" v-if="row.errors.reference"
                                                     v-text="row.errors.reference[0]"></small>
+                                            </div>
 
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
+                                                v-if="row.payment_method_type_id == '99'">
+                                                <el-select v-model="row.reference"
+                                                    @change="changeRetention(index, $event)">
+                                                    <el-option v-for="option in retentions" :key="option.id"
+                                                        :label="option.name" :value="option.id"></el-option>
+                                                </el-select>
+                                                <small class="form-control-feedback" v-if="row.errors.reference"
+                                                    v-text="row.errors.reference[0]"></small>
                                             </div>
 
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
@@ -119,7 +127,17 @@
                                                 </el-upload>
                                             </div>
                                         </td>
-                                        <td>
+
+                                        <td v-if="row.payment_method_type_id == '99'">
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-input v-model="row.payment"
+                                                    @change="changeRetentionInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                        </td>
+
+                                        <td v-else>
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-input v-model="row.payment"
                                                     @change="changeAdvanceInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
@@ -191,6 +209,7 @@ export default {
             showAddButton: true,
             purchase: {},
             advances: [],
+            retentions:[],
             index: null,
         }
     },
@@ -213,9 +232,49 @@ export default {
 
             this.$http.get(`/documents/advance/${this.customerId}`).then(
                 response => {
-                    this.advances = response.data
+                    this.advances = response.data.advances;
+                    this.retentions = response.data.retentions;
                 }
             )
+        },
+        changeRetention(index, id) {
+
+            let selectedRetention = _.find(this.retentions, { 'id': id })
+            let maxAmount = selectedRetention.valor
+
+            let payment_count = this.form.payments.length;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if (maxAmount >= amount) {
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+            } else if (amount > maxAmount) {
+
+                this.form.payments[index].payment = maxAmount
+                let message = 'El monto maximo de la retencion es de ' + maxAmount
+                this.$message.warning(message)
+            }
+        },
+        changeRetentionInput(index, event, methodType, id){
+            let selectedRetention = _.find(this.retentions, { 'id': id })
+            let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
+            if (payment_method_type.id.includes('99')) {
+
+                let maxAmount = selectedRetention.valor
+
+                if (maxAmount >= event) {
+                    /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+
+                } else {
+                    this.form.payments[index].payment = maxAmount
+                    let message = 'El monto maximo de la retencion es de ' + maxAmount
+                    this.$message.warning(message)
+
+                }
+            }
         },
         changeAdvanceInput(index, event, methodType, id) {
 

@@ -4,18 +4,9 @@
  */
 function ItemOptionDescription(item) {
     let data = '';
-    if (item !== undefined
-        && item.full_description !== undefined
-    ) {
+    if (item !== undefined && item.full_description !== undefined ) {
         data += item.full_description ;
     }
-    /*
-    if (item !== undefined
-        && item.stock !== undefined
-    ) {
-        data += item.stock;
-    }
-    */
 
     return data;
 }

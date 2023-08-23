@@ -768,7 +768,7 @@ export default {
         this.initForm()
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            console.log("Data CREATE: ", response.data.items);
+            //console.log("Data CREATE: ", response.data.items);
             this.all_items = response.data.items
             this.affectation_igv_types = response.data.affectation_igv_types
             this.system_isc_types = response.data.system_isc_types
@@ -829,11 +829,11 @@ export default {
         },
         async create(){
 
-            console.log("record item",this.recordItem)
+            //console.log("record item",this.recordItem)
 
             if (this.recordItem) {
                 this.titleDialog = 'Editar Producto o Servicio'
-                console.log("RECORD ITEM: ",this.recordItem)
+                //console.log("RECORD ITEM: ",this.recordItem)
 
                 this.form.item_id = await this.recordItem.item_id
                 this.form.quantity = this.recordItem.quantity
@@ -1098,11 +1098,11 @@ export default {
             if(this.recordItem){
 
                 if(this.recordItem.item.purchase_has_igv){
-                    console.log('Incluye IVA: ',this.recordItem.unit_price)
+
                     this.form.unit_price = _.round(parseFloat(this.recordItem.unit_price),2)
 
                 }else{
-                    console.log('No Incluye IVA: ',this.recordItem.unit_value)
+
                     this.form.unit_price = _.round(parseFloat(this.recordItem.unit_value),2)
                 }
 
@@ -1175,8 +1175,6 @@ export default {
         },
         changeRetentionTypeIncome(event) {
 
-            //console.log("changeRetentionTypeIncome1 : ",event)
-            //console.log("changeRetentionTypeIncome2 : ",this.retention_types_income)
             const val = _.find(this.retention_types_income, {'id': event});
             const item = {..._.find(this.items, {'id': this.form.item_id})};
             //console.log("changeRetentionTypeIncome: ",this.val)
@@ -1319,7 +1317,7 @@ export default {
                 this.row.indexi = this.recordItem.indexi
             }
             this.initForm()
-            console.log('row: ',this.row);
+            
             this.$emit('add', this.row)
         },
         changeWarehouse(row) {

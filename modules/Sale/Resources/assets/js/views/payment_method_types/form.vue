@@ -6,7 +6,7 @@
                     <div class="col-md-2">
                         <div class="form-group" :class="{'has-danger': errors.id}">
                         <label class="control-label">Código</label>
-                        <el-input v-model="form.id" :readonly="recordId !== null" :maxlength="2"></el-input>
+                        <el-input v-model="form.id" :readonly="recordId !== null" :maxlength="2"  ></el-input>
                         <small class="form-control-feedback" v-if="errors.id" v-text="errors.id[0]"></small>
                         </div>
                     </div>
@@ -42,22 +42,16 @@
                         </div>
                     </div>
                     <div class="col-md-3">
+                        <label class="control-label">Tipo de Pago</label>
                         <div class="form-group" :class="{'has-danger': errors.is_credit}">
-                            <label class="control-label">Tipo de pago</label>
-
-                            <el-select
-                                v-model="form.is_credit"
-                                clearable
-                                placeholder=""
-                            >
-                                <el-option
-                                    v-for="of in is_credit_text"
-                                    :key="of.id"
-                                    :value="of.id"
-                                    :label="of.name"
-                                ></el-option>
-                            </el-select>
-
+                            <label class="control-label">Crédito</label>
+                            <el-switch v-model="form.is_credit" :active-icon="Check" :inactive-icon="Close" @change="changeCredit" />
+                            <br>
+                            <label class="control-label">Contado</label>
+                            <el-switch v-model="form.is_cash" :active-icon="Check" :inactive-icon="Close" @change="changeCash"/>
+                            <br>
+                            <label class="control-label">Anticipo</label>
+                            <el-switch v-model="form.is_advance" :active-icon="Check" :inactive-icon="Close"  @change="changeAdvance"/>
                             <small
                                 class="form-control-feedback"
                                 v-if="errors.is_credit"
@@ -69,7 +63,7 @@
                         <label class="control-label">Número de dias</label>
                         <el-input v-model="form.number_days" :maxlength="3"></el-input>
                     </div>
-                    <div class="col-md-3" v-show="form.is_credit != 1 && isCompanieCountable">
+                    <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
                         <label class="control-label">Cuenta contable para cobros</label>
                                 <el-select v-model="form.countable_acount">
                                     <el-option v-for="option in accounts"
@@ -81,7 +75,7 @@
                                        class="form-control-feedback"
                                        v-text="errors.countable_acount[0]"></small>
                     </div>
-                    <div class="col-md-3" v-show="form.is_credit != 1 && isCompanieCountable">
+                    <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
                         <label class="control-label">Cuenta contable para pagos</label>
                                 <el-select v-model="form.countable_acount_payment">
                                     <el-option v-for="option in accounts"
@@ -132,6 +126,7 @@
                 options: [],
                 isCompanieCountable : false,
                 accounts:[],
+                isEdit:false,
             }
         },
         created() {
@@ -143,7 +138,9 @@
                 this.form = {
                     id: null,
                     description: null,
-                    is_credit: 0,
+                    is_credit: false,
+                    is_cash:true,
+                    is_advance:false,
                     number_days: 0,
                     pago_sri:null,
                 }
@@ -152,6 +149,7 @@
                 this.titleDialog = (this.recordId)? 'Editar método de pago':'Nuevo método de pago'
 
                 if (this.recordId) {
+                    this.isEdit = true;
                     this.$http.get(`/${this.resource}/record/${this.recordId}`)
                         .then(response => {
                             console.log(response.data)
@@ -173,11 +171,12 @@
                 }
             },
             submit() {
-                this.loading_submit = true
-                if(this.form.is_credit == 2){
-                    this.form.is_credit = 0
-                    this.form.is_advance = 1
+
+                if(this.form.is_cash > 0 && this.form.is_credit > 0 && this.form.is_advance > 0){
+                    this.$message.error("Debe selecionar un solo tipo de Pago")
+                    return;
                 }
+                this.loading_submit = true
                 this.$http.post(`/${this.resource}`, this.form)
                     .then(response => {
                         if (response.data.success) {
@@ -203,6 +202,29 @@
                 this.$emit('update:showDialog', false)
                 this.initForm()
             },
+            changeCredit(){
+                if(this.form.is_credit = true){
+
+                    this.form.is_cash = false;
+                    this.form.is_advance = false;
+                }
+
+            },
+            changeCash(){
+
+                if(this.form.is_cash = true){
+                    this.form.is_advance = false;
+                this.form.is_credit = false;
+                }
+            },
+            changeAdvance(){
+                if(this.form.is_advance = true){
+
+                    this.form.is_cash = false;
+                    this.form.is_credit = false;
+                }
+
+            }
         }
     }
 </script>
