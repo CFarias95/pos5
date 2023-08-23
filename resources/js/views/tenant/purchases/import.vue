@@ -88,7 +88,7 @@ export default {
         this.loadAllItems(this.$store)
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            console.log("item: ",response.data.items)
+            //console.log("item: ",response.data.items)
             this.items = response.data.items;
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
@@ -113,7 +113,7 @@ export default {
         ]),
         handleChange(file) {
 
-            console.log("File: ",file)
+            //console.log("File: ",file)
             const self = this;
             const reader = new FileReader();
             reader.onload = e => self.parseXml(e.target.result);
@@ -144,7 +144,7 @@ export default {
             let convert = require("xml-js");
 
             let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"],{compact: true, spaces: 4});
-            console.log("setdataForm",Invoice)
+            //console.log("setdataForm",Invoice)
 
             let evalu = '';
             let ID = [];
@@ -294,12 +294,11 @@ export default {
         },
         setFormItems(items) {
             const self = this;
-            //console.info(items)
+
             self.form.items = [];
 
-            items.forEach(element => {
-
-                //console.log(element['impuestos']['impuesto']['tarifa']["_text"])
+            if(items.length > 1){
+                items.forEach(element => {
                 let formItem = self.initFormItem();
                 formItem.item_id = null;
                 formItem.desciption = element['descripcion']["_text"];
@@ -328,28 +327,56 @@ export default {
                 }
 
                 self.form.items.push(formItem);
-            });
+                });
+            }else{
+                let element = items;
+                let formItem = self.initFormItem();
+                formItem.item_id = null;
+                formItem.desciption = element['descripcion']["_text"];
+                formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                formItem.quantity = parseFloat(element['cantidad']["_text"]);
+                formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
+                //formItem.total_discount = parseFloat(element['descuento']['_text']);
+                if(parseFloat(element['descuento']["_text"]) > 0 ){
+
+                    formItem.discounts = [{
+                        amount:parseFloat(element['descuento']["_text"]),
+                        base:parseFloat(element['precioUnitario']["_text"]),
+                        discount_type_id:'00',
+                        discount_type:{
+                            active:1,
+                            base:1,
+                            descripcion:'Descuentos que afectan la base imponible',
+                            id:'00',
+                            level:'item',
+                            type:'discount'
+                        },
+                        description:'Descuento',
+                        factor:_.round(((parseFloat(element['descuento']["_text"])*100)/parseFloat(element['precioUnitario']["_text"]))/100,2),
+                        is_amount:true,
+                        percentage:_.round((parseFloat(element['descuento']["_text"])*100)/parseFloat(element['precioUnitario']["_text"]),2),
+                        use_input_amount:true
+                    }];
+
+                }
+
+                self.form.items.push(formItem);
+            }
+            //console.info(self.form.items)
         },
         async changeItem(id, index){
-
-            console.log("CHANGEITEM "+id+"-"+index)
-
             let formItem = this.findItem(id);
             let itemActual = this.form.items[index]
 
             if(formItem !== undefined) {
-
                 this.form.items[index].item_id = id;
 
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_price;
-                //itemActual.affectation_igv_type_id = formItem.item.purchase_affectation_igv_type_id;
                 itemActual.item_unit_types = formItem.item_unit_types;
                 itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva/100));
                 itemActual.quantity = itemActual.quantity;
                 itemActual.item.presentation = {};
-                //formItem.affectation_igv_type_id = formItem.affectation_igv_type_id;
-                //formItem.affectation_igv_type = formItem.affectation_igv_type;
                 let row = calculateRowItem(itemActual, this.config.currency_type_id,1,itemActual.iva,null);
                 row.warehouse_id = 1;
                 row.warehouse_description = "Almacén Oficina Principal";
@@ -361,6 +388,8 @@ export default {
                 this.$message.error("No se encontro el item en la lista disponible");
                 this.form.items[index].item_id = null;
             }
+            //console.info(this.form.items)
+
         },
         initFormItem() {
             return {
@@ -456,7 +485,7 @@ export default {
                 .then(() => {
                     this.loading_submit = false;
                 });
-                console.log('XML',this.form)
+                //console.log('XML',this.form)
         },
         close() {
             this.$emit("update:showDialog", false);
@@ -488,12 +517,12 @@ export default {
                         var attribute = xml.attributes.item(j);
                         obj["@attributes"][attribute.nodeName] = attribute.nodeValue;
                     }
-                    console.log('obj', obj)
+                    //console.log('obj', obj)
                 }
             } else if (xml.nodeType == 3) {
                 // text
                 obj = xml.nodeValue;
-                console.log('obj', obj)
+                //console.log('obj', obj)
             }
 
             // do children

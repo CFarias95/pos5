@@ -1,7 +1,7 @@
 import { isArray } from "lodash";
 
 function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null ) {
-    console.log("porcentage ICG: "+pigv);
+    //console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
     let currency_type_id_old = row_old.item.currency_type_id
     let unit_price = parseFloat(row_old.unit_price )
@@ -30,7 +30,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    console.log("OLD ROW: ",row_old);
+    //console.log("OLD ROW: ",row_old);
 
     let row = {
         item_id: row_old.item.id,
@@ -273,7 +273,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //console.log('charge:',row.charges.length);
     //console.log('charge JS:',row.charges);
 
-    console.log('total base charge:', row.charges[0])
+    //console.log('total base charge:', row.charges[0])
     if (row.charges.length > 0) {
         row.charges.forEach((charge, index) => {
             charge.percentage = parseFloat(charge.percentage)
@@ -302,8 +302,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
 
-    console.log(total_base_igv , (row.percentage_igv / 100))
-    console.log( row.affectation_igv_type_id)
+    //console.log(total_base_igv , (row.percentage_igv / 100))
+    //console.log( row.affectation_igv_type_id)
 
     let total_igv = 0
 
@@ -449,7 +449,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //     row.total_plastic_bag_taxes = total_plastic_bag_taxes
     // }
 
-    console.log('RETURNED ROW: ',row)
+    //console.log('RETURNED ROW: ',row)
     return row
 }
 
