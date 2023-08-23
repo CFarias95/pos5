@@ -24,6 +24,7 @@ class PaymentMethodTypeController extends Controller
     }
     public function record($id)
     {
+        //$record = PaymentMethodType::findOrFail($id);
         //JOINSOFTWARE
         if ($id != 'join6v') {
             $record = PaymentMethodType::findOrFail($id);
@@ -32,15 +33,16 @@ class PaymentMethodTypeController extends Controller
             $record['pago_sri_list'] = $sri;
             $record['isCountable'] = (bool)  $isCountable->countable;
             $record['accounts'] = AccountMovement::get();
-            return $record;
         } else {
             $sri = SriFormasPagos::get();
             $isCountable = Company::active();
             $record['pago_sri_list'] = $sri;
             $record['isCountable'] = (bool)  $isCountable->countable;
             $record['accounts'] = AccountMovement::get();
-            return $record;
+
         }
+
+        return $record;
     }
 
     public function store(PaymentMethodTypeRequest $request)

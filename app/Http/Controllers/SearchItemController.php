@@ -97,8 +97,6 @@
         {
 
             self::validateRequest($request);
-            // $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
-            // $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
             return $item->orderBy('id')->get();

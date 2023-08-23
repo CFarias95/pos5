@@ -286,7 +286,7 @@
                                                         <i class="fa fa-info-circle"></i>
                                                     </el-tooltip>
                                                 </th>
-                                                <th v-if="form.payments.length > 0" class="pb-2">Referencia/Anticipo
+                                                <th v-if="form.payments.length > 0" class="pb-2">Referencia/Anticipo/Retención
                                                 </th>
                                                 <th v-if="form.payments.length > 0" class="pb-2">Monto
                                                 </th>
@@ -315,21 +315,34 @@
                                                         </el-select>
                                                     </div>
                                                 </td>
-                                                <td v-if="!row.payment_method_type_id_desc">
+                                                <td v-if="!row.payment_method_type_id_desc && row.payment_method_type_id != '99'">
                                                     <el-input v-model="row.reference"></el-input>
 
                                                 </td>
-                                                <td v-else>
+                                                <td v-if="row.payment_method_type_id_desc && row.payment_method_type_id != '99'">
                                                     <el-select v-model="row.reference"
                                                         @change="changeAdvance(index, $event)">
                                                         <el-option v-for="option in advances" :key="option.id"
                                                             :label="option.id" :value="option.id"></el-option>
                                                     </el-select>
                                                 </td>
-                                                <td>
+                                                <td v-if="row.payment_method_type_id == '99'">
+                                                    <el-select v-model="row.reference"
+                                                        @change="changeRetention(index, $event)">
+                                                        <el-option v-for="option in retentions" :key="option.id"
+                                                            :label="option.name" :value="option.id"></el-option>
+                                                    </el-select>
+                                                </td>
+
+                                                <td v-if="row.payment_method_type_id == '99'">
+                                                    <el-input v-model="row.payment"
+                                                        @change="changeRetentionInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                </td>
+                                                <td v-else>
                                                     <el-input v-model="row.payment"
                                                         @change="changeAdvanceInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
                                                 </td>
+
                                                 <td class="series-table-actions text-center">
                                                     <button class="btn waves-effect waves-light btn-xs btn-danger"
                                                         type="button" @click.prevent="clickCancel(index)">
@@ -742,7 +755,7 @@ export default {
             codSustentos_all: [],
             haveRetentions: false,
             advances: [],
-
+            retentions:[],
             is_countable: false,
             is_credit_note: false,
         }
@@ -1082,6 +1095,24 @@ export default {
             // console.log('2');
             return total_pay
         },
+        changeRetentionInput(index, event, methodType, id){
+            let selectedRetention = _.find(this.retentions, { 'id': id })
+            let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
+            if (payment_method_type.id.includes('99')) {
+
+                let maxAmount = selectedRetention.valor
+
+                if (maxAmount >= event) {
+                    /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+
+                } else {
+                    this.form.payments[index].payment = maxAmount
+                    let message = 'El monto maximo de la retencion es de ' + maxAmount
+                    this.$message.warning(message)
+
+                }
+            }
+        },
         changeAdvanceInput(index, event, methodType, id) {
 
             let selectedAdvance = _.find(this.advances, { 'id': id })
@@ -1121,15 +1152,35 @@ export default {
                 let message = 'El monto maximo del anticipo es de ' + maxAmount
                 this.$message.warning(message)
             }
+        },
+        changeRetention(index, id) {
 
+            let selectedRetention = _.find(this.retentions, { 'id': id })
+            let maxAmount = selectedRetention.valor
 
+            let payment_count = this.form.payments.length;
+            // let total = this.form.total;
+            let total = this.getTotal()
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if (maxAmount >= amount) {
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+            } else if (amount > maxAmount) {
+
+                this.form.payments[index].payment = maxAmount
+                let message = 'El monto maximo de la retencion es de ' + maxAmount
+                this.$message.warning(message)
+            }
         },
         addAdvancesCustomer() {
 
             this.$http.get(`/documents/advance/${this.form.supplier_id}`).then(
                 response => {
 
-                    this.advances = response.data
+                    this.advances = response.data.advances;
+                    this.retentions = response.data.retentions;
                 }
             )
         },
@@ -1171,6 +1222,18 @@ export default {
                 this.form.payment_method_type_id = null
                 this.enabled_payments = true
 
+
+            }else if (payment_method_type.id == '99') {
+
+                this.$notify({
+                    title: '',
+                    message: 'Debes seleccionar una retencion disponible',
+                    type: 'success'
+                })
+                this.form.date_of_due = this.form.date_of_issue
+                this.readonly_date_of_due = false
+                this.form.payment_method_type_id = null
+                this.enabled_payments = true
 
             } else {
 
@@ -1391,7 +1454,7 @@ export default {
 
                 retention_iva = 0
                 retention_renta = 0
-                console.log("Iten procesando", row)
+                //console.log("Iten procesando", row)
 
                 if (row.iva_retention || row.income_retention || row.iva_retention > 0 || row.income_retention > 0) {
 
@@ -1456,7 +1519,7 @@ export default {
                             retencionLocal.base = row.total_taxes
                             this.form.ret.push(retencionLocal)
 
-                            console.log("Agregando retencion de IVA "+ retIvaDesc.description)
+                            //console.log("Agregando retencion de IVA "+ retIvaDesc.description)
                         }
 
                         if (nuevaRetRENTA == true && row.income_retention > 0) {
@@ -1471,7 +1534,7 @@ export default {
                             retencionLocal.base = row.unit_value * row.quantity
                             this.form.ret.push(retencionLocal)
 
-                            console.log("Agregando retencion de RENTA "+ retRentaDesc.description)
+                            //console.log("Agregando retencion de RENTA "+ retRentaDesc.description)
                         }
 
                     } else {
@@ -1488,7 +1551,7 @@ export default {
                             retencionLocal.base = row.total_taxes
                             this.form.ret.push(retencionLocal)
 
-                            console.log("Agregando PRIMERA retencion de IVA "+ retIvaDesc.description)
+                            //console.log("Agregando PRIMERA retencion de IVA "+ retIvaDesc.description)
                         }
                         if (row.income_retention > 0) {
 
@@ -1502,7 +1565,7 @@ export default {
                             retencionLocal.base = row.unit_value * row.quantity
                             this.form.ret.push(retencionLocal)
 
-                            console.log("Agregando PRIMERA retencion de RENTA "+ retRentaDesc.description)
+                            //console.log("Agregando PRIMERA retencion de RENTA "+ retRentaDesc.description)
                         }
 
                     }

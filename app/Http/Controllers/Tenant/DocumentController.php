@@ -50,6 +50,7 @@ use App\Models\Tenant\PaymentCondition;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\PurchasePayment;
+use App\Models\Tenant\Retention;
 use App\Models\Tenant\SaleNote;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\StateType;
@@ -2188,7 +2189,7 @@ class DocumentController extends Controller
 
         $records = Advance::where('idCliente',$client_id)->get();
 
-        $data = $records->transform(function($row) use($client_id){
+        $advances = $records->transform(function($row) use($client_id){
             $documents = DocumentPayment::where('reference',$row->id)->where('payment_method_type_id',$row->idMethodType)->get();
             $purchases = PurchasePayment::where('reference',$row->id)->where('payment_method_type_id',$row->idMethodType)->get();
             $total = 0;
@@ -2203,7 +2204,15 @@ class DocumentController extends Controller
             $row->valor = round(($row->valor - $total),2);
             return $row;
         });
-        return $data;
+
+        $retentions = (Retention::where('supplier_id',$client_id)->get())->transform(function($row){
+            $data['id'] = $row->id;
+            $data['name'] = $row->series.'-'.$row->number.'/'.$row->total_retention;
+            $data['valor'] = number_format((float)($row->total_retention - $row->total_used), 2, '.', '');
+            return $data;
+        });
+
+        return compact('advances','retentions');
 
     }
 

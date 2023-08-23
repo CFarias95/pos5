@@ -51,10 +51,17 @@ class Retention extends ModelTenant
         'has_pdf',
         'has_cdr',
         'soap_shipping_response',
+        'in_use',
+        'total_used',
     ];
 
     protected $casts = [
         'date_of_issue' => 'date',
+        'in_use' => 'bool',
+        'total_used' => 'double',
+        'has_xml' =>'bool',
+        'has_pdf' => 'bool',
+        'has_cdr' => 'bool',
     ];
 
     public function getEstablishmentAttribute($value)
@@ -238,7 +245,7 @@ class Retention extends ModelTenant
         ];
     }
 
-    
+
     /**
      *
      * Filtro para no incluir relaciones en consulta

@@ -78,6 +78,11 @@
             'countable_acount',
             'countable_acount_payment',
         ];
+        protected $casts = [
+            'is_credit'=>'bool',
+            'is_cash' => 'bool',
+            'is_advance'=> 'bool',
+        ];
 
         public const CASH_PAYMENT_ID = '01';
 

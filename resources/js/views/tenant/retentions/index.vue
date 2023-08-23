@@ -6,7 +6,7 @@
                 <li class="active"><span>Retenciones</span></li>
             </ol>
             <div class="right-wrapper pull-right">
-                <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i class="fa fa-plus-circle"></i> Nuevo</a>
+                <!-- <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2" ><i class="fa fa-plus-circle"></i> Nuevo</a> -->
                 <button   @click.prevent="clickImport()" type="button" class="btn btn-custom btn-sm  mt-2 mr-2" ><i class="fa fa-upload"></i> Importar TXT</button>
             </div>
         </div>
@@ -21,7 +21,8 @@
                         <th>Estado</th>
                         <th class="text-right">T.Retención</th>
                         <th class="text-right">Total</th>
-                        <th class="text-center">Descargas</th>
+                        <th class="text-center">En uso</th>
+                        <th class="text-center">Total usado</th>
                     <tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -34,6 +35,10 @@
                         <td class="text-right">{{ row.total_retention }}</td>
                         <td class="text-right">{{ row.total }}</td>
                         <td class="text-center">
+                            <span class="badge bg-secondary text-white" :class="{'bg-info': (row.in_use === false), 'bg-success': (row.in_use === true)}">{{(row.in_use)?'SI':'NO'}}</span>
+                        </td>
+                        <td class="text-center">{{ row.total_used }}</td>
+                        <!-- <td class="text-center">
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickDownload(row.download_external_xml)">XML</button>
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
@@ -44,9 +49,9 @@
                                     @click.prevent="clickOptions(row.id)"
                                     v-if="row.has_cdr">CDR</button>
 
-                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                    @click.prevent="clickDownload(row.download_external_cdr)">CDR</button> -->
-                        </td>
+                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickDownload(row.download_external_cdr)">CDR</button>
+                        </td> -->
                     </tr>
                 </data-table>
             </div>

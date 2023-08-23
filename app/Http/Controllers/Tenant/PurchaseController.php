@@ -56,7 +56,8 @@
     use App\Models\Tenant\GeneralPaymentCondition;
     use App\Models\Tenant\Imports;
     use App\Models\Tenant\PurchaseDocumentTypes2;
-    use App\Models\Tenant\RetentionTypePurchase;
+use App\Models\Tenant\Retention;
+use App\Models\Tenant\RetentionTypePurchase;
     use App\Models\Tenant\RetentionsDetailEC;
     use App\Models\Tenant\RetentionsEC;
     use App\Models\Tenant\Series;
@@ -235,11 +236,7 @@ use Modules\Sale\Models\SaleOpportunity;
                 case 'items':
                     return SearchItemController::getItemToPurchase();
                     return SearchItemController::getItemToPurchase()->transform(function ($row) {
-                        /*
-                                            $items = Item::whereNotIsSet()->whereIsActive()->orderBy('description')->take(20)->get(); //whereWarehouse()
-                                        return collect($items)->transform(function($row) {
-                                            */
-                        /** @var Item $row */
+
                         $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
                         return [
                             'id' => $row->id,
@@ -312,8 +309,8 @@ use Modules\Sale\Models\SaleOpportunity;
         public function item_tables()
         {
 
-            // $items = $this->table('items');
-            $items = Item::all();
+            $items = $this->table('items');
+            //$items = Item::all();
             $categories = [];
             $affectation_igv_types = AffectationIgvType::whereActive()->get();
             $system_isc_types = SystemIscType::whereActive()->get();
@@ -371,14 +368,10 @@ use Modules\Sale\Models\SaleOpportunity;
 
         public function store(PurchaseRequest $request)
         {
-            //Log::info("REQUEST: ".json_encode($request));
-            //Log::info(json_encode($request->ret));
             $data = self::convert($request);
             $docIntern = PurchaseDocumentTypes2::where('idType',$request->document_type_intern)->get();
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
-
-            Log::info("CREATE PURCHASE".json_encode($data));
 
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
@@ -534,15 +527,23 @@ use Modules\Sale\Models\SaleOpportunity;
                     foreach ($data['payments'] as $payment) {
 
                         $record_payment = $doc->purchase_payments()->create($payment);
-
                         if (isset($payment['payment_destination_id'])) {
                             $this->createGlobalPayment($record_payment, $payment);
                         }
 
+                        if($payment['payment_method_type_id'] == '99'){
+                            $reference = $payment['reference'];
+                            $monto = floatval($payment['payment']);
+                            $retention = Retention::find($reference);
+                            $valor = $retention->total_used;
+                            $montoUsado = $valor + $monto;
+                            $retention->total_used = $montoUsado;
+                            $retention->in_use = true;
+                            $retention->save();
+                        }
                     }
 
                     $this->savePurchaseFee($doc, $data['fee']);
-
                     $this->setFilename($doc);
                     $this->createPdf($doc, "a4", $doc->filename);
 
@@ -1288,6 +1289,18 @@ use Modules\Sale\Models\SaleOpportunity;
                         $record_payment->payment_file()->create([
                             'filename' => $payment['payment_filename']
                         ]);
+                    }
+
+                    if($payment['payment_method_type_id'] == '99'){
+
+                        $reference = $payment['reference'];
+                        $monto = floatval($payment['payment']);
+                        $retention = Retention::find($reference);
+                        $valor = $retention->total_used;
+                        $montoUsado = $valor + $monto;
+                        $retention->total_used = $montoUsado;
+                        $retention->in_use = true;
+                        $retention->save();
                     }
 
 
