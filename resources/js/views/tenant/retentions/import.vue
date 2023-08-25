@@ -116,6 +116,8 @@ export default {
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
+                        this.$message.success("Se procesaron de forma exitosa: "+response.data.procesed);
+                        this.$message.error("No se procesaron: "+response.data.fail + "/");
                         this.$eventHub.$emit("reloadData");
                         this.$refs.upload.clearFiles();
                         this.close();

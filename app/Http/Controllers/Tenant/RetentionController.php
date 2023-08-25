@@ -173,58 +173,91 @@ class RetentionController extends Controller
             $data = $request['data'];
             $dataArray = explode("\n",$data);
 
+            $totalDocumentos = 0;
+            $totalProcesados = 0;
+            $totalError = 0;
+
             if(count($dataArray) > 1){
-                $message = 'Retenciones procesadas \n';
+
+                $message = 'Retenciones procesadas';
+
                 foreach($dataArray as $ret){
 
-                    $ret = explode("\t",$ret);
+                    $totalDocumentos += 1;
 
-                    if($ret['1'] != "SERIE_COMPROBANTE"){
+                    try{
 
-                        if(substr($ret['10'],8,2) != '07' ){
-                            return;
-                        }
-                        $message .= '\n'.$ret['10'];
-                        $claveAcceso = $ret['10'];
-                        $rucProveedor = $ret['2'];
-                        $supplier = Person::where('number',$rucProveedor)->get();
-                        if($supplier->count() < 1){
-                            $retAc = Retention::where('observations','like','%'.$claveAcceso.'%')->delete();
-                            return [
-                                'success' => false,
-                                'message' => "No se encontro el proveedor : ".$rucProveedor
-                            ];
-                        }
-                        $url = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+                        $ret = explode("\t",$ret);
 
-                        if($this->company->soap_type_id == '01'){
+                        if($ret['1'] != "SERIE_COMPROBANTE"){
 
-                            $url = 'https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
-                        }
+                            if(substr($ret['10'],8,2) != '07' ){
+                                return;
+                            }
+                            //$message .= '\n'.$ret['10'];
+                            $claveAcceso = $ret['10'];
+                            $rucProveedor = $ret['2'];
+                            $supplier = Person::where('number',$rucProveedor)->get();
+                            if($supplier->count() < 1){
 
-                        $get = new AuthSri();
-                        $documento = $get->send($url,$claveAcceso);
+                                $retAc = Retention::where('observations','like','%'.$claveAcceso.'%')->delete();
+                                return [
+                                    'success' => false,
+                                    'message' => "No se encontro el proveedor : ".$rucProveedor
+                                ];
 
-                        $comporbante = $documento['RespuestaAutorizacionComprobante']['numeroComprobantes'];
+                            }
+                            $url = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
 
-                        if($comporbante > 0){
+                            if($this->company->soap_type_id == '01'){
 
-                            $retencion = $documento['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                            $xmlRet =  simplexml_load_string($retencion);
+                                $url = 'https://celcer.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
+                            }
 
-                            Log::info($xmlRet->infoTributaria->claveAcceso);
-                            foreach($xmlRet->docsSustento->docSustento->retenciones->retencion as $retC){
+                            $get = new AuthSri();
+                            $documento = $get->send($url,$claveAcceso);
 
-                                Log::info($retC->valorRetenido);
+                            $comporbante = $documento['RespuestaAutorizacionComprobante']['numeroComprobantes'];
 
-                                $existe = Retention::where('ubl_version',$claveAcceso. "-".$retC->codigo."-".$retC->codigoRetencion)->get();
+                            if($comporbante > 0){
 
-                                if($existe->count() > 0 ){
+                                $retencion = $documento['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
+                                $xmlRet =  simplexml_load_string($retencion);
 
-                                    if($existe[0]->in_use == false){
+                                Log::info($xmlRet->infoTributaria->claveAcceso);
+                                foreach($xmlRet->docsSustento->docSustento->retenciones->retencion as $retC){
 
-                                        $existe[0]->delete();
+                                    $existe = Retention::where('ubl_version',$claveAcceso. "-".$retC->codigo."-".$retC->codigoRetencion)->get();
 
+                                    if($existe->count() > 0 ){
+
+                                        if($existe[0]->in_use == false){
+
+                                            $existe[0]->delete();
+
+                                            $retIN = new Retention();
+                                            $retIN->user_id = auth()->user()->id;
+                                            $retIN->external_id = Str::uuid()->toString();
+                                            $retIN->establishment_id = auth()->user()->establishment_id;
+                                            $retIN->soap_type_id = $this->company->soap_type_id;
+                                            $retIN->state_type_id = '05';
+                                            $retIN->series = 'RT';
+                                            $retIN->number = (Retention::get())->count() + 1;
+                                            $retIN->date_of_issue = date("Y-m-d");
+                                            $retIN->time_of_issue = date("h:i:s");
+                                            $retIN->supplier_id = $supplier[0]->id;
+                                            $retIN->supplier = $supplier[0];
+                                            $retIN->retention_type_id = '01';
+                                            $retIN->observations = "Retencion: ".$claveAcceso. " Tipo: ".(($retC->codigo == '1')?'RENTA':'IVA');
+                                            $retIN->ubl_version = $claveAcceso. "-".$retC->codigo."-".$retC->codigoRetencion;
+                                            $retIN->currency_type_id = $this->config->currency_type_id;
+                                            $retIN->total_retention = $retC->valorRetenido;
+                                            $retIN->total = $xmlRet->docsSustento->docSustento->importeTotal;
+                                            $retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
+                                            $retIN->save();
+
+                                        }
+                                    }else{
                                         $retIN = new Retention();
                                         $retIN->user_id = auth()->user()->id;
                                         $retIN->external_id = Str::uuid()->toString();
@@ -236,7 +269,6 @@ class RetentionController extends Controller
                                         $retIN->date_of_issue = date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier[0]->id;
-                                        $retIN->supplier = $supplier[0];
                                         $retIN->retention_type_id = '01';
                                         $retIN->observations = "Retencion: ".$claveAcceso. " Tipo: ".(($retC->codigo == '1')?'RENTA':'IVA');
                                         $retIN->ubl_version = $claveAcceso. "-".$retC->codigo."-".$retC->codigoRetencion;
@@ -245,42 +277,29 @@ class RetentionController extends Controller
                                         $retIN->total = $xmlRet->docsSustento->docSustento->importeTotal;
                                         $retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
                                         $retIN->save();
-
                                     }
-                                }else{
-                                    $retIN = new Retention();
-                                    $retIN->user_id = auth()->user()->id;
-                                    $retIN->external_id = Str::uuid()->toString();
-                                    $retIN->establishment_id = auth()->user()->establishment_id;
-                                    $retIN->soap_type_id = $this->company->soap_type_id;
-                                    $retIN->state_type_id = '05';
-                                    $retIN->series = 'RT';
-                                    $retIN->number = (Retention::get())->count() + 1;
-                                    $retIN->date_of_issue = date("Y-m-d");
-                                    $retIN->time_of_issue = date("h:i:s");
-                                    $retIN->supplier_id = $supplier[0]->id;
-                                    $retIN->retention_type_id = '01';
-                                    $retIN->observations = "Retencion: ".$claveAcceso. " Tipo: ".(($retC->codigo == '1')?'RENTA':'IVA');
-                                    $retIN->ubl_version = $claveAcceso. "-".$retC->codigo."-".$retC->codigoRetencion;
-                                    $retIN->currency_type_id = $this->config->currency_type_id;
-                                    $retIN->total_retention = $retC->valorRetenido;
-                                    $retIN->total = $xmlRet->docsSustento->docSustento->importeTotal;
-                                    $retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
-                                    $retIN->save();
                                 }
+
+                                $totalProcesados += 1;
+
+                            }else{
+
+                                Log::error("No se encontro la retencion : ".$ret['10']);
+                                $totalError += 1;
                             }
-
-
-                        }else{
-
-                            Log::error("No se encontro la retencion : ".$ret['10']);
-
                         }
+                    }catch(Exception $ex){
+                        Log::error("Error procesando retencion desde importacion: ".$ex->getMessage());
+                        $totalError += 1;
                     }
                 }
+
                 return [
                     'success' => true,
-                    'message' => $message
+                    'message' => $message,
+                    'documents'=>$totalDocumentos,
+                    'fail' =>$totalError,
+                    'procesed' =>$totalProcesados,
                 ];
 
 
