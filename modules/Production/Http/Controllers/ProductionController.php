@@ -2,6 +2,7 @@
 
 namespace Modules\Production\Http\Controllers;
 
+use App\Imports\ProductionImport;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
@@ -34,6 +35,7 @@ use Modules\Production\Models\Machine;
 use Modules\Production\Models\Production;
 use Modules\Production\Models\StateTypeProduction;
 use Illuminate\Support\Str;
+use Maatwebsite\Excel\Excel;
 
 class ProductionController extends Controller
 {
@@ -267,7 +269,7 @@ class ProductionController extends Controller
 
                 $total_debe = 0;
                 $total_haber = 0;
-                
+
                 $cabeceraC = new AccountingEntries();
                 $cabeceraC->user_id = $document->user_id;
                 $cabeceraC->seat = $seat;
@@ -912,7 +914,6 @@ class ProductionController extends Controller
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
                 $transformed_supplies = [];
-                Log::info("optionsItemProduction ".json_encode($supplies));
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
 
@@ -1227,5 +1228,30 @@ class ProductionController extends Controller
         $filename = 'Etiquetas_'.$produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new ProductionImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
     }
 }

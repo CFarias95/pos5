@@ -116,6 +116,7 @@ class Item extends ModelTenant
     public const SERVICE_UNIT_TYPE = 'ZZ';
 
     protected $fillable = [
+        'id',
         'warehouse_id',
         'name',
         'second_name',

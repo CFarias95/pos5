@@ -50,6 +50,7 @@
                     ->where('identity_document_type_id', $identity_document_type_id)
                     ->where('number', $number)
                     ->first();
+                    
                 if (!$person) {
                     Person::create([
                         'type' => $type,

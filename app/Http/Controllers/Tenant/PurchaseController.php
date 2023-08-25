@@ -373,6 +373,8 @@ use Modules\Sale\Models\SaleOpportunity;
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
 
+            Log::info("purchaseStore: ",$data);
+
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();
@@ -1849,13 +1851,15 @@ use Modules\Sale\Models\SaleOpportunity;
             try {
                 $model = $request->all();
                 $supplier = Person::whereType('suppliers')->where('number', $model['supplier_ruc'])->first();
+
                 if (!$supplier) {
                     return [
                         'success' => false,
-                        'data' => 'Supplier not exist.',
-                        'message' => 'Supplier not exist.'
+                        'data' => 'Proveedor no encontrado: '.$model['supplier_ruc'],
+                        'message' => 'Proveedor no encontrado: '.$model['supplier_ruc'],
                     ];
                 }
+
                 $model['supplier_id'] = $supplier->id;
                 $company = Company::active();
                 $values = [
@@ -1888,6 +1892,7 @@ use Modules\Sale\Models\SaleOpportunity;
                         $doc = new Purchase();
                         $doc->fill($data);
                         $doc->save();
+                        Log::info("PURCHASE IMPORT:",$data);
 
                         foreach ($data['items'] as $row) {
                             $doc->items()->create($row);

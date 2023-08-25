@@ -144,7 +144,7 @@ export default {
             let convert = require("xml-js");
 
             let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"],{compact: true, spaces: 4});
-            //console.log("setdataForm",Invoice)
+            console.log("setdataForm",Invoice)
 
             let evalu = '';
             let ID = [];
@@ -157,19 +157,17 @@ export default {
 
             evalu = 'factura';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_due = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
+
+
+
+            console.log(Invoice.factura.infoFactura.fechaEmision["_text"]);
+            let date = new Date(parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(6,4)),parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(3,2))-1,parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(0,2)));
+
+            this.form.date_of_due = date.toLocaleDateString('en-CA');
             //evalu = 'cbc:IssueDate';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            this.form.date_of_issue = new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca');
+            this.form.date_of_issue = date.toLocaleDateString('en-CA');
             this.form.time_of_issue = "00:00:00";
-            //evalu = 'cbc:IssueTime';
-            if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            //this.form.time_of_issue = Invoice[evalu]["_text"];
-            //evalu = 'cbc:ID';
-            if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
-            //ID = Invoice[evalu]["_text"].split("-");
-            //this.form.series = ID[0];
-            //this.form.number = ID[1];
 
             evalu = '[factura][infoTributaria][ruc]';
             if (Invoice.factura.infoTributaria.ruc) {
@@ -187,7 +185,7 @@ export default {
                 return false;
             }
 
-            evalu = '[factura][infoTributaria][claveAcceso]';
+            evalu = '[factura][infoTributaria][secuencial]';
             if (Invoice.factura.infoTributaria.secuencial) {
                 this.form.sequential_number = Invoice.factura.infoTributaria.estab["_text"]+Invoice.factura.infoTributaria.ptoEmi["_text"]+Invoice.factura.infoTributaria.secuencial["_text"];
             } else {
@@ -195,9 +193,7 @@ export default {
                 return false;
             }
 
-
             evalu = '[factura][detalles][detalle]';
-
             if (Invoice.factura.detalles.detalle !== undefined) {
 
                 await this.setFormItems(Invoice.factura.detalles.detalle);
@@ -219,8 +215,6 @@ export default {
                 this.MensajeError(evalu)
                 return false;
             }
-
-
 
             evalu = '[factura][infoFactura][importeTotal]';
             if (
@@ -247,20 +241,18 @@ export default {
                     this.MensajeError(evalu)
                     return false;
                 }
-                /****/
-                /****/
+
                 evalu = '[factura][infoFactura][totalSinImpuestos]';
                 if (
                     Invoice.factura.infoFactura.totalSinImpuestos !== undefined && Invoice.factura.infoFactura.importeTotal !== undefined
                 ) {
                     let impuestos = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]) - (parseFloat(Invoice.factura.infoFactura.totalSinImpuestos["_text"]))
-                    this.form.total_taxes = impuestos
+                    //this.form.total_taxes = impuestos
 
                 } else {
                     this.MensajeError(evalu)
                     return false;
                 }
-                /****/
 
             } else {
                 this.MensajeError(evalu)
@@ -270,13 +262,39 @@ export default {
 
             evalu = '[factura][infoFactura][totalSinImpuestos]';
             if (Invoice.factura.infoFactura.totalSinImpuestos !== undefined) {
-                this.form.total_taxed = Invoice.factura.infoFactura.totalSinImpuestos["_text"];
+                //this.form.total_taxed = Invoice.factura.infoFactura.totalSinImpuestos["_text"];
+
             } else {
                 this.MensajeError(evalu)
                 return false;
             }
 
-            this.form.total_value = this.form.total_taxed;
+            if(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.length > 1){
+
+                Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.forEach(element => {
+
+                    console.log("codigoPorcentaje"+element["codigoPorcentaje"]["_text"]);
+
+                    if(parseFloat(element["codigoPorcentaje"]["_text"]) > 0){
+                        this.form.total_taxed += parseFloat(element["baseImponible"]["_text"]);
+                    }else{
+                        this.form.total_unaffected += parseFloat(element["baseImponible"]["_text"]);
+                    }
+
+                });
+
+            }else{
+
+                console.log(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.codigoPorcentaje["_text"]);
+                if(parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.codigoPorcentaje["_text"]) > 0){
+                    this.form.total_taxed = parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.baseImponible["_text"]);
+                }else{
+                    this.form.total_unaffected = parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.baseImponible["_text"]);
+                }
+
+            }
+
+            this.form.total_value = this.form.total_taxed + this.form.total_unaffected;
             this.has_file = true;
 
         },

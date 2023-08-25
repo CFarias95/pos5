@@ -114,6 +114,7 @@
                     Route::get('/pdf', 'ProductionController@pdf');
                     Route::get('/pdf_Atributos/{recordId}', 'ProductionController@pdf_Atributos');
                     Route::get('/etiqueta/{recordId}', 'ProductionController@etiqueta');
+                    Route::post('/import', 'ProductionController@import');
                 });
                 Route::prefix('packaging')->group(function () {
                     Route::get('', 'PackagingController@index')->name('tenant.packaging.index'); // ->middleware('redirect.level');
@@ -127,9 +128,9 @@
 
                 });
 
-                
+
                 Route::prefix('workers')->group(function () {
-                 
+
                     Route::get('columns', 'WorkerController@columns');
                     Route::get('tables', 'WorkerController@tables');
                     Route::get('', 'WorkerController@index')->name('tenant.workers.index');
@@ -137,7 +138,7 @@
                     Route::get('record/{worker}', 'WorkerController@record');
                     Route::post('', 'WorkerController@store');
                     Route::delete('{person}', 'WorkerController@destroy');
-                    
+
                 });
 
             });

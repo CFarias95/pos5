@@ -30,7 +30,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    //console.log("OLD ROW: ",row_old);
+    console.log("OLD ROW: ",row_old);
 
     let row = {
         item_id: row_old.item.id,
@@ -449,7 +449,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //     row.total_plastic_bag_taxes = total_plastic_bag_taxes
     // }
 
-    //console.log('RETURNED ROW: ',row)
+    console.log('RETURNED ROW: ',row)
     return row
 }
 

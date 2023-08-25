@@ -21,6 +21,10 @@
                         Nuevo
                     </button>
                 </template>
+
+                <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickImport()"><i
+                    class="fa fa-upload"></i> Importar
+                </button>
             </div>
         </div>
         <div class="card mb-0">
@@ -254,6 +258,8 @@
             </div>
 
         </div>
+        <production-import :showDialog.sync="showImportDialog"
+                            :type="type"></production-import>
     </div>
 </template>
 <script>
@@ -262,7 +268,8 @@
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {deletable} from "../../../../../../../resources/js/mixins/deletable";
 import moment from "moment";
-import queryString from 'query-string'
+import queryString from 'query-string';
+import ProductionImport from './import.vue'
 
 export default {
     props: [
@@ -270,7 +277,7 @@ export default {
         'typeUser',
     ],
     mixins: [deletable],
-    components: {},
+    components: {ProductionImport},
     computed: {
         ...mapState([
             'config',
@@ -286,6 +293,7 @@ export default {
             loading_submit: false,
             showImportSetDialog: false,
             showImportSetIndividualDialog: false,
+            showImportDialog:false,
             showWarehousesDetail: false,
             resource: 'production',
             recordId: null,
@@ -392,6 +400,9 @@ export default {
         },
         clickImportSetIndividual() {
             this.showImportSetIndividualDialog = true
+        },
+        clickImport() {
+            this.showImportDialog = true
         },
         clickWarehouseDetail(warehouses) {
             this.warehousesDetail = warehouses
