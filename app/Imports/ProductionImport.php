@@ -22,8 +22,7 @@ use Modules\Production\Models\Production;
 class ProductionImport implements ToCollection
 {
     use Importable;
-
-    protected $data;
+    protected $result;
 
     public function collection(Collection $rows)
     {
@@ -38,7 +37,7 @@ class ProductionImport implements ToCollection
         foreach ($rows as $row) {
             Log::info(json_encode($row));
             if ($row[0] == null) {
-                return;
+                break;
             }
             try {
 
@@ -62,15 +61,15 @@ class ProductionImport implements ToCollection
                         if ($aProducir > $minimoB) {
                             $aProducirOP = $aProducir;
                         } else if ($aProducir == $minimoB) {
-                            $aProducir = $minimoB;
+                            $aProducirOP = $minimoB;
                         } else {
                             $surplus = $aProducir;
                             $aProducir = 0;
                         }
                     }
 
-                    if ($aProducir = 0) {
-                        return;
+                    if ($aProducir == 0) {
+                        break;
                     }
                     $data['user_id'] = auth()->user()->id;
                     $data['soap_type_id'] = $config->soap_type_id;
@@ -95,7 +94,9 @@ class ProductionImport implements ToCollection
 
                         $itemSupplo = ProductionController::optionsItemProduction($item->id);
 
-                        foreach ($itemSupplo->supplies as $supplie) {
+                        //Log::info(json_encode($itemSupplo));
+
+                        foreach ($itemSupplo[0]["supplies"] as $supplie) {
 
                             $production_supply = new ProductionSupply();
                             $production_id = $production->id;
@@ -127,7 +128,7 @@ class ProductionImport implements ToCollection
                         }
                     }
 
-                    $aProducir -= $aProducirOP;
+                    $aProducir = ($aProducir - $aProducirOP);
                 }
             } catch (Exception $ex) {
                 Log::error("No se pudo procesar la orden de produccion: " . $row[4]);
@@ -136,11 +137,12 @@ class ProductionImport implements ToCollection
             }
         }
 
-        $this->data = compact('total', 'registered', 'noRegistered', 'surplus');
+        $this->result = compact('registered', 'noRegistered', 'surplus');
+
     }
 
     public function getData()
     {
-        return $this->data;
+        return $this->result;
     }
 }

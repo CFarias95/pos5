@@ -74,7 +74,7 @@
             successUpload(response, file, fileList) {
                 if (response.success) {
                     this.$message.success(response.message)
-                    console.log(response.data);
+                    console.log(response);
                     let mensaje = "Ordenes de produccion generadas: "+response.data.registered + " <br/>Sobrante: "+response.data.surplus+"<br/>";
                         this.$notify({
                             title: "",

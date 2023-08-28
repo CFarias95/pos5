@@ -1237,10 +1237,11 @@ class ProductionController extends Controller
                 $import = new ProductionImport();
                 $import->import($request->file('file'), null, Excel::XLSX);
                 $data = $import->getData();
+
                 return [
                     'success' => true,
                     'message' => __('app.actions.upload.success'),
-                    'data' => $data
+                    'data' => $data,
                 ];
             } catch (Exception $e) {
                 return [
