@@ -312,6 +312,7 @@ class PurchasePaymentController extends Controller
         $item = PurchasePayment::findOrFail($id);
 
         if($item->payment_method_type_id == '99'){
+
             $monto = $item->payment;
             $reference = $item->reference;
 
@@ -325,7 +326,6 @@ class PurchasePaymentController extends Controller
         }
 
         $item->delete();
-
         $asientos = AccountingEntries::where('document_id', 'PC' . $id)->get();
         foreach ($asientos as $ass) {
             $ass->delete();

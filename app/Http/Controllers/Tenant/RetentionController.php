@@ -199,13 +199,13 @@ class RetentionController extends Controller
                             //$message .= '\n'.$ret['10'];
                             $claveAcceso = $ret['10'];
                             $rucProveedor = $ret['2'];
-                            $supplier = Person::where('number', $rucProveedor)->get();
-                            if ($supplier->count() < 1) {
+                            $supplier = Person::where('number', $rucProveedor)->first();
+                            if (!$supplier) {
 
                                 $retAc = Retention::where('observations', 'like', '%' . $claveAcceso . '%')->delete();
                                 return [
                                     'success' => false,
-                                    'message' => "No se encontro el proveedor : " . $rucProveedor
+                                    'message' => "No se encontro el proveedor/cliente : " . $rucProveedor
                                 ];
                             }
                             $url = 'https://cel.sri.gob.ec/comprobantes-electronicos-ws/AutorizacionComprobantesOffline?wsdl';
@@ -259,8 +259,8 @@ class RetentionController extends Controller
                                     $retIN->number = (Retention::get())->count() + 1;
                                     $retIN->date_of_issue = date("Y-m-d");
                                     $retIN->time_of_issue = date("h:i:s");
-                                    $retIN->supplier_id = $supplier[0]->id;
-                                    $retIN->supplier = $supplier[0];
+                                    $retIN->supplier_id = $supplier->id;
+                                    $retIN->supplier = $supplier;
                                     $retIN->retention_type_id = '01';
                                     $retIN->observations = "Retencion: " . $claveAcceso;
                                     $retIN->ubl_version = $secuencialRet;
@@ -295,8 +295,8 @@ class RetentionController extends Controller
                                     $retIN->number = (Retention::get())->count() + 1;
                                     $retIN->date_of_issue = date("Y-m-d");
                                     $retIN->time_of_issue = date("h:i:s");
-                                    $retIN->supplier_id = $supplier[0]->id;
-                                    $retIN->supplier = $supplier[0];
+                                    $retIN->supplier_id = $supplier->id;
+                                    $retIN->supplier = $supplier;
                                     $retIN->retention_type_id = '01';
                                     $retIN->observations = "Retencion: " . $claveAcceso;
                                     $retIN->ubl_version = $secuencialRet;

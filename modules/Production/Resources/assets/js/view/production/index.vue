@@ -258,8 +258,7 @@
             </div>
 
         </div>
-        <production-import :showDialog.sync="showImportDialog"
-                            :type="type"></production-import>
+        <production-import :showDialog.sync="showImportDialog"></production-import>
     </div>
 </template>
 <script>

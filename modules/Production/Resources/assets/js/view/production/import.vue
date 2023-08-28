@@ -74,7 +74,15 @@
             successUpload(response, file, fileList) {
                 if (response.success) {
                     this.$message.success(response.message)
-                    this.$message.success(response.data)
+                    console.log(response.data);
+                    let mensaje = "Ordenes de produccion generadas: "+response.data.registered + " <br/>Sobrante: "+response.data.surplus+"<br/>";
+                        this.$notify({
+                            title: "",
+                            dangerouslyUseHTMLString: true,
+                            message: mensaje,
+                            type: "warning",
+                            duration: 6000
+                        })
                     this.$eventHub.$emit('reloadData')
                     this.$refs.upload.clearFiles()
                     this.close()

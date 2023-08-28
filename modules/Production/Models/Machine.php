@@ -32,7 +32,9 @@
         protected $perPage = 25;
 
         protected $casts = [
-            'machine_type_id' => 'int'
+            'machine_type_id' => 'int',
+            'maximum_force' => 'double',
+            'minimum_force' => 'double',
         ];
 
         protected $fillable = [
