@@ -534,6 +534,7 @@ use Modules\Sale\Models\SaleOpportunity;
                         }
 
                         if($payment['payment_method_type_id'] == '99'){
+
                             $reference = $payment['reference'];
                             $monto = floatval($payment['payment']);
                             $retention = Retention::find($reference);
@@ -542,6 +543,7 @@ use Modules\Sale\Models\SaleOpportunity;
                             $retention->total_used = $montoUsado;
                             $retention->in_use = true;
                             $retention->save();
+
                         }
                     }
 

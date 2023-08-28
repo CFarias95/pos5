@@ -24,6 +24,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Retention;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 
@@ -94,6 +95,29 @@ class DocumentPaymentController extends Controller
         //Log::info("data:",$request->all());
 
         $id = $request->input('id');
+
+        if ($request['payment_method_type_id'] == '99' && !$id) {
+
+            $reference = $request['reference'];
+            $monto = floatval($request['payment']);
+            $retention = Retention::find($reference);
+            $valor = $retention->total_used;
+            $montoUsado = $valor + $monto;
+            $retention->total_used = $montoUsado;
+            $retention->in_use = true;
+            $retention->save();
+        } else if ($request['payment_method_type_id'] == '99' && $id) {
+
+            $pagoAnt = DocumentPayment::first(['id' => $id])->payment;
+            $reference = $request['reference'];
+            $monto = floatval($request['payment']);
+            $retention = Retention::find($reference);
+            $valor = $retention->total_used;
+            $montoUsado = $valor + $monto - $pagoAnt;
+            $retention->total_used = $montoUsado;
+            $retention->in_use = true;
+            $retention->save();
+        }
 
         $fee = DocumentFee::where('document_id', $request->document_id)->orderBy('date')->get();
         if($fee->count() > 0 ){
@@ -352,7 +376,22 @@ class DocumentPaymentController extends Controller
 
     public function destroy($id)
     {
+
         $item = DocumentPayment::findOrFail($id);
+
+        if($item->payment_method_type_id == '99'){
+            $monto = $item->payment;
+            $reference = $item->reference;
+
+            $retention = Retention::find($reference);
+            $valor = $retention->total_used;
+            $montoUsado = $valor - $monto;
+            $retention->total_used = $montoUsado;
+            $retention->in_use = ($montoUsado > 0 )?true:false;
+            $retention->save();
+
+        }
+
         $item->delete();
 
         $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
@@ -363,6 +402,8 @@ class DocumentPaymentController extends Controller
         foreach($asientos2 as $ass){
             $ass->delete();
         }
+
+
 
         return [
             'success' => true,

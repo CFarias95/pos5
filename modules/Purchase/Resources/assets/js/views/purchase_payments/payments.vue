@@ -359,6 +359,12 @@ export default {
                 // this.form.payments = []
                 this.enabled_payments = false
 
+                this.$notify({
+                    title: '',
+                    message: 'Debes seleccionar una retencion disponible',
+                    type: 'success'
+                })
+
             } else if (payment_method_type.description.includes('Anticipo')) {
 
                 this.$notify({
