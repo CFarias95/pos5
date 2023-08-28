@@ -94,8 +94,6 @@ class ProductionImport implements ToCollection
 
                         $itemSupplo = ProductionController::optionsItemProduction($item->id);
 
-                        //Log::info(json_encode($itemSupplo));
-
                         foreach ($itemSupplo[0]["supplies"] as $supplie) {
 
                             $production_supply = new ProductionSupply();
