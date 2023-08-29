@@ -889,6 +889,17 @@ if ($hostname) {
 
             Route::get('general-get-current-warehouse', 'Controller@generalGetCurrentWarehouse');
 
+
+            //internal request
+
+            Route::prefix('internal-request')->group(function () {
+
+                Route::get('','Tenant\InternalRequestController@index');
+
+            });
+
+
+
             // test theme
             // Route::get('testtheme', function () {
             //     return view('tenant.layouts.partials.testtheme');

@@ -263,8 +263,10 @@ Vue.component('tenant-order-notes-edit', require('../../modules/Order/Resources/
 Vue.component('tenant-report-valued-kardex', require('../../modules/Inventory/Resources/assets/js/valued_kardex/index.vue'));
 Vue.component('tenant-mitiendape-config', require('../../modules/Order/Resources/assets/js/views/mi_tienda_pe/form.vue'));
 
+//INTERNAL - REQUESTS
+Vue.component('tenant-internal-request-index',require('./views/tenant/internal_requests/index.vue'));
 
-//Finance
+//FINANCES
 Vue.component('tenant-finance-global-payments-index', require('../../modules/Finance/Resources/assets/js/views/global_payments/index.vue'));
 Vue.component('tenant-finance-balance-index', require('../../modules/Finance/Resources/assets/js/views/balance/index.vue'));
 Vue.component('tenant-finance-modal-transfer-between-accounts', require('../../modules/Finance/Resources/assets/js/views/transfer_between_accounts/options.vue'));
