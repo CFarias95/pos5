@@ -18,7 +18,6 @@
 
             <div class="card-body ">
                 <data-table :resource="resource">
-
                     <tr slot="heading">
 
                         <th>#</th>

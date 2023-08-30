@@ -2208,7 +2208,7 @@ class DocumentController extends Controller
         $retentions = (Retention::where('supplier_id',$client_id)->get())->transform(function($row){
             $data['id'] = $row->id;
             $data['name'] = $row->series.'-'.$row->number.'/'.$row->total_retention;
-            $data['valor'] = number_format((float)($row->total_retention - $row->total_used), 2, '.', '');
+            $data['valor'] = (float)($row->total_retention - $row->total_used);
             return $data;
         });
 

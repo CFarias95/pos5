@@ -111,7 +111,7 @@
                                             <div class="form-group mb-0"
                                                 :class="{ 'has-danger': row.errors.payment_method_type_id }">
                                                 <el-select v-model="row.payment_method_type_id"
-                                                    @change="changePaymentMethodType(index)">
+                                                    @change="changePaymentMethodType(row.payment_method_type_id)">
                                                     <el-option v-for="option in payment_method_types"
                                                         v-show="option.id != '09'" :key="option.id" :value="option.id"
                                                         :label="option.description"></el-option>
@@ -328,6 +328,7 @@ export default {
             advances: [],
             retentions: [],
             index: null,
+            monto: 0,
         }
     },
     async created() {
@@ -486,6 +487,7 @@ export default {
                 loading: false,
                 payment_received: '1',
             });
+
             this.showAddButton = false;
         },
         clickCancel(index) {
@@ -512,6 +514,8 @@ export default {
                 payment: this.records[index].payment,
                 payment_received: this.records[index].payment_received,
                 fee_id: this.documentFeeId,
+                date_of_due: moment().format('YYYY-MM-DD')
+
             };
 
             this.$http.post(`/${this.resource}`, form)
@@ -560,27 +564,19 @@ export default {
         },
         changePaymentMethodType(index) {
 
-            let id = '01';
+            let id = index;
 
-            if (this.records[index] !== undefined &&
-                this.records[index].payment_method_type_id !== undefined) {
-                id = this.records[index].payment_method_type_id;
-
-            } else if (this.form.fee[index] !== undefined &&
-                this.form.fee[index].payment_method_type_id !== undefined) {
-                id = this.form.fee[index].payment_method_type_id;
-            }
-            let payment_method_type = _.find(this.payment_method_types, { 'id': id });
+            let payment_method_type = _.find(this.payment_method_types, { 'id': index });
 
             if (payment_method_type.number_days) {
 
-                this.form.date_of_due = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+                //this.form.date_of_due = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
                 // this.form.payments = []
                 this.enabled_payments = false
                 this.readonly_date_of_due = true
-                this.form.payment_method_type_id = payment_method_type.id
+                //this.form.payment_method_type_id = payment_method_type.id
 
-                let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+                let date = moment().add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
 
                 // let date = moment()
                 //     .add(payment_method_type.number_days, 'days')
@@ -592,10 +588,10 @@ export default {
                     }
                 }
 
-            }else if (payment_method_type.id == '09') {
+            } else if (payment_method_type.id == '99') {
 
-                this.form.payment_method_type_id = payment_method_type.id
-                this.form.date_of_due = this.form.date_of_issue
+                //this.form.payment_method_type_id = payment_method_type.id
+                //this.form.date_of_due = this.form.date_of_issue
                 // this.form.payments = []
                 this.enabled_payments = false
                 this.$notify({
@@ -612,9 +608,6 @@ export default {
                     type: 'success'
                 })
                 this.records[index].payment_method_type_id_desc = 'Anticipo';
-
-
-            } else {
 
 
             }
@@ -650,9 +643,9 @@ export default {
             let selectedRetention = _.find(this.retentions, { 'id': id })
             let maxAmount = selectedRetention.valor
 
-            let payment_count = this.form.payments.length;
+            let payment_count = this.records.length;
             // let total = this.form.total;
-            let total = this.getTotal()
+            let total = parseFloat(this.document.total_difference);
 
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
@@ -661,7 +654,7 @@ export default {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
             } else if (amount > maxAmount) {
 
-                this.form.payments[index].payment = maxAmount
+                this.records[index].payment = maxAmount
                 let message = 'El monto maximo de la retencion es de ' + maxAmount
                 this.$message.warning(message)
             }
@@ -674,12 +667,31 @@ export default {
                 let maxAmount = selectedRetention.valor
 
                 if (maxAmount >= event) {
-                    /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+
+                    if (event > parseFloat(this.document.total_difference)) {
+
+                        this.records[index].payment = parseFloat(this.document.total_difference);
+                        let message = 'El monto maximo de la retencion es de ' + this.document.total_difference
+                        this.$message.warning(message)
+
+                    }
 
                 } else {
-                    this.form.payments[index].payment = maxAmount
-                    let message = 'El monto maximo de la retencion es de ' + maxAmount
-                    this.$message.warning(message)
+
+                    if (event > parseFloat(this.document.total_difference)) {
+
+                        this.records[index].payment = parseFloat(this.document.total_difference);
+                        let message = 'El monto maximo de la retencion es de ' + this.document.total_difference
+                        this.$message.warning(message)
+
+                    } else {
+
+                        this.records[index].payment = maxAmount;
+                        let message = 'El monto maximo de la retencion es de ' + maxAmount
+                        this.$message.warning(message)
+
+                    }
+
 
                 }
             }

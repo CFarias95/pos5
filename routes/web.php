@@ -895,6 +895,7 @@ if ($hostname) {
             Route::prefix('internal-request')->group(function () {
 
                 Route::get('','Tenant\InternalRequestController@index');
+                Route::get('/records','Tenant\InternalRequestController@records');
 
             });
 

@@ -92,4 +92,45 @@ class InternalRequestController extends Controller
     {
         //
     }
+
+    //RECORDS
+    public function records(Request $request){
+
+        $records = $this->getRecords($request);
+
+        return new ImportsCollection($records->paginate(config('tenant.items_per_page')));
+
+    }
+
+    public function getRecords($request)
+    {
+
+        $manager = $request->manager;
+
+        $estado = $request->estado;
+
+        $fechaInicio = $request->fechaInicio;
+
+        $fechaFin = $request->fechaFin;
+
+        $records = InternalRequest::query();
+
+        if ($manager) {
+
+            $records->where('user_manage', $manager);
+
+        }
+        if ($fechaInicio && $fechaFin) {
+
+            $records->whereBetween('created_at', [$fechaInicio,$fechaFin."23:59:59"]);
+        }
+
+        if ($estado) {
+
+            $records->where('status', 'like', '%' . $estado . '%');
+        }
+
+        return $records;
+    }
+
 }
