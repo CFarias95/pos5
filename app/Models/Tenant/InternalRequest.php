@@ -4,7 +4,7 @@ namespace App\Models\Tenant;
 
 use Illuminate\Database\Eloquent\Model;
 
-class InternalRequest extends Model
+class InternalRequest extends ModelTenant
 {
     protected $with = ['user','manage'];
     protected $fillable = [

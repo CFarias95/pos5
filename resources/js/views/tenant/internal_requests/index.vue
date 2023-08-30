@@ -20,14 +20,12 @@
             <div class="card-body ">
                 <data-table :resource="resource">
                     <tr slot="heading">
-
                         <th>#</th>
                         <th class="text-center" style="min-width: 95px;">Asunto</th>
                         <th class="text-center" style="min-width: 95px;">Detalles</th>
                         <th class="text-center" style="min-width: 95px;">Estado</th>
                         <th class="text-center" style="min-width: 95px;">Etapa</th>
                         <th class="text-center" style="min-width: 95px;">Acciones</th>
-
                     </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
@@ -49,19 +47,21 @@
                     </tr>
                 </data-table>
             </div>
-
+            <tenant-internal-request-form :recordId="recordId" :showDialog.sync="showDialog"></tenant-internal-request-form>
         </div>
     </div>
 </template>
 <script>
 import DataTable from '../../../components/DataTableInternalRequest.vue'
+import InternalRequestForm from './form.vue'
+
 export default {
     computed: {
 
     },
     components: {
 
-        DataTable,
+        DataTable, InternalRequestForm
     },
     data() {
         return {
@@ -71,8 +71,9 @@ export default {
         }
     },
     methods: {
-        clickCreate() {
-            console.log("click en boton crear")
+        clickCreate(recordId = null) {
+            this.recordId = recordId
+            this.showDialog = true
         },
     }
 

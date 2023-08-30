@@ -265,7 +265,7 @@ Vue.component('tenant-mitiendape-config', require('../../modules/Order/Resources
 
 //INTERNAL - REQUESTS
 Vue.component('tenant-internal-request-index',require('./views/tenant/internal_requests/index.vue'));
-
+Vue.component('tenant-internal-request-form',require('./views/tenant/internal_requests/form.vue'));
 //FINANCES
 Vue.component('tenant-finance-global-payments-index', require('../../modules/Finance/Resources/assets/js/views/global_payments/index.vue'));
 Vue.component('tenant-finance-balance-index', require('../../modules/Finance/Resources/assets/js/views/balance/index.vue'));
