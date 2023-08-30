@@ -18,11 +18,11 @@ class InternalRequestCollection extends ResourceCollection
 
             return [
                 'id' => $row->id,
-                'numeroImportacion' => $row->numeroImportacion,
-                'tipoTransporte' => $row->tipoTransporte,
-                'fechaEmbarque' => (!is_null($row->fechaEmbarque)) ? $row->fechaEmbarque:null,
-                'fechaLlegada' => (!is_null($row->fechaLlegada)) ? $row->fechaLlegada:null,
-                'estado'=>$row->estado,
+                'title' => $row->title,
+                'text' => $row->description,
+                'phase' => ($row->phase)?$row->phase:'',
+                'status' => $row->status,
+                'aproved'=>$row->confirmed,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
 

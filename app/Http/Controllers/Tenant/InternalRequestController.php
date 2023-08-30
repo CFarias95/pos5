@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
+use App\Http\Resources\Tenant\InternalRequestCollection;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\InternalRequest;
 use Illuminate\Http\Request;
@@ -98,7 +99,7 @@ class InternalRequestController extends Controller
 
         $records = $this->getRecords($request);
 
-        return new ImportsCollection($records->paginate(config('tenant.items_per_page')));
+        return new InternalRequestCollection($records->paginate(config('tenant.items_per_page')));
 
     }
 
