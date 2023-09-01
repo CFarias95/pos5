@@ -14,10 +14,10 @@
     </style>
 </head>
 <body>
-<p>Estimad@: 
+<p>Estimad@:
 
     {{ $company->name }}
-  
+
     , informamos que su cotización ha sido emitida exitosamente.</p>
 
 <ul>

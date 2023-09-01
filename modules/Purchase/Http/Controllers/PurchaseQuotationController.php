@@ -17,6 +17,7 @@ use Illuminate\Support\Str;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Requests\Inputs\Common\EstablishmentInput;
 use App\CoreFacturalo\Template;
+use App\Models\Tenant\InternalRequest;
 use Mpdf\Mpdf;
 use Mpdf\HTMLParserMode;
 use Mpdf\Config\ConfigVariables;
@@ -73,8 +74,8 @@ class PurchaseQuotationController extends Controller
         $suppliers = $this->table('suppliers');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $company = Company::active();
-
-        return compact('suppliers', 'establishments','company');
+        $iternalRequest = InternalRequest::all();
+        return compact('suppliers', 'establishments','company','iternalRequest');
     }
 
 

@@ -153,6 +153,12 @@
                                             </el-option>
                                         </el-select>
                                     </div>
+                                    <div class="form-group col-6 col-md-2">
+                                        <label>Pedido Interno</label>
+                                        <el-select v-model="form.internal_request" clearable>
+                                            <el-option v-for="option in options" :key="option.id" :value="option.id" :label="'IR-'+option.id"></el-option>
+                                        </el-select>
+                                    </div>
                                 </div>
                             </div>
 
@@ -465,6 +471,7 @@ export default {
             recordItem: null,
             sellers: [],
             total_discount_no_base: 0,
+            options :[],
         }
     },
     async created() {
@@ -485,7 +492,7 @@ export default {
                 this.payment_destinations = response.data.payment_destinations
                 /* this.configuration = response.data.configuration */
                 this.sellers = response.data.sellers
-
+                this.options = response.data.internalRequests
                 this.changeEstablishment()
                 this.changeDateOfIssue()
                 this.changeCurrencyType()
@@ -652,6 +659,7 @@ export default {
                     this.form.account_number = dato.account_number
                     this.form.terms_condition = dato.terms_condition
                     this.form.seller_id = dato.seller_id
+                    this.form.internal_request = dato.internal_request
                     this.form.active_terms_condition = dato.terms_condition ? true : false
                     this.form.items = this.onPrepareItems(dato.items)
                     // this.form.items = dato.items
@@ -744,7 +752,8 @@ export default {
                 },
                 contact: null,
                 phone: null,
-                seller_id: null
+                seller_id: null,
+                internal_request:null,
             }
 
             this.total_discount_no_base = 0

@@ -26,21 +26,34 @@
                         <th class="text-center" style="min-width: 95px;">Estado</th>
                         <th class="text-center" style="min-width: 95px;">Etapa</th>
                         <th class="text-center" style="min-width: 95px;">Acciones</th>
+
                     </tr>
                     <tr slot-scope="{ index, row }">
-                        <td>{{ index }}</td>
+                        <td>{{ 'IR-'+row.id }}</td>
                         <td class="text-center"> {{ row.title }}</td>
                         <td class="text-center"> {{ row.text }}</td>
-                        <td class="text-center"> {{ row.phase }}</td>
-                        <td class="text-center">
+                        <td v-if="row.is_manager == false" class="text-center">
                             <span class="badge bg-secondary text-white"
                                 :class="{ 'bg-success': (row.status === 'Acepted'), 'bg-warning': (row.estado === 'Rejected'), 'bg-secondary': (row.estado === 'Created') }">
                                 {{ row.status }}
                             </span>
                         </td>
+                        <td v-if="row.is_manager" class="text-center">
+                            <el-select v-model="row.status" @change="changeManager(row.id, row.status)">
+                                <el-option value="Created" label="Creada"></el-option>
+                                <el-option value="Acepted" label="Aceptada"></el-option>
+                                <el-option value="Rejected" label="Rechazada"></el-option>
+                            </el-select>
+                        </td>
+                        <td class="text-center"> {{ row.phase }}</td>
                         <td class="text-right">
 
-                            <button v-if="!row.aproved" class="dropdown-item" @click.prevent="clickCreate(row.id)">Editar
+                            <button v-if="!row.aproved && row.is_user" class="btn btn-custom btn-sm  mt-2 mr-2" type="button"
+                                @click.prevent="clickCreate(row.id)">Editar
+                            </button>
+
+                            <button v-if="row.status == 'Created'" class="btn btn-danger btn-sm  mt-2 mr-2" type="button"
+                                @click.prevent="clickDelete(row.id)">Eliminar
                             </button>
 
                         </td>
@@ -75,6 +88,54 @@ export default {
             this.recordId = recordId
             this.showDialog = true
         },
+        async clickDelete(id_d){
+
+            await this.$http.delete(`/${this.resource}/delete/`+id_d)
+                .then(response =>{
+                    if(response.data.success){
+
+                        this.$message.success(response.data.message)
+                    }else{
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+
+                    console.log('Error:', error);
+                });
+        },
+        async changeManager(id_a, status_a) {
+
+            let form = {
+                id: id_a,
+                status: status_a
+            }
+            await this.$http.post(`/${this.resource}/update/status`, form)
+
+                .then(response => {
+
+                    console.log(response)
+
+                    if (response.data.success) {
+
+                        this.$message.success(response.data.message)
+
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data
+                    } else {
+                        console.log(error)
+                    }
+                })
+                .finally(() => {
+                    this.loading_submit = false
+                })
+        }
     }
 
 }

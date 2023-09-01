@@ -1,6 +1,6 @@
 <?php
 
-namespace Modules\Purchase\Models; 
+namespace Modules\Purchase\Models;
 
 use App\Models\Tenant\User;
 use App\Models\Tenant\SoapType;
@@ -10,7 +10,7 @@ use App\Models\Tenant\ModelTenant;
 
 class PurchaseQuotation extends ModelTenant
 {
-    
+
     protected $fillable = [
         'id',
         'user_id',
@@ -18,12 +18,13 @@ class PurchaseQuotation extends ModelTenant
         'establishment_id',
         'establishment',
         'soap_type_id',
-        'state_type_id', 
-        'prefix', 
+        'state_type_id',
+        'prefix',
         'date_of_issue',
-        'time_of_issue', 
-        'suppliers', 
-        'filename', 
+        'time_of_issue',
+        'suppliers',
+        'filename',
+        'internal_request',
     ];
 
     protected $casts = [
@@ -49,8 +50,8 @@ class PurchaseQuotation extends ModelTenant
     {
         $this->attributes['suppliers'] = (is_null($value))?null:json_encode($value);
     }
- 
- 
+
+
     public function getIdentifierAttribute()
     {
         return $this->prefix.'-'.$this->id;
@@ -69,8 +70,8 @@ class PurchaseQuotation extends ModelTenant
     public function state_type()
     {
         return $this->belongsTo(StateType::class);
-    } 
- 
+    }
+
     public function items()
     {
         return $this->hasMany(PurchaseQuotationItem::class);
@@ -83,10 +84,10 @@ class PurchaseQuotation extends ModelTenant
 
     public function scopeWhereTypeUser($query)
     {
-        $user = auth()->user();         
-        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null; 
+        $user = auth()->user();
+        return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
     }
- 
+
     public function purchase_orders()
     {
         return $this->hasMany(PurchaseOrder::class);

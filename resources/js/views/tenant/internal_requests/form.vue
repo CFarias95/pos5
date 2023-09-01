@@ -18,7 +18,7 @@
                             <div class="col-md-4">
                                 <div :class="{ 'has-danger': errors.confirmed }" class="form-group">
                                     <label class="control-label">Mandar solicitud de pedido? </label>
-                                    <el-switch v-model="form.confirmed" class="ml-2" inline-prompt
+                                    <el-switch  :disabled="isEditForm" v-model="form.confirmed" class="ml-2" inline-prompt
                                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                                         active-text="Si" inactive-text="No" />
                                     <small v-if="errors.confirmed" class="form-control-feedback"
@@ -28,7 +28,7 @@
                             <div class="col-md-4">
                                 <div :class="{ 'has-danger': errors.confirmed }" class="form-group">
                                     <label class="control-label">Se solicita a: </label>
-                                    <el-select v-model="form.user_manage" >
+                                    <el-select :disabled="isEditForm" v-model="form.user_manage" >
                                         <el-option v-for="user in users" :key="user.id" :value="user.id" :label="user.name" ></el-option>
                                     </el-select>
                                 </div>
@@ -90,8 +90,6 @@ export default {
         this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.users = response.data.users
-            }).then(() => {
-
             })
 
     },
@@ -110,8 +108,13 @@ export default {
             this.errors = {}
             this.form = {
                 id: null,
-
-
+                user_id: null,
+                user_manage: null,
+                title: null,
+                description:null,
+                status: "Created",
+                phase: null,
+                confirmed: false,
             }
             this.resource = 'internal-request'
 
@@ -124,14 +127,15 @@ export default {
             this.titleDialog = (this.recordId) ? 'Editar pedido interno' : 'Nuevo pedido interno';
             this.titleTabDialog = 'Pedido Interno';
             this.typeDialog = (this.recordId) ? 'Editar' : 'Guardar';
-            this.isEditForm = (this.recordId) ? true : false;
+            //this.isEditForm = (this.recordId) ? true : false;
 
             if (this.recordId) {
+                console.log("seteando data")
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
-                        this.form = response.data.data
-                    }).then(() => {
-
+                        console.log(response.data.data)
+                        this.form = response.data.data;
+                        this.isEditForm = response.data.data.confirmed;
                     })
             }
         },

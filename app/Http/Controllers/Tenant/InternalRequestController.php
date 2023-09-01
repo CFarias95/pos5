@@ -4,10 +4,15 @@ namespace App\Http\Controllers\Tenant;
 
 use App\Http\Controllers\Controller;
 use App\Http\Resources\Tenant\InternalRequestCollection;
+use App\Mail\Tenant\InternalRequestEmail;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\InternalRequest;
 use App\Models\Tenant\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 
 class InternalRequestController extends Controller
 {
@@ -41,8 +46,7 @@ class InternalRequestController extends Controller
 
         $configuration = Configuration::first();
 
-        return view('tenant.imports.form', compact( 'configuration'));
-
+        return view('tenant.imports.form', compact('configuration'));
     }
 
     /**
@@ -105,24 +109,62 @@ class InternalRequestController extends Controller
         //
     }
 
+    public function updateStatus(Request $request){
+
+        $id = $request->id;
+        $status = $request->status;
+
+        $internalR = InternalRequest::find($id);
+
+        if($internalR){
+
+            $internalR->status = $status;
+            $internalR->save();
+
+            return [
+                'success'=>true,
+                'message' => 'Se actualizo el estado de pedido interno'
+            ];
+        }else{
+            return [
+                'success'=>false,
+                'message' => 'Se producjo un error al tratar de actualizar el estado de pedido interno'
+            ];
+        }
+    }
+
     /**
      * Remove the specified resource from storage.
      *
      * @param  \App\Model\Tenant\InternalRequest  $internalRequest
      * @return \Illuminate\Http\Response
      */
-    public function destroy(InternalRequest $internalRequest)
+    public function destroy( $id)
     {
-        //
+
+        $internalR = InternalRequest::find($id);
+        if($internalR){
+            $internalR->delete();
+            return [
+                'success'=>true,
+                'message' => 'Se elimino el pedido interno PI-'.$id
+            ];
+        }else{
+            return [
+                'success'=>false,
+                'message' => 'No se elimino el pedido interno PI-'.$id
+            ];
+        }
+
     }
 
     //RECORDS
-    public function records(Request $request){
+    public function records(Request $request)
+    {
 
         $records = $this->getRecords($request);
 
         return new InternalRequestCollection($records->paginate(config('tenant.items_per_page')));
-
     }
 
     public function getRecords($request)
@@ -141,11 +183,10 @@ class InternalRequestController extends Controller
         if ($manager) {
 
             $records->where('user_manage', $manager);
-
         }
         if ($fechaInicio && $fechaFin) {
 
-            $records->whereBetween('created_at', [$fechaInicio,$fechaFin."23:59:59"]);
+            $records->whereBetween('created_at', [$fechaInicio, $fechaFin . "23:59:59"]);
         }
 
         if ($estado) {
@@ -153,18 +194,55 @@ class InternalRequestController extends Controller
             $records->where('status', 'like', '%' . $estado . '%');
         }
 
-        return $records;
+        $tipo = auth()->user()->type;
+        if ($tipo == 'admin') {
+            return $records;
+        } else {
+            $id = auth()->user()->id;
+
+            $recordsN = $records->where('user_id', $id);
+            $recordsM = $records->where('user_manage', $id)->where('confirmed',1);
+            return  $recordsN->union($recordsM);
+        }
     }
 
     public function record($id)
     {
-        $record = InternalRequest::findOrFail($id);
-        return $record;
+        $data = InternalRequest::findOrFail($id);
+        return compact('data');
     }
 
-    public function tables(){
+    public function tables()
+    {
         $users = User::all();
         return compact('users');
     }
 
+    public function email($id)
+    {
+
+        $internalRequest = InternalRequest::find($id);
+        $user_email = $internalRequest->user->email;
+        $manage_email = $$internalRequest->manage->email;
+        $estado = $internalRequest->status;
+
+        // $this->reloadPDF($quotation, "a4", $quotation->filename);
+
+        $email = $user_email;
+        $mailable = new InternalRequestEmail($id);
+
+        Configuration::setConfigSmtpMail();
+        $backup = Mail::getSwiftMailer();
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
+
+
+        return [
+            'success' => true
+        ];
+    }
 }

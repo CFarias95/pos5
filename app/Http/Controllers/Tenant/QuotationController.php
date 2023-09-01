@@ -23,6 +23,7 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
+use App\Models\Tenant\InternalRequest;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
@@ -195,18 +196,12 @@ class QuotationController extends Controller
         $payment_method_types = PaymentMethodType::orderBy('id', 'desc')->get();
         $payment_destinations = $this->getPaymentDestinations();
         $configuration = Configuration::select('destination_sale')->first();
-        /*
-        carlomagno83/facturadorpro4#233
+        $internalRequests = InternalRequest::all();
 
-        $sellers = User::without(['establishment'])
-            ->whereIn('type', ['seller'])
-            ->orWhere('id', auth()->user()->id)
-            ->get();
-        */
         $sellers = User::GetSellers(false)->get();
 
         return compact('customers', 'establishments', 'currency_types', 'discount_types', 'charge_types', 'configuration',
-            'company', 'document_type_03_filter', 'payment_method_types', 'payment_destinations', 'sellers');
+            'company', 'document_type_03_filter', 'payment_method_types', 'payment_destinations', 'sellers', 'internalRequests');
 
     }
 

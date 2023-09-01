@@ -74,6 +74,7 @@ class Quotation extends ModelTenant
         'seller_id',
         'total_igv_free',
         'subtotal',
+        'internal_request',
     ];
 
     public static function boot()
@@ -402,6 +403,7 @@ class Quotation extends ModelTenant
             'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             'print_ticket' => $row->getUrlPrintPdf('ticket'),
             'filename' => $row->filename,
+            'internal_request' => $row->internal_request,
         ];
     }
 

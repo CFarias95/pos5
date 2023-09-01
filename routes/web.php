@@ -899,6 +899,8 @@ if ($hostname) {
                 Route::get('/records','Tenant\InternalRequestController@records');
                 Route::get('/record/{id}','Tenant\InternalRequestController@record');
                 Route::get('/tables','Tenant\InternalRequestController@tables');
+                Route::post('/update/status','Tenant\InternalRequestController@updateStatus');
+                Route::delete('delete/{id}', 'Tenant\InternalRequestController@destroy');
 
             });
 
