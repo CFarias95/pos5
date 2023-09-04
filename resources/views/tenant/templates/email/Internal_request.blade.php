@@ -14,20 +14,14 @@
     </style>
 </head>
 <body>
-
     @if($estado)
-
     <p>Estimad@: {{ $name }}<br>
 
         Le informamos que el pedido interno IR- {{ $id }} a sido {{ $estado }}</p>
-
     @else
-
     <p>Estimad@: {{ $name }}<br>
 
         Le informamos que se a generado el pedido interno IR- {{ $id }}</p>
-
     @endif
-
 </body>
 </html>
