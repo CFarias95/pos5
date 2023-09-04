@@ -106,6 +106,9 @@ export default {
                 .catch(error => {
 
                     console.log('Error:', error);
+                })
+                .finally(() => {
+                    this.loading_submit = false
                 });
         },
         async changeManager(id_a, status_a) {
