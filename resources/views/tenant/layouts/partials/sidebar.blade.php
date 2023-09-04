@@ -905,6 +905,12 @@
                                                                                                  compra</a>
                                     </li>
                                 @endif
+                                @if(in_array('internal_request', $vc_module_levels))
+                                    <li class="{{ ($firstLevel === 'internal-request')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.internal-request.index')}}">Pedidos internos</a>
+                                    </li>
+                                @endif
                                 @if(in_array('advanced_order_forms', $vc_module_levels))
                                     <li class="nav-parent
                                 {{ ($firstLevel === 'order-forms')?'nav-active nav-expanded':'' }}
