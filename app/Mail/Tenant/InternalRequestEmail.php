@@ -33,7 +33,6 @@ class InternalRequestEmail extends Mailable
     {
         return $this->subject('Pedido Interno')
                     ->from(config('mail.username'), 'Pedido Interno')
-                    ->view('tenant.templates.email.internal_request');
+                    ->view('tenant.templates.email.internal');
 
     }
-}
