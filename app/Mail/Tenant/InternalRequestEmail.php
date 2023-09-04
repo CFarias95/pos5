@@ -36,3 +36,4 @@ class InternalRequestEmail extends Mailable
                     ->view('tenant.templates.email.internal');
 
     }
+}

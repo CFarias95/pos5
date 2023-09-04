@@ -257,7 +257,7 @@ class InternalRequestController extends Controller
 
         }
 
-        $mailable = new InternalRequestEmail(null,$id,$name);
+        $mailable = new InternalRequestEmail($estado,$id,$name);
 
         Configuration::setConfigSmtpMail();
         $backup = Mail::getSwiftMailer();

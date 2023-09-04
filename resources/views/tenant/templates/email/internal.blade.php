@@ -14,7 +14,7 @@
     </style>
 </head>
 <body>
-    @if($estado)
+    @if($estado != 'Created')
     <p>Estimad@: {{ $name }}<br>
 
         Le informamos que el pedido interno IR- {{ $id }} a sido {{ $estado }}</p>
