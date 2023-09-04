@@ -115,10 +115,20 @@ class InternalRequestController extends Controller
         $status = $request->status;
 
         $internalR = InternalRequest::find($id);
+        $message = "Pedido aceptado";
+
+        if($status == "Rejected"){
+            $message = "Pedido rechazado";
+        }
+
+        if($status == "Created"){
+            $message = "Pedido creado";
+        }
 
         if($internalR){
 
             $internalR->status = $status;
+            $internalR->phase = $message;
             $internalR->save();
 
             return [
