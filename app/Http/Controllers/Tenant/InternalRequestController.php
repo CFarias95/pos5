@@ -256,8 +256,7 @@ class InternalRequestController extends Controller
         $transport->setPassword(Config::get('mail.password'));
         $mailer = new Swift_Mailer($transport);
         Mail::setSwiftMailer($mailer);
-        Mail::to($email)->send($mailable);
-
+        Mail::to($manage_email)->send($mailable);
 
         return [
             'success' => true
