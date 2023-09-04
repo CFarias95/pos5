@@ -26,6 +26,8 @@ class InternalRequestCollection extends ResourceCollection
                 'phase' => ($row->phase)?$row->phase:'Solicitud Creada',
                 'status' => $row->status,
                 'aproved'=>$row->confirmed,
+                'user' => $row->user->name,
+                'manage' => $row->manage->name,
                 'is_manager'=>( $authType == 'admin' || $autID == $row->user_manage)?true:false,
                 'is_user' => ( $authType == 'admin' || $autID == $row->user_id)?true:false,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),

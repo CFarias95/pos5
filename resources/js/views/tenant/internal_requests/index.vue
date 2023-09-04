@@ -22,6 +22,8 @@
                     <tr slot="heading">
                         <th>#</th>
                         <th class="text-center" style="min-width: 95px;">Asunto</th>
+                        <th class="text-center" style="min-width: 95px;">Solicitante</th>
+                        <th class="text-center" style="min-width: 95px;">Solicitado a</th>
                         <th class="text-center" style="min-width: 95px;">Detalles</th>
                         <th class="text-center" style="min-width: 95px;">Estado</th>
                         <th class="text-center" style="min-width: 95px;">Etapa</th>
@@ -31,6 +33,8 @@
                     <tr slot-scope="{ index, row }">
                         <td>{{ 'IR-'+row.id }}</td>
                         <td class="text-center"> {{ row.title }}</td>
+                        <td class="text-center"> {{ row.user }}</td>
+                        <td class="text-center"> {{ row.manage }}</td>
                         <td class="text-center"> {{ row.text }}</td>
                         <td v-if="row.is_manager == false" class="text-center">
                             <span class="badge bg-secondary text-white"

@@ -179,19 +179,23 @@ class InternalRequestController extends Controller
         $fechaFin = $request->fechaFin;
 
         $records = InternalRequest::query();
+        $recordsN = InternalRequest::query();
 
         if ($manager) {
 
             $records->where('user_manage', $manager);
+            $recordsN->where('user_manage', $manager);
         }
         if ($fechaInicio && $fechaFin) {
 
             $records->whereBetween('created_at', [$fechaInicio, $fechaFin . "23:59:59"]);
+            $recordsN->whereBetween('created_at', [$fechaInicio, $fechaFin . "23:59:59"]);
         }
 
         if ($estado) {
 
             $records->where('status', 'like', '%' . $estado . '%');
+            $recordsN->where('status', 'like', '%' . $estado . '%');
         }
 
         $tipo = auth()->user()->type;
@@ -200,9 +204,10 @@ class InternalRequestController extends Controller
         } else {
             $id = auth()->user()->id;
 
-            $recordsN = $records->where('user_id', $id);
-            $recordsM = $records->where('user_manage', $id)->where('confirmed',1);
-            return  $recordsN->union($recordsM);
+            $records->where('user_id', $id);
+            $recordsN->where('user_manage', $id)->where('confirmed',1);
+
+            return  $recordsN->union($records);
         }
     }
 
