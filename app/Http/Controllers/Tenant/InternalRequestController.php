@@ -241,13 +241,19 @@ class InternalRequestController extends Controller
 
         $internalRequest = InternalRequest::find($id);
         $user_email = $internalRequest->user->email;
-        $manage_email = $$internalRequest->manage->email;
+        $manage_email = $internalRequest->manage->email;
+
         $estado = $internalRequest->status;
-
+        $email = $manage_email;
+        $name = $internalRequest->manage->name;
         // $this->reloadPDF($quotation, "a4", $quotation->filename);
+        if($estado != 'Created'){
 
-        $email = $user_email;
-        $mailable = new InternalRequestEmail($id,'');
+            $email = $user_email;
+            $name = $internalRequest->user->name;
+
+        }
+        $mailable = new InternalRequestEmail(null,$id,$name);
 
         Configuration::setConfigSmtpMail();
         $backup = Mail::getSwiftMailer();
@@ -256,7 +262,7 @@ class InternalRequestController extends Controller
         $transport->setPassword(Config::get('mail.password'));
         $mailer = new Swift_Mailer($transport);
         Mail::setSwiftMailer($mailer);
-        Mail::to($manage_email)->send($mailable);
+        Mail::to($email)->send($mailable);
 
         return [
             'success' => true

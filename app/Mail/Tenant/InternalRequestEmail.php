@@ -15,11 +15,13 @@ class InternalRequestEmail extends Mailable
 
     public $estado;
     public $id;
+    public $name;
 
-    public function __construct($estado,$id)
+    public function __construct($estado,$id, $name)
     {
         $this->estado = $estado;
         $this->id = $id;
+        $this->name = $name;
     }
 
     /**
@@ -30,10 +32,13 @@ class InternalRequestEmail extends Mailable
     public function build()
     {
 
+
         //$pdf = $this->getStorage($this->quotation->filename, 'quotation');
         return $this->subject('Pedido Interno')
         ->from(config('mail.username'), 'Pedido Interno')
         ->view('tenant.templates.email.internal_request');
         //->attachData($pdf, $this->quotation->filename.'.pdf');
+
+
     }
 }

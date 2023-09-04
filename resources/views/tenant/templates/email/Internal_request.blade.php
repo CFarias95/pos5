@@ -14,9 +14,19 @@
     </style>
 </head>
 <body>
-<p>Estimad@:
 
-    Le informamos que su a generado el pedido interno IR- {{ $id }}</p>
+    @if(isset($estado))
+    <p>Estimad@: {{ $name }}
+
+        Le informamos que el pedido interno IR- {{ $id }} a sido {{ $estado }}</p>
+
+    @else
+
+    <p>Estimad@: {{ $name }}
+
+        Le informamos que se a generado el pedido interno IR- {{ $id }}</p>
+
+    @endif
 
 <ul>
 
