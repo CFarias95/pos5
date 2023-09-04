@@ -253,6 +253,7 @@ class InternalRequestController extends Controller
             $name = $internalRequest->user->name;
 
         }
+
         $mailable = new InternalRequestEmail(null,$id,$name);
 
         Configuration::setConfigSmtpMail();

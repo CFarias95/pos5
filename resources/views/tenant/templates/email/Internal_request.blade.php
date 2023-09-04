@@ -15,7 +15,8 @@
 </head>
 <body>
 
-    @if(isset($estado))
+    @if($estado)
+
     <p>Estimad@: {{ $name }}
 
         Le informamos que el pedido interno IR- {{ $id }} a sido {{ $estado }}</p>
