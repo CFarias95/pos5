@@ -32,8 +32,8 @@ class InternalRequestEmail extends Mailable
     public function build()
     {
         return $this->subject('Pedido Interno')
-        ->from(config('mail.username'), 'Pedido Interno')
-        ->view('tenant.templates.email.internal_request');
+                    ->from(config('mail.username'), 'Pedido Interno')
+                    ->view('tenant.templates.email.internal_request');
 
     }
 }
