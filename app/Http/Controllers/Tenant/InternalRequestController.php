@@ -65,9 +65,12 @@ class InternalRequestController extends Controller
         $data['user_id'] = auth()->user()->id;
         $internalR->fill($data);
         $internalR->save();
-        if($request->input('confirmed')){
+
+
+        if($internalR->confirmed){
             $this->email($internalR->id);
         }
+
         $msg = '';
         $msg = ($id) ? 'Solicitud de pedido interno editada con éxito' : 'Solicitud de pedido interno registrada con éxito';
 
