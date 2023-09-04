@@ -65,6 +65,9 @@ class InternalRequestController extends Controller
         $data['user_id'] = auth()->user()->id;
         $internalR->fill($data);
         $internalR->save();
+        if($request->input('confirmed')){
+            $this->email($id);
+        }
         $msg = '';
         $msg = ($id) ? 'Solicitud de pedido interno editada con éxito' : 'Solicitud de pedido interno registrada con éxito';
 
@@ -244,7 +247,7 @@ class InternalRequestController extends Controller
         // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
         $email = $user_email;
-        $mailable = new InternalRequestEmail($id);
+        $mailable = new InternalRequestEmail($id,'');
 
         Configuration::setConfigSmtpMail();
         $backup = Mail::getSwiftMailer();
