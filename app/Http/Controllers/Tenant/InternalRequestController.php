@@ -136,7 +136,7 @@ class InternalRequestController extends Controller
             $internalR->status = $status;
             $internalR->phase = $message;
             $internalR->save();
-
+            $this->email($id);
             return [
                 'success'=>true,
                 'message' => 'Se actualizo el estado de pedido interno'

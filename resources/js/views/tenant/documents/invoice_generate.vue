@@ -24,11 +24,11 @@
                                      style="line-height: initial;">
                                 <span class="font-weight-bold">{{ company.name }}</span>
                                 <br>
-                                <span v-if="establishment.address != '-'">{{ establishment.address }} </span>
+                                <span v-if=" establishment && establishment.address != '-'">{{ establishment.address }} </span>
                                 <br>
-                                <span v-if="establishment.email != '-'">{{
+                                <span v-if="establishment && establishment.email != '-'">{{
                                         establishment.email
-                                    }} </span><span v-if="establishment.telephone != '-'">- {{
+                                    }} </span><span v-if="establishment && establishment.telephone != '-'">- {{
                                     establishment.telephone
                                 }}</span>
                             </address>
@@ -1782,7 +1782,7 @@ export default {
             ],
             advances:[],
             focus_on_client: false,
-            dateValid: false,
+            dateValid: true,
             input_person: {},
             showDialogDocumentDetraction: false,
             has_data_detraction: false,
@@ -2521,7 +2521,7 @@ export default {
 
             this.form.customer_address_id = this.form.customer ? this.form.customer.address_id : null
 
-            if (customer.address) {
+            if (customer && customer.address) {
                 this.customer_addresses.unshift({
                     id: null,
                     address: customer.address
@@ -4240,7 +4240,7 @@ export default {
 
             let customer = _.find(this.customers, {'id': this.form.customer_id});
             this.customer_addresses = customer.addresses;
-            if (customer.address) {
+            if (customer && customer.address) {
                 this.customer_addresses.unshift({
                     id: null,
                     address: customer.address
