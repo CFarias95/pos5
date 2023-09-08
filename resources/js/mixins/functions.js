@@ -84,7 +84,7 @@ export const functions = {
                     console.log(this.form.percentage_igv);
                 });
         },
-        async getPercentageIgvWithParams(establishment_id, date_of_issue) 
+        async getPercentageIgvWithParams(establishment_id, date_of_issue)
         {
             await this.$http.post(`/store/get_igv`, {
                         establishment_id: establishment_id,
@@ -253,14 +253,31 @@ export const fnPaymentsFee = {
             let total = this.form.total
 
             let accumulated = 0
-            let amount = _.round(total / fee_count, 2)
-            _.forEach(this.form.fee, row => {
-                accumulated += amount
-                if (total - accumulated < 0) {
-                    amount = _.round(total - accumulated + amount, 2)
-                }
-                row.amount = amount
-            })
+
+            if(fee_count > 1){
+
+                _.forEach(this.form.fee, row => {
+
+                    accumulated += (parseFloat(row.amount))
+                    let amount = (parseFloat(row.amount))
+                    let valor =  _.round(total - accumulated + amount, 2);
+                    if(amount <= 0){
+
+                        row.amount = _.round(total - accumulated + amount, 2);
+                    }
+                })
+
+            }else{
+                let amount = _.round(total / fee_count, 2)
+                _.forEach(this.form.fee, row => {
+                    accumulated += amount
+                    if (total - accumulated < 0) {
+                        amount = _.round(total - accumulated + amount, 2)
+                    }
+                    row.amount = amount
+                })
+            }
+
 
         },
         clickRemoveFee(index) {
@@ -294,7 +311,7 @@ export const setDefaultSeriesByMultipleDocumentTypes = {
                 if(this.authUser.multiple_default_document_types)
                 {
                     const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : document_type_id})
-        
+
                     if(default_document_type_serie)
                     {
                         const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
@@ -405,12 +422,12 @@ export const operationsForDiscounts = {
         }
     },
     methods: {
-        deleteDiscountGlobal() 
+        deleteDiscountGlobal()
         {
             let discount = _.find(this.form.discounts, {'discount_type_id': this.config.global_discount_type_id})
             let index = this.form.discounts.indexOf(discount)
 
-            if (index > -1) 
+            if (index > -1)
             {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
@@ -471,11 +488,11 @@ export const operationsForDiscounts = {
             }
 
         },
-        changeTypeDiscount() 
+        changeTypeDiscount()
         {
             this.calculateTotal()
         },
-        changeTotalGlobalDiscount() 
+        changeTotalGlobalDiscount()
         {
             this.calculateTotal()
         },

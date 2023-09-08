@@ -272,7 +272,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4">
+                    <div class="col-md-4 col-sm-4" v-if="authUser.documents_change_item_warehouse">
                         <div class="form-group">
                             <label class="control-label">Almacén</label>
                             <el-select v-model="form.warehouse_id" filterable clearable>
@@ -655,6 +655,7 @@ export default {
         'currencyTypeIdActive',
         'exchangeRateSale',
         'typeUser',
+        'authUser',
         'isEditItemNote',
         'configuration',
         'documentTypeId',

@@ -1637,6 +1637,7 @@
             :recordItem="recordItem"
             :showDialog.sync="showDialogAddItem"
             :typeUser="typeUser"
+            :authUser="authUser"
             :customer-id="form.customer_id"
             :currency-types="currency_types"
             :is-from-invoice="true"
@@ -1740,6 +1741,7 @@ export default {
     props: [
         'idUser',
         'typeUser',
+        'userEditWarehouse',
         'configuration',
         'documentId',
         'table',
@@ -4402,19 +4404,37 @@ export default {
             })
         },
         calculateFee() {
+
             let fee_count = this.form.fee.length;
             // let total = this.form.total;
             let total = this.getTotal()
 
             let accumulated = 0;
-            let amount = _.round(total / fee_count, 2);
-            _.forEach(this.form.fee, row => {
-                accumulated += amount;
-                if (total - accumulated < 0) {
-                    amount = _.round(total - accumulated + amount, 2);
-                }
-                row.amount = amount;
-            })
+
+            if(fee_count > 1){
+
+                _.forEach(this.form.fee, row => {
+
+                    accumulated += (parseFloat(row.amount))
+                    let amount = (parseFloat(row.amount))
+
+                    if(amount <= 0){
+
+                        row.amount = _.round(total - accumulated + amount, 2);
+                    }
+                })
+
+            }else{
+                let amount = _.round(total / fee_count, 2);
+                _.forEach(this.form.fee, row => {
+                    accumulated += amount;
+                    if (total - accumulated < 0) {
+                        amount = _.round(total - accumulated + amount, 2);
+                    }
+                    row.amount = amount;
+                })
+            }
+
         },
         getTotal() {
             let total_pay = this.form.total;

@@ -135,6 +135,22 @@
                                     </div>
                                 </div>
 
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label>Importe</label>
+                                        <el-input
+                                            @change="changeImporte"
+                                            v-model="form.importe" clearable></el-input>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <br>
+                                        <el-checkbox  v-model="include_liquidated" @change="changeLiquidated" >Incluir Liquidadas</el-checkbox>
+                                    </div>
+                                </div>
+
                                 <div class="col-md-2">
                                     <label class="control-label">Métodos de cobro
                                         <el-tooltip class="item" effect="dark" content="Aplica a CPE" placement="top-start">
@@ -257,7 +273,119 @@
                                         </thead>
                                         <tbody>
                                             <template v-for="(row, index) in records">
-                                                <tr v-if="row.total_to_pay > 0" :key="index">
+                                                <tr v-if="include_liquidated == false && row.total_to_pay > 0" :key="index">
+                                                    <td>{{ customIndex(index) }}</td>
+                                                    <td>{{ row.date_of_issue }}</td>
+                                                    <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                                    <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
+                                                    <td>{{ row.number_full }}</td>
+                                                    <td>{{ row.customer_name }}</td>
+                                                    <td>{{ row.username }}</td>
+
+                                                    <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+                                                    <td>
+                                                        <el-popover placement="right" width="200" trigger="click">
+                                                            <strong>Penalidad: {{ row.arrears }}</strong>
+                                                            <el-button slot="reference">
+                                                                <i class="fa fa-eye"></i>
+                                                            </el-button>
+                                                        </el-popover>
+                                                    </td>
+                                                    <td>
+                                                        <template>
+                                                        <el-popover placement="right" width="400" trigger="click">
+                                                            <el-table :data="row.guides">
+                                                            <el-table-column
+                                                                width="120"
+                                                                property="date_of_issue"
+                                                                label="Fecha Emisión"
+                                                            ></el-table-column>
+                                                            <el-table-column width="100" property="number" label="Número"></el-table-column>
+                                                            <el-table-column
+                                                                width="100"
+                                                                property="date_of_shipping"
+                                                                label="Fecha Envío"
+                                                            ></el-table-column>
+                                                            <el-table-column fixed="right" label="Descargas" width="120">
+                                                                <template slot-scope="scope">
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_xml)"
+                                                                >XML</button>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_pdf)"
+                                                                >PDF</button>
+                                                                <button
+                                                                    type="button"
+                                                                    class="btn waves-effect waves-light btn-xs btn-info"
+                                                                    @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)"
+                                                                >CDR</button>
+                                                                </template>
+                                                            </el-table-column>
+                                                            </el-table>
+                                                            <el-button slot="reference" icon="el-icon-view"></el-button>
+                                                        </el-popover>
+                                                        </template>
+                                                    </td>
+
+                                                    <td  v-if="columns.web_platforms.visible">
+                                                        <template v-for="(platform,i) in row.web_platforms" v-if="row.web_platforms !== undefined">
+                                                            <label class="d-block"  :key="i">{{platform.name}}</label>
+                                                        </template>
+                                                    </td>
+                                                    <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}</td>
+                                                    <td>
+                                                        <el-popover placement="right" width="300" trigger="click">
+                                                            <p>
+                                                                Saldo actual:
+                                                                <span class="custom-badge">{{ row.total_to_pay }}</span>
+                                                            </p>
+                                                            <p>
+                                                                Fecha ultimo pago:
+                                                                <span
+                                                                class="custom-badge"
+                                                                >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
+                                                            </p>
+
+                                                        <el-button icon="el-icon-view" slot="reference"></el-button>
+                                                        </el-popover>
+                                                    </td>
+                                                    <td>{{row.currency_type_id}}</td>
+                                                    <td class="text-right text-danger">{{ row.total_to_pay }}</td>
+                                                    <td class="text-center">
+                                                        <template v-if="row.type == 'document'">
+                                                            {{ row.total_credit_notes }}
+                                                        </template>
+                                                        <template v-else>
+                                                            -
+                                                        </template>
+                                                    </td>
+
+                                                    <td class="text-right">{{ row.total }}</td>
+                                                    <td class="text-right">
+                                                        <template v-if="row.type === 'document'">
+                                                        <button
+                                                            type="button"
+                                                            style="min-width: 41px"
+                                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                            @click.prevent="clickDocumentPayment(row.fee_id,row.id,row.customer_id)"
+                                                        >Pagos</button>
+                                                        </template>
+                                                        <template v-else>
+                                                        <button
+                                                            type="button"
+                                                            style="min-width: 41px"
+                                                            class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                            @click.prevent="clickSaleNotePayment(row.id)"
+                                                        >Pagos</button>
+                                                        </template>
+
+                                                    </td>
+                                                </tr>
+                                                <tr v-if="include_liquidated == true" :key="index" :class="{'bg-success text-white': (row.total_to_pay == 0)}">
                                                     <td>{{ customIndex(index) }}</td>
                                                     <td>{{ row.date_of_issue }}</td>
                                                     <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
@@ -457,7 +585,9 @@
                         title: 'Plataformas web',
                         visible: false
                     },
-                }
+                },
+                include_liquidated:false,
+
             }
         },
         async created() {
@@ -691,6 +821,9 @@
             changeWebPlatform(){
                 this.loadUnpaid()
             },
+            changeImporte(){
+                this.loadUnpaid()
+            },
             changeDisabledDates() {
                 if (this.form.date_end < this.form.date_start) {
                     this.form.date_end = this.form.date_start
@@ -701,6 +834,10 @@
                 if (this.form.month_end < this.form.month_start) {
                     this.form.month_end = this.form.month_start
                 }
+                this.loadUnpaid();
+            },
+            changeLiquidated(){
+
                 this.loadUnpaid();
             },
             changePeriod() {

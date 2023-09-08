@@ -251,6 +251,8 @@ class DashboardView
         $web_platform_id = $request['web_platform_id']??0;
         $purchase_order = $request['purchase_order']??null;
         $payment_method_type_id = $request['payment_method_type_id']??null;
+        $importe = $request['importe']??null;
+        $include_liquidated = $request['include_liquidated']??null;
         // Obtendrá todos los establecimientos
         $stablishmentUnpaidAll = $request['stablishmentUnpaidAll']??0;
         $user = auth()->user();
@@ -408,6 +410,22 @@ class DashboardView
             $documents->where('purchase_order',$purchase_order);
             $sale_notes->where('purchase_order',$purchase_order);
         }
+        if($importe !== null){
+
+            $array = explode(',',$importe);
+
+            if(count($array) > 1){
+                $documents->where('total',trim($array[0]),floatval(trim($array[1])));
+                $sale_notes->where('total',trim($array[0]),floatval(trim($array[1])));
+            }else{
+
+                $documents->where('total','>=',floatval(trim($array[0])));
+                $sale_notes->where('total','>=',floatval(trim($array[0])));
+            }
+
+
+
+        }
         if($web_platform_id != 0){
             $web_platform_table_name = (new WebPlatform())->getTable();
             $item_table_name = (new Item())->getTable();
@@ -433,6 +451,10 @@ class DashboardView
             $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
 
         }
+
+
         return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
+
+
     }
 }

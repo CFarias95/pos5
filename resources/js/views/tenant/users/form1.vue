@@ -237,10 +237,17 @@
                                     </el-checkbox>
                                 </div>
                             </div>
-                            
+                            <div  class="col-md-4 mt-1">
+                                <div class="form-comtrol">
+                                    <el-checkbox v-model="form.documents_change_item_warehouse">
+                                        Seleccionar almacén de items en ventas
+                                    </el-checkbox>
+                                </div>
+                            </div>
+
                             <div class="col-md-4 mt-1" v-if="form.type === 'admin'">
                                 <div class="form-comtrol">
-                                    
+
                                     <el-tooltip class="item"
                                                 content="Se habilita el permiso para modificar el tipo de envío de las boletas - envío individual a resumen de boletas (solo aplica si la boleta fue enviada de forma individual y se encuentra en estado registrado)"
                                                 effect="dark"
@@ -325,7 +332,7 @@
                         </div>
 
                     </el-tab-pane>
-                    
+
                     <el-tab-pane class name="third">
                         <span slot="label">Datos personales</span>
                         <div class="row">
@@ -355,7 +362,7 @@
                                     <small v-if="errors.names" class="form-control-feedback" v-text="errors.names[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div :class="{ 'has-danger': errors.last_names }" class="form-group">
                                     <label class="control-label">Apellidos</label>
@@ -363,7 +370,7 @@
                                     <small v-if="errors.last_names" class="form-control-feedback" v-text="errors.last_names[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div :class="{ 'has-danger': errors.date_of_birth }" class="form-group">
                                     <label class="control-label">Fecha de nacimiento</label>
@@ -387,14 +394,14 @@
                                     <small v-if="errors.personal_cell_phone" class="form-control-feedback" v-text="errors.personal_cell_phone[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div :class="{ 'has-danger': errors.address }" class="form-group">
                                     <label class="control-label">Dirección</label>
                                     <el-input v-model="form.address"></el-input>
                                     <small v-if="errors.address" class="form-control-feedback" v-text="errors.address[0]"></small>
                                 </div>
-                            </div> 
+                            </div>
 
                             <div class="col-md-6">
                                 <div :class="{ 'has-danger': errors.corporate_email }" class="form-group">
@@ -403,7 +410,7 @@
                                     <small v-if="errors.corporate_email" class="form-control-feedback" v-text="errors.corporate_email[0]"></small>
                                 </div>
                             </div>
-                            
+
                             <div class="col-md-6">
                                 <div :class="{ 'has-danger': errors.contract_date }" class="form-group">
                                     <label class="control-label">Fecha de contratación</label>
@@ -449,8 +456,8 @@
                     <el-tab-pane class name="fourth">
                         <span slot="label">Config. Documentos</span>
                         <div class="row">
-                            
-                            
+
+
                             <div class="col-md-12">
                                 <label class="control-label">¿Múltiples tipos de documento por defecto?</label>
                                 <div class="form-group">
@@ -458,7 +465,7 @@
                                 </div>
                             </div>
 
-                            <template v-if="form.multiple_default_document_types"> 
+                            <template v-if="form.multiple_default_document_types">
 
                                 <div class="col-md-12 mt-3">
                                     <table class="table table-responsive table-bordered">
@@ -485,7 +492,7 @@
                                                         <el-select v-model="row.document_type_id" @change="changeDefaultDocumentType(index)">
                                                             <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
                                                         </el-select>
-                                                        
+
                                                         <template v-if="errors[`default_document_types.${index}.document_type_id`]">
                                                             <div class="form-group" :class="{'has-danger': errors[`default_document_types.${index}.document_type_id`]}">
                                                                 <small class="form-control-feedback" v-text="errors[`default_document_types.${index}.document_type_id`][0]"></small>
@@ -519,7 +526,7 @@
 
                             </template>
                             <template v-else>
-                                
+
                                 <!-- Documento por defecto -->
                                 <div class="col-md-4 mt-3">
                                     <div
@@ -660,12 +667,12 @@ export default {
     },
     methods: {
         onUploadSuccess(response, file, fileList) {
-            if (response.success) 
+            if (response.success)
             {
                 this.form.photo_filename = response.data.filename
                 this.form.photo_temp_image = response.data.temp_image
                 this.form.photo_temp_path = response.data.temp_path
-            } 
+            }
             else
             {
                 this.$message.error(response.message)
@@ -766,7 +773,7 @@ export default {
                 edit_purchase: true,
                 annular_purchase: true,
                 delete_purchase: true,
-                
+
                 identity_document_type_id: null,
                 number: null,
                 address: null,
@@ -816,7 +823,7 @@ export default {
             {
                 this.form.document_id = null
                 this.getSeries()
-            } 
+            }
             else
             {
                 this.form.default_document_types = []
@@ -857,7 +864,7 @@ export default {
 
             this.loading = true
 
-            if (this.recordId) 
+            if (this.recordId)
             {
                 await this.$http
                     .get(`/${this.resource}/record/${this.recordId}`)
@@ -889,8 +896,8 @@ export default {
                 await this.getSeries()
                 await this.initDataDefaultDocumentTypes(false)
 
-            } 
-            else 
+            }
+            else
             {
                 await this.$http.get(`/${this.resource}/tables`).then((response) => {
                     this.$refs.tree.setCheckedKeys([]);
@@ -910,7 +917,7 @@ export default {
         {
             //JOINSOFTWARE TIPOS DE DOCUMENTOS EN FORMULARIO DE CREAR CLIENTES//
             /*return data.filter(element => {
-                return ['01', '03', '80', '09'].includes(element.id) 
+                return ['01', '03', '80', '09'].includes(element.id)
             })*/
             return data
         },
@@ -937,8 +944,8 @@ export default {
             }
 
             this.form.config_regex_password_user = this.config_regex_password_user
-            
-            
+
+
             if (this.form.multiple_default_document_types && this.form.default_document_types.length == 0) return this.$message.error('Debe agregar al menos un tipo de documento por defecto')
 
             this.loading_submit = true;

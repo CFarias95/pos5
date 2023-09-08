@@ -32,6 +32,8 @@ class ToPay
         $month_end = $request['month_end'];
         $supplier_id = isset($request['supplier_id']) ? (int)$request['supplier_id'] : 0;
         $user = isset($request['user']) ? (int)$request['user'] : 0;
+        $importe = $request['importe']??null;
+        $include_liquidated = $request['include_liquidated']??null;
         // Obtendrá todos los establecimientos
         $stablishmentTopaidAll = (int)( $request['stablishmentTopaidAll'] ?? 0);
         $withBankLoan = $request['withBankLoan'] ?? 0;
@@ -103,6 +105,7 @@ class ToPay
             " fee.id as fee_id, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ' .
             "'purchase' AS 'type', " . 'purchases.currency_type_id, ' . 'purchases.exchange_rate_sale');
+
         $purchases->select($select);
 
         if ($d_start && $d_end) {
@@ -117,6 +120,18 @@ class ToPay
             $purchases->where('supplier_id', $supplier_id);
         }
 
+        if($importe !== null){
+            $array = explode(',',$importe);
+
+            if(count($array) > 1){
+                $purchases->where('total',trim($array[0]),floatval(trim($array[1])));
+
+            }else{
+
+                $purchases->where('total','>=',floatval(trim($array[0])));
+
+            }
+        }
         /*
          * Sale Notes
          */

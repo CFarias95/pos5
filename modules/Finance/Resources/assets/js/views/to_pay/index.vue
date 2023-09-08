@@ -88,6 +88,22 @@
                                         ></el-option>
                                     </el-select>
                                 </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <label>Importe</label>
+                                        <el-input
+                                            @change="changeImporte"
+                                            v-model="form.importe" clearable></el-input>
+                                    </div>
+                                </div>
+
+                                <div class="col-lg-3 col-md-3">
+                                    <div class="form-group">
+                                        <br>
+                                        <el-checkbox  v-model="include_liquidated" @change="changeLiquidated" >Incluir Liquidadas</el-checkbox>
+                                    </div>
+                                </div>
                                 <div class="col-md-8" style="margin-top:29px">
                                     <el-button type="primary" @click="loadToPay" class="mb-2">
                                         <i class="fa fa-search mr-2"></i>
@@ -181,7 +197,67 @@
                                 </thead>
                                 <tbody>
                                     <template v-for="(row, index) in records">
-                                        <tr v-if="row.total_to_pay > 0" :key="index">
+                                        <tr v-if="include_liquidated == false && row.total_to_pay > 0" :key="index">
+                                            <td>{{ index + 1 }}</td>
+                                            <td>{{ row.date_of_issue }}</td>
+                                            <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                            <td>{{ row.number_full }}</td>
+                                            <td>{{ row.supplier_name }}</td>
+                                            <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+
+                                            <td>
+                                                <el-popover placement="right" width="300" trigger="click">
+                                                <p>
+                                                    Saldo actual:
+                                                    <span class="custom-badge">{{ row.total_to_pay }}</span>
+                                                </p>
+                                                <p>
+                                                    Fecha ultimo pago:
+                                                    <span
+                                                    class="custom-badge"
+                                                    >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
+                                                </p>
+
+                                                <!-- <p>
+                                                    Dia de retraso en el pago:
+                                                    <span
+                                                    class="custom-badge"
+                                                    >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
+                                                </p> -->
+
+                                                <!-- <p>
+                                                    Fecha de vencimiento:
+                                                    <span
+                                                    class="custom-badge"
+                                                    >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
+                                                </p> -->
+                                                <el-button icon="el-icon-view" slot="reference"></el-button>
+                                                </el-popover>
+                                            </td>
+                                                <td>{{row.currency_type_id}}</td>
+                                            <td class="text-right text-danger">{{ row.total_to_pay }}</td>
+                                            <td class="text-right">{{ row.total }}</td>
+                                            <td class="text-right">
+                                                <template v-if="row.type === 'purchase'">
+                                                <button
+                                                    type="button"
+                                                    style="min-width: 41px"
+                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                    @click.prevent="clickPurchasePayment(row.fee_id,row.id, row.supplier_id)"
+                                                >Pagos</button>
+                                                </template>
+                                                <template v-else>
+                                                <button
+                                                    type="button"
+                                                    style="min-width: 41px"
+                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
+                                                    @click.prevent="clickExpensePayment(row.id)"
+                                                >Pagos</button>
+                                                </template>
+
+                                            </td>
+                                        </tr>
+                                        <tr v-if="include_liquidated" :key="index" :class="{'bg-success text-white': (row.total_to_pay == 0)}">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.date_of_issue }}</td>
                                             <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
@@ -302,7 +378,8 @@
                     }
                 },
                 showDialogPurchasePayments: false,
-                showDialogExpensePayments: false
+                showDialogExpensePayments: false,
+                include_liquidated:false,
             }
         },
         async created() {
@@ -483,6 +560,10 @@
                 if (this.form.month_end < this.form.month_start) {
                     this.form.month_end = this.form.month_start
                 }
+                this.loadToPay();
+            },
+            changeLiquidated(){
+
                 this.loadToPay();
             },
             changePeriod() {

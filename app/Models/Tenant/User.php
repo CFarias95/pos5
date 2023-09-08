@@ -180,7 +180,7 @@ class User extends Authenticatable
         'recreate_documents',
         'zone_id',
         'restaurant_role_id',
-        
+
         'delete_payment',
         'create_payment',
 
@@ -209,6 +209,7 @@ class User extends Authenticatable
 
         'multiple_default_document_types',
         'permission_force_send_by_summary',
+        'documents_change_item_warehouse',
 
     ];
 
@@ -238,6 +239,7 @@ class User extends Authenticatable
         'delete_purchase'=>'bool',
         'multiple_default_document_types'=>'bool',
         'permission_force_send_by_summary' => 'boolean',
+        'documents_change_item_warehouse' => 'boolean',
     ];
 
     public function modules()
@@ -938,14 +940,14 @@ $withEstablishment = true){
 
     }
 
-        
+
     /**
-     * 
+     *
      * Validar si aplica el filtro por vendedor para el usuario en sesión (filtrar clientes por vendedor asignado)
      *
      * Usado en:
      * Person - scopeWhereFilterCustomerBySeller
-     * 
+     *
      * @return bool
      */
     public function applyCustomerFilterBySeller()
@@ -955,9 +957,9 @@ $withEstablishment = true){
         return ($this->type === 'seller' && $configuration->customer_filter_by_seller);
     }
 
-    
+
     /**
-     * 
+     *
      * Obtener permisos para pagos de comprobantes
      *
      * @return array
@@ -970,9 +972,9 @@ $withEstablishment = true){
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Retorna data para los permisos de la app
      *
      * @return array
@@ -986,10 +988,10 @@ $withEstablishment = true){
             'app_modules' => $this->getDataAppModules()
         ];
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Obtener modulos de la app
      *
      * @return array
@@ -1017,7 +1019,7 @@ $withEstablishment = true){
 
 
     /**
-     * 
+     *
      * Obtener permisos del usuario para gestionar modulos en la app
      *
      * @return array
@@ -1030,14 +1032,14 @@ $withEstablishment = true){
         {
             return $this->getTransformPermissionsApp(AppModule::get());
         }
-        
+
         return $this->getTransformPermissionsApp($this->app_modules);
 
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener modulos/opciones disponibles en pos app
      *
      * @return array
@@ -1053,7 +1055,7 @@ $withEstablishment = true){
 
 
     /**
-     * 
+     *
      * Retornar data para api
      *
      * @param  array $data
@@ -1065,12 +1067,12 @@ $withEstablishment = true){
             return $row->getPermissionsApp();
         });
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener datos generales del usuario
-     * 
+     *
      * Usado para carga inicial en app
      *
      * @return array
@@ -1082,7 +1084,7 @@ $withEstablishment = true){
             'establishment_id' => $this->establishment_id,
         ];
     }
-    
+
     public function getPermissionsPurchase()
     {
         return [
@@ -1092,7 +1094,7 @@ $withEstablishment = true){
         ];
     }
 
-        
+
     /**
      *
      * @return string
@@ -1102,14 +1104,14 @@ $withEstablishment = true){
         return $this->photo_filename ? (new ModelTenant)->getPathPublicUploads('users', $this->photo_filename) : null;
     }
 
-    
+
     /**
-     * 
+     *
      * Filtro para no incluir relaciones en consulta
      *
      * @param \Illuminate\Database\Eloquent\Builder $query
      * @return \Illuminate\Database\Eloquent\Builder
-     */  
+     */
     public function scopeWhereFilterWithOutRelations($query)
     {
         return $query->withOut([
@@ -1117,9 +1119,9 @@ $withEstablishment = true){
         ]);
     }
 
-        
+
     /**
-     * 
+     *
      * Retorna nombre de la conexión
      *
      * @return string
@@ -1128,21 +1130,21 @@ $withEstablishment = true){
     {
         return $this->getConnection()->getName();
     }
-    
+
 
     public function system_activity_logs()
     {
         return $this->morphMany(SystemActivityLog::class, 'origin');
     }
 
-    
+
     /**
-     * 
+     *
      * Filtro para no incluir relaciones en consulta y obtener el nombre de usuario
      *
      * @param Builder $query
      * @return Builder
-     */  
+     */
     public function scopeFilterOnlyUsername($query)
     {
         return $query->whereFilterWithOutRelations()->select('id', 'name');
@@ -1187,12 +1189,13 @@ $withEstablishment = true){
             'multiple_default_document_types' => $this->multiple_default_document_types,
             'default_document_types' => $this->default_document_types,
             'permission_force_send_by_summary' => $this->permission_force_send_by_summary,
+            'documents_change_item_warehouse' => $this->documents_change_item_warehouse,
         ];
     }
 
 
     /**
-     * 
+     *
      * Permisos de los modulos y submodulos por usuario
      *
      * @return array

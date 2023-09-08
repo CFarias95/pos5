@@ -105,7 +105,7 @@ class UserController extends Controller
     }
 
 
-    public function store(UserRequest $request) 
+    public function store(UserRequest $request)
     {
         $id = $request->input('id');
 
@@ -151,7 +151,7 @@ class UserController extends Controller
             $user->edit_purchase = $request->input('edit_purchase');
             $user->annular_purchase = $request->input('annular_purchase');
             $user->delete_purchase = $request->input('delete_purchase');
-
+            $user->documents_change_item_warehouse = $request->input('documents_change_item_warehouse');
             $user->permission_force_send_by_summary = $request->input('permission_force_send_by_summary');
 
             if($user->isDirty('password')) $user->last_password_update = date('Y-m-d H:i:s');
@@ -175,9 +175,9 @@ class UserController extends Controller
         ];
     }
 
-    
+
     /**
-     * 
+     *
      * Asignar datos
      *
      * @param  User $user
@@ -207,7 +207,7 @@ class UserController extends Controller
 
 
     /**
-     * 
+     *
      * Guardar imágen
      *
      * @param  User $user
@@ -218,7 +218,7 @@ class UserController extends Controller
     {
         $temp_path = $request->photo_temp_path;
 
-        if($temp_path) 
+        if($temp_path)
         {
             $old_filename = $request->photo_filename;
             $user->photo_filename = UploadFileHelper:: uploadImageFromTempFile('users', $old_filename, $temp_path, $user->id, true);
@@ -226,9 +226,9 @@ class UserController extends Controller
         }
     }
 
-    
+
     /**
-     * 
+     *
      * Guardar documentos por defecto
      *
      * @param  User $user
@@ -239,7 +239,7 @@ class UserController extends Controller
     {
         $user->default_document_types()->delete();
 
-        foreach ($request->default_document_types as $row) 
+        foreach ($request->default_document_types as $row)
         {
             $user->default_document_types()->create($row);
         }
