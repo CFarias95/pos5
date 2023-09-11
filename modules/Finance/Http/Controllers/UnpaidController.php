@@ -75,7 +75,19 @@ class UnpaidController extends Controller
         ];
         $customers = array_merge($customer,$customer_temp->toArray());
 
-        $establishments = DashboardView::getEstablishments();
+
+        $establishments= [];
+        $establishments[] = [
+            'id' => 0,
+            'name' => 'Todos',
+        ];
+        $establishments = collect($establishments);
+        Establishment::all()->transform(function($row)  use(&$establishments){
+            $establishments[]  = [
+                'id' => $row->id,
+                'name' => $row->description
+            ]; }
+        );
 
         $users = [];
 

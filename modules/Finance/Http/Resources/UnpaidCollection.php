@@ -67,8 +67,8 @@ class UnpaidCollection extends ResourceCollection
                 $date_payment_last = SaleNotePayment::where('sale_note_id', $row->id)->orderBy('date_of_payment', 'desc')->first();
             }
             $to_pay_fee = 0;
-            if($row->fee_id){
-                $to_pay_fee = (DocumentPayment::where('fee_id',$row->fee_id)->get())->sum('payment');
+            if ($row->fee_id) {
+                $to_pay_fee = (DocumentPayment::where('fee_id', $row->fee_id)->get())->sum('payment');
             }
             $purchase_order = null;
             if ($row->type == 'document') {
@@ -89,18 +89,18 @@ class UnpaidCollection extends ResourceCollection
                 'customer_id' => $row->customer_id,
                 'number_full' => $row->number_full,
                 'total' => number_format((float)$row->total, 2, ".", ""),
-                'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
+                'total_to_pay' => ($row->amount && $row->amount > 0) ? number_format($row->amount - $to_pay_fee, 2, ".", "") : number_format($total_to_pay, 2, ".", ""),
                 'type' => $row->type,
                 'guides' => $guides,
                 'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
                 'delay_payment' => $delay_payment,
-                'date_of_due' => ($row->date)?$row->date:$date_of_due,
+                'date_of_due' => ($row->date) ? $row->date : $date_of_due,
                 'currency_type_id' => $row->currency_type_id,
                 'exchange_rate_sale' => (float)$row->exchange_rate_sale,
                 "user_id" => $row->user_id,
                 "username" => $row->username,
                 "total_subtraction" => $row->total_subtraction,
-                "total_credit_notes" => $this->getTotalCreditNote($row) ,
+                "total_credit_notes" => $this->getTotalCreditNote($row),
                 "total_payment" => $row->total_payment,
                 "web_platforms" => $web_platforms,
                 "purchase_order" => $purchase_order,

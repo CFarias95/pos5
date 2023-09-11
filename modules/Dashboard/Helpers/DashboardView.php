@@ -92,8 +92,12 @@ class DashboardView
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
                                     "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale"))
-                ->where('documents.establishment_id', $establishment_id)
+                //->where('documents.establishment_id', $establishment_id)
                 ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+
+                if($establishment_id > 0){
+                    $documents->where('documents.establishment_id', $establishment_id);
+                }
 
         }else{
 
@@ -112,8 +116,12 @@ class DashboardView
                                     "CONCAT(documents.series,'-',documents.number) AS number_full, ".
                                     "documents.total as total, ".
                                     "IFNULL(payments.total_payment, 0) as total_payment, ".
-                                    "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale"))
-                ->where('documents.establishment_id', $establishment_id);
+                                    "'document' AS 'type', ". "documents.currency_type_id, " . "documents.exchange_rate_sale"));
+
+
+                if($establishment_id > 0 ){
+                    $documents->where('documents.establishment_id', $establishment_id);
+                }
 
         }
 
@@ -141,10 +149,15 @@ class DashboardView
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
-                ->where('sale_notes.establishment_id', $establishment_id)
+                //->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
                 ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
                 ->where('sale_notes.total_canceled', false);
+
+                if($establishment_id > 0){
+
+                    $sale_notes->where('sale_notes.establishment_id', $establishment_id);
+                }
 
         }else{
 
@@ -163,9 +176,13 @@ class DashboardView
                                 "sale_notes.total as total, ".
                                 "IFNULL(payments.total_payment, 0) as total_payment, ".
                                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
-                ->where('sale_notes.establishment_id', $establishment_id)
+                //->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
                 ->where('sale_notes.total_canceled', false);
+
+                if($establishment_id > 0 ){
+                    $sale_notes->where('sale_notes.establishment_id',$establishment_id);
+                }
 
         }
 
@@ -240,7 +257,7 @@ class DashboardView
 
     public static function getUnpaidFilterUser($request)
     {
-        $establishment_id = $request['establishment_id']??null;
+        $establishment_id = $request['establishment_id'];
         $period = $request['period']??null;
         $date_start = $request['date_start']??null;
         $date_end = $request['date_end']??null;
@@ -355,7 +372,8 @@ class DashboardView
             ->select(DB::raw($document_select))
             ->orderByDesc('date');
 
-        if($stablishmentUnpaidAll !== 1) {
+        if($establishment_id > 0) {
+
             $documents-> where('documents.establishment_id', $establishment_id);
         }
 
@@ -383,7 +401,7 @@ class DashboardView
             ->where('sale_notes.changed', false)
             ->where('sale_notes.total_canceled', false);
 
-        if($stablishmentUnpaidAll !== 1) {
+        if($establishment_id > 0) {
             $sale_notes
                 ->where('sale_notes.establishment_id', $establishment_id)
             ;

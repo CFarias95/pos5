@@ -841,6 +841,7 @@
                 this.loadUnpaid();
             },
             changePeriod() {
+                
                 if(this.form.period === 'month') {
                     this.form.month_start = moment().format('YYYY-MM');
                     this.form.month_end = moment().format('YYYY-MM');
