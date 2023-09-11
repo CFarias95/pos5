@@ -119,7 +119,7 @@
                             <th v-if="document.payments.length>0">Referencia</th>
                             <th v-if="document.payments.length>0">Monto</th>
                             <th width="15%">
-                                <a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar]</a>
+                                <a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar pago]</a>
                             </th>
                         </tr>
                     </thead>
@@ -438,20 +438,18 @@ export default {
                 let paymentSelected = _.filter(this.payment_method_types,{id:row.payment_method_type_id});
                 let valor = row.payment;
 
-                if(paymentSelected[0].is_credit == 1){
+                if(paymentSelected[0].is_credit == true){
                     this.document.payment_condition_id =  '02';
                 }
                 //validar cupo
                 this.total_cuenta=0;
-                if(this.document.payment_condition_id != '01'){
+                if(this.document.payment_condition_id == '02'){
                     this.calcularCupo(valor);
                 }else{
                     this.deuda=0;
                     this.cupo=0;
                 }
                 let validar= this.validacionCupo();
-
-                console.log("deuda: "+validar)
 
                 if(validar){
 
@@ -460,7 +458,6 @@ export default {
                 }
             });
 
-            console.log("Paso: "+paso)
             if(paso){
                 this.$message.error('El monto es mayor al cupo disponible');
                 this.loading_submit = false;
@@ -471,7 +468,7 @@ export default {
                     .then(response => {
                         if (response.data.success) {
                             this.documentNewId = response.data.data.id;
-                            // console.log(this.document.document_type_id)
+
                             if (this.document.document_type_id === "80") {
                                 this.form_cash_document.sale_note_id = response.data.data.id;
                                 this.showDialogSaleNoteOptions = true;
@@ -623,7 +620,6 @@ export default {
                 this.all_series = response.data.series;
                 this.payment_destinations = response.data.payment_destinations
                 this.payment_method_types = response.data.payment_method_types;
-                console.log("payments: ",this.payment_method_types)
                 // this.document.document_type_id = (this.all_document_types.length > 0)?this.all_document_types[0].id:null
                 // this.changeDocumentType()
             });
@@ -631,7 +627,6 @@ export default {
             await this.$http
                 .get(`/${this.resource}/record2/${this.recordId}`)
                 .then(response => {
-                    console.log('options',response)
                     this.form = response.data.data;
                     this.form.order_note.seller_id = this.form.order_note.user_id;
                     // this.validateIdentityDocumentType()
@@ -765,7 +760,6 @@ export default {
                 }else{
                     this.total_cuenta=0
                 }
-            console.log("deuda: "+this.deuda +" cupo:"+ this.cupo )
         },
         validacionCupo(){
             console.log(" validar cupo deuda: "+this.deuda +" cupo:"+ this.cupo )
@@ -778,12 +772,9 @@ export default {
         mpagoChange(event){
 
             let paymentSelected = _.filter(this.payment_method_types,{id:event});
-            console.log("change: ",paymentSelected)
-            console.log("change: ",paymentSelected[0].is_credit)
             if(paymentSelected[0].is_credit == 1){
                 this.document.payment_condition_id =  '02';
             }
-            console.log("change: "+ this.document.payment_condition_id)
 
         }
     }
