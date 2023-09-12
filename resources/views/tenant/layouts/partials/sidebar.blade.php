@@ -883,7 +883,7 @@
                                 @if(in_array('advanced_retentions', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'retentions')?'nav-active':'' }}">
                                         <a class="nav-link"
-                                           href="{{route('tenant.retentions.index')}}">Retenciones</a>
+                                           href="{{route('tenant.retentions.index')}}">Retenciones recibidas</a>
                                     </li>
                                 @endif
                                 @if(in_array('advanced_dispatches', $vc_module_levels))

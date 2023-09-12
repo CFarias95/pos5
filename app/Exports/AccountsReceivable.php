@@ -24,10 +24,10 @@ class AccountsReceivable implements FromView
 
     /**
      * @return \Illuminate\Support\Collection
-     */
+    */
+
     public function view(): View
     {
-        /**/
 
         $document_payments = DB::table('document_payments')
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
@@ -60,7 +60,7 @@ class AccountsReceivable implements FromView
                 "documents.total as total, " .
                 "IFNULL(credit_notes.total_credit_notes, 0) as total_credit_notes, " .
                 "IFNULL(payments.total_payment, 0) as total_payment, " .
-                " fee.amount as amount, " . " DATE_FORMAT(fee.date, '%Y/%m/%d') date, "." fee.id as fee_id, " .
+                " fee.amount as amount, " . " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " . " fee.id as fee_id, " .
                 "'document' AS 'type', " . "documents.currency_type_id, " . "documents.exchange_rate_sale", "companies.trade_name"))
             ->where('total_canceled', 0);
 
@@ -85,15 +85,12 @@ class AccountsReceivable implements FromView
                 "sale_notes.total as total, " .
                 "null as total_credit_notes," .
                 "IFNULL(payments.total_payment, 0) as total_payment, " .
-                " 0 as amount, " ." null as date, " ." null as fee_id, " .
+                " 0 as amount, " . " null as date, " . " null as fee_id, " .
                 "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
             ->where('sale_notes.changed', false)
             ->where('sale_notes.total_canceled', false);
 
         $records = $documents->union($sale_notes)->get();
-
-
-
 
         $collection = collect($records)->transform(function ($row) {
 
@@ -115,8 +112,6 @@ class AccountsReceivable implements FromView
 
                             $delay_payment = $now->diffInDays($due);
                         }
-
-
                     }
                 }
             }
@@ -154,8 +149,8 @@ class AccountsReceivable implements FromView
                 $web_platforms = new \Illuminate\Database\Eloquent\Collection();
             }
             $to_pay_fee = 0;
-            if($row->fee_id){
-                $to_pay_fee = (DocumentPayment::where('fee_id',$row->fee_id)->get())->sum('payment');
+            if ($row->fee_id) {
+                $to_pay_fee = (DocumentPayment::where('fee_id', $row->fee_id)->get())->sum('payment');
             }
             return [
                 'id' => $row->id,
@@ -164,31 +159,23 @@ class AccountsReceivable implements FromView
                 'customer_id' => $row->customer_id,
                 'number_full' => $row->number_full,
                 'total' => number_format((float)$row->total, 2, ".", ""),
-                'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
+                'total_to_pay' => ($row->amount && $row->amount > 0) ? number_format($row->amount - $to_pay_fee, 2, ".", "") : number_format($total_to_pay, 2, ".", ""),
                 'type' => $row->type,
                 'guides' => $guides,
                 'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,
                 'delay_payment' => $delay_payment,
-                'date_of_due' => ($row->date)?$row->date:$date_of_due,
+                'date_of_due' => ($row->date) ? $row->date : $date_of_due,
                 'currency_type_id' => $row->currency_type_id,
                 'exchange_rate_sale' => (float)$row->exchange_rate_sale,
                 "purchase_order" => $purchase_order,
-                "web_platforms" => $web_platforms ,
+                "web_platforms" => $web_platforms,
                 "fee_id" => $row->fee_id,
             ];
-//            }
         });
 
-        return view('tenant.reports.no_paid.reportall_excel', ['records' => $collection->all(),
-            'companies' => $company]);
-
-        /*$clients = DB::connection('tenant')
-                            ->table('documents')
-                            ->join('persons', 'documents.customer_id', '=', 'persons.id')
-                            ->join('companies', 'documents.user_id', '=', 'companies.id')
-                            ->select('companies.trade_name','companies.number','date_of_issue', 'time_of_issue','filename','persons.name', 'total_value','total', DB::raw('CONCAT(documents.series, "-", documents.number) AS full_number'))
-                            ->where('total_canceled', 0)->get();
-        return view('tenant.reports.no_paid.reportall_excel', ['records' => $clients]);*/
+        return view('tenant.reports.no_paid.reportall_excel', [
+            'records' => $collection->all(),
+            'companies' => $company
+        ]);
     }
-
 }

@@ -12,6 +12,7 @@ class RetentionCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
+    
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
@@ -26,6 +27,8 @@ class RetentionCollection extends ResourceCollection
                 'id' => $row->id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'number' => $row->number_full,
+                'secuencial' => $row->ubl_version,
+                'clave_acceso' => $row->observations,
                 'supplier_name' => ($row->supplier)?$row->supplier->name:null,
                 'supplier_number' => ($row->supplier)?$row->supplier->identity_document_type->description.' '.$row->supplier->number:null,
                 'state_type_id' => $row->state_type_id,

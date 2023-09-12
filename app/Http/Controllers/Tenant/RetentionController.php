@@ -22,11 +22,14 @@ use App\Models\Tenant\Catalogs\DocumentType;
 use Illuminate\Support\Facades\DB;
 use App\CoreFacturalo\Facturalo;
 use App\CoreFacturalo\WS\Services\AuthSri;
+use App\Exports\RetentionsExport;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use DOMDocument;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Excel;
+use PDF;
 use PhpOffice\PhpSpreadsheet\Shared\Date;
 
 class RetentionController extends Controller
@@ -50,15 +53,23 @@ class RetentionController extends Controller
     public function columns()
     {
         return [
-            'number' => 'Número'
+            'number' => 'Número',
+            'ubl_version' =>'Secuencial',
+            'observations' =>'Clave de acceso',
+            'date_of_issue' => 'Fecha de emisión',
         ];
     }
+
+    public function excel(Request $request){
+
+        return Excel::download(new RetentionsExport, 'Retentions.xlsx');
+
+    }
+
 
     public function records(Request $request)
     {
         $records = Retention::where($request->column, 'like', "%{$request->value}%")
-            // ->orderBy('series')
-            // ->orderBy('number', 'desc');
             ->latest();
 
         return new RetentionCollection($records->paginate(config('tenant.items_per_page')));
@@ -170,7 +181,6 @@ class RetentionController extends Controller
 
     public function import(Request $request)
     {
-
         try {
 
             $data = $request['data'];
@@ -196,9 +206,10 @@ class RetentionController extends Controller
                             if (substr($ret['10'], 8, 2) != '07') {
                                 return;
                             }
-                            //$message .= '\n'.$ret['10'];
+
                             $claveAcceso = $ret['10'];
                             $rucProveedor = $ret['2'];
+
                             $supplier = Person::where('number', $rucProveedor)->first();
                             if (!$supplier) {
 
@@ -225,6 +236,14 @@ class RetentionController extends Controller
                                 $retencion = $documento['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
 
                                 $xmlRet =  simplexml_load_string($retencion);
+
+                                Log::info(json_encode($xmlRet));
+
+                                $version = $xmlRet->@attribute('version');
+
+                                Log::info("VERSION DE XML".$version);
+
+                                /*
                                 $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
 
                                 $existe = Retention::where('ubl_version', $secuencialRet)->first();
@@ -309,9 +328,8 @@ class RetentionController extends Controller
                                 }
 
                                 $totalProcesados += 1;
-
+                                */
                             } else {
-
                                 Log::error("No se encontro la retencion : " . $ret['10']);
                                 $totalError += 1;
                             }

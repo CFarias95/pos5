@@ -1,26 +1,12 @@
 <template>
-    <el-dialog
-        :title="titleDialog"
-        :visible="showDialog"
-        class="dialog-import"
-        @close="close"
-        @open="create"
-    >
+    <el-dialog :title="titleDialog" :visible="showDialog" class="dialog-import" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-12 mt-4">
-                        <div :class="{'has-danger': errors.file}" class="form-group text-center">
-                            <el-upload
-                                ref="upload"
-                                :auto-upload="false"
-                                :limit="1"
-                                :multiple="false"
-                                :on-change="handleChange"
-                                :show-file-list="true"
-                                accept=".txt"
-                                action="''"
-                            >
+                        <div :class="{ 'has-danger': errors.file }" class="form-group text-center">
+                            <el-upload ref="upload" :auto-upload="false" :limit="1" :multiple="false"
+                                :on-change="handleChange" :show-file-list="true" accept=".txt" action="''">
                                 <el-button slot="trigger" type="primary">Seleccione un archivo (TXT)</el-button>
                             </el-upload>
                             <small v-if="errors.file" class="form-control-feedback" v-text="errors.file[0]"></small>
@@ -39,8 +25,8 @@
 
 <script>
 import { event } from "jquery";
-import {calculateRowItem} from "../../../helpers/functions";
-import {mapActions, mapState} from "vuex";
+import { calculateRowItem } from "../../../helpers/functions";
+import { mapActions, mapState } from "vuex";
 
 export default {
     props: ["showDialog"],
@@ -60,13 +46,13 @@ export default {
             discount_types: [],
             charge_types: [],
             attribute_types: [],
-            purchaseItems:[],
+            purchaseItems: [],
         };
     },
     created() {
 
     },
-    mounted(){
+    mounted() {
     },
     methods: {
         ...mapActions([
@@ -116,7 +102,7 @@ export default {
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
-                        let mensaje = "Se procesaron de forma exitosa: "+response.data.procesed + " documentos <br/>No se procesaron: "+response.data.fail+" documentos <br/>";
+                        let mensaje = "Se procesaron de forma exitosa: " + response.data.procesed + " documentos <br/>No se procesaron: " + response.data.fail + " documentos <br/>";
                         this.$notify({
                             title: "",
                             dangerouslyUseHTMLString: true,
@@ -129,7 +115,7 @@ export default {
                         this.$refs.upload.clearFiles();
                         this.close();
                     } else {
-                        this.$message({message: response.data.message, type: "error"});
+                        this.$message({ message: response.data.message, type: "error" });
                     }
                 })
                 .catch(error => {
@@ -138,7 +124,7 @@ export default {
                 .then(() => {
                     this.loading_submit = false;
                 });
-                //console.log('XML',this.form)
+            //console.log('XML',this.form)
         },
         close() {
             this.$emit("update:showDialog", false);
@@ -151,7 +137,7 @@ export default {
                 //this.$refs.upload.clearFiles()
                 //this.close()
             } else {
-                this.$message({message: response.message, type: "error"});
+                this.$message({ message: response.message, type: "error" });
             }
         },
         errorUpload(response) {
