@@ -1470,7 +1470,7 @@ export default {
                     let nuevaRetIVA = true
                     let nuevaRetRENTA= true
 
-                    if (this.form.ret.length > 0) {
+                    if (this.form.ret.length > 0){
 
                         this.form.ret.forEach((data) => {
 
@@ -1487,10 +1487,10 @@ export default {
                                 if (data.tipo == 'IVA' && data.code != retIvaDesc.code) {
                                     nuevaRetIVA = true;
                                 }
-
                             }
 
                             if (row.income_retention > 0) {
+
                                 const retIncomeDesc = _.find(this.retention_types_income, { 'id': row.retention_type_id_income })
 
                                 if (data.tipo == 'RENTA' && data.code == retIncomeDesc.code) {

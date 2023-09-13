@@ -65,6 +65,10 @@ class ToPay
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
+            case 'expired':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
         }
 
         /*
@@ -109,13 +113,17 @@ class ToPay
         $purchases->select($select);
 
         if ($d_start && $d_end) {
-            // ->join('users', 'users.name', 'like', "%{$user}%")
-            // ->where('supplier_id', $supplier_id)
-            // ->where('user_id', $user)
-            $purchases
-                ->whereBetween('purchases.date_of_issue', [$d_start, $d_end]);
+
+            if($period == 'expired'){
+
+                $purchases->whereBetween('purchases.date_of_due', [$d_start, $d_end]);
+            }else{
+
+                $purchases->whereBetween('purchases.date_of_issue', [$d_start, $d_end]);
+            }
 
         }
+
         if ($supplier_id !== 0) {
             $purchases->where('supplier_id', $supplier_id);
         }
@@ -162,14 +170,14 @@ class ToPay
             " null as date, " .
             " null as fee_id, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ';
+
         if ($d_start && $d_end) {
-            $expenses
-                // ->where('supplier_id', $supplier_id)
-                ->select(DB::raw($select .
-                    "'expense' AS 'type', " . "expenses.currency_type_id, " . "expenses.exchange_rate_sale"))
-                // ->where('expenses.changed', false)
+
+            //if($period != 'expired'){
+                $expenses
+                ->select(DB::raw($select ."'expense' AS 'type', " . "expenses.currency_type_id, " . "expenses.exchange_rate_sale"))
                 ->whereBetween('expenses.date_of_issue', [$d_start, $d_end]);
-            // ->where('expenses.total_canceled', false);
+            //}
 
         } else {
 
@@ -214,11 +222,13 @@ class ToPay
                 " null as fee_id, " .
                 'IFNULL(payments.total_payment, 0) as total_payment, ';
             if ($d_start && $d_end) {
-                $bankLoans
-                    // ->where('supplier_id', $supplier_id)
+
+                //if($period != 'expired'){
+                    $bankLoans
                     ->select(DB::raw($select .
                         "'bank_loans' AS 'type', " . "bank_loans.currency_type_id, " . "bank_loans.exchange_rate_sale"))
                     ->whereBetween('bank_loans.date_of_issue', [$d_start, $d_end]);
+                //}
 
             } else {
                 $bankLoans

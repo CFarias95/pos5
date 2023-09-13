@@ -37,6 +37,7 @@
                                         <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
                                         <el-option key="date" value="date" label="Por fecha"></el-option>
                                         <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
+                                        <el-option key="expired" value="expired" label="Fecha de vencimiento"></el-option>
                                     </el-select>
                                 </div>
                                 <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -55,7 +56,7 @@
                                                         value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
                                     </div>
                                 </template>
-                                <template v-if="form.period === 'date' || form.period === 'between_dates'">
+                                <template v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired'">
                                     <div class="col-md-3">
                                         <label class="control-label">Fecha del</label>
                                         <el-date-picker v-model="form.date_start" type="date"
@@ -63,7 +64,7 @@
                                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                                     </div>
                                 </template>
-                                <template v-if="form.period === 'between_dates'">
+                                <template v-if="form.period === 'between_dates' || form.period == 'expired'">
                                     <div class="col-md-3">
                                         <label class="control-label">Fecha al</label>
                                         <el-date-picker v-model="form.date_end" type="date"

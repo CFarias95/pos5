@@ -778,20 +778,18 @@
                                            v-text="errors.credit_quota[0]"></small>
                                 </div>
                             </div>
-
-                            <!--Zona -->
-                            <!--
-                            <div class="col-md-6">
-                                <div :class="{'has-danger': errors.zone }"
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.default_payment}"
                                      class="form-group">
-                                    <label class="control-label">Zona</label>
-                                    <el-input v-model="form.zone"></el-input>
-                                    <small v-if="errors.zone"
+                                    <label class="control-label">Forma de pago por defecto</label>
+                                    <el-select v-model="form.default_payment">
+                                        <el-option v-for="option in payment_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.default_payment"
                                            class="form-control-feedback"
-                                           v-text="errors.zone[0]"></small>
+                                           v-text="errors.default_payment[0]"></small>
                                 </div>
                             </div>
-                            -->
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -883,6 +881,7 @@ export default {
             activeName: 'first',
             accounts:[],
             company : null,
+            payment_types:[],
         }
     },
     async created() {
@@ -892,8 +891,6 @@ export default {
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.api_service_token = response.data.api_service_token
-                // console.log(this.api_service_token)
-
                 this.countries = response.data.countries
                 this.zones = response.data.zones
                 this.sellers = response.data.sellers
@@ -907,6 +904,7 @@ export default {
                 this.discount_types = response.data.discount_types;
                 this.accounts = response.data.accounts;
                 this.company = response.data.company;
+                this.payment_types = response.data.payment_types;
             })
             .finally(() => {
                 if (this.api_service_token === false) {
@@ -959,6 +957,7 @@ export default {
                 parteRel:'NO',
                 pagoLocExt:'Local',
                 account:null,
+                default_payment:null,
 
             }
             this.updateEmail()

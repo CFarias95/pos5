@@ -139,7 +139,6 @@
             'enabled',
             'website',
             'barcode',
-            // 'zone',
             'observation',
             'credit_days',
             'optional_email',
@@ -157,6 +156,7 @@
             'pagoLocExt',
             'account',
             'credit_quota',
+            'default_payment',
         ];
 
         protected $casts = [

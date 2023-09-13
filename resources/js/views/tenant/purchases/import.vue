@@ -1,32 +1,22 @@
 <template>
-    <el-dialog
-        :title="titleDialog"
-        :visible="showDialog"
-        class="dialog-import"
-        @close="close"
-        @open="create"
-    >
+    <el-dialog :title="titleDialog" :visible="showDialog" class="dialog-import" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
                     <div class="col-md-12 mt-4">
-                        <div :class="{'has-danger': errors.file}" class="form-group text-center">
-                            <el-upload
-                                ref="upload"
-                                :auto-upload="false"
-                                :limit="1"
-                                :multiple="false"
-                                :on-change="handleChange"
-                                :show-file-list="true"
-                                action="''"
-                            >
+                        <div :class="{ 'has-danger': errors.file }" class="form-group text-center">
+                            <el-upload ref="upload" :auto-upload="false" :limit="1" :multiple="false"
+                                :on-change="handleChange" :show-file-list="true" action="''">
                                 <el-button slot="trigger" type="primary">Seleccione un archivo (xml)</el-button>
                             </el-upload>
                             <small v-if="errors.file" class="form-control-feedback" v-text="errors.file[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-12 mt-12" v-if="has_file && form.items && form.items.length > 0" style="align-content: center;">
-                        <div style="text-align: center;"><h3>Lista de productos</h3></div>
+                    <div class="col-md-12 mt-12" v-if="has_file && form.items && form.items.length > 0"
+                        style="align-content: center;">
+                        <div style="text-align: center;">
+                            <h3>Lista de productos</h3>
+                        </div>
                         <div>
                             <table bordered style="align-content: center; text-align: center;">
                                 <tr slot="heading">
@@ -34,12 +24,15 @@
                                     <th>Cantidad</th>
                                     <th>Interno</th>
                                 </tr>
-                                <tr v-for="(item,index) in form.items" style="text-align: center;">
-                                    <td style="text-align: left;">{{ (item.desciption)?item.desciption:item.item.name }}</td>
+                                <tr v-for="(item, index) in form.items" style="text-align: center;">
+                                    <td style="text-align: left;">{{ (item.desciption) ? item.desciption : item.item.name }}
+                                    </td>
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
-                                        <el-select  :disabled="item.item_id != null" v-model="item.item_id" @change="changeItem(item.item_id,index)" filterable required="true">
-                                            <el-option v-for="(prod,index2) in items" :key="index2" :value="prod.id" :label="prod.internal_id + '-'+  prod.name"></el-option>
+                                        <el-select :disabled="item.item_id != null" v-model="item.item_id"
+                                            @change="changeItem(item.item_id, index)" filterable required="true">
+                                            <el-option v-for="(prod, index2) in items" :key="index2" :value="prod.id"
+                                                :label="prod.internal_id + '-' + prod.name"></el-option>
                                         </el-select>
                                     </td>
                                 </tr>
@@ -59,8 +52,8 @@
 
 <script>
 import { event } from "jquery";
-import {calculateRowItem} from "../../../helpers/functions";
-import {mapActions, mapState} from "vuex";
+import { calculateRowItem } from "../../../helpers/functions";
+import { mapActions, mapState } from "vuex";
 
 export default {
     props: ["showDialog"],
@@ -80,7 +73,7 @@ export default {
             discount_types: [],
             charge_types: [],
             attribute_types: [],
-            purchaseItems:[],
+            purchaseItems: [],
         };
     },
     created() {
@@ -100,10 +93,10 @@ export default {
         });
         this.initForm();
     },
-    mounted(){
+    mounted() {
         this.$http.post(`get-items`).then(response => {
 
-           this.$store.commit('setAllItems', response.data.data)
+            this.$store.commit('setAllItems', response.data.data)
         });
     },
     methods: {
@@ -134,7 +127,7 @@ export default {
         async parseXml(source) {
             this.loading_submit = true;
             let convert = require("xml-js");
-            this.formXmlJson = convert.xml2js(source, {compact: true, spaces: 4});
+            this.formXmlJson = convert.xml2js(source, { compact: true, spaces: 4 });
             this.has_file = false;
             await this.setdataForm();
             this.loading_submit = false;
@@ -143,8 +136,8 @@ export default {
 
             let convert = require("xml-js");
 
-            let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"],{compact: true, spaces: 4});
-            console.log("setdataForm",Invoice)
+            let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"], { compact: true, spaces: 4 });
+            console.log("setdataForm", Invoice)
 
             let evalu = '';
             let ID = [];
@@ -161,7 +154,7 @@ export default {
 
 
             console.log(Invoice.factura.infoFactura.fechaEmision["_text"]);
-            let date = new Date(parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(6,4)),parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(3,2))-1,parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(0,2)));
+            let date = new Date(parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(6, 4)), parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(3, 2)) - 1, parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(0, 2)));
 
             this.form.date_of_due = date.toLocaleDateString('en-CA');
             //evalu = 'cbc:IssueDate';
@@ -187,7 +180,7 @@ export default {
 
             evalu = '[factura][infoTributaria][secuencial]';
             if (Invoice.factura.infoTributaria.secuencial) {
-                this.form.sequential_number = Invoice.factura.infoTributaria.estab["_text"]+Invoice.factura.infoTributaria.ptoEmi["_text"]+Invoice.factura.infoTributaria.secuencial["_text"];
+                this.form.sequential_number = Invoice.factura.infoTributaria.estab["_text"] + Invoice.factura.infoTributaria.ptoEmi["_text"] + Invoice.factura.infoTributaria.secuencial["_text"];
             } else {
                 this.MensajeError(evalu)
                 return false;
@@ -222,18 +215,18 @@ export default {
             ) {
                 evalu = '[factura][infoFactura][pagos]';
                 if (Invoice.factura.infoFactura.pagos) {
-                    this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
+                    this.form.total = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"]);
                     this.form.total_discount = parseFloat(Invoice.factura.infoFactura.totalDescuento["_text"]);
                     //PAYMENTS
                     this.form.payments = [
                         {
                             id: null,
-                            purchase_id:null,
-                            date_of_payment:new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca'),
-                            payment_method_type_id:"01",
-                            reference:null,
-                            payment_destination_id:"cash",
-                            payment:this.form.total =  parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
+                            purchase_id: null,
+                            date_of_payment: new Date(Invoice.factura.infoFactura.fechaEmision["_text"]).toLocaleDateString('en-ca'),
+                            payment_method_type_id: "01",
+                            reference: null,
+                            payment_destination_id: "cash",
+                            payment: this.form.total = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
 
                         }
                     ];
@@ -269,26 +262,26 @@ export default {
                 return false;
             }
 
-            if(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.length > 1){
+            if (Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.length > 1) {
 
                 Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.forEach(element => {
 
-                    console.log("codigoPorcentaje"+element["codigoPorcentaje"]["_text"]);
+                    console.log("codigoPorcentaje" + element["codigoPorcentaje"]["_text"]);
 
-                    if(parseFloat(element["codigoPorcentaje"]["_text"]) > 0){
+                    if (parseFloat(element["codigoPorcentaje"]["_text"]) > 0) {
                         this.form.total_taxed += parseFloat(element["baseImponible"]["_text"]);
-                    }else{
+                    } else {
                         this.form.total_unaffected += parseFloat(element["baseImponible"]["_text"]);
                     }
 
                 });
 
-            }else{
+            } else {
 
                 console.log(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.codigoPorcentaje["_text"]);
-                if(parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.codigoPorcentaje["_text"]) > 0){
+                if (parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.codigoPorcentaje["_text"]) > 0) {
                     this.form.total_taxed = parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.baseImponible["_text"]);
-                }else{
+                } else {
                     this.form.total_unaffected = parseFloat(Invoice.factura.infoFactura.totalConImpuestos.totalImpuesto.baseImponible["_text"]);
                 }
 
@@ -298,7 +291,7 @@ export default {
             this.has_file = true;
 
         },
-        findItem(search){
+        findItem(search) {
 
             if (search === '') return undefined;
             let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
@@ -315,38 +308,38 @@ export default {
 
             self.form.items = [];
 
-            if(items.length > 1){
+            if (items.length > 1) {
                 items.forEach(element => {
-                let formItem = self.initFormItem();
-                formItem.item_id = null;
-                formItem.desciption = element['descripcion']["_text"];
-                formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
-                formItem.quantity = parseFloat(element['cantidad']["_text"]);
-                formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
-                //formItem.total_discount = parseFloat(element['descuento']['_text']);
-                if(parseFloat(element['descuento']["_text"]) > 0 ){
+                    let formItem = self.initFormItem();
+                    formItem.item_id = null;
+                    formItem.desciption = element['descripcion']["_text"];
+                    formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                    formItem.quantity = parseFloat(element['cantidad']["_text"]);
+                    formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
+                    //formItem.total_discount = parseFloat(element['descuento']['_text']);
+                    if (parseFloat(element['descuento']["_text"]) > 0) {
 
-                    formItem.discounts = [{
-                        amount:parseInt(element['descuento']["_text"]),
-                        base:parseFloat(element['precioUnitario']["_text"]),
-                        discount_type_id:'00',
-                        discount_type:{
-                            active:1,
-                            base:1,
-                            descripcion:'Descuentos que afectan la base imponible',
-                            id:'00',
-                            level:'item',
-                            type:'discount'
-                        },
-                        description:'Descuento',
-                        factor:0.1,
-                    }];
+                        formItem.discounts = [{
+                            amount: parseInt(element['descuento']["_text"]),
+                            base: parseFloat(element['precioUnitario']["_text"]),
+                            discount_type_id: '00',
+                            discount_type: {
+                                active: 1,
+                                base: 1,
+                                descripcion: 'Descuentos que afectan la base imponible',
+                                id: '00',
+                                level: 'item',
+                                type: 'discount'
+                            },
+                            description: 'Descuento',
+                            factor: 0.1,
+                        }];
 
-                }
+                    }
 
-                self.form.items.push(formItem);
+                    self.form.items.push(formItem);
                 });
-            }else{
+            } else {
                 let element = items;
                 let formItem = self.initFormItem();
                 formItem.item_id = null;
@@ -355,25 +348,25 @@ export default {
                 formItem.quantity = parseFloat(element['cantidad']["_text"]);
                 formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
                 //formItem.total_discount = parseFloat(element['descuento']['_text']);
-                if(parseFloat(element['descuento']["_text"]) > 0 ){
+                if (parseFloat(element['descuento']["_text"]) > 0) {
 
                     formItem.discounts = [{
-                        amount:parseFloat(element['descuento']["_text"]),
-                        base:parseFloat(element['precioUnitario']["_text"]),
-                        discount_type_id:'00',
-                        discount_type:{
-                            active:1,
-                            base:1,
-                            descripcion:'Descuentos que afectan la base imponible',
-                            id:'00',
-                            level:'item',
-                            type:'discount'
+                        amount: parseFloat(element['descuento']["_text"]),
+                        base: parseFloat(element['precioUnitario']["_text"]),
+                        discount_type_id: '00',
+                        discount_type: {
+                            active: 1,
+                            base: 1,
+                            descripcion: 'Descuentos que afectan la base imponible',
+                            id: '00',
+                            level: 'item',
+                            type: 'discount'
                         },
-                        description:'Descuento',
-                        factor:_.round(((parseFloat(element['descuento']["_text"])*100)/parseFloat(element['precioUnitario']["_text"]))/100,2),
-                        is_amount:true,
-                        percentage:_.round((parseFloat(element['descuento']["_text"])*100)/parseFloat(element['precioUnitario']["_text"]),2),
-                        use_input_amount:true
+                        description: 'Descuento',
+                        factor: _.round(((parseFloat(element['descuento']["_text"]) * 100) / parseFloat(element['precioUnitario']["_text"])) / 100, 2),
+                        is_amount: true,
+                        percentage: _.round((parseFloat(element['descuento']["_text"]) * 100) / parseFloat(element['precioUnitario']["_text"]), 2),
+                        use_input_amount: true
                     }];
 
                 }
@@ -382,27 +375,27 @@ export default {
             }
             //console.info(self.form.items)
         },
-        async changeItem(id, index){
+        async changeItem(id, index) {
             let formItem = this.findItem(id);
             let itemActual = this.form.items[index]
 
-            if(formItem !== undefined) {
+            if (formItem !== undefined) {
                 this.form.items[index].item_id = id;
 
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_price;
                 itemActual.item_unit_types = formItem.item_unit_types;
-                itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva/100));
+                itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva / 100));
                 itemActual.quantity = itemActual.quantity;
                 itemActual.item.presentation = {};
-                let row = calculateRowItem(itemActual, this.config.currency_type_id,1,itemActual.iva,null);
+                let row = calculateRowItem(itemActual, this.config.currency_type_id, 1, itemActual.iva, null);
                 row.warehouse_id = 1;
                 row.warehouse_description = "Almacén Oficina Principal";
                 row.iva = itemActual.iva;
                 row.desciption = itemActual.desciption;
                 this.form.items[index] = row;
 
-            }else{
+            } else {
                 this.$message.error("No se encontro el item en la lista disponible");
                 this.form.items[index].item_id = null;
             }
@@ -435,14 +428,14 @@ export default {
             this.form = {
                 establishment_id: 1,
                 document_type_id: "01",
-                document_type_intern:"01",
+                document_type_intern: "01",
                 series: "cc",
                 number: 0,
                 date_of_issue: null,
                 time_of_issue: null,
                 supplier_id: null,
                 payment_method_type_id: "01",
-                currency_type_id:this.config.currency_type_id,
+                currency_type_id: this.config.currency_type_id,
                 purchase_order: null,
                 exchange_rate_sale: 1,
                 total_prepayment: 0,
@@ -470,12 +463,12 @@ export default {
                 discounts: [],
                 attributes: [],
                 guides: [],
-                is_aproved:false,
-                codSustento:"01",
-                customer_id:null,
-                has_client:false,
-                has_payment:true,
-                payment_condition_id:"01",
+                is_aproved: false,
+                codSustento: "01",
+                customer_id: null,
+                has_client: false,
+                has_payment: true,
+                payment_condition_id: "01",
             };
 
             //this.initInputPerson();
@@ -484,18 +477,21 @@ export default {
             this.titleDialog = "Importar Factura Compra";
         },
         async submit() {
+
             this.loading_submit = true;
             await this.$http
                 .post(`/${this.resource}/import`, this.form)
                 .then(response => {
+
                     if (response.data.success) {
                         this.$message.success(response.data.message);
                         this.$eventHub.$emit("reloadData");
                         this.$refs.upload.clearFiles();
                         this.close();
                     } else {
-                        this.$message({message: response.data.message, type: "error"});
+                        this.$message({ message: response.data.message, type: "error" });
                     }
+
                 })
                 .catch(error => {
                     this.$message.error(error.response.message);
@@ -503,7 +499,7 @@ export default {
                 .then(() => {
                     this.loading_submit = false;
                 });
-                //console.log('XML',this.form)
+            //console.log('XML',this.form)
         },
         close() {
             this.$emit("update:showDialog", false);
@@ -516,7 +512,7 @@ export default {
                 //this.$refs.upload.clearFiles()
                 //this.close()
             } else {
-                this.$message({message: response.message, type: "error"});
+                this.$message({ message: response.message, type: "error" });
             }
         },
         errorUpload(response) {
@@ -548,6 +544,7 @@ export default {
             var textNodes = [].slice.call(xml.childNodes).filter(function (node) {
                 return node.nodeType === 3;
             });
+
             if (xml.hasChildNodes() && xml.childNodes.length === textNodes.length) {
                 obj = [].slice.call(xml.childNodes).reduce(function (text, node) {
                     return text + node.nodeValue;

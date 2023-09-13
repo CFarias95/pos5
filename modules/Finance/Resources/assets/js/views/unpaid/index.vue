@@ -43,6 +43,8 @@
                                             <el-option key="date" value="date" label="Por fecha"></el-option>
                                             <el-option key="between_dates" value="between_dates"
                                                 label="Entre fechas"></el-option>
+                                            <el-option key="expired" value="expired"
+                                                label="Fecha de vencimiento"></el-option>
                                         </el-select>
                                     </div>
                                     <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -61,7 +63,8 @@
                                                 format="MM/yyyy" :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
-                                    <template v-if="form.period === 'date' || form.period === 'between_dates'">
+                                    <template
+                                        v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired'">
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha del</label>
                                             <el-date-picker v-model="form.date_start" type="date"
@@ -69,7 +72,7 @@
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
-                                    <template v-if="form.period === 'between_dates'">
+                                    <template v-if="form.period === 'between_dates' || form.period == 'expired'">
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha al</label>
                                             <el-date-picker v-model="form.date_end" type="date"
@@ -117,7 +120,12 @@
 
                                     <div class="col-lg-3 col-md-3">
                                         <div class="form-group">
-                                            <label>Importe</label>
+                                            <label>Total documento
+                                                <el-tooltip class="item" effect="dark" content="Por defecto la condicion sera >=(mayor igual), si se desea otra condición especificar condicion,valor ejemplo =,100"
+                                                    placement="top-start">
+                                                    <i class="fa fa-info-circle"></i>
+                                                </el-tooltip>
+                                            </label>
                                             <el-input @change="changeImporte" v-model="form.importe" clearable></el-input>
                                         </div>
                                     </div>
@@ -224,7 +232,7 @@
                                                     <th>Moneda</th>
                                                     <th class="text-right">Por cobrar</th>
                                                     <th class="text-right">T. Nota Crédito</th>
-                                                    <th class="text-right">Total</th>
+                                                    <th class="text-right">Total documento</th>
                                                     <th></th>
                                                 </tr>
                                             </thead>
