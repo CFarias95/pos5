@@ -1876,11 +1876,18 @@ use Modules\Sale\Models\SaleOpportunity;
                     'state_type_id' => '01'
                 ];
 
-                
-
                 $numero = Purchase::where('establishment_id',$model['establishment_id'])->where('series',$model['series'])->count();
                 $data = array_merge($model, $values);
                 $data['number'] = $numero + 1;
+
+                foreach($data['payments'] as $payment){
+
+                    if($formaPagoDefecto){
+
+                        $payment->payment_method_type_id = $formaPagoDefecto->id;
+
+                    }
+                }
 
                 Log::info("importPurchase: ".json_encode($data));
 
