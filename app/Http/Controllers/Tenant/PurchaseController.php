@@ -1884,7 +1884,7 @@ use Modules\Sale\Models\SaleOpportunity;
 
                     if($formaPagoDefecto){
 
-                        $payment->payment_method_type_id = $formaPagoDefecto->id;
+                        $payment['payment_method_type_id'] = $formaPagoDefecto->id;
 
                     }
                 }

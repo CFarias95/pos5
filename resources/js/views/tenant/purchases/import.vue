@@ -5,7 +5,7 @@
                 <div class="row">
                     <div class="col-md-12 mt-4">
                         <div :class="{ 'has-danger': errors.file }" class="form-group text-center">
-                            <el-upload ref="upload" :auto-upload="false" :limit="1" :multiple="false"
+                            <el-upload ref="upload" :auto-upload="false" :limit="1" :multiple="false" accept=".xml"
                                 :on-change="handleChange" :show-file-list="true" action="''">
                                 <el-button slot="trigger" type="primary">Seleccione un archivo (xml)</el-button>
                             </el-upload>
@@ -138,6 +138,7 @@ export default {
 
             let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"], { compact: true, spaces: 4 });
             console.log("setdataForm", Invoice)
+
 
             let evalu = '';
             let ID = [];
