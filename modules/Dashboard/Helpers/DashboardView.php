@@ -66,6 +66,10 @@ class DashboardView
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
+            case 'expired':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
         }
 
         /*
@@ -81,6 +85,7 @@ class DashboardView
                 ->table('documents')
                 ->where('customer_id', $customer_id)
                 ->join('persons', 'persons.id', '=', 'documents.customer_id')
+                ->join('invoices', 'invoices.document_id', '=', 'documents.id')
                 ->leftJoinSub($document_payments, 'payments', function ($join) {
                     $join->on('documents.id', '=', 'payments.document_id');
                 })
@@ -92,9 +97,12 @@ class DashboardView
                     "CONCAT(documents.series,'-',documents.number) AS number_full, " .
                     "documents.total as total, " .
                     "IFNULL(payments.total_payment, 0) as total_payment, " .
-                    "'document' AS 'type', " . "documents.currency_type_id, " . "documents.exchange_rate_sale"))
-                //->where('documents.establishment_id', $establishment_id)
-                ->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+                    "'document' AS 'type', " . "documents.currency_type_id, " . "documents.exchange_rate_sale"));
+            if($period == 'expired'){
+                $documents->whereBetween('invoices.date_of_due', [$d_start, $d_end]);
+            }else{
+                $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+            }
 
             if ($establishment_id > 0) {
                 $documents->where('documents.establishment_id', $establishment_id);
@@ -150,9 +158,11 @@ class DashboardView
                     "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
                 //->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
-                ->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end])
                 ->where('sale_notes.total_canceled', false);
 
+            if($period != 'expired'){
+                $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);
+            }
             if ($establishment_id > 0) {
 
                 $sale_notes->where('sale_notes.establishment_id', $establishment_id);
@@ -174,7 +184,6 @@ class DashboardView
                     "sale_notes.total as total, " .
                     "IFNULL(payments.total_payment, 0) as total_payment, " .
                     "'sale_note' AS 'type', " . "sale_notes.currency_type_id, " . "sale_notes.exchange_rate_sale"))
-                //->where('sale_notes.establishment_id', $establishment_id)
                 ->where('sale_notes.changed', false)
                 ->where('sale_notes.total_canceled', false);
 
@@ -307,11 +316,9 @@ class DashboardView
             ->select('document_id', DB::raw('SUM(payment) as total_payment'))
             ->groupBy('document_id');
 
-        $document_payments_fee = DB::table('document_payments')
-            ->select('fee_id', DB::raw('SUM(payment) as total_payment_fee'))
-            ->groupBy('fee_id');
-
         $document_fee = DB::table('document_fee');
+
+        $document_Invoices = DB::table('invoices');
 
         $document_select = "documents.id as id, " .
             "DATE_FORMAT(documents.date_of_issue, '%Y/%m/%d') as date_of_issue, " .
@@ -353,11 +360,13 @@ class DashboardView
 
         $documents = DB::connection('tenant')
             ->table('documents')
-            //->where('customer_id', $customer_id)
             ->join('persons', 'persons.id', '=', 'documents.customer_id')
             ->join('users', 'users.id', '=', 'documents.user_id')
             ->leftJoinSub($document_payments, 'payments', function ($join) {
                 $join->on('documents.id', '=', 'payments.document_id');
+            })
+            ->leftJoinSub($document_Invoices, 'invoices', function ($join) {
+                $join->on('documents.id', '=', 'invoices.document_id');
             })
             ->leftJoinSub($document_fee, 'fee', function ($join) {
                 $join->on('documents.id', '=', 'fee.document_id');
@@ -417,14 +426,16 @@ class DashboardView
             $documents->where('customer_id', $customer_id);
         }
         if ($d_start && $d_end) {
-            $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);
-            $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+
+            if($period == 'expired'){
+                $documents->whereBetween('invoices.date_of_due', [$d_start, $d_end])
+                        ->WhereBetween('fee.date', [$d_start, $d_end]);
+            }else{
+                $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);
+                $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
+            }
         }
-        if($period == 'expired'){
-            $sale_notes->whereBetween('sale_notes.date', [$d_start, $d_end]);
-            $documents->whereBetween('document.date', [$d_start, $d_end]);
-        }
-        // return $documents->union($sale_notes);
+
         if ($purchase_order !== null) {
             $documents->where('purchase_order', $purchase_order);
             $sale_notes->where('purchase_order', $purchase_order);
@@ -465,7 +476,7 @@ class DashboardView
             $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
         }
 
-
         return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
+
     }
 }

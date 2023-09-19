@@ -12,6 +12,7 @@ use App\Models\Tenant\SaleNotePayment;
 use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Finance\Traits\UnpaidTrait;
 
 
@@ -28,10 +29,11 @@ class UnpaidCollection extends ResourceCollection
      */
     public function toArray($request)
     {
-        return $this->collection->transform(function ($row, $key) {
+        return $this->collection->transform(function ($row, $key) use($request) {
 
             $total_to_pay = $this->getTotalToPay($row);
             // $total_to_pay = (float)$row->total - (float)$row->total_payment;
+            Log::info($request['period']);
 
             $delay_payment = null;
             $date_of_due = null;
@@ -82,7 +84,8 @@ class UnpaidCollection extends ResourceCollection
             } else {
                 $web_platforms = new \Illuminate\Database\Eloquent\Collection();
             }
-            return [
+
+            $data = [
                 'id' => $row->id,
                 'date_of_issue' => $row->date_of_issue,
                 'customer_name' => $row->customer_name,
@@ -106,6 +109,8 @@ class UnpaidCollection extends ResourceCollection
                 "purchase_order" => $purchase_order,
                 "fee_id" => $row->fee_id,
             ];
+            return $data;
+
         });
     }
 }

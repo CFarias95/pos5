@@ -326,10 +326,8 @@ class RetentionController extends Controller
                                         $retIN->optional = json_encode($detalles);
                                         $retIN->save();
                                     }
-
                                     $totalProcesados += 1;
                                 }
-
                                 if ($version == '1.0.0') {
 
                                     $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;

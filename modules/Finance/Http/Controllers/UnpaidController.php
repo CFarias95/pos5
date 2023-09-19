@@ -104,13 +104,12 @@ class UnpaidController extends Controller
 
     public function records(Request $request)
     {
-
         $records = (new DashboardView())->getUnpaidFilterUser($request->all());
         $config = Configuration::first();
+
         return (new UnpaidCollection($records->paginate(config('tenant.items_per_page'))))->additional([
             'configuration' => $config->finances
         ]);
-
     }
 
     public function unpaidall()

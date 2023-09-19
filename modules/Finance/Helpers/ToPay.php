@@ -115,13 +115,12 @@ class ToPay
         if ($d_start && $d_end) {
 
             if($period == 'expired'){
-
-                $purchases->whereBetween('purchases.date_of_due', [$d_start, $d_end]);
+                $purchases->whereBetween('purchases.date_of_due', [$d_start, $d_end])
+                ->orWhereBetween('fee.date', [$d_start, $d_end]);
             }else{
 
                 $purchases->whereBetween('purchases.date_of_issue', [$d_start, $d_end]);
             }
-
         }
 
         if ($supplier_id !== 0) {
@@ -174,7 +173,7 @@ class ToPay
         if ($d_start && $d_end) {
 
             //if($period != 'expired'){
-                $expenses
+            $expenses
                 ->select(DB::raw($select ."'expense' AS 'type', " . "expenses.currency_type_id, " . "expenses.exchange_rate_sale"))
                 ->whereBetween('expenses.date_of_issue', [$d_start, $d_end]);
             //}
