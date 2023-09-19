@@ -1880,30 +1880,27 @@ use Modules\Sale\Models\SaleOpportunity;
                 $data = array_merge($model, $values);
                 $data['number'] = $numero + 1;
 
+                $indice = 0;
                 foreach($data['payments'] as $payment){
 
                     if($formaPagoDefecto){
 
+                        $data['payments'][$indice]['payment_method_type_id'] = $formaPagoDefecto->id;
                         $payment['payment_method_type_id'] = $formaPagoDefecto->id;
-
                     }
+                    $indice += 1;
                 }
 
-                Log::info("importPurchase: ".json_encode($data));
-
                 foreach($data['items'] as $item){
-
+                    
                     $data['total_igv'] += $item['total_igv'];
-
                 }
 
                 $purchase = DB::connection('tenant')->transaction(function () use ($data) {
-
                     try{
                         $doc = new Purchase();
                         $doc->fill($data);
                         $doc->save();
-                        Log::info("PURCHASE IMPORT:",$data);
 
                         foreach ($data['items'] as $row) {
                             $doc->items()->create($row);

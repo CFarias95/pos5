@@ -630,6 +630,7 @@
                 'parteRel' => $this->parteRel,
                 'pagoLocExt' => $this->pagoLocExt,
                 'account' => $this->account,
+                'default_payment' => $this->default_payment,
 
             ];
             if ($childrens == true) {

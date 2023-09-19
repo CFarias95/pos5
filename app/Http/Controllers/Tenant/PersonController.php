@@ -97,7 +97,6 @@ class PersonController extends Controller
     public function record($id)
     {
         $record = new PersonResource(Person::findOrFail($id));
-
         return $record;
     }
 

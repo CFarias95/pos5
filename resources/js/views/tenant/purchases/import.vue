@@ -306,7 +306,6 @@ export default {
         },
         setFormItems(items) {
             const self = this;
-
             self.form.items = [];
 
             if (items.length > 1) {
@@ -317,7 +316,7 @@ export default {
                     formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
                     formItem.quantity = parseFloat(element['cantidad']["_text"]);
                     formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
-                    //formItem.total_discount = parseFloat(element['descuento']['_text']);
+
                     if (parseFloat(element['descuento']["_text"]) > 0) {
 
                         formItem.discounts = [{
