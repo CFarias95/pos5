@@ -196,6 +196,7 @@ class RetentionController extends Controller
                 foreach ($dataArray as $ret) {
 
                     $totalDocumentos += 1;
+                    $number = (Retention::get())->count() + 1;
 
                     try {
 
@@ -241,12 +242,9 @@ class RetentionController extends Controller
 
                                 $version = $xmlRet[0]['version'];
 
-                                Log::info("VERSION DE XML " . $version);
-
                                 if ($version == '2.0.0' || $version == '2.1.0') {
 
                                     $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
-
                                     $existe = Retention::where('ubl_version', $secuencialRet)->first();
 
                                     if ($existe && $existe->count() > 0) {
@@ -276,7 +274,7 @@ class RetentionController extends Controller
                                         $retIN->soap_type_id = $this->company->soap_type_id;
                                         $retIN->state_type_id = '05';
                                         $retIN->series = 'RT';
-                                        $retIN->number = (Retention::get())->count() + 1;
+                                        $retIN->number = $number;
                                         $retIN->date_of_issue = date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier->id;
@@ -311,7 +309,7 @@ class RetentionController extends Controller
                                         $retIN->soap_type_id = $this->company->soap_type_id;
                                         $retIN->state_type_id = '05';
                                         $retIN->series = 'RT';
-                                        $retIN->number = (Retention::get())->count() + 1;
+                                        $retIN->number = $number;
                                         $retIN->date_of_issue = date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier->id;
@@ -328,6 +326,7 @@ class RetentionController extends Controller
                                     }
                                     $totalProcesados += 1;
                                 }
+
                                 if ($version == '1.0.0') {
 
                                     $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
@@ -364,7 +363,7 @@ class RetentionController extends Controller
                                         $retIN->soap_type_id = $this->company->soap_type_id;
                                         $retIN->state_type_id = '05';
                                         $retIN->series = 'RT';
-                                        $retIN->number = (Retention::get())->count() + 1;
+                                        $retIN->number = $number;
                                         $retIN->date_of_issue = date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier->id;
@@ -402,7 +401,7 @@ class RetentionController extends Controller
                                         $retIN->soap_type_id = $this->company->soap_type_id;
                                         $retIN->state_type_id = '05';
                                         $retIN->series = 'RT';
-                                        $retIN->number = (Retention::get())->count() + 1;
+                                        $retIN->number = $number;
                                         $retIN->date_of_issue = date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier->id;
@@ -420,6 +419,7 @@ class RetentionController extends Controller
 
                                     $totalProcesados += 1;
                                 }
+
                             } else {
                                 Log::error("No se encontro la retencion : " . $ret['10']);
                                 $totalError += 1;
