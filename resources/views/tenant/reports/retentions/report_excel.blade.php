@@ -63,7 +63,7 @@
                                 <tr>
                                     <td class="celda">{{$loop->iteration}}</td>
                                     <td class="celda">{{$value['date_of_issue']->format('Y-m-d')}}</td>
-                                    <td class="celda">{{$value['supplier']->name}}</td>
+                                    <td class="celda">{{($value['supplier'])?$value['supplier']->name:''}}</td>
                                     <td class="celda">RT-{{$value['number']}}</td>
                                     <td class="celda">{{$value['ubl_version']}}</td>
                                     <td class="celda">{{$value['observations']}}</td>
