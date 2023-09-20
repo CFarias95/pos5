@@ -22,7 +22,7 @@ class ReportRetentionController extends Controller
 
     public function excel(Request $request)
     {
-        $retention = Retention::all();
+        $retention = [];//Retention::limit(10)->get();
 
         $records = new RetentionCollection($retention);
 
