@@ -25,7 +25,6 @@ class ReportRetentionController extends Controller
 
         $retention = Retention::where($request->column, 'like', "%{$request->value}%")
         ->latest();
-        //$retention = Retention::all();
 
         $records = new RetentionCollection($retention);
 
