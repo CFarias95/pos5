@@ -32,7 +32,6 @@
                     <td align="center"> {{$value->number}}</td>
 
                 @endforeach
-
                     <td>
                         <p><strong>Fecha: </strong></p>
                     </td>
