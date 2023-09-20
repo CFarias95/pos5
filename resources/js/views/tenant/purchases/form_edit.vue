@@ -751,22 +751,18 @@ export default {
                 this.codSustentos_all = response.data.codSustentos
                 this.document_types2 = response.data.typeDocs2
                 //console.log('tipos de documentos Local: ',response.data.typeDocs2)
-
                 this.charges_types = response.data.charges_types
                 this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
                 this.form.establishment_id = (this.establishment.id) ? this.establishment.id : null
                 //this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
                 //this.form.document_type_intern = (this.document_types2.length > 0 )? this.document_types2[0].id : null
-
                 this.retention_types_income = response.data.retention_types_income
                 this.retention_types_iva = response.data.retention_types_iva
-
 
                 this.changeDateOfIssue()
                 //this.changeDocumentType()
                 //this.changeDocumentType2()
                 this.changeCurrencyType()
-
             })
 
         this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
@@ -804,7 +800,6 @@ export default {
         getWarehouseDescription(row) {
 
             let description = null
-
             if (row.warehouse_description) {
                 description = row.warehouse_description
             } else if (row.warehouse) {
@@ -813,7 +808,6 @@ export default {
                 const warehouse = this.getWarehouse(row.warehouse_id)
                 if (warehouse) description = warehouse.description
             }
-
             return description
         },
         changeHasGlobalIgv() {
@@ -839,10 +833,8 @@ export default {
         searchRemotePersons(input) {
 
             if (input.length > 1) {
-
                 this.loading_search = true
                 let parameters = `input=${input}`
-
                 this.$http.get(`/reports/data-table/persons/customers?${parameters}`)
                     .then(response => {
                         this.customers = response.data.persons
@@ -855,14 +847,12 @@ export default {
             } else {
                 this.filterCustomers()
             }
-
         },
         filterCustomers() {
             this.customers = this.all_customers
         },
         getFormatUnitPriceRow(unit_price) {
             return _.round(unit_price, 6)
-            // return unit_price.toFixed(6)
         },
         async validate_payments() {
 
@@ -901,21 +891,17 @@ export default {
             if (this.form.has_payment) {
 
                 if (this.form.payment_condition_id === '01' && this.form.payments.length == 0) {
-
                     return {
                         success: false,
                         message: 'Debe registrar al menos un pago'
                     }
-
                 }
 
                 if (this.isCreditPaymentCondition && this.form.fee.length == 0) {
-
                     return {
                         success: false,
                         message: 'Debe registrar al menos una cuota'
                     }
-
                 }
             }
 
@@ -939,29 +925,21 @@ export default {
                 payment_destination_id: this.getPaymentDestinationId(),
                 payment: 0,
             });
-
             this.calculatePayments()
-
         },
         setTotalDefaultPayment() {
 
             if (this.form.payments.length > 0) {
-
                 this.form.payments[0].payment = this.form.total
             }
         },
         getPaymentDestinationId() {
 
             if (this.configuration.destination_sale && this.payment_destinations.length > 0) {
-
                 let cash = _.find(this.payment_destinations, { id: 'cash' })
-
                 return (cash) ? cash.id : this.payment_destinations[0].id
-
             }
-
             return null
-
         },
         initInputPerson() {
             this.input_person = {
@@ -980,7 +958,6 @@ export default {
                             this.input_person.identity_document_type_id = '1'
                             this.showDialogNewPerson = true
                             break;
-
                         case 11:
                             this.input_person.identity_document_type_id = '6'
                             this.showDialogNewPerson = true
@@ -1002,7 +979,6 @@ export default {
                     let pos = supplier.description.search(this.input_person.number);
                     return (pos > -1)
                 })
-
                 this.input_person.number = (exist_persons.length == 0) ? this.input_person.number : null
             }
 
@@ -1078,7 +1054,6 @@ export default {
             payments.forEach(it => {
                 it.payment_destination_id = it.global_payment.destination_type == "App\Models\Tenant\Cash" ? 'cash' : it.global_payment.destination_id
             });
-
             return payments
         },
         changeRetentionInput(index, event, methodType, id) {
@@ -1087,7 +1062,6 @@ export default {
             if (payment_method_type.id.includes('99')) {
 
                 let maxAmount = selectedRetention.valor
-
                 if (maxAmount >= event) {
                     /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
 
@@ -1106,15 +1080,12 @@ export default {
             if (payment_method_type.description.includes('Anticipo')) {
 
                 let maxAmount = selectedAdvance.valor
-
                 if (maxAmount >= event) {
                     /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
-
                 } else {
                     this.form.payments[index].payment = maxAmount
                     let message = 'El monto maximo del anticipo es de ' + maxAmount
                     this.$message.warning(message)
-
                 }
             }
         },
@@ -1122,17 +1093,14 @@ export default {
 
             let selectedAdvance = _.find(this.advances, { 'id': id })
             let maxAmount = selectedAdvance.valor
-
             let payment_count = this.form.payments.length;
             let total = this.getTotal()
-
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
 
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
             } else if (amount > maxAmount) {
-
                 this.form.payments[index].payment = maxAmount
                 let message = 'El monto maximo del anticipo es de ' + maxAmount
                 this.$message.warning(message)
@@ -1142,11 +1110,8 @@ export default {
 
             let selectedRetention = _.find(this.retentions, { 'id': id })
             let maxAmount = selectedRetention.valor
-
             let payment_count = this.form.payments.length;
-            // let total = this.form.total;
-            let total = this.getTotal()
-
+            let total = this.getTotal();
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
 
@@ -1284,7 +1249,6 @@ export default {
                 is_aproved: false,
 
             }
-
             // this.clickAddPayment()
             this.initInputPerson()
             this.readonly_date_of_due = false
@@ -1357,7 +1321,6 @@ export default {
 
                 this.form.items.push(row);
             }
-
             this.calculateTotal();
         },
         clickRemoveItem(index) {

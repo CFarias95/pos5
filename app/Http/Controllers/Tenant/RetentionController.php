@@ -211,7 +211,8 @@ class RetentionController extends Controller
                             $claveAcceso = $ret['10'];
                             $rucProveedor = $ret['2'];
 
-                            $supplier = Person::where('number', $rucProveedor)->first();
+                            $supplier = Person::where('number', $rucProveedor)->where('type','customers')->first();
+
                             if (!$supplier) {
 
                                 $retAc = Retention::where('observations', 'like', '%' . $claveAcceso . '%')->delete();
