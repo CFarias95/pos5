@@ -22,9 +22,12 @@ class ReportRetentionController extends Controller
 
     public function excel(Request $request)
     {
-
-        $retention = Retention::where($request->column, 'like', "%{$request->value}%")
-        ->latest();
+        $retention = null;
+        if($request->column && $request->value){
+            $retention = Retention::where($request->column, 'like', "%{$request->value}%")->get();
+        }else{
+            $retention = Retention::all();
+        }
 
         $records = new RetentionCollection($retention);
 
