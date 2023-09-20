@@ -34,6 +34,6 @@ class ReportRetentionController extends Controller
             ->company($company)
             ->records($records);
 
-        return $retentionExport->download('Reporte_retenciones_' . Carbon::now()->timestamp . '.xlsx');
+        return $retentionExport->download('Retenciones_' . Carbon::now()->timestamp . '.xlsx');
     }
 }

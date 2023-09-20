@@ -19,7 +19,6 @@
                         <p><b>Empresa: </b></p>
                     </td>
                 @foreach($company as $value)
-
                     <td align="center">
                         <p><strong>{{$value->name}}</strong></p>
                     </td>
@@ -30,7 +29,6 @@
                         <p><strong>Ruc: </strong></p>
                     </td>
                     <td align="center"> {{$value->number}}</td>
-
                 @endforeach
                     <td>
                         <p><strong>Fecha: </strong></p>
