@@ -1042,8 +1042,8 @@ export default {
 
                     if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
 
-                    //this.changeDocumentType()
-                    //this.changeDocumentType2()
+                    this.changeDocumentType()
+                    this.changeDocumentType2()
                     this.calculateTotal()
                 })
 

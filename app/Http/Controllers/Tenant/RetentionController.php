@@ -62,7 +62,6 @@ class RetentionController extends Controller
 
     public function excel(Request $request)
     {
-
         return Excel::download(new RetentionsExport, 'Retentions.xlsx');
     }
 
@@ -199,9 +198,7 @@ class RetentionController extends Controller
                     $number = (Retention::get())->count() + 1;
 
                     try {
-
                         $ret = explode("\t", $ret);
-
                         if ($ret['1'] != "SERIE_COMPROBANTE") {
 
                             if (substr($ret['10'], 8, 2) != '07') {
@@ -210,7 +207,6 @@ class RetentionController extends Controller
 
                             $claveAcceso = $ret['10'];
                             $rucProveedor = $ret['2'];
-
                             $supplier = Person::where('number', $rucProveedor)->where('type','customers')->first();
 
                             if (!$supplier) {

@@ -17,7 +17,6 @@ use Modules\Finance\Traits\UnpaidTrait;
 
 class ReportRetentionController extends Controller
 {
-
     use UnpaidTrait;
 
     public function excel(Request $request)
