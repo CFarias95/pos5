@@ -62,7 +62,7 @@
                                     <td class="celda">{{$value['date_of_issue']->format('Y-m-d')}}</td>
                                     <td class="celda">{{($value['supplier'])?$value['supplier']->name:''}}</td>
                                     <td class="celda">RT-{{$value['number']}}</td>
-                                    <td class="celda">{{$value['ubl_version']}}</td>
+                                    <td class="celda">R-{{$value['ubl_version']}}</td>
                                     <td class="celda">{{$value['observations']}}</td>
                                     <td class="celda">{{$value['total_retention']}}</td>
                                     <td class="celda">{{ ($value['in_use'])?'SI':'NO' }}</td>
