@@ -28,14 +28,11 @@
                                         <td>{{ row.date_of_payment }}</td>
                                         <td>{{ row.payment_method_type_description }}</td>
                                         <td>{{ row.destination_description }}</td>
-                                        <!-- <td>{{ row.reference }}</td> -->
-                                        <td class="text-center">{{ row.payment }}</td>
-
+                                        <td class="text-center">{{ row.payment }}<br> {{ row.postdated ? row.postdated : '' }}
+                                        </td>
                                         <td class="text-left">
-
                                             <!-- pagos que no cuenten con la opcion pago recibido -->
                                             <template v-if="row.payment_received === null">
-
                                                 <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{
                                                     row.reference }}</span>
                                                 <button type="button" v-if="row.filename"
@@ -45,7 +42,6 @@
                                                     Descargar voucher
                                                 </button>
                                                 <!-- <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button> -->
-
                                             </template>
                                             <!-- nuevo flujo -->
                                             <template v-else>
@@ -84,16 +80,11 @@
                                                         class="fas fa-file-upload"></i></button>
                                             </td>
                                         </template>
-
-
                                         <td class="series-table-actions text-right">
-
                                             <template v-if="permissions.delete_payment">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                     @click.prevent="clickDelete(row.id)">Eliminar</button>
                                             </template>
-
-                                            <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                         </td>
                                     </template>
                                     <template v-else>
@@ -138,6 +129,20 @@
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-input v-model="row.payment"
                                                     @change="changeRetentionInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                        </td>
+                                        <td v-if="row.payment_method_type_id == '13'">
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-date-picker v-model="row.postdated" type="date" :clearable="false"
+                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd"
+                                                    placeholder="Postfechado"></el-date-picker>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-input v-model="row.payment"></el-input>
                                                 <small class="form-control-feedback" v-if="row.errors.payment"
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
@@ -202,11 +207,9 @@
                                                         </template>
                                                     </div>
                                                 </div>
-
                                             </div>
 
                                             <div class="col-md-5">
-
                                                 <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
                                                     v-if="row.payment_method_type_id_desc && row.payment_method_type_id != '99'">
                                                     <el-select v-model="row.reference"
@@ -514,30 +517,30 @@ export default {
                 payment: this.records[index].payment,
                 payment_received: this.records[index].payment_received,
                 fee_id: this.documentFeeId,
-                date_of_due: moment().format('YYYY-MM-DD')
-
+                date_of_due: moment().format('YYYY-MM-DD'),
+                postdated: this.records[index].postdated,
             };
 
             this.$http.post(`/${this.resource}`, form)
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message);
-                        this.getData();
-                        // this.initDocumentTypes()
-                        this.showAddButton = true;
-                        this.$eventHub.$emit('reloadData')
-                    } else {
-                        this.$message.error(response.data.message);
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.records[index].errors = error.response.data;
-                    } else {
+            .then(response => {
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.getData();
+                    // this.initDocumentTypes()
+                    this.showAddButton = true;
+                    this.$eventHub.$emit('reloadData')
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            })
+            .catch(error => {
+                if (error.response.status === 422) {
+                    this.records[index].errors = error.response.data;
+                } else {
 
-                        this.$message.error(error.response.data.message)
-                    }
-                })
+                    this.$message.error(error.response.data.message)
+                }
+            })
         },
         changeAdvance(index, id) {
 

@@ -1863,10 +1863,9 @@ use Modules\Sale\Models\SaleOpportunity;
                 }
 
                 $model['supplier_id'] = $supplier->id;
-
                 $formaPagoDefecto = PaymentMethodType::find($supplier->default_payment);
-
                 $company = Company::active();
+
                 $values = [
                     'user_id' => auth()->id(),
                     'external_id' => Str::uuid()->toString(),
@@ -1879,20 +1878,18 @@ use Modules\Sale\Models\SaleOpportunity;
                 $numero = Purchase::where('establishment_id',$model['establishment_id'])->where('series',$model['series'])->count();
                 $data = array_merge($model, $values);
                 $data['number'] = $numero + 1;
-
                 $indice = 0;
+
                 foreach($data['payments'] as $payment){
-
                     if($formaPagoDefecto){
-
-                        $data['payments'][$indice]['payment_method_type_id'] = $formaPagoDefecto->id;
-                        $payment['payment_method_type_id'] = $formaPagoDefecto->id;
+                        $data['payments'][$indice]['payment_method_type_id'] = $supplier->default_payment;
+                        $data['payment_method_type_id'] = $supplier->default_payment;
                     }
                     $indice += 1;
                 }
 
                 foreach($data['items'] as $item){
-                    
+
                     $data['total_igv'] += $item['total_igv'];
                 }
 
@@ -1901,17 +1898,14 @@ use Modules\Sale\Models\SaleOpportunity;
                         $doc = new Purchase();
                         $doc->fill($data);
                         $doc->save();
-
                         foreach ($data['items'] as $row) {
                             $doc->items()->create($row);
                         }
-
                         $doc->purchase_payments()->create([
                             'date_of_payment' => $data['date_of_issue'],
                             'payment_method_type_id' => $data['payment_method_type_id'],
                             'payment' => $data['total'],
                         ]);
-
                         return $doc;
 
                     }catch(Exception $ex){

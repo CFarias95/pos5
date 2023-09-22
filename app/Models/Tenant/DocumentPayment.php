@@ -27,11 +27,13 @@ class DocumentPayment extends ModelTenant
         'payment',
         'payment_received',
         'fee_id',
+        'postdated',
     ];
 
     protected $casts = [
         'date_of_payment' => 'date',
         'payment_received' => 'bool',
+        'postdated' => 'date',
     ];
 
     public function payment_method_type()

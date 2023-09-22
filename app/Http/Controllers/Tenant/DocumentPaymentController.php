@@ -92,8 +92,6 @@ class DocumentPaymentController extends Controller
 
     public function store(DocumentPaymentRequest $request)
     {
-        //Log::info("data:",$request->all());
-
         $id = $request->input('id');
 
         if ($request['payment_method_type_id'] == '99' && !$id) {
@@ -128,7 +126,7 @@ class DocumentPaymentController extends Controller
 
                 $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
                 $pagado = $pago->sum('payment');
-                Log::info("fee pago:".json_encode($pago));
+
                 $valorCuota = $cuotas->amount - $pagado;
                 $cuotaid = $cuotas->id;
 
@@ -217,15 +215,12 @@ class DocumentPaymentController extends Controller
 
         }else{
 
-            $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
-
+            $data = DB::connection('tenant')->transaction(function() use ($id, $request) {
                 $record = DocumentPayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
                 $record->save();
-
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'documents');
-
                 return $record;
             });
 
@@ -257,7 +252,6 @@ class DocumentPaymentController extends Controller
                     $cash->cash_documents()->updateOrCreate($req);
 
                 }
-
             }
             if($id){
 
@@ -266,20 +260,16 @@ class DocumentPaymentController extends Controller
                     $ass->delete();
                 }
             }
-
-
-
-
         }
         if((Company::active())->countable > 0 ){
             $this->createAccountingEntry($request->document_id, $data);
         }
+
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
             'id' => $data->id,
         ];
-
     }
 
     /* Crear los asientos contables del documento */

@@ -117,7 +117,6 @@
                                         </td>
                                         <td>
                                             <div class="form-group mb-0">
-
                                                 <el-upload :data="{ 'index': index }" :headers="headers" :multiple="false"
                                                     :on-remove="handleRemove" :action="`/finances/payment-file/upload`"
                                                     :show-file-list="true" :file-list="fileList" :on-success="onSuccess"
@@ -127,7 +126,6 @@
                                                 </el-upload>
                                             </div>
                                         </td>
-
                                         <td v-if="row.payment_method_type_id == '99'">
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-input v-model="row.payment"
@@ -136,7 +134,19 @@
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
                                         </td>
-
+                                        <td v-if="row.payment_method_type_id == '13'">
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-date-picker v-model="row.postdated" type="date" :clearable="false"
+                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd" placeholder="Postfechado"></el-date-picker>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-input v-model="row.payment"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                        </td>
                                         <td v-else>
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-input v-model="row.payment"

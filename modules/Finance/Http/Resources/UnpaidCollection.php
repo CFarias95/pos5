@@ -33,7 +33,6 @@ class UnpaidCollection extends ResourceCollection
 
             $total_to_pay = $this->getTotalToPay($row);
             // $total_to_pay = (float)$row->total - (float)$row->total_payment;
-            Log::info($request['period']);
 
             $delay_payment = null;
             $date_of_due = null;

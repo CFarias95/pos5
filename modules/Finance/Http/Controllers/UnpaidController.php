@@ -41,7 +41,6 @@ use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 
 class UnpaidController extends Controller
 {
-
     use FinanceTrait, UnpaidTrait;
     use StorageDocument;
 
@@ -74,8 +73,6 @@ class UnpaidController extends Controller
             'identity_document_type_id' => '',
         ];
         $customers = array_merge($customer,$customer_temp->toArray());
-
-
         $establishments= [];
         $establishments[] = [
             'id' => 0,
@@ -90,7 +87,6 @@ class UnpaidController extends Controller
         );
 
         $users = [];
-
         if(auth()->user()->type == 'admin')
         {
             $users = User::where('id', '!=', auth()->user()->id)->whereIn('type', ['admin', 'seller'])->get();
@@ -98,7 +94,6 @@ class UnpaidController extends Controller
 
         $payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get();
         $web_platforms = WebPlatform::all();
-
         return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms');
     }
 
@@ -299,7 +294,6 @@ class UnpaidController extends Controller
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-
         $this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
     }
 
@@ -438,5 +432,4 @@ class UnpaidController extends Controller
     {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
-
 }

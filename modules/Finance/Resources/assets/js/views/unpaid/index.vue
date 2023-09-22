@@ -536,7 +536,6 @@ export default {
     computed: {
 
         getCurrentBalance() {
-
             const self = this;
             let source = [];
             if (self.form.customer_id) {
@@ -793,7 +792,6 @@ export default {
             }
             this.loadUnpaid();
         },
-
     }
 }
 </script>

@@ -1046,7 +1046,6 @@ export default {
                     this.changeDocumentType2()
                     this.calculateTotal()
                 })
-
             //await this.getPercentageIgv();
         },
         getPayments(payments) {
@@ -1069,7 +1068,6 @@ export default {
                     this.form.payments[index].payment = maxAmount
                     let message = 'El monto maximo de la retencion es de ' + maxAmount
                     this.$message.warning(message)
-
                 }
             }
         },
@@ -1078,7 +1076,6 @@ export default {
             let selectedAdvance = _.find(this.advances, { 'id': id })
             let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
             if (payment_method_type.description.includes('Anticipo')) {
-
                 let maxAmount = selectedAdvance.valor
                 if (maxAmount >= event) {
                     /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
@@ -1097,7 +1094,6 @@ export default {
             let total = this.getTotal()
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
-
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
             } else if (amount > maxAmount) {
@@ -1114,7 +1110,6 @@ export default {
             let total = this.getTotal();
             let payment = 0;
             let amount = _.round(total / payment_count, 2);
-
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
             } else if (amount > maxAmount) {
@@ -1128,7 +1123,6 @@ export default {
 
             this.$http.get(`/documents/advance/${this.form.supplier_id}`).then(
                 response => {
-
                     this.advances = response.data
                     this.retentions = response.data.retentions;
                 }
@@ -1183,14 +1177,12 @@ export default {
 
             this.suppliers = this.all_suppliers;
             this.selectSupplier()
-
         },
         selectSupplier() {
 
             let supplier = _.find(this.suppliers, { 'id': this.aux_supplier_id })
             this.form.supplier_id = (supplier) ? supplier.id : null
             this.aux_supplier_id = null
-
         },
         initForm() {
             this.errors = {}
@@ -1303,11 +1295,8 @@ export default {
         },
         changeDocumentType2() {
             var document = _.find(this.document_types2, { 'idType': this.form.document_type_intern })
-            //console.log('documento seleccionado',document.DocumentTypeID)
             this.form.document_type_id = document.DocumentTypeID
-            //this.codSustentos = _.find(this.codSustentos,{'idTipoComprobante':this.form.document_type_id})
             this.codSustentos = _.filter(this.codSustentos_all, { 'idTipoComprobante': this.form.document_type_id })
-
             this.is_countable = (document.accountant > 0)
             this.is_credit_note = (document.DocumentTypeID == '04')
         },
