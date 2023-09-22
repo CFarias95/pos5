@@ -1884,6 +1884,7 @@ use Modules\Sale\Models\SaleOpportunity;
                     if($formaPagoDefecto){
                         $data['payments'][$indice]['payment_method_type_id'] = $supplier->default_payment;
                         $data['payment_method_type_id'] = $supplier->default_payment;
+                        $data['payment_condition_id'] = ($formaPagoDefecto->is_cash)?'01':'02';
                     }
                     $indice += 1;
                 }

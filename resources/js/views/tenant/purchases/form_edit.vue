@@ -742,6 +742,7 @@ export default {
                 this.all_customers = response.data.customers
                 this.configuration = response.data.configuration
                 this.payment_conditions = response.data.payment_conditions
+                //this.has_payment = true;
                 this.warehouses = response.data.warehouses
 
                 this.retention_types_iva = response.data.retention_types_iva
@@ -999,7 +1000,7 @@ export default {
         async initRecord() {
             await this.$http.get(`/${this.resource}/record/${this.resourceId}`)
                 .then(response => {
-                    //console.log('PURCHASE DATA: ',response.data.data.purchase)
+                    console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
                     console.log('RESPONSE LOAD DATA EDIT: ', dato.items)
                     this.form.id = dato.id
@@ -1016,6 +1017,7 @@ export default {
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.items = dato.items
                     this.form.payments = dato.purchase_payments
+                    //this.has_payment = true
                     this.form.purchase_payments_id = dato.purchase_payments.id
                     this.form.purchase_order_id = dato.purchase_order_id
                     this.form.customer_id = dato.customer_id
@@ -1027,9 +1029,7 @@ export default {
                     this.form.is_aproved = (dato.is_aproved && dato.is_aproved > 0) ? true : false
                     this.form.import_id = dato.import_id
                     this.form.tipo_doc_id = dato.tipo_doc_id
-
                     this.setCurrencyType()
-                    //this.changeCurrencyType()
 
                     if (this.form.customer_id) {
                         this.searchRemotePersons(dato.customer_number)
@@ -1037,11 +1037,10 @@ export default {
 
                     this.form.has_client = (this.form.customer_id) ? true : false
                     this.form.payment_condition_id = dato.payment_condition_id
+                    this.changePaymentCondition();
                     this.form.fee = dato.fee
                     this.form.has_payment = (this.form.fee.length > 0 || this.form.payments.length > 0) ? true : false
-
                     if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
-
                     this.changeDocumentType()
                     this.changeDocumentType2()
                     this.calculateTotal()
