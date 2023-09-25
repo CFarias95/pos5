@@ -541,7 +541,6 @@ use Modules\Sale\Models\SaleOpportunity;
                             $retention->total_used = $montoUsado;
                             $retention->in_use = true;
                             $retention->save();
-
                         }
                     }
 
