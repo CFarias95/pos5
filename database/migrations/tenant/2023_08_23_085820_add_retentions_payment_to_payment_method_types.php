@@ -14,7 +14,10 @@ class AddRetentionsPaymentToPaymentMethodTypes extends Migration
      */
     public function up()
     {
-        DB::connection('tenant')->table('payment_method_types')->insert(['id'=>'99','description'=>'Canje retenciones','has_card'=>0,'is_cash'=>1,'pago_sri'=>'01']);
+        DB::connection('tenant')->table('payment_method_types')->insert([
+            ['id'=>'14','description'=>'Anticipo Cliente','has_card' => 0, 'is_credit'=> 0,'is_cash'=>0,'is_advance'=>1,'pago_sri'=>'01'],
+            ['id'=>'15','description'=>'Anticipo Proveedor','has_card' => 0, 'is_credit'=> 0,'is_cash'=>0,'is_advance'=>1,'pago_sri'=>'01'],
+            ['id'=>'99','description'=>'Canje retenciones','has_card'=>0,'is_cash'=>1,'pago_sri'=>'01']]);
 
     }
 

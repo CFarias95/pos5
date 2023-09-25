@@ -17,6 +17,7 @@ class TenantModifySriFormasPagoDefault extends Migration
             ['id' => '11', 'description' => 'Crédito 30 días', 'has_card' => false, 'number_days' => 30, 'charge' => null, 'pago_sri' => '01', 'is_credit' => true],
             ['id' => '12', 'description' => 'Crédito 60 días', 'has_card' => false, 'number_days' => 60, 'charge' => null, 'pago_sri' => '01', 'is_credit' => true],
             ['id' => '13', 'description' => 'Cheque', 'has_card' => false, 'number_days' => null, 'charge' => null, 'pago_sri' => '20', 'is_credit' => false],
+
         ]);
         DB::connection('tenant')->table('payment_method_types')->where('description', 'Efectivo')->update(['pago_sri' => '01']);
         DB::connection('tenant')->table('payment_method_types')->where('description', 'Tarjeta de crédito')->update(['pago_sri' => '19']);
