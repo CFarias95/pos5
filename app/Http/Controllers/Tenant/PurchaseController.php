@@ -1852,6 +1852,7 @@ use Modules\Sale\Models\SaleOpportunity;
         {
             try {
                 $model = $request->all();
+
                 $supplier = Person::whereType('suppliers')->where('number', $model['supplier_ruc'])->first();
 
                 if (!$supplier) {
@@ -1935,18 +1936,13 @@ use Modules\Sale\Models\SaleOpportunity;
                         'message' => 'Xml No cargado correctamente.',
                     ];
                 }
-
-
-
             } catch (Exception $e) {
                 Log::error("Error al generar Purchase Import: ".$e->getMessage());
-
                 return [
                     'success' => false,
                     'message' => $e->getMessage()
                 ];
             }
-
         }
 
         public function destroy_purchase_item($id)

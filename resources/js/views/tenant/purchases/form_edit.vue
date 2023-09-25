@@ -1000,9 +1000,9 @@ export default {
         async initRecord() {
             await this.$http.get(`/${this.resource}/record/${this.resourceId}`)
                 .then(response => {
-                    console.log('PURCHASE DATA: ',response.data.data.purchase)
+                    //console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
-                    console.log('RESPONSE LOAD DATA EDIT: ', dato.items)
+                    //console.log('RESPONSE LOAD DATA EDIT: ', dato.items)
                     this.form.id = dato.id
                     this.form.document_type_intern = dato.document_type_intern
                     this.form.document_type_id = dato.document_type_id

@@ -381,7 +381,6 @@ export default {
 
             if (formItem !== undefined) {
                 this.form.items[index].item_id = id;
-
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_price;
                 itemActual.item_unit_types = formItem.item_unit_types;
@@ -399,8 +398,6 @@ export default {
                 this.$message.error("No se encontro el item en la lista disponible");
                 this.form.items[index].item_id = null;
             }
-            //console.info(this.form.items)
-
         },
         initFormItem() {
             return {
