@@ -18,6 +18,10 @@ class Advance extends ModelTenant
         'valor',
         'observation',
         'is_supplier',
+        'in_use',
+    ];
+    protected $casts = [
+        'in_use'=>'boolean',
     ];
 
     public function person(){

@@ -20,7 +20,8 @@
                                      class="form-group">
                                     <label class="control-label">Tipo</label>
                                     <el-select v-model="form.idMethodType"
-                                               filterable>
+                                               filterable
+                                               :disabled="in_use">
                                         <el-option v-for="option in methodTypes"
                                                    :key="option.id"
                                                    :label="option.description"
@@ -36,7 +37,8 @@
                                      class="form-group">
                                     <label class="control-label">Forma de pago</label>
                                     <el-select v-model="form.id_payment"
-                                               filterable>
+                                               filterable
+                                               :disabled="in_use">
                                         <el-option v-for="option in methodTypes2"
                                                    :key="option.id"
                                                    :label="option.description"
@@ -52,6 +54,7 @@
                                      class="form-group">
                                      <label class="control-label">Es de proveedor?</label>
                                     <el-switch
+                                        :disabled="in_use"
                                         v-model="form.is_supplier"
                                         class="ml-2"
                                         active-text="Si"
@@ -70,7 +73,8 @@
                                     <label class="control-label">{{ cliente_text }}</label>
                                     <el-select v-model="form.idCliente"
                                                dusk="tipoTransporte"
-                                               filterable>
+                                               filterable
+                                               :disabled="in_use">
                                         <el-option v-for="option in clients"
                                                    :key="option.id"
                                                    :label="option.name"
@@ -83,7 +87,7 @@
                             </div>
                             <div class="col-md-4" :class="{'has-danger': errors.valor}">
                                 <label class="control-label">Valor</label>
-                                <el-input-number v-model="form.valor" :step="1" :min="0"></el-input-number>
+                                <el-input-number v-model="form.valor" :step="1" :min="0" :disabled="in_use"></el-input-number>
                                 <small v-if="errors.valor"
                                             class="form-control-feedback"
                                             v-text="errors.valor[0]"></small>
@@ -97,7 +101,7 @@
                             </div>
                             <div class="col-md-4" :class="{'has-danger': errors.reference}">
                                 <label class="control-label">Referencia</label>
-                                <el-input v-model="form.reference"></el-input>
+                                <el-input v-model="form.reference" :disabled="in_use"></el-input>
                                 <small v-if="errors.reference"
                                             class="form-control-feedback"
                                             v-text="errors.reference[0]"></small>
@@ -148,7 +152,7 @@ export default {
             form: {
             },
             cliente_text:'Cliente',
-
+            in_use:false,
         }
     },
     async created() {
@@ -211,6 +215,7 @@ export default {
                     .then(response => {
                         //console.log('DATOS A EDITAR: ', response.data.data)
                         this.form = response.data.data
+                        this.in_use = response.data.data.in_use
                 }).then(() => {
 
                 })

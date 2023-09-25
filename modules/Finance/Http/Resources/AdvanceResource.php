@@ -23,7 +23,7 @@ class AdvanceResource extends JsonResource
             'is_supplier' => (bool) $this->is_supplier,
             'valor' => $this->valor,
             'observation' => ($this->observation) ? $this->observation : '',
-
+            'in_use'=> $this->in_use,
         ];
     }
 }

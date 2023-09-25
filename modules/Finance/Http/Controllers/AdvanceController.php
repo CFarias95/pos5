@@ -79,6 +79,7 @@ class AdvanceController extends Controller
             $records->where('created_at', 'like', "%{$request->date_created}%");
         }
 
+
         return new AdvanceCollection($records->paginate(config('tenant.items_per_page')));
     }
 

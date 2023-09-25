@@ -373,8 +373,6 @@ use Modules\Sale\Models\SaleOpportunity;
             $alteraStock = (bool)($docIntern && $docIntern[0]->stock)?$docIntern[0]->stock:0;
             $signo = ($docIntern && $docIntern[0]->sign == 0)? -1 : 1;
 
-            Log::info("purchaseStore: ",$data);
-
             try {
                     $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                     $numero = Purchase::where('establishment_id',$data['establishment_id'])->where('series',$data['series'])->count();

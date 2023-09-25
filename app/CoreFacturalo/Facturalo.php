@@ -47,6 +47,7 @@ use Illuminate\Support\Facades\Log;
 use App\CoreFacturalo\WS\Services\AuthSri;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Advance;
 use App\Models\Tenant\DispatchItem;
 use App\Models\Tenant\Person;
 
@@ -233,7 +234,6 @@ class Facturalo
 
                 }
                 break;
-
         }
         return $this;
     }
@@ -1512,24 +1512,17 @@ class Facturalo
 
         $total = $document->total;
         $balance = $total - collect($payments)->sum('payment');
-
         $search_cash = ($balance < 0) ? collect($payments)->firstWhere('payment_method_type_id', '01') : null;
         $this->apply_change = false;
-
         if($balance < 0 && $search_cash){
-
             $payments = collect($payments)->map(function($row) use($balance){
-
                 $change = null;
                 $payment = $row['payment'];
-
                 if($row['payment_method_type_id'] == '01' && !$this->apply_change){
                     $change = abs($balance);
                     $payment = $row['payment'] - abs($balance);
                     $this->apply_change = true;
-
                 }
-
                 return [
                     "id" => null,
                     "document_id" => null,
@@ -1541,26 +1534,27 @@ class Facturalo
                     "change" => $change,
                     "payment" => $payment
                 ];
-
             });
         }
 
         foreach ($payments as $row) {
+            if($row['payment_method_type_id'] == 14 || $row['payment_method_type_id'] == 15){
+                $anticipo = $row['reference'];
+                $anticipos = Advance::find($anticipo);
+                $anticipos->in_use = true;
+                $anticipos->save();
+            }
             if($balance < 0 && !$this->apply_change){
                 $row['change'] = abs($balance);
                 $row['payment'] = $row['payment'] - abs($balance);
                 $this->apply_change = true;
             }
-
             $record = $document->payments()->create($row);
             //considerar la creacion de una caja chica cuando recien se crea el cliente
             if(isset($row['payment_destination_id'])){
                 $this->createGlobalPayment($record, $row);
             }
-
         }
-
-
     }
 
     /**

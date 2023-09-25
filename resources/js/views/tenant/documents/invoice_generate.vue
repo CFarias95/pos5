@@ -693,7 +693,6 @@
 
                                                                         </td>
                                                                     </template>
-
                                                                     <td>
                                                                         <el-select
                                                                             v-model="row.payment_method_type_id"
@@ -729,7 +728,7 @@
                                                                                 <el-option
                                                                                     v-for="option in advances"
                                                                                     :key="option.id"
-                                                                                    :label="option.id"
+                                                                                    :label="'AT -' +option.id"
                                                                                     :value="option.id"></el-option>
                                                                             </el-select>
                                                                         </td>
@@ -2836,8 +2835,8 @@ export default {
 
             this.$http.get(`/${this.resource}/advance/${this.form.customer_id}`).then(
                 response => {
-
-                    this.advances = response.data
+                    console.log("addAdvancesCustomer",response)
+                    this.advances = response.data.advances
                 }
             )
         },

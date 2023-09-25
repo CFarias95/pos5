@@ -600,6 +600,7 @@ class DocumentController extends Controller
         if (!$validate['success']) return $validate;
         $res = $this->storeWithData($request->all());
         $document_id = $res['data']['id'];
+
         $this->associateDispatchesToDocument($request, $document_id);
         $this->associateSaleNoteToDocument($request, $document_id);
 
@@ -1352,16 +1353,13 @@ class DocumentController extends Controller
     public function storeWithData($data)
     {
         self::setChildrenToData($data);
-        $fact = DB::connection('tenant')->transaction(function () use ($data) {
+        $fact = DB::connection('tenant')->transaction(function() use ($data) {
             $facturalo = new Facturalo();
             $facturalo->save($data);
             $facturalo->createXmlUnsigned();
             $facturalo->signXmlUnsigned();
             $facturalo->updateHash();
             $facturalo->updateQr();
-            //$facturalo->createPdf();
-            //$facturalo->senderXmlSignedBill();
-
             return $facturalo;
         });
 
