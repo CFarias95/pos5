@@ -157,6 +157,10 @@ class Facturalo
                     // $item = new DocumentItem($row);
                     // $item->push();
                 }
+                if( array_key_last($inputs['fee'])){
+                    $lastKey = array_key_last($inputs['fee']);
+                    $inputs['invoice']['date_of_due'] = $inputs['fee'][$lastKey]['date'];
+                }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
                 if($inputs['transport']) $document->transport()->create($inputs['transport']);
