@@ -116,7 +116,6 @@ class ToPay
 
             if($period == 'expired'){
                 $purchases->whereBetween('fee.date', [$d_start, $d_end])
-                ->if()
                 ->orWhereBetween('purchases.date_of_due', [$d_start, $d_end]);
             }else{
 
