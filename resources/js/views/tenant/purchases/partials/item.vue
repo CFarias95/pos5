@@ -768,7 +768,7 @@ export default {
         this.initForm()
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            //console.log("Data CREATE: ", response.data.items);
+            console.log("ITEMS FORM ", response.data.items);
             this.all_items = response.data.items
             this.affectation_igv_types = response.data.affectation_igv_types
             this.system_isc_types = response.data.system_isc_types
@@ -1317,7 +1317,7 @@ export default {
                 this.row.indexi = this.recordItem.indexi
             }
             this.initForm()
-            
+
             this.$emit('add', this.row)
         },
         changeWarehouse(row) {

@@ -30,9 +30,10 @@
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
                                         <el-select :disabled="item.item_id != null" v-model="item.item_id"
-                                            @change="changeItem(item.item_id, index)" filterable required="true">
-                                            <el-option v-for="(prod, index2) in items" :key="index2" :value="prod.id"
-                                                :label="prod.internal_id + '-' + prod.name"></el-option>
+                                            @change="changeItem(item.item_id, index)" filterable required="true"
+                                            :remote-method="searchRemoteItems" remote>
+                                            <el-option v-for="(prod, index2) in items_all" :key="index2" :value="prod.id"
+                                                :label="prod.name"></el-option>
                                         </el-select>
                                     </td>
                                 </tr>
@@ -63,17 +64,18 @@ export default {
             loading_submit: false,
             headers: headers_token,
             titleDialog: null,
-            resource: "purchases",
+            resource: 'purchases',
             errors: {},
             form: {},
             formXmlJson: {},
-            items: [],
+            items_all: [],
             affectation_igv_types: [],
             system_isc_types: [],
             discount_types: [],
             charge_types: [],
             attribute_types: [],
             purchaseItems: [],
+            loading_search: false,
         };
     },
     created() {
@@ -81,15 +83,15 @@ export default {
         this.loadAllItems(this.$store)
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            //console.log("item: ",response.data.items)
-            this.items = response.data.items;
+            console.log("ITEMS IMPORT: ", response.data.items)
+            this.items_all = response.data.items;
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
             this.discount_types = response.data.discount_types;
             this.charge_types = response.data.charge_types;
             this.attribute_types = response.data.attribute_types;
             this.$store.commit('setWarehouses', response.data.warehouses)
-            //this.$store.commit('setAllItems', response.data.items)
+
         });
         this.initForm();
     },
@@ -472,6 +474,28 @@ export default {
         },
         create() {
             this.titleDialog = "Importar Factura Compra";
+        },
+        async searchRemoteItems(input) {
+
+            if (input.length > 2) {
+
+                this.loading_search = true
+                let parameters = `input=${input}`
+
+                await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
+                    .then(response => {
+                        this.items_all = response.data.items
+                        this.loading_search = false
+
+                        if (this.items_all.length == 0) {
+                            this.initFilterItems()
+                        }
+                    })
+            }
+
+        },
+        initFilterItems() {
+            this.activeName = 'first'
         },
         async submit() {
 

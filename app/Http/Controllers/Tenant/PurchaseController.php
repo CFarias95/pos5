@@ -272,13 +272,11 @@ class PurchaseController extends Controller
                     ];
                 });
                 return $suppliers;
-
                 break;
 
             case 'items':
                 return SearchItemController::getItemToPurchase();
                 return SearchItemController::getItemToPurchase()->transform(function ($row) {
-
                     $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
                     return [
                         'id' => $row->id,
@@ -310,23 +308,12 @@ class PurchaseController extends Controller
                             ];
                         }),
                         'series_enabled' => (bool)$row->series_enabled,
-
-                        // 'warehouses' => collect($row->warehouses)->transform(function($row) {
-                        //     return [
-                        //         'warehouse_id' => $row->warehouse->id,
-                        //         'warehouse_description' => $row->warehouse->description,
-                        //         'stock' => $row->stock,
-                        //     ];
-                        // })
                     ];
                 });
-                //                return $items;
-
                 break;
             default:
 
                 return [];
-
                 break;
         }
     }
@@ -349,7 +336,6 @@ class PurchaseController extends Controller
 
     public function item_tables()
     {
-
         $items = $this->table('items');
         //$items = Item::all();
         $categories = [];
