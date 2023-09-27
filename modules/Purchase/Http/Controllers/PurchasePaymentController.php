@@ -85,6 +85,7 @@ class PurchasePaymentController extends Controller
             $retention->total_used = $montoUsado;
             $retention->in_use = true;
             $retention->save();
+
         } else if ($request['payment_method_type_id'] == '99' && $id) {
 
             $pagoAnt = PurchasePayment::first(['id' => $id])->payment;
@@ -196,7 +197,6 @@ class PurchasePaymentController extends Controller
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'purchases');
-
                 return $record;
             });
 
@@ -290,13 +290,44 @@ class PurchasePaymentController extends Controller
                 $detalle->debe = $payment->payment;
                 $detalle->save();
 
-                $detalle2 = new AccountingEntryItems();
-                $detalle2->accounting_entrie_id = $cabeceraC->id;
-                $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
-                $detalle2->seat_line = 2;
-                $detalle2->haber = $payment->payment;
-                $detalle2->debe = 0;
-                $detalle2->save();
+                if($payment->payment_method_type_id == '99'){
+                    $haber = $payment->payment;
+                    $reference = $payment->reference;
+                    $retention = Retention::find($reference);
+                    $detRet = $retention->optional;
+                    $seat = 2;
+                    foreach ($detRet as $ret) {
+                        $valor = floatval($ret->valorRetenido);
+                        $haberInterno = 0;
+                        if($valor >=  $haber){
+                            $haberInterno = $haber;
+                            $haber = 0;
+                        }
+                        if($valor < $haber){
+                            $haberInterno = $valor;
+                            $haber -=  $valor;
+                        }
+                        $detalle2 = new AccountingEntryItems();
+                        $detalle2->accounting_entrie_id = $cabeceraC->id;
+                        $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
+                        $detalle2->seat_line = $seat;
+                        $detalle2->haber = $haberInterno;
+                        $detalle2->debe = 0;
+                        $detalle2->save();
+
+                        $seat += 1;
+                    }
+                }else{
+                    $detalle2 = new AccountingEntryItems();
+                    $detalle2->accounting_entrie_id = $cabeceraC->id;
+                    $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
+                    $detalle2->seat_line = 2;
+                    $detalle2->haber = $payment->payment;
+                    $detalle2->debe = 0;
+                    $detalle2->save();
+                }
+
+
             } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable del pago de compra');

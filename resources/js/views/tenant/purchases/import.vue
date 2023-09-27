@@ -426,7 +426,7 @@ export default {
                 establishment_id: 1,
                 document_type_id: "01",
                 document_type_intern: "01",
-                series: "cc",
+                series: "CC",
                 number: 0,
                 date_of_issue: null,
                 time_of_issue: null,

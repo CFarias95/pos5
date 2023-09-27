@@ -56,7 +56,7 @@ class PurchaseResource extends JsonResource
             return [
                 'id' => $row->id,
                 'purchase_id' => $row->purchase_id,
-                'date_of_payment' => $row->date_of_payment->format('Y-m-d'),
+                'date_of_payment' => $row->date_of_payment,
                 'payment_method_type_id' => $row->payment_method_type_id,
                 'has_card' => $row->has_card,
                 'card_brand_id' => $row->card_brand_id,

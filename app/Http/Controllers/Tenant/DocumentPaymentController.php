@@ -276,7 +276,7 @@ class DocumentPaymentController extends Controller
     private function createAccountingEntry($document_id, $request){
 
         $document = Document::find($document_id);
-        Log::info('documento created: ' . json_encode($document));
+        //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
 
         if($document && $document->document_type_id == '01'){
@@ -344,13 +344,58 @@ class DocumentPaymentController extends Controller
                 $detalle->haber = $request->payment;
                 $detalle->save();
 
-                $detalle2 = new AccountingEntryItems();
-                $detalle2->accounting_entrie_id = $cabeceraC->id;
-                $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$configuration->cta_charge;
-                $detalle2->seat_line = 2;
-                $detalle2->debe = $request->payment;
-                $detalle2->haber = 0;
-                $detalle2->save();
+                if($request->payment_method_type_id == '99'){
+                    $debe = $request->payment;
+                    $reference = $request->reference;
+                    $retention = Retention::find($reference);
+                    $detRet = $retention->optional;
+                    //Log::alert($detRet);
+                    $seat = 2;
+                    foreach (json_decode($detRet) as $ret) {
+                        if($debe > 0){
+                            $valor = floatval($ret->valorRetenido);
+                            $debeInterno = 0;
+                            $cuentaId = null;
+                            if($valor >=  $debe){
+                                $debeInterno = $debe;
+                                $debe = 0;
+                            }
+                            if($valor < $debe){
+                                $debeInterno = $valor;
+                                $debe -=  $valor;
+                            }
+                            if($ret->codigo == '2'){
+                                $cuentaId=$ceuntaC->countable_acount;
+                            }
+                            if($ret->codigo == '1'){
+                                $cuentaId=$ceuntaC->countable_acount_payment;
+                            }
+                            if($cuentaId == null){
+                                $cabeceraC->delete();
+                                throw new Exception("Centas contables para Caanje Retenciones sin asignar", 1);
+                            }
+
+                            $detalle2 = new AccountingEntryItems();
+                            $detalle2->accounting_entrie_id = $cabeceraC->id;
+                            $detalle2->account_movement_id = $cuentaId;
+                            $detalle2->seat_line = $seat;
+                            $detalle2->debe = $debeInterno;
+                            $detalle2->haber = 0;
+                            $detalle2->save();
+
+                            $seat += 1;
+                        }
+                    }
+                }else{
+                    $detalle2 = new AccountingEntryItems();
+                    $detalle2->accounting_entrie_id = $cabeceraC->id;
+                    $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$configuration->cta_charge;
+                    $detalle2->seat_line = 2;
+                    $detalle2->debe = $request->payment;
+                    $detalle2->haber = 0;
+                    $detalle2->save();
+                }
+
 
             }catch(Exception $ex){
 

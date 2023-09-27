@@ -189,8 +189,8 @@
                                     v-text="errors.tipo_doc_id[0]"></small>
                             </div>
                         </div>
-                        <div class="form-group col-sm-12 col-md-6 col-lg-2" :class="{ 'has-danger': errors.afected_document }"
-                            v-if="is_credit_note">
+                        <div class="form-group col-sm-12 col-md-6 col-lg-2"
+                            :class="{ 'has-danger': errors.afected_document }" v-if="is_credit_note">
                             <label class="control-label">Documento Afectado</label>
                             <el-input v-model="form.afected_document" dusk="afected_document" :required="is_credit_note">
                             </el-input>
@@ -553,7 +553,8 @@
 
                             <!-- descuentos -->
 
-                            <p v-if="form.total_exportation > 0" class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol }}
+                            <p v-if="form.total_exportation > 0" class="text-right">OP.EXPORTACIÓN: {{ currency_type.symbol
+                            }}
                                 {{ form.total_exportation }}</p>
                             <p v-if="form.total_free > 0" class="text-right">OP.GRATUITAS: {{ currency_type.symbol }} {{
                                 form.total_free
@@ -728,10 +729,10 @@ export default {
         }
     },
     async created() {
+
         await this.initForm()
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
-
                 this.document_types = response.data.document_types_invoice
                 this.currency_types = response.data.currency_types
                 this.establishment = response.data.establishment
@@ -742,7 +743,6 @@ export default {
                 this.all_customers = response.data.customers
                 this.configuration = response.data.configuration
                 this.payment_conditions = response.data.payment_conditions
-                //this.has_payment = true;
                 this.warehouses = response.data.warehouses
 
                 this.retention_types_iva = response.data.retention_types_iva
@@ -765,21 +765,24 @@ export default {
                 //this.changeDocumentType2()
                 this.changeCurrencyType()
             })
+            .then(() => {
+                this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
+                    this.reloadDataSuppliers(supplier_id)
+                })
 
-        this.$eventHub.$on('reloadDataPersons', (supplier_id) => {
-            this.reloadDataSuppliers(supplier_id)
-        })
+                this.$eventHub.$on('initInputPerson', () => {
+                    this.initInputPerson()
+                })
 
-        this.$eventHub.$on('initInputPerson', () => {
-            this.initInputPerson()
-        })
+                this.filterCustomers()
+                this.changeHasPayment()
+                this.changeHasClient()
+                this.initGlobalIgv()
+            })
+            .finally(() => {
+                this.initRecord()
+            })
 
-        await this.filterCustomers()
-        await this.changeHasPayment()
-        await this.changeHasClient()
-        this.initGlobalIgv()
-
-        this.initRecord()
         //this.changeDocumentType2()
         //this.addRetentions()
     },
@@ -1002,7 +1005,7 @@ export default {
                 .then(response => {
                     //console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
-                    //console.log('RESPONSE LOAD DATA EDIT: ', dato.items)
+                    console.log('RESPONSE LOAD DATA EDIT: ', dato)
                     this.form.id = dato.id
                     this.form.document_type_intern = dato.document_type_intern
                     this.form.document_type_id = dato.document_type_id
@@ -1016,8 +1019,7 @@ export default {
                     this.form.currency_type_id = dato.currency_type_id
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.items = dato.items
-                    this.form.payments = dato.purchase_payments
-                    //this.has_payment = true
+
                     this.form.purchase_payments_id = dato.purchase_payments.id
                     this.form.purchase_order_id = dato.purchase_order_id
                     this.form.customer_id = dato.customer_id
@@ -1036,14 +1038,30 @@ export default {
                     }
 
                     this.form.has_client = (this.form.customer_id) ? true : false
-                    this.form.payment_condition_id = dato.payment_condition_id
-                    this.changePaymentCondition();
-                    this.form.fee = dato.fee
-                    this.form.has_payment = (this.form.fee.length > 0 || this.form.payments.length > 0) ? true : false
+
+
                     if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
                     this.changeDocumentType()
                     this.changeDocumentType2()
                     this.calculateTotal()
+
+                    this.form.has_payment = true;
+                    this.changeHasPayment();
+
+                    this.form.payment_condition_id = dato.payment_condition_id;
+                    this.changePaymentCondition();
+
+                    this.form.fee = dato.purchase_payments;
+                    this.form.payments = dato.purchase_payments;
+
+                    if(dato.fee.length > 0){
+
+                        this.form.fee = dato.fee
+                    }
+                    this.changePaymentMethodType(0);
+                    this.calculateTotal()
+                    console.log(dato.purchase_payments)
+
                 })
             //await this.getPercentageIgv();
         },
@@ -1261,6 +1279,8 @@ export default {
         },
         changePaymentCondition() {
 
+            console.log(this.form.payment_condition_id)
+
             this.form.fee = []
             this.form.payments = []
 
@@ -1268,7 +1288,6 @@ export default {
 
                 this.clickAddPayment()
                 this.initDataPaymentCondition()
-
             }
             if (this.form.payment_condition_id === '02') {
                 this.clickAddFeeNew()
@@ -1552,16 +1571,13 @@ export default {
 
             let supplier = _.find(this.all_suppliers, { 'id': this.form.supplier_id })
             if (supplier) {
-
                 if (supplier.perception_agent) {
 
                     let total_perception = 0
                     let quantity_item_perception = 0
                     let total_amount = 0
                     this.form.total_perception = 0
-
                     this.form.perception_date = moment().format('YYYY-MM-DD')
-
                     this.form.items.forEach((row) => {
                         quantity_item_perception += (row.item.has_perception) ? 1 : 0
                         total_perception += (row.item.has_perception) ? (parseFloat(row.unit_price) * parseFloat(row.quantity) * (parseFloat(row.item.percentage_perception) / 100)) : 0

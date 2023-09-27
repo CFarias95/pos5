@@ -41,7 +41,7 @@ class Retention extends ModelTenant
         'currency_type_id',
         'total_retention',
         'total',
-
+        'optional',
         'legends',
 
         'filename',

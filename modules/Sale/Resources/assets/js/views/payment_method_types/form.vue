@@ -45,13 +45,13 @@
                         <label class="control-label">Tipo de Pago</label>
                         <div class="form-group" :class="{'has-danger': errors.is_credit}">
                             <label class="control-label">Crédito</label>
-                            <el-switch v-model="form.is_credit" :active-icon="Check" :inactive-icon="Close" @change="changeCredit" />
+                            <el-switch :readonly="recordId !== null" v-model="form.is_credit" :active-icon="Check" :inactive-icon="Close" @change="changeCredit" />
                             <br>
                             <label class="control-label">Contado</label>
-                            <el-switch v-model="form.is_cash" :active-icon="Check" :inactive-icon="Close" @change="changeCash"/>
+                            <el-switch :readonly="recordId !== null" v-model="form.is_cash" :active-icon="Check" :inactive-icon="Close" @change="changeCash"/>
                             <br>
                             <label class="control-label">Anticipo</label>
-                            <el-switch v-model="form.is_advance" :active-icon="Check" :inactive-icon="Close"  @change="changeAdvance"/>
+                            <el-switch :readonly="recordId !== null" v-model="form.is_advance" :active-icon="Check" :inactive-icon="Close"  @change="changeAdvance"/>
                             <small
                                 class="form-control-feedback"
                                 v-if="errors.is_credit"
@@ -64,7 +64,8 @@
                         <el-input v-model="form.number_days" :maxlength="3"></el-input>
                     </div>
                     <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
-                        <label class="control-label">Cuenta contable para cobros</label>
+                        <label v-if ="form.id && form.id == '99'" class="control-label">Cuenta contable para IVA</label>
+                        <label v-else class="control-label">Cuenta contable para cobros</label>
                                 <el-select v-model="form.countable_acount">
                                     <el-option v-for="option in accounts"
                                                :key="option.id"
@@ -76,7 +77,8 @@
                                        v-text="errors.countable_acount[0]"></small>
                     </div>
                     <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
-                        <label class="control-label">Cuenta contable para pagos</label>
+                        <label v-if ="form.id && form.id == '99'" class="control-label">Cuenta contable para RENTA</label>
+                        <label v-else class="control-label">Cuenta contable para pagos</label>
                                 <el-select v-model="form.countable_acount_payment">
                                     <el-option v-for="option in accounts"
                                                :key="option.id"
