@@ -1019,7 +1019,6 @@ export default {
                     this.form.currency_type_id = dato.currency_type_id
                     this.form.exchange_rate_sale = dato.exchange_rate_sale
                     this.form.items = dato.items
-
                     this.form.purchase_payments_id = dato.purchase_payments.id
                     this.form.purchase_order_id = dato.purchase_order_id
                     this.form.customer_id = dato.customer_id
@@ -1038,30 +1037,28 @@ export default {
                     }
 
                     this.form.has_client = (this.form.customer_id) ? true : false
-
-
                     if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
                     this.changeDocumentType()
                     this.changeDocumentType2()
                     this.calculateTotal()
-
                     this.form.has_payment = true;
                     this.changeHasPayment();
-
                     this.form.payment_condition_id = dato.payment_condition_id;
                     this.changePaymentCondition();
 
-                    this.form.fee = dato.purchase_payments;
-                    this.form.payments = dato.purchase_payments;
+                    if(dato.payment_condition_id === '02'){
+                        this.form.fee = dato.purchase_payments;
+                    }
+
+                    if(dato.payment_condition_id === '01'){
+                        this.form.payments = dato.purchase_payments;
+                    }
 
                     if(dato.fee.length > 0){
-
                         this.form.fee = dato.fee
                     }
                     this.changePaymentMethodType(0);
                     this.calculateTotal()
-                    console.log(dato.purchase_payments)
-
                 })
             //await this.getPercentageIgv();
         },
@@ -1607,7 +1604,6 @@ export default {
             this.form.payments.forEach((item) => {
                 if (item.payment_destination_id == null) error_by_item++;
             })
-
             return {
                 error_by_item: error_by_item,
             }
@@ -1653,12 +1649,11 @@ export default {
             }
         },
         async submit() {
+            console.log(this.form)
             let validarMontos = await this.validarEntradas()
             if (!validarMontos.success) {
                 return this.$message.error(validarMontos.message);
             }
-
-
             let validate = await this.validate_payments()
             if (!validate.success) {
                 return this.$message.error(validate.message);

@@ -783,7 +783,6 @@ export default {
 
       this.$http.post(`/${this.resource}/data`, this.form).then((response) => {
         this.document = response.data.data.document;
-        // this.documents_quantity = response.data.data.quantity;
         this.balance = response.data.data.balance;
         this.sale_note = response.data.data.sale_note;
         this.general = response.data.data.general;
