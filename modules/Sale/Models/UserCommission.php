@@ -7,21 +7,18 @@ use App\Models\Tenant\ModelTenant;
 
 class UserCommission extends ModelTenant
 {
-
     protected $fillable = [
         'id',
         'user_id',
         'amount',
-        'type', 
+        'type',
 
     ];
- 
- 
     public function user()
     {
         return $this->belongsTo(User::class);
     }
- 
+
     public function scopeWhereTypeUser($query)
     {
         $user = auth()->user();

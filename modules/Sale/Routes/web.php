@@ -188,6 +188,14 @@ if($current_hostname) {
 
         });
 
+        //ROUTES FROM USER BUDETS
+        Route::prefix('budget')->group(function(){
+
+            Route::get('/records/{id}', 'BudgetController@records');
+            Route::Post('', 'BudgetController@store');
+            Route::delete('/{id}', 'BudgetController@destroy');
+        });
+
         Route::prefix('quotation_payments')->group(function () {
             /**
             quotation_payments/records/{quotation}

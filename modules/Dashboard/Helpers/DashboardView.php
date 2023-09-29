@@ -428,8 +428,8 @@ class DashboardView
         if ($d_start && $d_end) {
 
             if($period == 'expired'){
-                $documents->whereBetween('fee.date', [$d_start, $d_end])
-                ->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
+                $documents->whereBetween('fee.date', [$d_start, $d_end]);
+                //->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
             }else{
                 $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);
                 $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);

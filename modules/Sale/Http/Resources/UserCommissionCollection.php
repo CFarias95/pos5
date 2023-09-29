@@ -17,13 +17,14 @@ class UserCommissionCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
 
             return [
-                'id' => $row->id, 
-                'user_name' => $row->user->name, 
+                'id' => $row->id,
+                'user_name' => $row->user->name,
+                'user_id' => $row->user->id,
                 'type' => ($row->type == 'amount') ? 'Monto':'Porcentaje',
                 'amount' => $row->amount,
             ];
-            
+
         });
     }
-    
+
 }

@@ -20,14 +20,14 @@ class UserCommissionController extends Controller
         return view('sale::user-commissions.index');
     }
 
- 
+
     public function columns()
     {
         return [
             'id' => 'Número',
         ];
     }
- 
+
 
     public function records(Request $request)
     {
@@ -39,7 +39,7 @@ class UserCommissionController extends Controller
     private function getRecords($request){
 
         if($request->column == 'customer'){
-            
+
             $records = UserCommission::whereHas('person', function($query) use($request){
                             $query->where('name', 'like', "%{$request->value}%");
                         });
@@ -47,11 +47,11 @@ class UserCommissionController extends Controller
         }else{
 
             $records = UserCommission::where($request->column, 'like', "%{$request->value}%");
-        
+
         }
-        
+
         return $records->whereTypeUser()->latest();
-    } 
+    }
 
 
     public function tables() {
@@ -68,7 +68,7 @@ class UserCommissionController extends Controller
 
         return $record;
     }
- 
+
 
     public function store(UserCommissionRequest $request) {
 
@@ -83,8 +83,8 @@ class UserCommissionController extends Controller
         ];
 
     }
- 
-  
+
+
 
     public function destroy($id)
     {

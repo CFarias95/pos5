@@ -6,7 +6,8 @@
                 <li class="active"><span>Comisiones</span></li>
             </ol>
             <div class="right-wrapper pull-right">
-                <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i class="fa fa-plus-circle"></i> Nuevo</button>
+                <button type="button" class="btn btn-custom btn-sm  mt-2 mr-2" @click.prevent="clickCreate()"><i
+                        class="fa fa-plus-circle"></i> Nuevo</button>
             </div>
         </div>
         <div class="card mb-0">
@@ -29,55 +30,60 @@
                         <td>{{ row.amount }}</td>
                         <td class="text-right">
                             <template v-if="typeUser === 'admin'">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickBudget(row.id)">Presupuesto</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickBudget(row.user_id)">Presupuesto</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                    @click.prevent="clickCreate(row.id)">Editar</button>
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                    @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
                         </td>
                     </tr>
                 </data-table>
             </div>
-
-            <user-commissions-form :showDialog.sync="showDialog"
-                        :recordId="recordId"></user-commissions-form>
+            <user-commissions-form :showDialog.sync="showDialog" :recordId="recordId"></user-commissions-form>
+            <user-commissions-budget :showDialog.sync="showDialogBudget" :recordId="recordId"></user-commissions-budget>
 
 
         </div>
     </div>
 </template>
 <script>
-    import UserCommissionsForm from './form.vue'
-    import DataTable from '@components/DataTable.vue'
-    import {deletable} from '@mixins/deletable'
+import UserCommissionsForm from './form.vue'
+import UserCommissionsBudget from './budget.vue'
+import DataTable from '@components/DataTable.vue'
+import { deletable } from '@mixins/deletable'
 
-    export default {
-        mixins: [deletable],
-        props:['typeUser'],
-        components: {UserCommissionsForm,  DataTable},
-        data() {
-            return {
-                showDialog: false,
-                showImportDialog: false,
-                showWarehousesDetail: false,
-                resource: 'user-commissions',
-                recordId: null,
-            }
+export default {
+    mixins: [deletable],
+    props: ['typeUser'],
+    components: { UserCommissionsForm, DataTable, UserCommissionsBudget },
+    data() {
+        return {
+            showDialog: false,
+            showDialogBudget:false,
+            showImportDialog: false,
+            showWarehousesDetail: false,
+            resource: 'user-commissions',
+            recordId: null,
+        }
+    },
+    created() {
+    },
+    methods: {
+        clickCreate(recordId = null) {
+            this.recordId = recordId
+            this.showDialog = true
         },
-        created() {
+        clickDelete(id) {
+            this.destroy(`/${this.resource}/${id}`).then(() =>
+                this.$eventHub.$emit('reloadData')
+            )
         },
-        methods: {
-            clickCreate(recordId = null) {
-                this.recordId = recordId
-                this.showDialog = true
-            },
-            clickDelete(id) {
-                this.destroy(`/${this.resource}/${id}`).then(() =>
-                    this.$eventHub.$emit('reloadData')
-                )
-            },
-            clickBudget(id){
-                this.recordId = recordId
-            }
+        clickBudget(id) {
+            this.recordId = id
+            this.showDialogBudget = true
         }
     }
+}
 </script>
