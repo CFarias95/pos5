@@ -264,7 +264,7 @@
                                             ">
                                             <a class="nav-link"
                                                href="#">
-                                                Comisiones
+                                                Comisiones/Presupuestos
                                             </a>
                                             <ul class="nav nav-children">
                                                 <li class="{{ ($firstLevel === 'user-commissions')?'nav-active':'' }}">
