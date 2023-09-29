@@ -17,18 +17,19 @@
                 <data-table :resource="resource">
                     <tr slot="heading" width="100%">
                         <th>#</th>
-                        <th>Vendedor</th> 
-                        <th>Tipo</th> 
+                        <th>Vendedor</th>
+                        <th>Tipo</th>
                         <th>Comisión</th>
                         <th class="text-right">Acciones</th>
-                    <tr>
+                    </tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
-                        <td>{{ row.user_name }}</td> 
+                        <td>{{ row.user_name }}</td>
                         <td>{{ row.type }}</td>
                         <td>{{ row.amount }}</td>
                         <td class="text-right">
                             <template v-if="typeUser === 'admin'">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickBudget(row.id)">Presupuesto</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-info" @click.prevent="clickCreate(row.id)">Editar</button>
                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
@@ -39,13 +40,12 @@
 
             <user-commissions-form :showDialog.sync="showDialog"
                         :recordId="recordId"></user-commissions-form>
- 
+
 
         </div>
     </div>
 </template>
 <script>
-
     import UserCommissionsForm from './form.vue'
     import DataTable from '@components/DataTable.vue'
     import {deletable} from '@mixins/deletable'
@@ -65,15 +65,18 @@
         },
         created() {
         },
-        methods: { 
+        methods: {
             clickCreate(recordId = null) {
                 this.recordId = recordId
                 this.showDialog = true
-            }, 
+            },
             clickDelete(id) {
                 this.destroy(`/${this.resource}/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickBudget(id){
+                this.recordId = recordId
             }
         }
     }
