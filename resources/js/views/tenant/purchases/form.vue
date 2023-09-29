@@ -1460,13 +1460,10 @@ export default {
 
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
-
                     toal_retenido += (retention_iva + retention_renta)
-
                     this.haveRetentions = true
                     this.maxLength1 = 15
                     this.maxLength2 = 45
-
                     let nuevaRetIVA = true
                     let nuevaRetRENTA= true
 

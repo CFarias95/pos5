@@ -91,7 +91,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let percentage_igv_a = pigv;
 
-    //console.log("percentage_igv: "+ percentage_igv_a );
+    console.log("percentage_igv: "+ pigv );
 
     if(pigv == null){
 
@@ -128,7 +128,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
             row.affectation_igv_type_id = '12';
         }
 
-        if(percentage_igv_a === 12){
+        if(percentage_igv_a === 12 ){
 
             row.affectation_igv_type_id = '10';
         }
@@ -140,18 +140,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     }
 
-    //row.percentage_igv = percentage_igv_a;
-
-    //console.log("Affectation_igv_type_id: "+ row.affectation_igv_type_id);
-    //console.log("percentage_igv 2: "+ row.percentage_igv );
-
     let unit_value = row.unit_price
 
-    if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-        unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
-    }
-
-    // row.unit_value = _.round(unit_value, 4)
+    //if(row.has_igv){
+        if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
+            unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
+        }
+    //}
 
     row.unit_value = unit_value
 
@@ -302,8 +297,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
 
-    //console.log(total_base_igv , (row.percentage_igv / 100))
-    //console.log( row.affectation_igv_type_id)
+    console.log(total_base_igv , (row.percentage_igv / 100))
+    console.log( row.affectation_igv_type_id)
 
     let total_igv = 0
 

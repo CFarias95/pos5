@@ -766,9 +766,8 @@ export default {
         this.loadHasGlobalIgv()
         this.activeName = 'first'
         this.initForm()
-
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            console.log("ITEMS FORM ", response.data.items);
+            //console.log("ITEMS FORM ", response.data.items);
             this.all_items = response.data.items
             this.affectation_igv_types = response.data.affectation_igv_types
             this.system_isc_types = response.data.system_isc_types
@@ -828,20 +827,13 @@ export default {
                 })
         },
         async create(){
-
-            //console.log("record item",this.recordItem)
-
             if (this.recordItem) {
                 this.titleDialog = 'Editar Producto o Servicio'
-                //console.log("RECORD ITEM: ",this.recordItem)
+                console.log("RECORD ITEM: ",this.recordItem)
 
-                this.form.item_id = await this.recordItem.item_id
-                this.form.quantity = this.recordItem.quantity
-                await this.reloadDataItems(this.recordItem.item_id)
-                //await this.changeItem()
+                this.form.item_id = this.recordItem.item_id
+                this.reloadDataItems(this.recordItem.item_id)
 
-                this.form.unit_price_value = this.recordItem.input_unit_price_value
-                this.form.unit_price = this.recordItem.unit_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.has_service_taxes = (this.recordItem.total_service_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
@@ -850,7 +842,7 @@ export default {
                 this.form.attributes = this.recordItem.attributes;
                 this.form.discounts = this.recordItem.discounts;
                 this.form.charges = this.recordItem.charges;
-                //this.setPresentationEditItem()
+
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
@@ -868,9 +860,11 @@ export default {
                 this.form.retention_type_id_income = this.recordItem.retention_type_id_income
                 this.form.retention_type_id_iva = this.recordItem.retention_type_id_iva
 
+                this.form.quantity = this.recordItem.quantity
+                //this.form.unit_price_value = this.recordItem.unit_price
+                //this.form.unit_price = this.recordItem.unit_price
+
                 this.calculateQuantity()
-
-
             }
 
         },
@@ -1094,10 +1088,9 @@ export default {
 
             const saleUnitPrice = item.sale_unit_price;
             this.sale_unit_price = parseFloat(saleUnitPrice).toFixed(2);
-
+            console.log("ITEM: ",item)
             if(this.recordItem){
-
-                if(this.recordItem.item.purchase_has_igv){
+                if(item.purchase_has_igv){
 
                     this.form.unit_price = _.round(parseFloat(this.recordItem.unit_price),2)
 
@@ -1105,7 +1098,6 @@ export default {
 
                     this.form.unit_price = _.round(parseFloat(this.recordItem.unit_value),2)
                 }
-
             }else{
                 this.form.unit_price = this.form.item.purchase_unit_price
             }
@@ -1201,7 +1193,6 @@ export default {
                 this.is_income = true
             }
         },
-
         setGlobalPurchaseCurrencyToItem(){
 
             if(this.config.set_global_purchase_currency_items)
@@ -1281,6 +1272,9 @@ export default {
             this.form.item.import_id = this.form.import;
             this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': this.form.affectation_igv_type_id})
 
+            if(this.percentageIgv < 1){
+                this.percentageIgv = this.percentageIgv * 100
+            }
             this.row = await calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv, this.currencyTypeIdConfig)
             this.row.lot_code = await this.lot_code
             this.row.lots = await this.lots
@@ -1339,11 +1333,9 @@ export default {
             } else {
 
                 this.$http.get(`/${this.resource}/search/item/${item_id}`).then((response) => {
-
                     this.items = response.data.items
                     this.form.item_id = item_id
                     this.changeItem()
-
                 })
             }
         },

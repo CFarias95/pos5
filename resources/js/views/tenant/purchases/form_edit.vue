@@ -1374,7 +1374,6 @@ export default {
             this.form.total = _.round(total - retenido, 2)
         },
         calculateTotal() {
-
             let total_discount = 0
             let total_charge = 0
             let total_exportation = 0
@@ -1394,15 +1393,11 @@ export default {
             this.form.ret = []
 
             this.form.items.forEach((row) => {
-
-                //console.log('Rows: ',row)
                 if (row.iva_retention > 0 || row.income_retention > 0) {
 
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
-
                     toal_retenido += (retention_iva + retention_renta)
-
                     let nuevaRetIVA = true
                     let nuevaRetRENTA = true
 
@@ -1415,7 +1410,6 @@ export default {
                             if (row.iva_retention > 0) {
 
                                 const retIvaDesc = _.find(this.retention_types_iva, { 'id': row.retention_type_id_iva })
-
                                 if (data.tipo == 'IVA' && data.code == retIvaDesc.code) {
                                     data.valor += _.round(parseFloat(row.iva_retention), 3)
                                     data.base += row.total_taxes;
