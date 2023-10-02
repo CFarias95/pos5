@@ -71,17 +71,14 @@ export const functions = {
             })
         },
         async getPercentageIgv() {
-            console.log('********');
-            console.log(this.form.establishment_id);
-            console.log(this.form.date_of_issue);
-            console.log('********');
+            console.log('getPercentageIgv');
             await this.$http.post(`/store/get_igv`, {
                 'establishment_id': this.form.establishment_id,
                 'date': this.form.date_of_issue
             })
                 .then(response => {
                     this.percentage_igv = response.data;
-                    console.log(this.form.percentage_igv);
+                    console.log(this.percentage_igv);
                 });
         },
         async getPercentageIgvWithParams(establishment_id, date_of_issue)

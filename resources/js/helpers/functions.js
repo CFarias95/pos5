@@ -21,10 +21,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         row_old.iva_retention = row_old.iva_retention * exchange_rate_sale;
     }
 
-
-    // unit_price = _.round(unit_price, 4);
-
-
     // fixed for update sale_note
     let record_id = (row_old.record_id) ? row_old.record_id : (row_old.id ? row_old.id : null)
 
@@ -81,10 +77,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         total_taxes_without_rounding: 0,
         total_without_rounding: 0,
 
-        //
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
-        purchase_has_igv: row_old.item.has_igv,
+        purchase_has_igv: row_old.item.purchase_has_igv,
 
         data_item_lot_group: getDataItemLotGroup(row_old)
     };
@@ -93,7 +88,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     console.log("percentage_igv: "+ pigv );
 
-    if(pigv == null){
+    if(pigv == null || row.affectation_igv_type_id){
 
         if(row.affectation_igv_type_id === '11'){
 
@@ -142,11 +137,19 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let unit_value = row.unit_price
 
-    //if(row.has_igv){
+    if(row.purchase_has_igv){
         if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
             unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
         }
-    //}
+    }
+
+    if(row.purchase_has_igv  == false || row.purchase_has_igv == null){
+        console.log("purchase_has_igv: "+row.purchase_has_igv,row.unit_price)
+        if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
+            unit_value = row.unit_price
+            row.unit_price = row.unit_price * (1 + (row.percentage_igv / 100))
+        }
+    }
 
     row.unit_value = unit_value
 
