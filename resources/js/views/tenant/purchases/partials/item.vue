@@ -962,6 +962,9 @@ export default {
         },
         cambioCantidad() {
 
+            this.income = this.form.quantity * this.form.unit_price
+            this.iva = this.form.quantity * this.form.unit_price
+
             this.changeRetentionTypeIva(this.form.retention_type_id_iva)
             this.changeRetentionTypeIncome(this.form.retention_type_id_income)
 
@@ -975,11 +978,10 @@ export default {
 
             if (val && val.type_id == '02') {
 
-                if (item.has_igv) {
+                if (item.purchase_has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.12)), 3)
-                        //console.log("valor RET: " + (parseFloat(val.percentage) + ' ' + this.iva ))
                     } else if (this.form.affectation_igv_type_id == '11') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.08)), 3)
                     } else if (this.form.affectation_igv_type_id == '12') {
