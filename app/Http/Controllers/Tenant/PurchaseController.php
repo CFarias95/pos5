@@ -789,17 +789,17 @@ class PurchaseController extends Controller
                             }
                         }
 
-                        if (!($impuesto->account) && $configuration->cta_taxes) {
+                        if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
 
-                            if (array_key_exists($configuration->cta_taxes, $arrayEntrys)) {
+                            if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
 
-                                $arrayEntrys[$configuration->cta_taxes]['debe'] += floatval($value->total_taxes);
+                                $arrayEntrys[$configuration->cta_taxes_purchases]['debe'] += floatval($value->total_taxes);
                             }
-                            if (!array_key_exists($configuration->cta_taxes, $arrayEntrys)) {
+                            if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
 
                                 $n += 1;
 
-                                $arrayEntrys[$configuration->cta_taxes] = [
+                                $arrayEntrys[$configuration->cta_taxes_purchases] = [
                                     'seat_line' => $n,
                                     'debe' => floatval($value->total_taxes),
                                     'haber' => 0,
@@ -879,17 +879,17 @@ class PurchaseController extends Controller
                             }
                         }
 
-                        if (!($impuesto->account) && $configuration->cta_taxes) {
+                        if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
 
-                            if (array_key_exists($configuration->cta_taxes, $arrayEntrys)) {
+                            if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
 
-                                $arrayEntrys[$configuration->cta_taxes]['haber'] += floatval($value->total_taxes);
+                                $arrayEntrys[$configuration->cta_taxes_purchases]['haber'] += floatval($value->total_taxes);
                             }
-                            if (!array_key_exists($configuration->cta_taxes, $arrayEntrys)) {
+                            if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
 
                                 $n += 1;
 
-                                $arrayEntrys[$configuration->cta_taxes] = [
+                                $arrayEntrys[$configuration->cta_taxes_purchases] = [
                                     'seat_line' => $n,
                                     'debe' => 0,
                                     'haber' => floatval($value->total_taxes),
