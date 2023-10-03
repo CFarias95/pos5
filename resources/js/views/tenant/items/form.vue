@@ -675,6 +675,8 @@
                                             <el-option v-for="option in categories" :key="option.id" :label="option.name"
                                                 :value="option.id"></el-option>
                                         </el-select>
+                                        <el-cascader v-model="form.category_id" :options="categories" :props="props" />
+
                                         <small v-if="errors.category_id" class="form-control-feedback"
                                             v-text="errors.category_id[0]"></small>
                                     </div>
@@ -1188,6 +1190,7 @@ import { ItemOptionDescription, ItemSlotTooltip } from "../../../helpers/modal_i
 
 
 export default {
+
     props: [
         'showDialog',
         'recordId',

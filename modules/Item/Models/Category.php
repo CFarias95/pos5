@@ -35,6 +35,14 @@ class Category extends ModelTenant
         ];
     }
 
+    public function getTreeCategories()
+    {
+        return [
+            'value' => $this->id,
+            'label' => $this->name,
+        ];
+    }
+
 
     /**
      *

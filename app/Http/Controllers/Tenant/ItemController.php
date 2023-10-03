@@ -216,6 +216,8 @@ class ItemController extends Controller
 
     public function tables()
     {
+
+
         $unit_types = UnitType::whereActive()->orderByDescription()->get();
         $currency_types = CurrencyType::whereActive()->orderByDescription()->get();
         $attribute_types = AttributeType::whereActive()->orderByDescription()->get();
@@ -224,7 +226,7 @@ class ItemController extends Controller
         $warehouses = Warehouse::all();
         $accounts = AccountMovement::all();
         $tags = Tag::all();
-        $categories = Category::all();
+        $categories = Category::where('parent_id',null)->get()->getTreeCategories();
         $brands = Brand::all();
         $configuration= Configuration::first();
         /** Informacion adicional */
