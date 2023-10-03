@@ -12,6 +12,8 @@ class Category extends ModelTenant
         'id',
         'name',
         'parent_id',
+        'parent_2_id',
+        'parent_3_id',
     ];
 
     public function items()

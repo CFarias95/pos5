@@ -28,8 +28,7 @@ class CategoryController extends Controller
 
     public function records(Request $request)
     {
-        $records = Category::where($request->column, 'like', "%{$request->value}%")
-                            ->latest();
+        $records = Category::where($request->column, 'like', "%{$request->value}%");
 
         return new CategoryCollection($records->paginate(config('tenant.items_per_page')));
     }
@@ -38,7 +37,6 @@ class CategoryController extends Controller
     public function record($id)
     {
         $record = Category::findOrFail($id);
-
         return $record;
     }
 
@@ -86,7 +84,6 @@ class CategoryController extends Controller
             ];
         }
         return $data;
-
     }
 
     public function destroy($id)
@@ -110,10 +107,19 @@ class CategoryController extends Controller
     }
 
     public function tables(){
-        $categories = Category::get();
+        $categories = Category::where('parent_id',null)->get();
         return compact('categories');
     }
 
+    public function subcategories($id){
+        $categories = Category::where('parent_id',$id)->where('parent_2_id',null)->get();
+        return compact('categories');
+    }
+
+    public function subcategories2($id){
+        $categories = Category::where('parent_2_id',$id)->where('parent_3_id',null)->get();
+        return compact('categories');
+    }
 
 
 }

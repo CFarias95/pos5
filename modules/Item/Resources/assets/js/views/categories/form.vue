@@ -12,9 +12,33 @@
                         <div class="form-group" :class="{'has-danger': errors.parent_id}">
                             <label class="control-label">Categoria Padre</label>
                             <el-select v-model="form.parent_id"
-                                       filterable>
+                                        @change="changeParentCategorie()"
+                                        filterable>
                                 <el-option
                                     v-for="option in categories"
+                                    :key="option.id"
+                                    :label="option.name"
+                                    :value="option.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div v-if="form.parent_id" class="form-group" :class="{'has-danger': errors.parent_2_id}">
+                            <label class="control-label">Subcategoria Padre</label>
+                            <el-select v-model="form.parent_2_id"
+                                        filterable
+                                        @change="changeParentCategorie2()">
+                                <el-option
+                                    v-for="option in categories_1"
+                                    :key="option.id"
+                                    :label="option.name"
+                                    :value="option.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div v-if="form.parent_2_id" class="form-group" :class="{'has-danger': errors.parent_3_id}">
+                            <label class="control-label">Sub-subcategoria Padre</label>
+                            <el-select v-model="form.parent_3_id"
+                                       filterable>
+                                <el-option
+                                    v-for="option in categories_2"
                                     :key="option.id"
                                     :label="option.name"
                                     :value="option.id"></el-option>
@@ -44,6 +68,8 @@
                 errors: {},
                 form: {},
                 categories:[],
+                categories_1:[],
+                categories_2:[],
             }
         },
         created() {
@@ -56,6 +82,9 @@
                 this.form = {
                     id: null,
                     name: null,
+                    parent_id: null,
+                    parent_2_id: null,
+                    parent_3_id: null,
                 }
             },
             create() {
@@ -67,7 +96,27 @@
                 if (this.recordId) {
                     this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
                             this.form = response.data
+                            this.changeParentCategorie()
+                            this.changeParentCategorie2()
+
                         })
+                }
+            },
+            changeParentCategorie(){
+
+                if(this.form.parent_id){
+
+                    this.$http.get(`/${this.resource}/subcategorie/${this.form.parent_id}`).then(response => {
+                        this.categories_1 = response.data.categories
+                    })
+                }
+            },
+            changeParentCategorie2(){
+                if(this.form.parent_2_id){
+
+                    this.$http.get(`/${this.resource}/subcategorie/2/${this.form.parent_2_id}`).then(response => {
+                        this.categories_2 = response.data.categories
+                    })
                 }
             },
             submit() {

@@ -272,7 +272,7 @@ class RetentionController extends Controller
                                         $retIN->state_type_id = '05';
                                         $retIN->series = 'RT';
                                         $retIN->number = $number;
-                                        $retIN->date_of_issue = date("Y-m-d");
+                                        $retIN->date_of_issue = substr($claveAcceso,4,4)."-".substr($claveAcceso,2,2)."-".substr($claveAcceso,0,2); //date("Y-m-d");
                                         $retIN->time_of_issue = date("h:i:s");
                                         $retIN->supplier_id = $supplier->id;
                                         $retIN->supplier = $supplier;
