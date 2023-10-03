@@ -154,8 +154,6 @@ export default {
             evalu = 'factura';
             if (!this.RetornoIndexIndefinido(Invoice, evalu)) return false;
 
-
-
             console.log(Invoice.factura.infoFactura.fechaEmision["_text"]);
             let date = new Date(parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(6, 4)), parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(3, 2)) - 1, parseInt(Invoice.factura.infoFactura.fechaEmision["_text"].substr(0, 2)));
 
@@ -201,7 +199,6 @@ export default {
             }
 
             evalu = '[factura][infoFactura][totalDescuento]';
-
             if (Invoice.factura.infoFactura.totalDescuento !== undefined) {
 
                 this.form.total_discount = parseFloat(Invoice.factura.infoFactura.totalDescuento);
@@ -315,7 +312,7 @@ export default {
                     let formItem = self.initFormItem();
                     formItem.item_id = null;
                     formItem.desciption = element['descripcion']["_text"];
-                    formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                    formItem.unit_value = parseFloat(element['precioUnitario']["_text"]);
                     formItem.quantity = parseFloat(element['cantidad']["_text"]);
                     formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
 
@@ -346,7 +343,7 @@ export default {
                 let formItem = self.initFormItem();
                 formItem.item_id = null;
                 formItem.desciption = element['descripcion']["_text"];
-                formItem.unit_price = parseFloat(element['precioUnitario']["_text"]);
+                formItem.unit_value = parseFloat(element['precioUnitario']["_text"]);
                 formItem.quantity = parseFloat(element['cantidad']["_text"]);
                 formItem.iva = parseInt(element['impuestos']['impuesto']['tarifa']["_text"]);
                 //formItem.total_discount = parseFloat(element['descuento']['_text']);
@@ -382,14 +379,19 @@ export default {
             let itemActual = this.form.items[index]
 
             if (formItem !== undefined) {
+
                 this.form.items[index].item_id = id;
+
                 itemActual.item = formItem;
-                itemActual.unit_price = itemActual.unit_price;
+                itemActual.unit_price = itemActual.unit_value;
                 itemActual.item_unit_types = formItem.item_unit_types;
-                itemActual.unit_price = (itemActual.unit_price * (1 + itemActual.iva / 100));
+                //itemActual.unit_price = (itemActual.unit_value * (1 + itemActual.iva / 100));
                 itemActual.quantity = itemActual.quantity;
+                itemActual.purchase_has_igv = false;
                 itemActual.item.presentation = {};
+
                 let row = calculateRowItem(itemActual, this.config.currency_type_id, 1, itemActual.iva, null);
+
                 row.warehouse_id = 1;
                 row.warehouse_description = "Almacén Oficina Principal";
                 row.iva = itemActual.iva;

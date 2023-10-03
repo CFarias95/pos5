@@ -1488,7 +1488,7 @@ export default {
             console.log('ANTES DE ENVIAR: ', this.form)
 
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
-            //console.log("ITEM AFTER",this.row)
+            
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi

@@ -1468,10 +1468,10 @@
                                 </div>
                             </div>
                             <div class="col-md-4 mt-4">
-                                <label class="control-label">Cuenta de impuesto
+                                <label class="control-label">Cuenta de impuesto Ventas
                                     <el-tooltip
                                         class="item"
-                                        content="Cuenta por defecto asociada de impuestos"
+                                        content="Cuenta por defecto asociada de impuestos en ventas"
                                         effect="dark"
                                         placement="top-start">
                                         <i class="fa fa-info-circle"></i>
@@ -1491,6 +1491,32 @@
                                         v-if="errors.cta_taxes"
                                         class="form-control-feedback"
                                         v-text="errors.cta_taxes[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-4 mt-4">
+                                <label class="control-label">Cuenta de impuesto Compras
+                                    <el-tooltip
+                                        class="item"
+                                        content="Cuenta por defecto asociada de impuestos en las compras"
+                                        effect="dark"
+                                        placement="top-start">
+                                        <i class="fa fa-info-circle"></i>
+                                    </el-tooltip>
+                                </label>
+                                <div :class="{'has-danger': errors.cta_taxes_purchases}"
+                                        class="form-group">
+                                    <el-select v-model="form.cta_taxes_purchases"
+                                                @change="submit"
+                                                filterable>
+                                        <el-option v-for="option in ctas"
+                                                    :key="option.id"
+                                                    :label="option.code+' - '+option.description"
+                                                    :value="option.id"></el-option>
+                                    </el-select>
+                                    <small
+                                        v-if="errors.cta_taxes_purchases"
+                                        class="form-control-feedback"
+                                        v-text="errors.cta_taxes_purchases[0]"></small>
                                 </div>
                             </div>
                             <div class="col-md-4 mt-4">
