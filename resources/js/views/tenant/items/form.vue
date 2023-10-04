@@ -1868,7 +1868,7 @@ export default {
 
             console.log(this.form)
             if(this.form.category_id_array){
-                this.form.category_id_array = JSON.stringify(this.form.category_id_array);
+                //this.form.category_id_array = JSON.stringify(this.form.category_id_array);
             }
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {

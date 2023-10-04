@@ -8,52 +8,37 @@
                             <div style="width:100px">
                                 Filtrar por:
                             </div>
-                            <el-select
-                                v-model="search.column"
-                                placeholder="Select"
-                                @change="changeClearInput"
-                            >
-                                <el-option
-                                    v-for="(label, key) in columns"
-                                    :key="key"
-                                    :value="key"
-                                    :label="label"
-                                ></el-option>
+                            <el-select v-model="search.column" placeholder="Select" @change="changeClearInput">
+                                <el-option v-for="(label, key) in columns" :key="key" :value="key"
+                                    :label="label"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
-                        <template
-                            v-if="
-                                search.column === 'date_of_issue' ||
-                                    search.column === 'date_of_due' ||
-                                    search.column === 'date_of_payment' ||
-                                    search.column === 'delivery_date'
-                            "
-                        >
-                            <el-date-picker
-                                v-model="search.value"
-                                type="date"
-                                style="width: 100%;"
-                                placeholder="Buscar"
-                                value-format="yyyy-MM-dd"
-                                @change="getRecords"
-                            >
+                        <template v-if="search.column === 'date_of_issue' ||
+                            search.column === 'date_of_due' ||
+                            search.column === 'date_of_payment' ||
+                            search.column === 'delivery_date'
+                            ">
+                            <el-date-picker v-model="search.value" type="date" style="width: 100%;" placeholder="Buscar"
+                                value-format="yyyy-MM-dd" @change="getRecords">
                             </el-date-picker>
                         </template>
+                        <template v-else-if="search.column === 'parent_id'">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Departamento" @change="getRecords">
+                                <el-option v-for="(item, index) of parentsList" :key="index"
+                                    :label="item.name" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </template>
                         <template v-else>
-                            <el-input v-if="search.column != 'facturado'"
-                                placeholder="Buscar"
-                                v-model="search.value"
-                                style="width: 100%;"
-                                prefix-icon="el-icon-search"
-                                @input="getRecords"
-                            >
+                            <el-input v-if="search.column != 'facturado'" placeholder="Buscar" v-model="search.value"
+                                style="width: 100%;" prefix-icon="el-icon-search" @input="getRecords">
                             </el-input>
                             <el-select v-if="search.column == 'finalized'" v-model="search.value" @change="getRecords">
                                 <el-option value="FP">Facturado Con Pendiente</el-option>
                                 <el-option value="FF">Facturado Finalizado</el-option>
-                            </el-select>  
+                            </el-select>
                         </template>
                     </div>
                 </div>
@@ -66,21 +51,13 @@
                             <slot name="heading"></slot>
                         </thead>
                         <tbody>
-                            <slot
-                                v-for="(row, index) in records"
-                                :row="row"
-                                :index="customIndex(index)"
-                            ></slot>
+                            <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
                     </table>
                     <div>
-                        <el-pagination
-                            @current-change="getRecords"
-                            layout="total, prev, pager, next"
-                            :total="pagination.total"
-                            :current-page.sync="pagination.current_page"
-                            :page-size="pagination.per_page"
-                        >
+                        <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
+                            :total="pagination.total" :current-page.sync="pagination.current_page"
+                            :page-size="pagination.per_page">
                         </el-pagination>
                     </div>
                 </div>
@@ -118,10 +95,11 @@ export default {
             pagination: {},
             loading_submit: false,
             fromPharmacy: false,
+            parentsList: [],
         };
     },
     created() {
-        if(this.pharmacy !== undefined && this.pharmacy === true){
+        if (this.pharmacy !== undefined && this.pharmacy === true) {
             this.fromPharmacy = true;
         }
         this.$eventHub.$on("reloadData", () => {
@@ -134,8 +112,14 @@ export default {
         await this.$http
             .get(`/${_.head(column_resource)}/columns`)
             .then(response => {
-                this.columns = response.data;
-                this.search.column = _.head(Object.keys(this.columns));
+                if (response.data.columns) {
+                    this.columns = response.data.columns;
+                    this.search.column = _.head(Object.keys(this.columns));
+                    this.parentsList = response.data.categories;
+                } else {
+                    this.columns = response.data;
+                    this.search.column = _.head(Object.keys(this.columns));
+                }
             });
         await this.getRecords();
     },
@@ -159,7 +143,7 @@ export default {
                         response.data.meta.per_page
                     );
                 })
-                .catch(error => {})
+                .catch(error => { })
                 .then(() => {
                     this.loading_submit = false;
                 });
@@ -175,7 +159,7 @@ export default {
             return queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
-                isPharmacy:this.fromPharmacy,
+                isPharmacy: this.fromPharmacy,
                 ...this.search
             });
         },

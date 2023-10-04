@@ -10,38 +10,41 @@
                             <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                         </div>
                         <div class="form-group" :class="{'has-danger': errors.parent_id}">
-                            <label class="control-label">Categoria Padre</label>
+                            <label class="control-label">Departamento</label>
                             <el-select v-model="form.parent_id"
                                         @change="changeParentCategorie()"
-                                        filterable>
+                                        filterable
+                                        clearable >
                                 <el-option
                                     v-for="option in categories"
                                     :key="option.id"
                                     :label="option.name"
-                                    :value="option.id"></el-option>
+                                    :value="option.id" v-if="option.id != form.id"></el-option>
                             </el-select>
                         </div>
                         <div v-if="form.parent_id" class="form-group" :class="{'has-danger': errors.parent_2_id}">
-                            <label class="control-label">Subcategoria Padre</label>
+                            <label class="control-label">Seccion</label>
                             <el-select v-model="form.parent_2_id"
                                         filterable
+                                        clearable
                                         @change="changeParentCategorie2()">
                                 <el-option
                                     v-for="option in categories_1"
                                     :key="option.id"
                                     :label="option.name"
-                                    :value="option.id"></el-option>
+                                    :value="option.id" v-if="option.id != form.id" ></el-option>
                             </el-select>
                         </div>
                         <div v-if="form.parent_2_id" class="form-group" :class="{'has-danger': errors.parent_3_id}">
-                            <label class="control-label">Sub-subcategoria Padre</label>
+                            <label class="control-label">Categoría</label>
                             <el-select v-model="form.parent_3_id"
-                                       filterable>
+                                        clearable
+                                        filterable>
                                 <el-option
                                     v-for="option in categories_2"
                                     :key="option.id"
                                     :label="option.name"
-                                    :value="option.id"></el-option>
+                                    :value="option.id" v-if="option.id != form.id"></el-option>
                             </el-select>
                         </div>
                     </div>

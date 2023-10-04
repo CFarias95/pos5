@@ -21,15 +21,28 @@ class CategoryController extends Controller
 
     public function columns()
     {
-        return [
+        $columns = [
             'name' => 'Nombre',
+            'parent_id' => 'Departamento',
         ];
+
+        $categories = Category::where('parent_id',null)->get();
+
+        return compact('columns','categories');
     }
 
     public function records(Request $request)
     {
-        $records = Category::where($request->column, 'like', "%{$request->value}%");
+        if($request->column == 'parent_id'){
+            if($request->value){
+                $records = Category::where($request->column, $request->value)->orwhere('id',$request->value);
+            }else{
+                $records = Category::query();
+            }
 
+        }else{
+            $records = Category::where($request->column, 'like', "%{$request->value}%");
+        }
         return new CategoryCollection($records->paginate(config('tenant.items_per_page')));
     }
 
