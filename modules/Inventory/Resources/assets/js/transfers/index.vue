@@ -12,9 +12,7 @@
                 </li>
             </ol>
             <div class="right-wrapper pull-right">
-                <a class="btn btn-custom btn-sm mt-2 mr-2"
-                   href="#"
-                   @click.prevent="clickCreate()">
+                <a class="btn btn-custom btn-sm mt-2 mr-2" href="#" @click.prevent="clickCreate()">
                     <i class="fa fa-plus-circle"></i> Nuevo
                 </a>
             </div>
@@ -45,50 +43,38 @@
                         <td>{{ row.warehouse_destination }}</td>
                         <td>{{ row.description }}</td>
                         <td>
-                            <el-popover placement="right"
-                                        trigger="click"
-                                        width="400">
+                            <el-popover placement="right" trigger="click" width="400">
                                 <el-table :data="row.inventory">
-                                    <el-table-column label="Producto"
-                                                     property="description"
-                                                     width="260"></el-table-column>
+                                    <el-table-column label="Producto" property="description" width="260"></el-table-column>
 
-                                    <el-table-column label="Cantidad"
-                                                     property="quantity"
-                                                     width="100"></el-table-column>
+                                    <el-table-column label="Cantidad" property="quantity" width="100"></el-table-column>
 
-                                    <el-table-column fixed="right"
-                                                     label="Series"
-                                                     width="120">
+                                    <el-table-column fixed="right" label="Series" width="120">
                                         <template slot-scope="scope">
-                                            <el-popover placement="right"
-                                                        trigger="click"
-                                                        width="150">
-                                                <el-table :data="scope.row.lots"
-                                                          width="80">
-                                                    <el-table-column label="Series"
-                                                                     prop="series"
-                                                                     width="180"></el-table-column>
+                                            <el-popover placement="right" trigger="click" width="150">
+                                                <el-table :data="scope.row.lots" width="80">
+                                                    <el-table-column label="Series" prop="series"
+                                                        width="180"></el-table-column>
                                                 </el-table>
-                                                <el-button slot="reference"
-                                                           icon="el-icon-zoom-in"></el-button>
+                                                <el-button slot="reference" icon="el-icon-zoom-in"></el-button>
                                             </el-popover>
                                         </template>
                                     </el-table-column>
                                 </el-table>
-                                <el-button slot="reference"
-                                           icon="el-icon-zoom-in"></el-button>
+                                <el-button slot="reference" icon="el-icon-zoom-in"></el-button>
                             </el-popover>
                         </td>
                         <td>{{ row.quantity }}</td>
                         <td class="text-right">
-                            <button
-                                class="btn waves-effect waves-light btn-xs btn-info"
-                                type="button"
-                                @click.prevent="clickDownload('pdf',row.id)"
-                            >
+                            <button class="btn waves-effect waves-light btn-xs btn-info" type="button"
+                                @click.prevent="clickDownload('pdf', row.id)">
                                 <i class="fa fa-file-pdf"></i>
                                 PDF
+                            </button>
+                            <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
+                                :href="`/dispatches/create/${row.id}/t`">
+                                <i class="fa fa-file-file"></i>
+                                Guía
                             </button>
                         </td>
                         <!--<td class="text-right">
@@ -101,19 +87,18 @@
                 </data-table>
             </div>
 
-            <inventories-form :recordId="recordId"
-                              :showDialog.sync="showDialog"></inventories-form>
+            <inventories-form :recordId="recordId" :showDialog.sync="showDialog"></inventories-form>
         </div>
     </div>
 </template>
 
 <script>
 import DataTable from "../../../../../../resources/js/components/DataTableTransfers.vue";
-import {deletable} from "../../../../../../resources/js/mixins/deletable";
+import { deletable } from "../../../../../../resources/js/mixins/deletable";
 import InventoriesForm from "./form.vue";
 
 export default {
-    components: {DataTable, InventoriesForm},
+    components: { DataTable, InventoriesForm },
     mixins: [deletable],
     data() {
         return {
@@ -138,7 +123,7 @@ export default {
                 this.$eventHub.$emit("reloadData")
             );
         },
-        clickDownload(type,id) {
+        clickDownload(type, id) {
             window.open(`/${this.resource}/download/${type}/${id}`, "_blank");
         },
     }

@@ -45,6 +45,7 @@ use App\Models\Tenant\PaymentCondition;
 use App\Models\Tenant\Catalogs\RelatedDocumentType;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
+use Modules\Inventory\Models\InventoryTransfer;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 
@@ -68,7 +69,7 @@ class DispatchController extends Controller
     public function index()
     {
         $configuration = Configuration::getPublicConfig();
-        return view('tenant.dispatches.index',compact('configuration'));
+        return view('tenant.dispatches.index', compact('configuration'));
     }
 
     public function columns()
@@ -86,7 +87,8 @@ class DispatchController extends Controller
     }
 
 
-    public function getRecords($request){
+    public function getRecords($request)
+    {
 
         $d_end = $request->d_end;
         $d_start = $request->d_start;
@@ -95,31 +97,30 @@ class DispatchController extends Controller
         $customer_id = $request->customer_id;
 
 
-        if($d_start && $d_end){
-            $records = Dispatch::where('series', 'like', '%' . $series . '%')->whereBetween('date_of_issue', [$d_start , $d_end]);
-        }else{
+        if ($d_start && $d_end) {
+            $records = Dispatch::where('series', 'like', '%' . $series . '%')->whereBetween('date_of_issue', [$d_start, $d_end]);
+        } else {
             $records = Dispatch::where('series', 'like', '%' . $series . '%');
         }
 
-        if($number){
+        if ($number) {
             $records = $records->where('number', $number);
         }
 
-        if($customer_id){
+        if ($customer_id) {
             $records = $records->where('customer_id', $customer_id);
         }
 
         return $records->latest();
-
     }
 
 
     public function data_table()
     {
-        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function($row) {
+        $customers = Person::whereType('customers')->orderBy('name')->take(20)->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->number.' - '.$row->name,
+                'description' => $row->number . ' - ' . $row->name,
                 'name' => $row->name,
                 'number' => $row->number,
                 'identity_document_type_id' => $row->identity_document_type_id,
@@ -128,8 +129,7 @@ class DispatchController extends Controller
 
         $series = Series::where('document_type_id', '09')->get();
 
-        return compact( 'customers','series');
-
+        return compact('customers', 'series');
     }
 
 
@@ -140,15 +140,15 @@ class DispatchController extends Controller
             $document = Quotation::find($document_id);
         } elseif ($type == 'on') {
             $document = OrderNote::find($document_id);
-        } elseif($type == 'i') {
+        } elseif ($type == 't') {
+            $document = InventoryTransfer::find($document_id);
+        } elseif ($type == 'i') {
             $type = 'i';
             $document = Document::find($document_id);
-        } elseif(isset($document_id) && !isset( $type)){
-
+        } elseif (isset($document_id) && !isset($type)) {
             $type = 'i';
             $document = Document::find($document_id);
-
-        }else{
+        } else {
             $type = null;
             $document = null;
         }
@@ -160,9 +160,9 @@ class DispatchController extends Controller
         $configuration = Configuration::query()->first();
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
-        if(isset($document)){
+        if (isset($document)) {
             foreach ($document->items as $item) {
-                $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+                $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                 $items[] = [
                     'item_id' => $item->item_id,
                     'item' => $item,
@@ -171,9 +171,9 @@ class DispatchController extends Controller
                     'name_product_pdf' => $name_product_pdf
                 ];
             }
-        }elseif(isset($dispatch)){
+        } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
-                $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+                $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                 $items[] = [
                     'item_id' => $item->item_id,
                     'item' => $item,
@@ -195,7 +195,7 @@ class DispatchController extends Controller
         $configuration = Configuration::query()->first();
         $items = [];
         foreach ($document->items as $item) {
-            $name_product_pdf = ($configuration->show_pdf_name)?strip_tags($item->name_product_pdf):null;
+            $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
             $items[] = [
                 'item_id' => $item->item_id,
                 'item' => $item,
@@ -208,14 +208,15 @@ class DispatchController extends Controller
         return view('tenant.dispatches.form', compact('document', 'type', 'dispatch', 'items'));
     }
 
-    public function sendDispatchToSunat(Dispatch $document) {
+    public function sendDispatchToSunat(Dispatch $document)
+    {
 
         $data = [
             'sent'        => false,
             'code'        => null,
             'description' => "El elemento ya fue enviado",
         ];
-        if(!$document->wasSend()) {
+        if (!$document->wasSend()) {
             $facturalo = $document->getFacturalo();
 
             $facturalo
@@ -241,8 +242,8 @@ class DispatchController extends Controller
                 $facturalo->createXmlUnsigned();
                 $facturalo->signXmlUnsigned();
                 $facturalo->createPdf();
-                if($configuration->isAutoSendDispatchsToSunat()) {
-                     $facturalo->senderXmlSignedBill();
+                if ($configuration->isAutoSendDispatchsToSunat()) {
+                    $facturalo->senderXmlSignedBill();
                 }
                 return $facturalo;
             });
@@ -263,16 +264,16 @@ class DispatchController extends Controller
             // $response = $fact->getResponse();
         }
 
-        if(!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
+        if (!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
             $reference = Document::find($document->reference_document_id);
-            if(!empty($reference)) {
+            if (!empty($reference)) {
                 $reference->updatePdfs();
             }
         }
 
         return [
             'success' => true,
-            'message' => ($request->id)?("Se actualizo la guía de remisión {$document->series}-{$document->number}"):("Se creo la guía de remisión {$document->series}-{$document->number}"),
+            'message' => ($request->id) ? ("Se actualizo la guía de remisión {$document->series}-{$document->number}") : ("Se creo la guía de remisión {$document->series}-{$document->number}"),
             'data'    => [
                 'id' => $document->id,
             ],
@@ -291,42 +292,42 @@ class DispatchController extends Controller
         $itemsFromSummary = null;
         if ($request->itemIds) {
             $itemsFromSummary = Item::query()
-            ->with('lots_group')
-            ->whereIn('id', $request->itemIds)
-            ->where('item_type_id', '01')
-            ->orderBy('description')
-            ->get()
-            ->transform(function ($row) {
-                $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+                ->with('lots_group')
+                ->whereIn('id', $request->itemIds)
+                ->where('item_type_id', '01')
+                ->orderBy('description')
+                ->get()
+                ->transform(function ($row) {
+                    $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
 
-                return [
-                    'id'                               => $row->id,
-                    'full_description'                 => $full_description,
-                    'description'                      => $row->description,
-                    'model'                            => $row->model,
-                    'internal_id'                      => $row->internal_id,
-                    'currency_type_id'                 => $row->currency_type_id,
-                    'currency_type_symbol'             => $row->currency_type->symbol,
-                    'sale_unit_price'                  => $row->sale_unit_price,
-                    'purchase_unit_price'              => $row->purchase_unit_price,
-                    'unit_type_id'                     => $row->unit_type_id,
-                    'sale_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
-                    'attributes'                       => $row->attributes ? $row->attributes : [],
-                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                    'has_igv'                          => $row->has_igv,
-                    'lots_group' => $row->lots_group->each(function($lot){
-                        return [
-                            'id'  => $lot->id,
-                            'code' => $lot->code,
-                            'quantity' => $lot->quantity,
-                            'date_of_due' => $lot->date_of_due,
-                            'checked'  => false
-                        ];
-                    }),
-                    'lots' => [],
-                    'lots_enabled' => (bool) $row->lots_enabled,
-                ];
-            });
+                    return [
+                        'id'                               => $row->id,
+                        'full_description'                 => $full_description,
+                        'description'                      => $row->description,
+                        'model'                            => $row->model,
+                        'internal_id'                      => $row->internal_id,
+                        'currency_type_id'                 => $row->currency_type_id,
+                        'currency_type_symbol'             => $row->currency_type->symbol,
+                        'sale_unit_price'                  => $row->sale_unit_price,
+                        'purchase_unit_price'              => $row->purchase_unit_price,
+                        'unit_type_id'                     => $row->unit_type_id,
+                        'sale_affectation_igv_type_id'     => $row->sale_affectation_igv_type_id,
+                        'attributes'                       => $row->attributes ? $row->attributes : [],
+                        'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                        'has_igv'                          => $row->has_igv,
+                        'lots_group' => $row->lots_group->each(function ($lot) {
+                            return [
+                                'id'  => $lot->id,
+                                'code' => $lot->code,
+                                'quantity' => $lot->quantity,
+                                'date_of_due' => $lot->date_of_due,
+                                'checked'  => false
+                            ];
+                        }),
+                        'lots' => [],
+                        'lots_enabled' => (bool) $row->lots_enabled,
+                    ];
+                });
         }
         $items = Item::query()
             ->with('lots_group')
@@ -352,7 +353,7 @@ class DispatchController extends Controller
                     'attributes'                       => $row->attributes ? $row->attributes : [],
                     'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
                     'has_igv'                          => $row->has_igv,
-                    'lots_group' => $row->lots_group->each(function($lot){
+                    'lots_group' => $row->lots_group->each(function ($lot) {
                         return [
                             'id'  => $lot->id,
                             'code' => $lot->code,
@@ -412,7 +413,7 @@ class DispatchController extends Controller
                 foreach ($province->districts as $district) {
                     $children_districts[] = [
                         'value' => $district->id,
-                        'label' => $district->id." - ".$district->description
+                        'label' => $district->id . " - " . $district->description
                     ];
                 }
                 $children_provinces[] = [
@@ -504,9 +505,9 @@ class DispatchController extends Controller
         $record = Dispatch::find($request->input('id'));
         $customer_email = $request->input('customer_email');
         $email = $customer_email;
-        $mailable =new DispatchEmail($record);
+        $mailable = new DispatchEmail($record);
         $id =  $request->input('id');
-        $model = __FILE__.";;".__LINE__;
+        $model = __FILE__ . ";;" . __LINE__;
         //$sendIt = EmailController::SendMail($email, $mailable, $id, 4);
         Configuration::setConfigSmtpMail();
         $backup = Mail::getSwiftMailer();
@@ -617,7 +618,6 @@ class DispatchController extends Controller
             'affectation_igv_types' => $affectation_igv_types,
             'payment_conditions' => $payment_conditions,
         ], 200);
-
     }
 
 
@@ -633,11 +633,10 @@ class DispatchController extends Controller
     public function getDispatchSaleUnitPrice($item, $dispatch, $relation_external_document, $set_unit_price_dispatch_related_record)
     {
 
-        if($dispatch->isGeneratedFromExternalDocument($relation_external_document) && $set_unit_price_dispatch_related_record)
-        {
+        if ($dispatch->isGeneratedFromExternalDocument($relation_external_document) && $set_unit_price_dispatch_related_record) {
             $exist_item = $relation_external_document->items->where('item_id', $item->id)->first();
 
-            if($exist_item) return $exist_item->unit_price;
+            if ($exist_item) return $exist_item->unit_price;
         }
 
         return $item->sale_unit_price;
@@ -671,14 +670,15 @@ class DispatchController extends Controller
                 'message' => 'Ocurrió un error al asociar la guía con el comprobante. Detalles: ' . $th->getMessage()
             ], 500);
         }
-
     }
 
     public function dispatchesByClient($clientId)
     {
-        $records = Dispatch::without(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
-        'transfer_reason_type', 'items', 'reference_document'])
-            ->select('series', 'number', 'id', 'date_of_issue','soap_shipping_response')
+        $records = Dispatch::without([
+            'user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type',
+            'transfer_reason_type', 'items', 'reference_document'
+        ])
+            ->select('series', 'number', 'id', 'date_of_issue', 'soap_shipping_response')
             ->where('customer_id', $clientId)
             ->whereNull('reference_document_id')
             ->whereStateTypeAccepted()
@@ -714,19 +714,18 @@ class DispatchController extends Controller
      *
      * @return DocumentType[]|\Illuminate\Database\Eloquent\Collection|\Illuminate\Database\Query\Builder[]|\Illuminate\Support\Collection
      */
-    public function getDocumentTypeToDispatches(){
+    public function getDocumentTypeToDispatches()
+    {
         $doc_type = ['09', '31'];
-        $document_types_guide = DocumentType::whereIn('id',$doc_type )->get()->transform(function($row) {
+        $document_types_guide = DocumentType::whereIn('id', $doc_type)->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'active' => (bool) $row->active,
                 'short' => $row->short,
-                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA','REMITENTE',$row->description))),
+                'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA', 'REMITENTE', $row->description))),
             ];
         });
 
         return $document_types_guide;
     }
-
-
 }
