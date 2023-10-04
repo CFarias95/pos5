@@ -116,6 +116,7 @@
                 'image' => $this->image,
                 'account_id' => $this->account_id,
                 'category_id' => $this->category_id,
+                'category_id_array' =>$this->category_id_array,
                 'brand_id' => $this->brand_id,
                 'date_of_due' => !empty($this->date_of_due) ? $this->date_of_due->format('Y-m-d H:i:s') : null,
                 'image_url' => ($this->image !== 'imagen-no-disponible.jpg') ? asset('storage' . DIRECTORY_SEPARATOR . 'uploads' . DIRECTORY_SEPARATOR . 'items' . DIRECTORY_SEPARATOR . $this->image) : asset("/logo/{$this->image}"),

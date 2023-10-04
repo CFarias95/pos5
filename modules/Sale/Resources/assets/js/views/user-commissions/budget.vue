@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="title" :visible="showDialog" @close="close" @open="create"  width="80%">
+    <el-dialog :title="title" :visible="showDialog" @close="close" @open="create" width="80%">
         <div class="form-body">
             <div class="row">
                 <div class="col-md-12" v-if="records.length > 0">
@@ -33,7 +33,7 @@
                                                 <td></td>
                                                 <td>
                                                     <div class="form-group mb-0"
-                                                        :class="{'has-danger': row.errors.date_from }">
+                                                        :class="{ 'has-danger': row.errors.date_from }">
                                                         <el-date-picker v-model="row.date_from" type="date"
                                                             :clearable="false" format="dd/MM/yyyy"
                                                             value-format="yyyy-MM-dd"></el-date-picker>
@@ -104,7 +104,7 @@ export default {
             types: [],
             users: [],
             records: [],
-            title : 'Presupuestos asignados',
+            title: 'Presupuestos asignados',
         }
     },
     created() {
@@ -113,7 +113,7 @@ export default {
     methods: {
         initForm() {
             this.loading_submit = false,
-            this.errors = {}
+                this.errors = {}
             this.records = []
 
         },
@@ -129,6 +129,13 @@ export default {
                     })
             }
         },
+        getData() {
+            this.$http.get(`/${this.resource}/records/${this.recordId}`)
+                .then(response => {
+                    this.records = response.data.data
+                })
+            this.$eventHub.$emit('reloadDataBudget')
+        },
         clickAddRow() {
 
             this.records.push({
@@ -140,18 +147,25 @@ export default {
                 errors: {},
                 loading: false,
             });
-            console.log('data',this.records)
+            console.log('data', this.records)
 
             this.showAddButton = false;
         },
         clickCancel(index) {
             this.records.splice(index, 1);
             this.showAddButton = true;
+            this.getData()
         },
-        clickDelete(id){
-            this.destroy(`/${this.resource}/${id}`).then(() =>
-                this.$eventHub.$emit('reloadData')
-            )
+        clickDelete(id) {
+            this.$http.delete(`/${this.resource}/${id}`).then((response) => {
+
+                if (response.data.success) {
+                    this.$message.success(response.data.message);
+                    this.getData()
+                } else {
+                    this.$message.error(response.data.message);
+                }
+            })
         },
         clickSubmit(index) {
 
@@ -159,22 +173,24 @@ export default {
                 this.$message.error('Ingrese un valor válido');
                 return;
             }
+
             let form = {
                 id: this.records[index].id,
-                user_id : this.recordId,
-                date_from : this.records[index].date_from,
-                date_until : this.records[index].date_until,
-                amount : this.records[index].amount,
+                user_id: this.recordId,
+                date_from: this.records[index].date_from,
+                date_until: this.records[index].date_until,
+                amount: this.records[index].amount,
             };
 
             this.$http.post(`/${this.resource}`, form)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
-                        this.showAddButton = true;
+                        this.getData()
                         this.$eventHub.$emit('reloadData')
                     } else {
                         this.$message.error(response.data.message);
+                        this.getData()
                     }
                 })
                 .catch(error => {

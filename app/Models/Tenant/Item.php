@@ -199,6 +199,7 @@ class Item extends ModelTenant
         'lugar_produccion',
         'total_producir',
         // 'warehouse_id'
+        'category_id_array'
     ];
 
     protected $casts = [
@@ -213,6 +214,7 @@ class Item extends ModelTenant
         'favorite' => 'boolean',
         'exchange_points' => 'boolean',
         'quantity_of_points' => 'float',
+        'category_id_array' => 'json',
     ];
 
     /**
@@ -2457,6 +2459,7 @@ class Item extends ModelTenant
             'purchase_affectation_igv_type_id' => $this->purchase_affectation_igv_type_id,
             'purchase_unit_price' => $this->purchase_unit_price,
             'category_id' => $this->category_id,
+            'category_id_array' => $this->category_id_array,
             'active' => (bool) $this->active,
             'stock' => $this->getWarehouseCurrentStock(),
             'favorite' => $this->favorite,

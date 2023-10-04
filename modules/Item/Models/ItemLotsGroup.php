@@ -108,10 +108,10 @@ class ItemLotsGroup extends ModelTenant
         $this->item_id = $item_id;
         return $this;
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener datos para formulario de venta de lotes
      *
      * @return array
@@ -127,6 +127,5 @@ class ItemLotsGroup extends ModelTenant
             'compromise_quantity' => 0
         ];
     }
-
 
 }

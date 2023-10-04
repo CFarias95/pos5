@@ -659,7 +659,7 @@
                                             Categoría
                                         </label>
 
-                                        <a v-if="form_category.add == false"
+                                        <!-- <a v-if="form_category.add == false"
                                             class="control-label font-weight-bold text-info" href="#"
                                             @click="form_category.add = true"> [ + Nuevo]</a>
                                         <a v-if="form_category.add == true" class="control-label font-weight-bold text-info"
@@ -674,8 +674,9 @@
                                             filterable>
                                             <el-option v-for="option in categories" :key="option.id" :label="option.name"
                                                 :value="option.id"></el-option>
-                                        </el-select>
-                                        <el-cascader v-model="form.category_id" :options="categories" :props="props" />
+                                        </el-select> -->
+
+                                        <el-cascader v-model="form.category_id_array" :options="categories" @change="handleChange"/>
 
                                         <small v-if="errors.category_id" class="form-control-feedback"
                                             v-text="errors.category_id[0]"></small>
@@ -1288,6 +1289,7 @@ export default {
             form: {
                 item_supplies: [],
                 is_for_production: false,
+                category_id_array:[]
             },
             // configuration: {},
             unit_types: [],
@@ -1388,11 +1390,13 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
-        /*sumaProducir(){
-            this.form.supplies.forEach((row) => {
-                this.total_producir += row.percentage_decimal;
-            })
-        },*/
+        handleChange(){
+
+            if(this.form.category_id_array){
+                let number = this.form.category_id_array.length;
+                this.form.category_id = this.form.category_id_array[number-1]
+            }
+        },
         setDefaultConfiguration() {
             this.form.sale_affectation_igv_type_id = (this.config) ? this.config.affectation_igv_type_id : '10'
 
@@ -1642,6 +1646,7 @@ export default {
                 lugar_produccion: null,
                 percentage_decimal: 0,
                 quantity: 0,
+                category_id_array:[]
 
             }
 
@@ -1861,7 +1866,10 @@ export default {
 
             this.loading_submit = true
 
-
+            console.log(this.form)
+            if(this.form.category_id_array){
+                this.form.category_id_array = JSON.stringify(this.form.category_id_array);
+            }
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {
