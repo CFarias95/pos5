@@ -187,6 +187,7 @@ export default {
             this.$eventHub.$on('reloadData', () => {
                 this.getRecords()
             })
+            
         },
         async mounted () {
 

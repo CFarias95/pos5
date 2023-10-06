@@ -8,6 +8,8 @@ use App\Mail\Tenant\InternalRequestEmail;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\InternalRequest;
 use App\Models\Tenant\User;
+use Error;
+use Exception;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Mail;
@@ -57,28 +59,33 @@ class InternalRequestController extends Controller
      */
     public function store(Request $request)
     {
-        $id = $request->input('id');
-        $estado = $request->input('estado');
-        $internalR = InternalRequest::firstOrNew(['id' => $id]);
-        $data = $request->all();
-        unset($data['id']);
-        $data['user_id'] = auth()->user()->id;
-        $internalR->fill($data);
-        $internalR->save();
+        try{
+            $id = $request->input('id');
+            $estado = $request->input('estado');
+            $internalR = InternalRequest::firstOrNew(['id' => $id]);
+            $data = $request->all();
+            unset($data['id']);
+            $data['user_id'] = auth()->user()->id;
+            $internalR->fill($data);
+            $internalR->save();
 
 
-        if($internalR->confirmed){
-            $this->email($internalR->id);
+            if($internalR->confirmed){
+                $this->email($internalR->id);
+            }
+
+            $msg = '';
+            $msg = ($id) ? 'Solicitud de pedido interno editada con éxito' : 'Solicitud de pedido interno registrada con éxito';
+
+            return [
+                'success' => true,
+                'message' => $msg,
+                'id' => $internalR->id
+            ];
+        }catch(Exception $es){
+            //throw new Exception($es->getMessage(), 1);
+            throw new Error($es->getMessage());
         }
-
-        $msg = '';
-        $msg = ($id) ? 'Solicitud de pedido interno editada con éxito' : 'Solicitud de pedido interno registrada con éxito';
-
-        return [
-            'success' => true,
-            'message' => $msg,
-            'id' => $internalR->id
-        ];
     }
 
     /**
@@ -242,34 +249,43 @@ class InternalRequestController extends Controller
     public function email($id)
     {
 
-        $internalRequest = InternalRequest::find($id);
-        $user_email = $internalRequest->user->email;
-        $manage_email = $internalRequest->manage->email;
+        try{
+            $internalRequest = InternalRequest::find($id);
+            $user_email = $internalRequest->user->email;
+            $manage_email = $internalRequest->manage->email;
 
-        $estado = $internalRequest->status;
-        $email = $manage_email;
-        $name = $internalRequest->manage->name;
-        // $this->reloadPDF($quotation, "a4", $quotation->filename);
-        if($estado != 'Created'){
+            $estado = $internalRequest->status;
+            $email = $manage_email;
+            $name = $internalRequest->manage->name;
+            // $this->reloadPDF($quotation, "a4", $quotation->filename);
+            if($estado != 'Created'){
 
-            $email = $user_email;
-            $name = $internalRequest->user->name;
+                $email = $user_email;
+                $name = $internalRequest->user->name;
 
+            }
+
+            $mailable = new InternalRequestEmail($estado,$id,$name);
+
+            Configuration::setConfigSmtpMail();
+            $backup = Mail::getSwiftMailer();
+            $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+            $transport->setUsername(Config::get('mail.username'));
+            $transport->setPassword(Config::get('mail.password'));
+            $mailer = new Swift_Mailer($transport);
+            Mail::setSwiftMailer($mailer);
+            Mail::to($email)->send($mailable);
+
+            return [
+                'success' => true
+            ];
+        }catch(Exception $ex){
+
+            return [
+                'success' => true
+            ];
+            throw new Exception($ex->getMessage(), 1);
         }
 
-        $mailable = new InternalRequestEmail($estado,$id,$name);
-
-        Configuration::setConfigSmtpMail();
-        $backup = Mail::getSwiftMailer();
-        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
-        $transport->setUsername(Config::get('mail.username'));
-        $transport->setPassword(Config::get('mail.password'));
-        $mailer = new Swift_Mailer($transport);
-        Mail::setSwiftMailer($mailer);
-        Mail::to($email)->send($mailable);
-
-        return [
-            'success' => true
-        ];
     }
 }

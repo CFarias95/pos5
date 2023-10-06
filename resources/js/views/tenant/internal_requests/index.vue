@@ -16,7 +16,6 @@
             </div>
         </div>
         <div class="card mb-0">
-
             <div class="card-body ">
                 <data-table :resource="resource">
                     <tr slot="heading">
@@ -31,7 +30,7 @@
 
                     </tr>
                     <tr slot-scope="{ index, row }">
-                        <td>{{ 'IR-'+row.id }}</td>
+                        <td>{{ 'IR-' + row.id }}</td>
                         <td class="text-center"> {{ row.title }}</td>
                         <td class="text-center"> {{ row.user }}</td>
                         <td class="text-center"> {{ row.manage }}</td>
@@ -52,8 +51,8 @@
                         <td class="text-center"> {{ row.phase }}</td>
                         <td class="text-right">
 
-                            <button v-if="!row.aproved && row.is_user" class="btn btn-custom btn-sm  mt-2 mr-2" type="button"
-                                @click.prevent="clickCreate(row.id)">Editar
+                            <button v-if="!row.aproved && row.is_user" class="btn btn-custom btn-sm  mt-2 mr-2"
+                                type="button" @click.prevent="clickCreate(row.id)">Editar
                             </button>
 
                             <button v-if="row.status == 'Created'" class="btn btn-danger btn-sm  mt-2 mr-2" type="button"
@@ -92,24 +91,24 @@ export default {
             this.recordId = recordId
             this.showDialog = true
         },
-        async clickDelete(id_d){
+        async clickDelete(id_d) {
 
-            await this.$http.delete(`/${this.resource}/delete/`+id_d)
-                .then(response =>{
-                    if(response.data.success){
-
+            await this.$http.delete(`/${this.resource}/delete/` + id_d)
+                .then(response => {
+                    if (response.data.success) {
                         this.$message.success(response.data.message)
-                    }else{
+                    } else {
                         this.$message.error(response.data.message)
                     }
                 })
                 .catch(error => {
-
                     console.log('Error:', error);
                 })
                 .finally(() => {
                     this.loading_submit = false
                 });
+                this.$eventHub.$emit('reloadData')
+
         },
         async changeManager(id_a, status_a) {
 
