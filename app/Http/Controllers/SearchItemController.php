@@ -519,7 +519,6 @@
             $items_services = self::getServiceItem($request, $id);
             return self::TransformToModal($items_not_services->merge($items_services));
 
-
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
             // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
@@ -539,7 +538,8 @@
                 ->take(\Config('extra.number_items_at_start'))
                 //->take(10)
                 ->get();
-            return self::TransformToModal($item_not_service->merge($service_item));
+
+                return self::TransformToModal($item_not_service->merge($service_item));
         }
 
         /**

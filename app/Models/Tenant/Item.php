@@ -766,9 +766,9 @@ class Item extends ModelTenant
             $stock = '';
         }
         if($extended == false) {
-            $desc = "{$desc} - {$brand}";
+            $desc = "{$this->name} - {$brand}";
         }else {
-            $desc = "{$desc} - {$category} - {$brand}";
+            $desc = "{$this->name} - {$desc} - {$this->model} - {$this->interenal_id}";
         }
         return [
             'full_description'      => $desc,
@@ -823,7 +823,7 @@ class Item extends ModelTenant
     public function getDataToItemModal(
         $warehouse = null,
         $with_lots_has_sale = false,
-        $extended_description = false,
+        $extended_description = true,
         $series = null,
         $search_item_by_series = false,
         $aditional_data = true
