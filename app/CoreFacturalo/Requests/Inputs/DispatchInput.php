@@ -76,6 +76,7 @@ class DispatchInput
             'reference_order_note_id' => Functions::valueKeyInArray($inputs, 'reference_order_note_id'),
             'reference_order_form_id' => Functions::valueKeyInArray($inputs, 'reference_order_form_id'),
             'reference_sale_note_id' => Functions::valueKeyInArray($inputs, 'reference_sale_note_id'),
+            'reference_transfer_id' => Functions::valueKeyInArray($inputs, 'reference_transfer_id'),
             'secondary_license_plates' => self::secondary_license_plates($inputs),
             'related' => self::related($inputs),
             'order_form_external' => Functions::valueKeyInArray($inputs, 'order_form_external'),

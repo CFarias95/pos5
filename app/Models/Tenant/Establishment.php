@@ -25,6 +25,7 @@ class Establishment extends ModelTenant
         'web_address',
         'aditional_information',
         'customer_id',
+        'customer_associate_id',
         'rate_id',
         'logo',
         'template_pdf',
@@ -65,6 +66,10 @@ class Establishment extends ModelTenant
     public function customer()
     {
         return $this->belongsTo(Person::class, 'customer_id');
+    }
+    public function associated()
+    {
+        return $this->belongsTo(Person::class, 'customer_associate_id');
     }
 
     public function warehouse()

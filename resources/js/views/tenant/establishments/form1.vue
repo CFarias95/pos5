@@ -126,6 +126,24 @@
 
                         </div>
                     </div>
+                    <div class="col-lg-6 col-md-6">
+                        <div class="form-group">
+                            <label class="control-label">
+                                Cliente asociado
+                                <el-tooltip class="item" effect="dark" content="Cliente relacionado al establecimiento creado" placement="top">
+                                    <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                            </label>
+
+                            <el-select v-model="form.customer_associate_id" filterable remote  popper-class="el-select-customers"  clearable
+                                placeholder="Nombre o número de documento"
+                                :remote-method="searchRemoteCustomers"
+                                :loading="loading_search">
+                                <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            </el-select>
+
+                        </div>
+                    </div>
                     <div class="col-md-4">
                         <div :class="{'has-danger': errors.rate_id}"
                              class="form-group">
@@ -264,6 +282,7 @@
                     web_address: null,
                     aditional_information: null,
                     customer_id: null,
+                    customer_associate_id: null,
                     has_igv_31556: false,
                     rate_id: null,
                 }

@@ -674,7 +674,9 @@ export default {
                 this.form.date_of_issue = this.document.date_of_issue
                 this.form.date_of_shipping = this.form.date_of_issue
                 this.form.customer_id = this.document.customer_id
-                this.form.transfer_reason_type_id = '01'
+                //this.form.reference_transfer_id = this.document.reference_transfer_id?this.document.reference_transfer_id:null
+                this.form.transfer_reason_type_id = this.document.transfer_reason_type_id?this.document.transfer_reason_type_id:'01'
+                this.form.transfer_reason_description = this.document.transfer_reason_description?this.document.transfer_reason_description:''
                 this.form.transport_mode_type_id = '02'
                 this.form.items = this.document.items
                 if(this.documentItems !== undefined){
@@ -874,6 +876,7 @@ export default {
                 reference_quotation_id: this.typeDocument == 'q' ? this.document.id : null,
                 reference_order_note_id: this.typeDocument == 'on' ? this.document.id : null,
                 reference_sale_note_id: this.sale_note ? this.sale_note.id : null,
+                reference_transfer_id:this.typeDocument == 't'?this.document.id:null,
                 establishment_id: null,
                 document_type_id: '09',
                 series_id: null,

@@ -138,6 +138,7 @@
             'response_verification_msg',
             'verificated',
             'barCode',
+            'reference_transfer_id',
         ];
 
         protected $casts = [
@@ -537,6 +538,7 @@
                 'download_external_cdr' => $this->download_external_cdr,
                 'reference_document_id' => $this->reference_document_id,
                 'reference_order_note_id' => $this->reference_order_note_id,
+                'reference_transfer_id' => $this->reference_transfer_id,
                 'order_notes' => $this->order_note,
                 'created_at' => $this->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $this->updated_at->format('Y-m-d H:i:s'),
@@ -727,5 +729,5 @@
         {
             return $query->withOut(['user', 'soap_type', 'state_type', 'document_type', 'unit_type', 'transport_mode_type', 'transfer_reason_type', 'items', 'reference_document']);
         }
-
+        
     }

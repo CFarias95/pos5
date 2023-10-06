@@ -4,7 +4,8 @@
 
     use App\Models\Tenant\Company;
     use App\Models\Tenant\Configuration;
-    use App\Models\Tenant\ModelTenant;
+use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\ModelTenant;
     use App\Models\Tenant\User;
     use Carbon\Carbon;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
@@ -85,6 +86,10 @@
             return $this->hasMany(Inventory::class, 'inventories_transfer_id');
         }
 
+        public function guides()
+        {
+            return $this->hasMany(Dispatch::class, 'reference_transfer_id');
+        }
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\BelongsTo

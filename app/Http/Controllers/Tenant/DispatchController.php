@@ -160,17 +160,53 @@ class DispatchController extends Controller
         $configuration = Configuration::query()->first();
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
-        if (isset($document)) {
-            foreach ($document->items as $item) {
-                $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
-                $items[] = [
-                    'item_id' => $item->item_id,
-                    'item' => $item,
-                    'quantity' => $item->quantity,
-                    'description' => $item->item->description,
-                    'name_product_pdf' => $name_product_pdf
-                ];
+        if (isset($document->inventories)) {
+            Log::info(json_encode($document));
+
+            if($type != 't'){
+                foreach ($document->items as $item) {
+                    $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
+                    $items[] = [
+                        'item_id' => $item->item_id,
+                        'item' => $item,
+                        'quantity' => $item->quantity,
+                        'description' => $item->item->description,
+                        'name_product_pdf' => $name_product_pdf
+                    ];
+                }
+            }else{
+                $origin = [];
+                $delivery = [];
+                $document->establishment_id = $document->warehouse_id;
+                $document->establishment = $document->warehouse->establishment;
+                //$document->date_of_issue = $document->created_at;
+                $document->customer_id = $document->warehouse_destination->establishment->customer_associate_id;
+                $document->transfer_reason_type_id = '04';
+                $document->transfer_reason_description = $document->description;
+                $document->customer =  $document->warehouse_destination->establishment->associated;
+                $document->reference_transfer_id = $document_id;
+                $origin['location_id'] = [$document->warehouse->establishment->department_id,$document->warehouse->establishment->province_id,$document->warehouse->establishment->district_id];
+                $origin['address'] = $document->warehouse->establishment->address;
+                $origin['country_id'] = $document->warehouse->establishment->country_id;
+                $document->origin = $origin;
+
+                $delivery['country_id'] = $document->warehouse_destination->establishment->country_id;
+                $delivery['location_id'] = [$document->warehouse_destination->establishment->department_id,$document->warehouse_destination->establishment->province_id,$document->warehouse_destination->establishment->district_id];
+                $delivery['address'] = $document->warehouse_destination->establishment->address;
+                $document->delivery = $delivery;
+
+                foreach ($document->inventories as $item) {
+                    $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->item->name_product_pdf) : null;
+                    $items[] = [
+                        'item_id' => $item->item_id,
+                        'item' => $item->item,
+                        'quantity' => $item->quantity,
+                        'description' => $item->item->description,
+                        'name_product_pdf' => $name_product_pdf
+                    ];
+                }
             }
+
         } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;

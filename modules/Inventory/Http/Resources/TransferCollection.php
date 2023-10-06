@@ -42,7 +42,12 @@ class TransferCollection extends ResourceCollection
                             ];
                         }),
                     ];
-                })
+                }),
+                'guides' =>$row->guides->transform(function($t){
+                    return[
+                        'number'=>$t->series.'-'.$t->number,
+                    ];
+                }),
             ];
         });
     }

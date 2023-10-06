@@ -207,9 +207,6 @@ class Facturalo
                 $this->document = PurchaseSettlement::find($document->id);
                 break;
             default:
-                //$document = Dispatch::create($inputs);
-                Log::info("Dispatch ID: ".$inputs['id']);
-
                 if(isset($inputs['id'])){
                     $document = Dispatch::find($inputs['id']);
                     $inputs['response_verification_msg']=null;
@@ -230,6 +227,7 @@ class Facturalo
 
                 }else{
                     $document = Dispatch::create($inputs);
+
                     foreach ($inputs['items'] as $row) {
                         $document->items()->create($row);
                     }

@@ -32,13 +32,13 @@
                         <th>Detalle</th>
                         <th>Detalle Productos</th>
                         <th>Cantidad Total Productos</th>
+                        <th>Guias Generadas</th>
                         <th class="text-right">Acciones</th>
                     </tr>
                     <tr></tr>
                     <tr slot-scope="{ index, row }">
                         <td>{{ index }}</td>
                         <td>{{ row.created_at }}</td>
-
                         <td>{{ row.warehouse }}</td>
                         <td>{{ row.warehouse_destination }}</td>
                         <td>{{ row.description }}</td>
@@ -65,6 +65,14 @@
                             </el-popover>
                         </td>
                         <td>{{ row.quantity }}</td>
+                        <td>
+                            <el-popover placement="right" trigger="click">
+                                <el-table :data="row.guides">
+                                    <el-table-column label="Guía" property="number"></el-table-column>
+                                </el-table>
+                                <el-button slot="reference"><i class="fa fa-list"></i></el-button>
+                            </el-popover>
+                        </td>
                         <td class="text-right">
                             <button class="btn waves-effect waves-light btn-xs btn-info" type="button"
                                 @click.prevent="clickDownload('pdf', row.id)">
@@ -72,8 +80,8 @@
                                 PDF
                             </button>
                             <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
-                                :href="`/dispatches/create/${row.id}/t`">
-                                <i class="fa fa-file-file"></i>
+                                @click.prevent="clickGuide(row.id)">
+                                <i class="fa fa-truck"></i>
                                 Guía
                             </button>
                         </td>
@@ -126,6 +134,9 @@ export default {
         clickDownload(type, id) {
             window.open(`/${this.resource}/download/${type}/${id}`, "_blank");
         },
+        clickGuide(id){
+            location.href =`/dispatches/create/${id}/t`;
+        }
     }
 };
 </script>
