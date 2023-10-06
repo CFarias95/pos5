@@ -476,6 +476,7 @@
                             @endforeach
                             @endif
                             @if($document->payment_condition_id === '02')
+                            @if(count($document->fee) < 4)
                             @foreach($document->fee as $pago)
                                 <tr style="background: #f7f7f5;">
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $pago->sridesc }}</td>
@@ -483,6 +484,13 @@
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ date_diff($document->date_of_issue, $pago->date)->format('%a') }} días</td>
                                 </tr>
                             @endforeach
+                            @else
+                            <tr style="background: #f7f7f5;">
+                                <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->fee[(count($document->fee)-1)]->sridesc }}</td>
+                                <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->currency_type->symbol }}{{ number_format($document->fee[(count($document->fee)-1)]->amount, 2) }}</td>
+                                <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ date_diff($document->date_of_issue, $document->fee[(count($document->fee)-1)]->date)->format('%a') }} días</td>
+                            </tr>
+                            @endif
                             @endif
                             </tbody>
                         </table>
