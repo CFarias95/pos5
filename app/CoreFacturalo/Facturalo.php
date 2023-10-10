@@ -147,9 +147,6 @@ class Facturalo
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
                     $document->items()->create($row);
-                    // $row['document_id']=  $document->id;
-                    // $item = new DocumentItem($row);
-                    // $item->push();
                 }
                 $this->updatePrepaymentDocuments($inputs);
                 if($inputs['hotel']) $document->hotel()->create($inputs['hotel']);
