@@ -472,7 +472,7 @@ class PurchaseController extends Controller
 
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => floatval($row['unit_price'])]);
+                            ->update([['purchase_unit_price' => floatval($row['unit_price'])],['purchase_has_igv' => true]]);
                         // actualizacion de precios
                         $item = $row['item'];
                         if (isset($item['item_unit_types'])) {
