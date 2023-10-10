@@ -91,6 +91,14 @@
                                 </el-select>
                             </div>
                         </div>
+                        <div class="col-md-4" v-if="form.attribute_id">
+                            <div class="form-group">
+                                <label class="control-label font-weight-bold text-info">
+                                    Atributo Valor
+                                </label>
+                                <el-input v-model="form.attribute" @change="changeFilter"></el-input>
+                            </div>
+                        </div>
                         <div v-if="filters.active.visible" class="col-md-3">
                             <label class="control-label">Estado del item</label>
                             <el-select v-model="form.active" :clearable="true" placeholder="Seleccionar filtro"
@@ -304,6 +312,7 @@ export default {
                 'category_id': null,
                 'brand_id': null,
                 'attribute_id': null,
+                'attribute':null,
                 active: null
             }
         },
@@ -404,9 +413,10 @@ export default {
                     'format': format,
                     'filter': this.form.filter,
                     'warehouse_id': this.form.warehouse_id,
-                    brand_id: this.form.brand_id,
-                    category_id: this.form.category_id,
-                    attribute_id: this.form.attribute_id
+                    'brand_id': this.form.brand_id,
+                    'category_id': this.form.category_id,
+                    'attribute_id': this.form.attribute_id,
+                    'attribute':this.form.attribute,
                 },
             })
                 .then(response => {
@@ -416,12 +426,7 @@ export default {
                         this.$message.success(res.message);
                     } else {
                         this.$message.error('Error al exportar');
-                        /*const url = window.URL.createObjectURL(new Blob([res]));
-                        const link = document.createElement('a');
-                        link.href = url;
-                        link.setAttribute('download', 'ReporteInv_' + moment().format('HHmmss') + '.' + format);
-                        document.body.appendChild(link);
-                        link.click();*/
+
                     }
                 })
                 .catch(error => {

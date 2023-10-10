@@ -36,6 +36,10 @@ class ProcessInventoryReport implements ShouldQueue
     public $warehouse_id;
     public $filter;
     public $params;
+    public $attribute_id;
+    public $attribute;
+    public $brand_id;
+    public $category_id;
 
 
     /**
@@ -43,13 +47,17 @@ class ProcessInventoryReport implements ShouldQueue
      *
      * @return void
      */
-    public function __construct(int $website_id, int $tray_id, int $warehouse_id, string $filter, array $params)
+    public function __construct(int $website_id, int $tray_id, int $warehouse_id, string $filter, $attribute_id, $attribute, $brand_id,$category_id)
     {
         $this->website_id = $website_id;
         $this->tray_id = $tray_id;
         $this->warehouse_id = $warehouse_id;
         $this->filter = $filter;
-        $this->params = $params;
+        $this->attribute_id = $attribute_id;
+        $this->attribute = $attribute;
+        $this->brand_id = $brand_id;
+        $this->category_id = $category_id;
+
     }
 
     /**
@@ -61,6 +69,7 @@ class ProcessInventoryReport implements ShouldQueue
     {
         Log::debug("ProcessInventoryReport Start WebsiteId => " . $this->website_id);
         Log::debug("warehouse_id => " . $this->warehouse_id);
+        Log::debug("attribute_id => " . $this->attribute_id);
 
         $website = Website::find($this->website_id);
         $tenancy = app(Environment::class);
@@ -72,6 +81,8 @@ class ProcessInventoryReport implements ShouldQueue
         $website_id = $this->website_id;
         $tray_id = $this->tray_id;
         $warehouse_id = $this->warehouse_id;
+        $attribute_id = $this->attribute_id;
+        $attribute = $this->attribute;
         $filter = $this->filter;
 
         if (empty($tray)) {
@@ -94,7 +105,7 @@ class ProcessInventoryReport implements ShouldQueue
                 }
                 //ini_set('max_execution_time', 0);
 
-                $records = $this->getRecordsTranform($this->warehouse_id, $this->filter);
+                $records = $this->getRecordsTranform($this->warehouse_id, $this->filter, $this->attribute_id,$this->attribute, $this->category_id, $this->brand_id);
 
                 if (!is_object($tray)) {
                     //Log::debug('DE ' . var_export($tray, true));
@@ -196,14 +207,12 @@ class ProcessInventoryReport implements ShouldQueue
         Log::debug("ProcessInventoryReport Finish transaction");
     }
 
-    public function getRecordsTranform($warehouse_id, $filter)
+    public function getRecordsTranform($warehouse_id, $filter, $attribute_id, $category, $brand)
     {
         Log::debug("warehouse_id " . $warehouse_id);
         Log::debug("getRecordsTranform init" . date('H:i:s'));
 
-        $records = $this->getRecordsNew($warehouse_id, $filter);
-
-        //Log::info('RECORDS' . json_encode($records->get()));
+        $records = $this->getRecordsNew($warehouse_id, $filter, $attribute_id, $category, $brand);
 
         $data = [];
 
@@ -234,14 +243,19 @@ class ProcessInventoryReport implements ShouldQueue
         return $data;
     }
 
-    private function getRecordsNew($warehouse_id = 0, $filter)
+    private function getRecordsNew($warehouse_id = 0, $filter,$attribute_id, $attribute, $category, $brand)
     {
         $query = ItemWarehouse::with(['warehouse', 'item' => function ($query) {
             $query->select('id', 'barcode', 'internal_id', 'description', 'name', 'category_id', 'brand_id', 'stock_min', 'sale_unit_price', 'purchase_unit_price', 'model', 'date_of_due', 'attributes');
             $query->with(['category', 'brand']);
             $query->without(['item_type', 'unit_type', 'currency_type', 'warehouses', 'item_unit_types', 'tags']);
         }])
-            ->whereHas('item', function ($q) {
+            ->whereHas('item', function ($q) use($attribute_id, $attribute, $category, $brand){
+
+                if ($attribute_id) $q->where('attributes', 'like', '%' . $attribute_id . '%');
+                if ($attribute) $q->where('attributes', 'like', '%' . $attribute_id . '%')->where('attributes', 'like', '%' . $attribute . '%');
+                if($brand) $q->where('brand_id', $brand );
+                if($category) $q->where('brand_id','like', '%'.$category.'%' );
                 $q->where([
                     ['item_type_id', '01'],
                     ['unit_type_id', '!=', 'ZZ'],
