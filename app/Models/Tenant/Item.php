@@ -807,6 +807,23 @@ class Item extends ModelTenant
  *
      * @return array
      */
+    public function getPurchaseUnitPrice(){
+        $unitPrice = $this->purchase_unit_price;
+        $hasIgv = $this->purchase_has_igv;
+        $igvType = $this->purchase_affectation_igv_type_id;
+
+        $affectatioType = AffectationIgvType::find($igvType);
+
+        if($hasIgv == true){
+            $descrip = $affectatioType->description;
+            $descrip = str_replace(['Gravado - IVA','Inafecto - IVA','IVA','Iva'],'',$descrip);
+            $percentage = intval($descrip);
+            $unitPrice = round($unitPrice /(1+($percentage/100)),2);
+        }
+
+        return $unitPrice;
+    }
+    
     public function getDataToItemModal(
         $warehouse = null,
         $with_lots_has_sale = false,

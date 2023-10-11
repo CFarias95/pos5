@@ -47,7 +47,7 @@ if (!isset($qty)) {
     $total = $value->total;
     $total_value = $value->total_value;
     $web_platform = optional($relation_item->web_platform)->name;
-    $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
+    $purchase_unit_price = ($relation_item) ? $relation_item->getPurchaseUnitPrice() : 0;
     $igv = $value->total_igv;
     $aditionals = $value->total_service_taxes;
 
@@ -81,7 +81,7 @@ if (!isset($qty)) {
     $unit_price = $item->sale_unit_price;
     $utility_item = '';
     $relation_item = $item;
-    $purchase_unit_price = ($relation_item) ? $relation_item->purchase_unit_price : 0;
+    $purchase_unit_price = ($relation_item) ? $relation_item->getPurchaseUnitPrice() : 0;
     $total =number_format( $qty * (float)$purchase_unit_price,2);
     /*
     $set = ItemSet::where('individual_item_id',$item->id)->first();
