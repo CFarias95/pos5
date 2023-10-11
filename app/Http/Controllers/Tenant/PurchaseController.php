@@ -631,6 +631,7 @@ class PurchaseController extends Controller
             }
         }
         Log::info($documentoInterno->accountant);
+
         if ($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0) {
 
             try {
@@ -693,246 +694,270 @@ class PurchaseController extends Controller
                 if ($importP && $importP->count() > 0) {
                     $importCTA = $importP->cuenta_contable;
                 }
-                $detalle = new AccountingEntryItems();
 
-                $detalle->accounting_entrie_id = $cabeceraC->id;
-                $detalle->account_movement_id = ($importCTA != '') ? $importCTA : (($customer->account) ? $customer->account : $configuration->cta_suppliers);
-                $detalle->seat_line = 1;
-                $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
-                $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
-                $detalle->save();
 
-                $arrayEntrys = [];
-                $n = 1;
+                if($importCTA != ''){
 
-                foreach ($document->items as $key => $value) {
+                    $detalle = new AccountingEntryItems();
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = $importCTA;
+                    $detalle->seat_line = 1;
+                    $detalle->haber = 0;
+                    $detalle->debe = $document->total;
+                    $detalle->save();
 
-                    $importCTAItem = $value->import;
-                    $ctaImportItem = Imports::find($importCTAItem);
-                    $itemCTA = "";
-                    if ($ctaImportItem && $ctaImportItem->count() > 0) {
-                        $itemCTA = $ctaImportItem->cuenta_contable;
+                    $detalle2 = new AccountingEntryItems();
+                    $detalle2->accounting_entrie_id = $cabeceraC->id;
+                    $detalle2->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $detalle2->seat_line = 1;
+                    $detalle2->haber = $document->total;
+                    $detalle2->debe = 0;
+                    $detalle2->save();
+
+                }else{
+
+                    $detalle = new AccountingEntryItems();
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = ($importCTA != '') ? $importCTA : (($customer->account) ? $customer->account : $configuration->cta_suppliers);
+                    $detalle->seat_line = 1;
+                    $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
+                    $detalle->debe = ($documentoInterno->sign < 1) ? 0 : $document->total;
+                    $detalle->save();
+
+                    $arrayEntrys = [];
+                    $n = 1;
+
+                    foreach ($document->items as $key => $value) {
+
+                        $importCTAItem = $value->import;
+                        $ctaImportItem = Imports::find($importCTAItem);
+                        $itemCTA = "";
+                        if ($ctaImportItem && $ctaImportItem->count() > 0) {
+                            $itemCTA = $ctaImportItem->cuenta_contable;
+                        }
+
+                        $item = Item::find($value->item_id);
+                        $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
+
+                        //CONTABILIDAD PARA VALORES POSITIVOS
+                        if ($documentoInterno->sign > 0) {
+
+                            if ($itemCTA == "" && $item->purchase_cta) {
+
+                                if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
+
+                                    $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$item->purchase_cta] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_value),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+
+                            if ($itemCTA != "" && !$item->purchase_cta) {
+
+                                if (array_key_exists($itemCTA, $arrayEntrys)) {
+
+                                    $arrayEntrys[$itemCTA]['debe'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($itemCTA, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$itemCTA] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_value),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+
+                            if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
+
+                                if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+
+                                    $arrayEntrys[$configuration->cta_purchases]['debe'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$configuration->cta_purchases] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_value),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+
+                            if ($impuesto->account) {
+
+                                if (array_key_exists($impuesto->account, $arrayEntrys)) {
+
+                                    $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
+                                }
+                                if (!array_key_exists($impuesto->account, $arrayEntrys)) {
+
+                                    $n += 1;
+
+                                    $arrayEntrys[$impuesto->account] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_taxes),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+
+                            if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
+
+                                if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+
+                                    $arrayEntrys[$configuration->cta_taxes_purchases]['debe'] += floatval($value->total_taxes);
+                                }
+                                if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+
+                                    $n += 1;
+
+                                    $arrayEntrys[$configuration->cta_taxes_purchases] = [
+                                        'seat_line' => $n,
+                                        'debe' => floatval($value->total_taxes),
+                                        'haber' => 0,
+                                    ];
+                                }
+                            }
+                        }
+                        //CONTABILIDAD PARA VALORES NEGATIVOS
+                        if ($documentoInterno->sign < 1) {
+
+                            if ($itemCTA != "" && !$item->purchase_cta) {
+
+                                if (array_key_exists($itemCTA, $arrayEntrys)) {
+
+                                    $arrayEntrys[$itemCTA]['haber'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($itemCTA, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$itemCTA] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_value),
+                                    ];
+                                }
+                            }
+
+                            if ($itemCTA == "" && $item->purchase_cta) {
+
+                                if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
+
+                                    $arrayEntrys[$item->purchase_cta]['haber'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$item->purchase_cta] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_value),
+                                    ];
+                                }
+                            }
+
+                            if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
+
+                                if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+
+                                    $arrayEntrys[$configuration->cta_purchases]['haber'] += floatval($value->total_value);
+                                }
+                                if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                    $n += 1;
+
+                                    $arrayEntrys[$configuration->cta_purchases] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_value),
+                                    ];
+                                }
+                            }
+
+                            if ($impuesto->account) {
+
+                                if (array_key_exists($impuesto->account, $arrayEntrys)) {
+
+                                    $arrayEntrys[$impuesto->account]['haber'] += floatval($value->total_taxes);
+                                }
+                                if (!array_key_exists($impuesto->account, $arrayEntrys)) {
+
+                                    $n += 1;
+
+                                    $arrayEntrys[$impuesto->account] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_taxes),
+                                    ];
+                                }
+                            }
+
+                            if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
+
+                                if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+
+                                    $arrayEntrys[$configuration->cta_taxes_purchases]['haber'] += floatval($value->total_taxes);
+                                }
+                                if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+
+                                    $n += 1;
+
+                                    $arrayEntrys[$configuration->cta_taxes_purchases] = [
+                                        'seat_line' => $n,
+                                        'debe' => 0,
+                                        'haber' => floatval($value->total_taxes),
+                                    ];
+                                }
+                            }
+                        }
                     }
 
-                    $item = Item::find($value->item_id);
-                    $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
+                    foreach ($arrayEntrys as $key => $value) {
+                        if ($value['debe'] > 0 || $value['haber'] > 0) {
 
-                    //CONTABILIDAD PARA VALORES POSITIVOS
-                    if ($documentoInterno->sign > 0) {
-
-                        if ($itemCTA == "" && $item->purchase_cta) {
-
-                            if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
-
-                                $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$item->purchase_cta] = [
-                                    'seat_line' => $n,
-                                    'debe' => floatval($value->total_value),
-                                    'haber' => 0,
-                                ];
-                            }
-                        }
-
-                        if ($itemCTA != "" && !$item->purchase_cta) {
-
-                            if (array_key_exists($itemCTA, $arrayEntrys)) {
-
-                                $arrayEntrys[$itemCTA]['debe'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($itemCTA, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$itemCTA] = [
-                                    'seat_line' => $n,
-                                    'debe' => floatval($value->total_value),
-                                    'haber' => 0,
-                                ];
-                            }
-                        }
-
-                        if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
-
-                            if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
-
-                                $arrayEntrys[$configuration->cta_purchases]['debe'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$configuration->cta_purchases] = [
-                                    'seat_line' => $n,
-                                    'debe' => floatval($value->total_value),
-                                    'haber' => 0,
-                                ];
-                            }
-                        }
-
-                        if ($impuesto->account) {
-
-                            if (array_key_exists($impuesto->account, $arrayEntrys)) {
-
-                                $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
-                            }
-                            if (!array_key_exists($impuesto->account, $arrayEntrys)) {
-
-                                $n += 1;
-
-                                $arrayEntrys[$impuesto->account] = [
-                                    'seat_line' => $n,
-                                    'debe' => floatval($value->total_taxes),
-                                    'haber' => 0,
-                                ];
-                            }
-                        }
-
-                        if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
-
-                            if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
-
-                                $arrayEntrys[$configuration->cta_taxes_purchases]['debe'] += floatval($value->total_taxes);
-                            }
-                            if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
-
-                                $n += 1;
-
-                                $arrayEntrys[$configuration->cta_taxes_purchases] = [
-                                    'seat_line' => $n,
-                                    'debe' => floatval($value->total_taxes),
-                                    'haber' => 0,
-                                ];
-                            }
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = $key;
+                            $detalle->seat_line = $value['seat_line'];
+                            $detalle->debe = $value['debe'];
+                            $detalle->haber = $value['haber'];
+                            $detalle->save();
                         }
                     }
-                    //CONTABILIDAD PARA VALORES NEGATIVOS
-                    if ($documentoInterno->sign < 1) {
 
-                        if ($itemCTA != "" && !$item->purchase_cta) {
-
-                            if (array_key_exists($itemCTA, $arrayEntrys)) {
-
-                                $arrayEntrys[$itemCTA]['haber'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($itemCTA, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$itemCTA] = [
-                                    'seat_line' => $n,
-                                    'debe' => 0,
-                                    'haber' => floatval($value->total_value),
-                                ];
-                            }
-                        }
-
-                        if ($itemCTA == "" && $item->purchase_cta) {
-
-                            if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
-
-                                $arrayEntrys[$item->purchase_cta]['haber'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$item->purchase_cta] = [
-                                    'seat_line' => $n,
-                                    'debe' => 0,
-                                    'haber' => floatval($value->total_value),
-                                ];
-                            }
-                        }
-
-                        if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
-
-                            if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
-
-                                $arrayEntrys[$configuration->cta_purchases]['haber'] += floatval($value->total_value);
-                            }
-                            if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
-                                $n += 1;
-
-                                $arrayEntrys[$configuration->cta_purchases] = [
-                                    'seat_line' => $n,
-                                    'debe' => 0,
-                                    'haber' => floatval($value->total_value),
-                                ];
-                            }
-                        }
-
-                        if ($impuesto->account) {
-
-                            if (array_key_exists($impuesto->account, $arrayEntrys)) {
-
-                                $arrayEntrys[$impuesto->account]['haber'] += floatval($value->total_taxes);
-                            }
-                            if (!array_key_exists($impuesto->account, $arrayEntrys)) {
-
-                                $n += 1;
-
-                                $arrayEntrys[$impuesto->account] = [
-                                    'seat_line' => $n,
-                                    'debe' => 0,
-                                    'haber' => floatval($value->total_taxes),
-                                ];
-                            }
-                        }
-
-                        if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
-
-                            if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
-
-                                $arrayEntrys[$configuration->cta_taxes_purchases]['haber'] += floatval($value->total_taxes);
-                            }
-                            if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
-
-                                $n += 1;
-
-                                $arrayEntrys[$configuration->cta_taxes_purchases] = [
-                                    'seat_line' => $n,
-                                    'debe' => 0,
-                                    'haber' => floatval($value->total_taxes),
-                                ];
-                            }
-                        }
-                    }
-                }
-
-                foreach ($arrayEntrys as $key => $value) {
-                    if ($value['debe'] > 0 || $value['haber'] > 0) {
-
+                    if ($iva > 0 && $configuration->cta_iva_tax) {
+                        $n += 1;
                         $detalle = new AccountingEntryItems();
                         $detalle->accounting_entrie_id = $cabeceraC->id;
-                        $detalle->account_movement_id = $key;
-                        $detalle->seat_line = $value['seat_line'];
-                        $detalle->debe = $value['debe'];
-                        $detalle->haber = $value['haber'];
+                        $detalle->account_movement_id = $configuration->cta_iva_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
+                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
                         $detalle->save();
                     }
+
+                    if ($renta > 0 && $configuration->cta_income_tax) {
+                        $n += 1;
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $configuration->cta_income_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
+                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
+                        $detalle->save();
+                    }
+
                 }
 
-                if ($iva > 0 && $configuration->cta_iva_tax) {
-                    $n += 1;
-                    $detalle = new AccountingEntryItems();
-                    $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = $configuration->cta_iva_tax;
-                    $detalle->seat_line = $n;
-                    $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
-                    $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                    $detalle->save();
-                }
-
-                if ($renta > 0 && $configuration->cta_income_tax) {
-                    $n += 1;
-                    $detalle = new AccountingEntryItems();
-                    $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = $configuration->cta_income_tax;
-                    $detalle->seat_line = $n;
-                    $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
-                    $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                    $detalle->save();
-                }
             } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
