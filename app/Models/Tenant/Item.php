@@ -803,9 +803,7 @@ class Item extends ModelTenant
             $unitPrice = round($unitPrice /(1+($percentage/100)),2);
         }
 
-
         return $unitPrice;
-
     }
     /**
      * Devuelve la relacion con el almacen dado
