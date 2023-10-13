@@ -15,7 +15,7 @@ class Altertable2ToProductionSupplies extends Migration
     {
         Schema::table('production_supplies', function (Blueprint $table) {
 
-            $table->decimal('cost_per_unit', 15, 8)->nullable()->change();
+            $table->decimal('cost_per_unit', 15, 8)->nullable();
 
         });
     }
