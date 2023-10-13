@@ -15,6 +15,10 @@ class Imports extends ModelTenant
         'fechaLlegada',
         'estado',
         'cuenta_contable',
+        'cta_isd',
+        'cta_comunications',
+        'isd',
+        'comunications',
     ];
 
     public function getCollectionData()
@@ -27,6 +31,10 @@ class Imports extends ModelTenant
             'fechaLlegada'=>$this->fechaLlegada,
             'estado' => $this->estado,
             'cuenta_contable' => $this->cuenta_contable,
+            'cta_isd' => $this->cta_isd,
+            'cta_comunications' => $this->cta_comunications,
+            'isd' => $this->isd,
+            'comunications' => $this->comunications,
         ];
         return $data;
     }

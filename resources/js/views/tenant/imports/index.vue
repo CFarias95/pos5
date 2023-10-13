@@ -56,6 +56,12 @@
                             <button class="btn btn-success btn-sm" type="button" @click.prevent="clickGenerteReport(row.id)">
                                 <i class="fas fa-table"></i> Reporte
                             </button>
+                            <button class="btn btn-info btn-sm" type="button" @click.prevent="clickGenerteiIsd(row.id)">
+                                <i class="fas fa-file-alt"></i> Asiento ISD
+                            </button>
+                            <button class="btn btn-warning btn-sm" type="button" @click.prevent="clickGenerteComu(row.id)">
+                                <i class="fas fa-file-alt"></i> Asiento Comunicaciones
+                            </button>
 
                         </td>
                         <td class="text-right"
@@ -217,7 +223,12 @@ export default {
             //console.log(`/imports/liquidation-report/${importId}`);
             window.open(`/imports/liquidation-report/${importId}`, '_blank');
         },
+        clickGenerteiIsd(importId){
+        },
 
+        clickGenerteComu(importId){
+
+        },
         clickCheckOnline(document_id) {
             this.$http.get(`/${this.resource}/check_server/${document_id}`)
                 .then(response => {

@@ -78,7 +78,6 @@
                                 </div>
                             </div>
                         </div>
-
                         <div class="row">
                             <div class="col-md-3">
                                 <label class="control-label">Estado</label>
@@ -86,9 +85,32 @@
                                     <el-option v-for="option in estados" :key="option.id" :value="option.description" :label="option.description"></el-option>
                                 </el-select>
                             </div>
-                            <div class="col-md-3">
-                                <label class="control-label">Cuenta contable</label>
+                            <div class="col-md-4">
+                                <label class="control-label">ISD</label>
+                                <el-input-number :min="0" v-model="form.isd" clearable ></el-input-number>
+                            </div>
+                            <div class="col-md-5">
+                                <label class="control-label">Comunicaciones</label>
+                                <el-input-number :min="0" v-model="form.comunications" clearable ></el-input-number>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4">
+                                <label class="control-label">Cta. contable</label>
                                 <el-select v-model="form.cuenta_contable"  filterable clearable>
+                                    <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label">Cta. ISD</label>
+                                <el-select v-model="form.cta_isd"  filterable clearable>
+                                    <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label">Cta. Comunicaciones</label>
+                                <el-select v-model="form.cta_comunications"  filterable clearable>
                                     <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
                                 </el-select>
                             </div>
@@ -199,6 +221,10 @@ export default {
                 tipoTransporte: null,
                 numeroImportacion:null,
                 cuenta_contable: null,
+                cta_isd:null,
+                cta_comunications:null,
+                isd:null,
+                comunications:null,
 
             }
             this.resource = 'imports'
@@ -234,7 +260,7 @@ export default {
                         if(response.data.data.estado == 'Liquidada'){
                             this.estados= [{'id':3,'description':'Liquidada'}]
                         }
-                        
+
                     }).then(() => {
                     //this.updateEmail()
                 })

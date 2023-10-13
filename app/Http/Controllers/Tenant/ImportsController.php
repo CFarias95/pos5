@@ -152,12 +152,127 @@ class ImportsController extends Controller
 
     }
 
-    private function updateItemCost($id){
+    public function isdCountant($id){
 
+        $valor = DB::connection("tenant")->select("CALL SP_Reporteimportacion(?)",[$id]);
+
+        if($valor > 0){
+
+            $existe = AccountingEntries::where('document_id','ISD'.$id)->last();
+
+            if($existe && $existe->count() > 0 ){
+                $existe->total_debe = $valor;
+                $existe->total_haber = $valor;
+
+                $entries = AccountingEntryItems::where('account_movement_id',$existe->id)->get();
+
+                foreach($entries as $entry){
+                    if($entry->seat_line == 1){
+                        $entry->haber = $valor;
+                    }
+                    if($entry->seat_line == 2){
+                        $entry->debe = $valor;
+                    }
+                    $entry->save();
+                }
+
+                $existe->save();
+
+                return[
+                    'success'=>true,
+                    'message' => 'Asiento contable ISD actualizado'
+                ];
+
+            }else{
+                $document = Imports::firstOrNew(['id' => $id]);
+                try{
+                    $idauth = auth()->user()->id;
+                    $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                    $ultimo = AccountingEntries::latest('id')->first();
+                    $configuration = Configuration::first();
+                    if (empty($lista)) {
+                        $seat = 1;
+                    } else {
+
+                        $seat = $lista->seat + 1;
+                    }
+
+                    if (empty($ultimo)) {
+                        $seat_general = 1;
+                    } else {
+                        $seat_general = $ultimo->seat_general + 1;
+                    }
+
+                    $comment = ' ISD Importacion '. $document->numeroImportacion ;
+
+                    $cabeceraC = new AccountingEntries();
+                    $cabeceraC->user_id = auth()->user()->id;
+                    $cabeceraC->seat = $seat;
+                    $cabeceraC->seat_general = $seat_general;
+                    $cabeceraC->seat_date = $document->updated_at;
+                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->comment = $comment;
+                    $cabeceraC->serie = null;
+                    $cabeceraC->number = $seat;
+                    $cabeceraC->total_debe = $valor;
+                    $cabeceraC->total_haber = $valor;
+                    $cabeceraC->revised1 = 0;
+                    $cabeceraC->user_revised1 = 0;
+                    $cabeceraC->revised2 = 0;
+                    $cabeceraC->user_revised2 = 0;
+                    $cabeceraC->currency_type_id = $configuration->currency_type_id;
+                    $cabeceraC->doctype = 99;
+                    $cabeceraC->is_client = false;
+                    $cabeceraC->establishment_id = null;
+                    $cabeceraC->establishment = '';
+                    $cabeceraC->prefix = 'ASC';
+                    $cabeceraC->person_id = null;
+                    $cabeceraC->external_id = Str::uuid()->toString();
+                    $cabeceraC->document_id = 'ISD'.$id;
+
+                    $cabeceraC->save();
+                    $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                    $cabeceraC->save();
+
+                    $detalle = new AccountingEntryItems();
+
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = $document->cta_isd;
+                    $detalle->seat_line = 1;
+                    $detalle->debe = 0;
+                    $detalle->haber = $valor;
+                    $detalle->save();
+
+                    $detalle2 = new AccountingEntryItems();
+
+                    $detalle2->accounting_entrie_id = $cabeceraC->id;
+                    $detalle2->account_movement_id = $document->cuenta_contable;
+                    $detalle2->seat_line = 2;
+                    $detalle2->debe = $valor;
+                    $detalle2->haber = 0;
+                    $detalle2->save();
+
+                    return[
+                        'success'=>true,
+                        'message' => 'Se generar el asiento contable ISD correctamente'
+                    ];
+
+                }catch(Exception $ex){
+
+                    Log::error('Error al intentar generar el asiento contable de ISD ');
+                    Log::error($ex->getMessage());
+                    return[
+                        'success'=>false,
+                        'message' => 'No se pudo generar el asiento contable ISD'
+                    ];
+                }
+            }
+        }
+    }
+    private function updateItemCost($id){
         $result = DB::connection("tenant")->select("CALL SP_Liquidarimportacion(?)",[$id]);
         Log::info("valor liquidacion: ".$result[0]->totalimportacion);
         $this->createAccountingEntry($id,$result[0]->totalimportacion);
-
     }
 
     /* CREARE ACCOUNTING ENTRIES IMPORT*/
