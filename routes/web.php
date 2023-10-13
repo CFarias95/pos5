@@ -635,6 +635,8 @@ if ($hostname) {
             Route::post('imports', 'Tenant\ImportsController@store');
             Route::get('imports/liquidation-report/{id}', 'Tenant\ImportsController@liquidationsReport');
             Route::get('imports/tables', 'Tenant\ImportsController@table');
+            Route::get('imports/isd/{id}', 'Tenant\ImportsController@isdAccountant');
+            Route::get('imports/comunication/{id}', 'Tenant\ImportsController@comunicationsAccountant');
 
             Route::get('tariff', 'Tenant\TariffController@index')->name('tenant.imports.tariff');
             Route::get('tariff/records', 'Tenant\TariffController@records');

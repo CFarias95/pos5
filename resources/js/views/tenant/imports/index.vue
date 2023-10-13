@@ -7,10 +7,9 @@
                 <li><span class="text-muted">Carpeta</span>
                 </li>
             </ol>
-            <div class="right-wrapper pull-right"
-                 v-if="typeUser != 'integrator'">
-                 <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickCreate()"><i
-                    class="fa fa-plus-circle"></i> Nuevo
+            <div class="right-wrapper pull-right" v-if="typeUser != 'integrator'">
+                <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickCreate()"><i
+                        class="fa fa-plus-circle"></i> Nuevo
                 </button>
             </div>
         </div>
@@ -30,30 +29,31 @@
                         <th class="text-center"></th>
 
                     </tr>
-                    <tr slot-scope="{ index, row }"
-                        :class="{'text-success': (row.estado === 'Liquidada'),
-                            'text-warning': (row.estado === 'Liberada'),
-                            'border-light': (row.estado === 'Registrada'),
-                            'border-left border-info': (row.estado === 'Registrada'),
-                            'border-left border-success': (row.estado === 'Liquidada'),
-                            'border-left border-secondary': (row.estado === '07'),
-                            'border-left border-dark': (row.estado === '09'),
-                            'border-left border-danger': (row.estado === 'Liquidada')}">
+                    <tr slot-scope="{ index, row }" :class="{
+                        'text-success': (row.estado === 'Liquidada'),
+                        'text-warning': (row.estado === 'Liberada'),
+                        'border-light': (row.estado === 'Registrada'),
+                        'border-left border-info': (row.estado === 'Registrada'),
+                        'border-left border-success': (row.estado === 'Liquidada'),
+                        'border-left border-secondary': (row.estado === '07'),
+                        'border-left border-dark': (row.estado === '09'),
+                        'border-left border-danger': (row.estado === 'Liquidada')
+                    }">
                         <td>{{ index }}</td>
-                        <td class="text-center" > {{ row.numeroImportacion }}</td>
-                        <td class="text-center" > {{ row.tipoTransporte }}</td>
+                        <td class="text-center"> {{ row.numeroImportacion }}</td>
+                        <td class="text-center"> {{ row.tipoTransporte }}</td>
                         <td class="text-center">{{ row.fechaEmbarque }}</td>
                         <td class="text-center">{{ row.fechaLlegada }}</td>
-                        <td class="text-center" >
-                            <span
-                                  class="badge bg-secondary text-white"
-                                  :class="{'bg-success': (row.estado === 'Liquidada'), 'bg-warning': (row.estado === 'Liberada'), 'bg-secondary': (row.estado === 'Registrada')}">
+                        <td class="text-center">
+                            <span class="badge bg-secondary text-white"
+                                :class="{ 'bg-success': (row.estado === 'Liquidada'), 'bg-warning': (row.estado === 'Liberada'), 'bg-secondary': (row.estado === 'Registrada') }">
                                 {{ row.estado }}
                             </span>
                         </td>
                         <td class="text-right">
 
-                            <button class="btn btn-success btn-sm" type="button" @click.prevent="clickGenerteReport(row.id)">
+                            <button class="btn btn-success btn-sm" type="button"
+                                @click.prevent="clickGenerteReport(row.id)">
                                 <i class="fas fa-table"></i> Reporte
                             </button>
                             <button class="btn btn-info btn-sm" type="button" @click.prevent="clickGenerteiIsd(row.id)">
@@ -64,17 +64,15 @@
                             </button>
 
                         </td>
-                        <td class="text-right"
-                        v-if="row.estado != 'Liquidada'" >
+                        <td class="text-right" v-if="row.estado != 'Liquidada'">
                             <div class="dropdown">
                                 <button class="btn btn-default btn-sm" type="button" id="dropdownMenuButton"
-                                        data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                                    data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                                     <i class="fas fa-ellipsis-v"></i>
                                 </button>
-                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" >
-                                    <div >
-                                        <button class="dropdown-item"
-                                                @click.prevent="clickCreate(row.id)">Editar
+                                <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
+                                    <div>
+                                        <button class="dropdown-item" @click.prevent="clickCreate(row.id)">Editar
                                         </button>
                                     </div>
 
@@ -85,10 +83,7 @@
                     </tr>
                 </data-table>
             </div>
-            <tenant-imports-generate
-                          :recordId="recordId"
-                          :showDialog.sync="showDialog"
-                          ></tenant-imports-generate>
+            <tenant-imports-generate :recordId="recordId" :showDialog.sync="showDialog"></tenant-imports-generate>
 
         </div>
     </div>
@@ -103,13 +98,13 @@ import DocumentPayments from '../documents/partials/payments.vue'
 //import DocumentImportExcel from './partials/ImportExcel'
 import DataTable from '../../../components/DataTableImports.vue'
 import ItemsImport from '../documents/import.vue'
-import {deletable} from '../../../mixins/deletable'
+import { deletable } from '../../../mixins/deletable'
 import DocumentConstancyDetraction from '../documents/partials/constancy_detraction.vue'
 import ReportPayment from '../documents/partials/report_payment.vue'
 import ReportPaymentComplete from '../documents/partials/report_payment_complete.vue'
 import DocumentValidate from '../documents/partials/validate.vue';
 import MassiveValidateCpe from '../../../../../modules/ApiPeruDev/Resources/assets/js/components/MassiveValidateCPE';
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import { mapActions, mapState } from "vuex/dist/vuex.mjs";
 //import DocumentRetention from './partials/retention'
 
 
@@ -217,17 +212,40 @@ export default {
                 this.$message.error(error.response.data.message)
             });
         },
-        clickGenerteReport(importId){
+        clickGenerteReport(importId) {
             //alert('SE generara el reporte de la importacion '+importId)
             //console.log('DATA: ',importId);
             //console.log(`/imports/liquidation-report/${importId}`);
             window.open(`/imports/liquidation-report/${importId}`, '_blank');
         },
-        clickGenerteiIsd(importId){
+        clickGenerteiIsd(importId) {
+            this.$http.get(`/${this.resource}/isd/${importId}`)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    this.$message.error(error.response.data.message)
+                })
         },
+        clickGenerteComu(importId) {
 
-        clickGenerteComu(importId){
-
+            this.$http.get(`/${this.resource}/comunication/${importId}`)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    this.$message.error(error.response.data.message)
+                })
         },
         clickCheckOnline(document_id) {
             this.$http.get(`/${this.resource}/check_server/${document_id}`)
@@ -316,9 +334,8 @@ export default {
         clickReportPayments() {
             this.showDialogReportPayment = true
         },
-        clickForceSendBySummary(id)
-        {
-            this.forceSendBySummary(`/${this.resource}/force-send-by-summary`, { id : id}).then(() =>
+        clickForceSendBySummary(id) {
+            this.forceSendBySummary(`/${this.resource}/force-send-by-summary`, { id: id }).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
         },
