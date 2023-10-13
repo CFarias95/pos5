@@ -635,6 +635,7 @@ class PurchaseController extends Controller
         if ($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0) {
 
             try {
+
                 $idauth = auth()->user()->id;
                 $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
                 $ultimo = AccountingEntries::latest('id')->first();
@@ -689,14 +690,14 @@ class PurchaseController extends Controller
                 $customer = Person::find($cabeceraC->person_id);
 
                 $importP = Imports::find($document->import_id);
-                $importCTA = '';
+                $importCTA = null;
 
                 if ($importP && $importP->count() > 0) {
                     $importCTA = $importP->cuenta_contable;
                 }
 
 
-                if($importCTA != ''){
+                if(isset($importCTA)){
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -718,10 +719,10 @@ class PurchaseController extends Controller
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = ($importCTA != '') ? $importCTA : (($customer->account) ? $customer->account : $configuration->cta_suppliers);
+                    $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
-                    $detalle->debe = ($documentoInterno->sign < 1) ? 0 : $document->total;
+                    $detalle->debe = ($documentoInterno->sign < 1) ? $document->total : 0;
                     $detalle->save();
 
                     $arrayEntrys = [];

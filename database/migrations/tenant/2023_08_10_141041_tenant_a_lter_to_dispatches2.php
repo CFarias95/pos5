@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class TenantALterToDispatches extends Migration
+class TenantALterToDispatches2 extends Migration
 {
     /**
      * Run the migrations.
