@@ -176,7 +176,6 @@ class DocumentCollection extends ResourceCollection
                 'btn_voided' => $btn_voided,
                 'btn_note' => $btn_note,
                 'btn_guide' => $btn_guide,
-//                'btn_ticket' => $btn_ticket,
                 'btn_resend' => $btn_resend,
                 'btn_consult_cdr' => $btn_consult_cdr,
                 'btn_constancy_detraction' => $btn_constancy_detraction,
@@ -184,12 +183,7 @@ class DocumentCollection extends ResourceCollection
                 'btn_change_to_registered_status' => $btn_change_to_registered_status,
                 'btn_delete_doc_type_03' => $btn_delete_doc_type_03,
                 'send_server' => (bool) $row->send_server,
-//                'voided' => $voided,
                 'affected_document' => $affected_document,
-//                'has_xml_voided' => $has_xml_voided,
-//                'has_cdr_voided' => $has_cdr_voided,
-//                'download_xml_voided' => $download_xml_voided,
-//                'download_cdr_voided' => $download_cdr_voided,
                 'shipping_status' => json_decode($row->shipping_status) ,
                 'sunat_shipping_status' => json_decode($row->sunat_shipping_status) ,
                 'query_status' => json_decode($row->query_status) ,
@@ -231,11 +225,9 @@ class DocumentCollection extends ResourceCollection
         });
     }
 
-
     private function getDispatches($row){
 
         $dispatches = [];
-
         if(in_array($row->document_type_id, ['01', '03'])) {
 
             $dispatches = $row->reference_guides->transform(function($row) {
@@ -249,11 +241,8 @@ class DocumentCollection extends ResourceCollection
                     'description' => $row->dispatch->number_full,
                 ]);
             }
-
         }
-
         return $dispatches;
-
     }
 
 }

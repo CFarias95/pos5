@@ -147,6 +147,8 @@ Vue.component('tenant-account-summary-report', require('../../modules/Account/Re
 Vue.component('tenant-account-format', require('../../modules/Account/Resources/assets/js/views/account/format.vue'));
 Vue.component('tenant-company-accounts', require('../../modules/Account/Resources/assets/js/views/company_accounts/form.vue'));
 Vue.component('tenant-ledger-accounts', require('../../modules/Account/Resources/assets/js/views/ledger_accounts/form.vue'));
+Vue.component('tenant-accounting-reconciliation', require('../../modules/Account/Resources/assets/js/views/accounting_reconciliation/index.vue'));
+
 
 Vue.component('inventory-review-index', require('@viewsModuleInventory/inventory-review/index.vue'));
 

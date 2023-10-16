@@ -26,6 +26,15 @@ class AccountingEntryItems extends ModelTenant
         'debe',
         'haber',
         'seat_cost',
+        'user_id_audited',
+        'user_id_reconciliation',
+        'audited',
+        'reconciliation'
+    ];
+
+    protected $casts = [
+        'audited' => 'bool',
+        'reconciliation' => 'bool',
     ];
 
     public function account()
@@ -39,9 +48,9 @@ class AccountingEntryItems extends ModelTenant
     }
 
 
- 
 
 
 
-    
+
+
 }
