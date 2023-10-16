@@ -609,3 +609,9 @@ p {
 .mx-auto {
   margin-left: auto !important;
 }
+
+/*estilo imagen*/
+img {
+    width:1.5cm !important;
+     height:1.5cm !important;
+  }

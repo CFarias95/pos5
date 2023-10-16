@@ -297,6 +297,8 @@
                             <vue-ckeditor
                                 v-model="form.name_product_pdf"
                                 :editors="editors"
+                                @ready="uploader"
+                                :config="editorConfig"
                                 type="classic"></vue-ckeditor>
                         </div>
                     </div>
@@ -566,6 +568,7 @@ import WarehousesDetail from './warehouses.vue'
 
 import ClassicEditor from '@ckeditor/ckeditor5-build-classic'
 import VueCkeditor from 'vue-ckeditor5'
+import UploadAdapter from '../../../../UploadAdapter'
 import {mapActions, mapState} from "vuex/dist/vuex.mjs";
 import {ItemOptionDescription, ItemSlotTooltip} from "../../../../helpers/modal_item";
 
@@ -629,7 +632,16 @@ export default {
             showDialogSelectLots: false,
             lots: [],
             editors: {
-                classic: ClassicEditor
+                classic: ClassicEditor,
+                image: {
+                    toolbar: ["imageTextAlternative", "imageStyle:full", "imageStyle:side"],
+                },
+            },
+            editorConfig: {
+                language: 'es',
+                image: {
+                    toolbar: ["imageTextAlternative", "imageStyle:full", "imageStyle:side"],
+                },
             },
             value1: 'hello',
             readonly_total: 0,
@@ -1410,7 +1422,14 @@ export default {
                 }
             }
 
-        }
+        },
+        //funcion habilitando visualizacion 14-10-23
+        uploader(editor) {
+            console.log(editor.builtinPlugins.map( plugin => plugin.pluginName ));
+            editor.plugins.get('FileRepository').createUploadAdapter = function (loader) {
+                return new UploadAdapter(loader);
+            };
+        },
     },
 }
 
