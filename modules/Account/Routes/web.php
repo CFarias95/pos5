@@ -42,6 +42,12 @@ if($hostname) {
                 Route::post('record', 'LedgerAccountController@record');
             });
 
+            Route::prefix('accounting_reconciliation')->group(function () {
+                Route::get('/', 'ReconciliationController@index')->name('tenant.accounting_reconciliation.create');
+                Route::get('records', 'ReconciliationController@records');
+                Route::get('columns', 'ReconciliationController@columns');
+            });
+
 
         });
     });
