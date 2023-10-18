@@ -69,6 +69,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         income_retention: row_old.income_retention,
         iva_retention: row_old.iva_retention,
         name_product_pdf: row_old.name_product_pdf,
+        images: row_old.images,
         record_id: record_id, // fixed for update sale_note
 
         //valores sin redondeo, se usa en los calculos (invoice) para mayor precision

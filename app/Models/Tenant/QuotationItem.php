@@ -53,6 +53,7 @@
             'additional_information',
             'warehouse_id',
             'name_product_pdf',
+            'images',
         ];
 
 
@@ -181,6 +182,16 @@
         {
             $this->warehouse_id = (int)$warehouse_id;
             return $this;
+        }
+
+        public function getImagesAttribute($value)
+        {
+            return (is_null($value)) ? null : (object)json_decode($value);
+        }
+
+        public function setImagesAttribute($value)
+        {
+            $this->attributes['images'] = (is_null($value)) ? null : json_encode($value);
         }
 
 

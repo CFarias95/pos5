@@ -247,6 +247,13 @@
                   @if($row->item !== null && property_exists($row->item,'extra_attr_value') && $row->item->extra_attr_value != '')
                     <br/><span style="font-size: 9px">{{$row->item->extra_attr_name}}: {{ $row->item->extra_attr_value }}</span>
                 @endif
+                @if($row->images)
+                    <div class="img_producto_box">
+                        @foreach($row->images as $attr)
+                        <img src="{{$attr}}" class="img_producto" style="max-width: 150px;">
+                        @endforeach
+                    </div>
+                @endif
             </td>
             <td class="text-left">{{ $brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>

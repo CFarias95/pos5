@@ -611,7 +611,11 @@ p {
 }
 
 /*estilo imagen*/
-img {
-    width:1.5cm !important;
-     height:1.5cm !important;
-  }
+.img_producto_box {
+display: flex;
+    justify-content: center;
+}
+.img_producto {
+    width:1cm !important;
+     height:1cm !important;
+}
