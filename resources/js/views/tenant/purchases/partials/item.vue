@@ -669,6 +669,7 @@ export default {
         },
         async create() {
             if (this.recordItem) {
+
                 this.titleDialog = 'Editar Producto o Servicio'
                 console.log("RECORD ITEM: ", this.recordItem)
 
@@ -677,6 +678,8 @@ export default {
 
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.has_service_taxes = (this.recordItem.total_service_taxes > 0) ? true : false
+                //this.form.purchase_has_igv = this.recordItem.purchase_has_igv
+                this.form.has_igv = this.recordItem.has_igv
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
 
@@ -846,7 +849,7 @@ export default {
                 item_unit_types: [],
                 lot_code: null,
                 date_of_due: null,
-                purchase_has_igv: null,
+                //purchase_has_igv: null,
                 update_price: false,
                 update_date_of_due: false,
                 update_purchase_price: this.config.checked_update_purchase_price,
@@ -941,12 +944,12 @@ export default {
             } else {
                 this.form.unit_price = this.form.item.purchase_unit_price
             }
-
+            this.form.has_igv = this.form.item.purchase_has_igv
             this.form.affectation_igv_type_id = this.form.item.purchase_affectation_igv_type_id
             this.form.item_unit_types = _.find(this.items, { 'id': this.form.item_id }).item_unit_types
             this.prices = this.form.item_unit_types;
             this.date_of_due = this.form.date_of_due;
-            this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+            //this.form.purchase_has_igv = this.form.item.purchase_has_igv;
             this.setExtraElements(this.form.item);
             this.setGlobalIgvToItem()
             this.setGlobalPurchaseCurrencyToItem()
@@ -973,12 +976,13 @@ export default {
 
             const val = _.find(this.retention_types_iva, { 'id': event });
             const item = { ..._.find(this.items, { 'id': this.form.item_id }) };
-            //console.log("retention_types_iva: ",val)
+
+            console.log("retention_types_iva: ",this.form.has_igv)
 
 
             if (val && val.type_id == '02') {
 
-                if (item.purchase_has_igv) {
+                if (this.form.has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.12)), 3)
@@ -1014,7 +1018,7 @@ export default {
             //console.log("changeRetentionTypeIncome: ",this.val)
 
             if (val && val.type_id == '01') {
-                if (item.has_igv) {
+                if ( this.form.has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.12), 4)
@@ -1046,7 +1050,7 @@ export default {
             if (this.config.enabled_global_igv_to_purchase === true) {
                 // Ajusta el igv, si es global, se lo añade o quita al precio del item directamente
                 // this.form.purchase_has_igv = this.hasGlobalIgv
-                this.form.purchase_has_igv = this.localHasGlobalIgv
+                this.form.has_igv = this.localHasGlobalIgv
 
             }
         },
@@ -1066,7 +1070,8 @@ export default {
             this.form.item_unit_types = item.item_unit_types
             this.prices = this.form.item_unit_types;
             this.date_of_due = this.form.date_of_due;
-            this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+            //this.form.purchase_has_igv = this.form.item.purchase_has_igv;
+            this.form.has_igv = this.form.item.purchase_has_igv;
             this.search_item_by_barcode = 0;
             this.setExtraElements(this.form.item);
             this.setGlobalIgvToItem()
@@ -1095,7 +1100,7 @@ export default {
 
             if (!affectation_igv_types_exonerated_unaffected.includes(this.form.affectation_igv_type_id)) {
 
-                unit_price = (this.form.purchase_has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
+                unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
 
             }
 
@@ -1125,26 +1130,7 @@ export default {
             this.row.sale_unit_price = this.sale_unit_price
 
             this.row = this.changeWarehouse(this.row)
-
             this.row.date_of_due = date_of_due
-            //this.row.retention_type_id_income = this.form.retention_type_id_income;
-            //this.row.retention_type_id_iva = this.form.retention_type_id_iva;
-
-            //this.row.income_retention = this.form.income_retention;
-            //this.row.iva_retention = this.form.iva_retention;
-
-            /*if( this.currencyTypeIdActive == this.currencyTypeIdConfig && this.currencyTypeIdActive !== this.form.currency_type_id ){
-
-                this.row.income_retention = this.form.income_retention / this.exchangeRateSale;
-                this.row.iva_retention = this.form.iva_retention  / this.exchangeRateSale;
-
-            }else if( this.form.currency_type_id == this.currencyTypeIdConfig && this.currencyTypeIdActive !== this.form.currency_type_id ){
-
-                this.row.income_retention = this.form.income_retention * this.exchangeRateSale;
-                this.row.iva_retention = this.form.iva_retention  * this.exchangeRateSale;
-
-            }
-            */
             this.row.import = this.form.import;
             this.row.concepto = this.form.concepto;
 

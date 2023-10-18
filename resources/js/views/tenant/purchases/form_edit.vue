@@ -780,11 +780,10 @@ export default {
                 this.initGlobalIgv()
             })
             .finally(() => {
+
                 this.initRecord()
             })
 
-        //this.changeDocumentType2()
-        //this.addRetentions()
     },
     computed: {
         creditPaymentMethod: function () {
@@ -855,8 +854,8 @@ export default {
         filterCustomers() {
             this.customers = this.all_customers
         },
-        getFormatUnitPriceRow(unit_price) {
-            return _.round(unit_price, 6)
+        getFormatUnitPriceRow(value) {
+            return _.round(value, 2)
         },
         async validate_payments() {
 
@@ -1000,12 +999,14 @@ export default {
         setCurrencyType() {
             this.currency_type = _.find(this.currency_types, { 'id': this.form.currency_type_id })
         },
+
         async initRecord() {
             await this.$http.get(`/${this.resource}/record/${this.resourceId}`)
                 .then(response => {
-                    //console.log('PURCHASE DATA: ',response.data.data.purchase)
+                    console.log('PURCHASE DATA: ',response.data.data.purchase)
                     let dato = response.data.data.purchase
-                    console.log('RESPONSE LOAD DATA EDIT: ', dato)
+                    console.log('PURCHASE DATA ITEMS: ', dato.items)
+
                     this.form.id = dato.id
                     this.form.document_type_intern = dato.document_type_intern
                     this.form.document_type_id = dato.document_type_id
@@ -1040,7 +1041,7 @@ export default {
                     if (this.form.payment_condition_id == '02') this.readonly_date_of_due = true
                     this.changeDocumentType()
                     this.changeDocumentType2()
-                    this.calculateTotal()
+                    //this.calculateTotal()
                     this.form.has_payment = true;
                     this.changeHasPayment();
                     this.form.payment_condition_id = dato.payment_condition_id;
@@ -1049,19 +1050,20 @@ export default {
                     if(dato.payment_condition_id === '02'){
                         this.form.fee = dato.purchase_payments;
                     }
-
                     if(dato.payment_condition_id === '01'){
                         this.form.payments = dato.purchase_payments;
                     }
-
                     if(dato.fee.length > 0){
                         this.form.fee = dato.fee
                     }
                     this.changePaymentMethodType(0);
-                    this.calculateTotal()
+
+                    console.log("FORM ITEMS: ", this.form.items)
+                    //this.changeCurrencyType();
                 })
-            //await this.getPercentageIgv();
+
         },
+
         getPayments(payments) {
 
             payments.forEach(it => {
@@ -1069,6 +1071,7 @@ export default {
             });
             return payments
         },
+
         changeRetentionInput(index, event, methodType, id) {
             let selectedRetention = _.find(this.retentions, { 'id': id })
             let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
@@ -1085,8 +1088,8 @@ export default {
                 }
             }
         },
-        changeAdvanceInput(index, event, methodType, id) {
 
+        changeAdvanceInput(index, event, methodType, id) {
             let selectedAdvance = _.find(this.advances, { 'id': id })
             let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
             if (payment_method_type.description.includes('Anticipo')) {
@@ -1100,6 +1103,7 @@ export default {
                 }
             }
         },
+
         changeAdvance(index, id) {
 
             let selectedAdvance = _.find(this.advances, { 'id': id })
@@ -1332,13 +1336,17 @@ export default {
             this.calculateTotal()
         },
         changeCurrencyType() {
+
             this.currency_type = _.find(this.currency_types, { 'id': this.form.currency_type_id })
             let items = []
+
             this.form.items.forEach((row) => {
                 items.push(calculateRowItem(row, this.form.currency_type_id, this.form.exchange_rate_sale, (this.percentage_igv * 100)))
             });
             this.form.items = items
+
             this.calculateTotal()
+
         },
         addRetenciones() {
 

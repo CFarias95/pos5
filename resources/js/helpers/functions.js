@@ -30,7 +30,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let row = {
         item_id: row_old.item.id,
-        // item_description: row_old.item.description,
         item: row_old.item,
         currency_type_id: currency_type_id_new,
         quantity: row_old.quantity,
@@ -40,12 +39,10 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         total_base_igv: 0,
         percentage_igv: pigv,
         total_igv: 0,
-        has_igv: row_old.has_igv,
+        has_igv: (row_old.purchase_has_igv)?row_old.purchase_has_igv:row_old.has_igv,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
-        // system_isc_type_id: null,
         total_base_isc: 0,
         percentage_isc: has_isc ? parseFloat(row_old.percentage_isc) : 0,
-        // percentage_isc: 0,
         total_isc: 0,
         total_base_other_taxes: 0,
         percentage_other_taxes: 0,
@@ -80,7 +77,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
         purchase_unit_price: row_old.item.purchase_unit_price,
         purchase_unit_value: row_old.item.purchase_unit_value,
-        purchase_has_igv: row_old.purchase_has_igv,
+        //purchase_has_igv: row_old.purchase_has_igv,
 
         data_item_lot_group: getDataItemLotGroup(row_old)
     };
@@ -141,23 +138,33 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     if(row.purchase_has_igv || row.has_igv){
         if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
             unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
+            //row.purchase_unit_value = unit_value
+
         }
     }
 
     if(row.purchase_has_igv  == false || row.has_igv == false){
 
         if(row.has_igv === false){
-            console.log("has_igv: "+row.purchase_has_igv,row_old.unit_price_value)
+            console.log("has_igv: "+row.has_igv,row_old.unit_price)
+
             if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-                unit_value = row_old.unit_price_value
+                unit_value = (row_old.unit_price_value)?row_old.unit_price_value:row_old.unit_value
                 row.unit_price = row_old.unit_price
             }
         }
+
         if(row.purchase_has_igv === false){
+
             console.log("purchase_has_igv: "+row.purchase_has_igv,row.unit_price)
             if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
                 unit_value = row.unit_price
+
+                row.has_igv = row.purchase_has_igv
                 row.unit_price = row.unit_price * (1 + (row.percentage_igv / 100))
+                row.purchase_unit_price = row.unit_price * (1 + (row.percentage_igv / 100))
+                row.purchase_unit_value =  unit_value
+
             }
         }
     }

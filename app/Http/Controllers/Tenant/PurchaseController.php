@@ -459,6 +459,7 @@ class PurchaseController extends Controller
                         $temp_item['lots'] = $lots;
                         $p_item->item = $temp_item;
                     }
+                    //$p_item->purchase_has_igv = $row['purchase_has_igv'];
                     $p_item->purchase_id = $doc->id;
                     $p_item->save();
 
@@ -1904,15 +1905,23 @@ class PurchaseController extends Controller
                     $doc = new Purchase();
                     $doc->fill($data);
                     $doc->save();
+
                     foreach ($data['items'] as $row) {
+
+
+                        log::info("Purchase item to create : ". json_encode($row['item']));
+                        $row['has_igv'] = false;
                         $doc->items()->create($row);
                     }
+
                     $doc->purchase_payments()->create([
                         'date_of_payment' => $data['date_of_issue'],
                         'payment_method_type_id' => $data['payment_method_type_id'],
                         'payment' => $data['total'],
                     ]);
+
                     return $doc;
+
                 } catch (Exception $ex) {
                     Log::error($ex->getMessage());
                     return false;

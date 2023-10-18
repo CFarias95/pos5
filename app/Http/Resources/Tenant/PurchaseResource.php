@@ -117,6 +117,7 @@ class PurchaseResource extends JsonResource
                 'iva_retention' => $row->iva_retention,
                 'import' => $row->import,
                 'concepto' => $row->concepto,
+                'has_igv' => $row->has_igv,
             ];
         });
 

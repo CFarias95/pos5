@@ -17,8 +17,8 @@
                         <th>Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :key="index"
-                        :class="{ 'border-left border-success': (row.reconciliated > 0), }">
-                        <td>{{ index + 1 }}</td>
+                        :class="{'text-success border-left border-success': (row.reconciliated > 0),  }">
+                        <td>{{ index }}</td>
                         <td>{{ row.reference }}</td>
                         <td>{{ row.value }}</td>
                         <td>{{ row.date }}</td>
@@ -26,8 +26,8 @@
                         <td>{{ row.ctaHaber }}</td>
                         <td>{{ row.comment }}</td>
                         <td>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-primary"
-                                @click.prevent="clickConciliate(row.id)"> Puntear</button>
+                            <button v-if="row.reconciliated < 1" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
+                                @click.prevent="clickConciliate(row.id)">Puntear</button>
                         </td>
                     </tr>
                 </data-table>
@@ -37,7 +37,7 @@
 </template>
 
 <script>
-import DataTable from '@components/DataTable.vue'
+import DataTable from '@components/DataTableReconciliation.vue'
 export default {
     components: { DataTable },
     data() {
@@ -69,7 +69,17 @@ export default {
                 })
         },
         clickConciliate(recordId) {
+            this.$http.get(`/${this.resource}/reconciliate/${recordId}`)
+                .then(response => {
+                    console.log(response)
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                    } else {
 
+                        this.$message.error(response.data.message);
+                    }
+                })
         }
     }
 }
