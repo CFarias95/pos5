@@ -722,7 +722,7 @@ class PurchaseController extends Controller
                     $detalle->account_movement_id = ($importCTA != '') ? $importCTA : (($customer->account) ? $customer->account : $configuration->cta_suppliers);
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
-                    $detalle->debe = ($documentoInterno->sign < 1) ? 0 : $document->total;
+                    $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
                     $detalle->save();
 
                     $arrayEntrys = [];
@@ -1203,12 +1203,12 @@ class PurchaseController extends Controller
 
             if (count($request['ret']) > 0) {
 
-                $retenciones = RetentionsEC::where('idDocumento', $doc->id)->get();
-
+                $retenciones = RetentionsEC::where('idDocumento', $doc->id)->delete();
+                /*
                 foreach ($retenciones as $ret) {
                     $ret->delete();
                 }
-
+                */
                 $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
                 $tipoSerie = null;
                 $tiposerieText = '';

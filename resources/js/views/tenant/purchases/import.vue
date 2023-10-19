@@ -386,7 +386,7 @@ export default {
                 itemActual.unit_price = itemActual.unit_value;
                 itemActual.item_unit_types = formItem.item_unit_types;
                 itemActual.quantity = itemActual.quantity;
-                itemActual.purchase_has_igv = false;
+                itemActual.has_igv = false;
                 itemActual.item.presentation = {};
 
                 let row = calculateRowItem(itemActual, this.config.currency_type_id, 1, itemActual.iva, null);

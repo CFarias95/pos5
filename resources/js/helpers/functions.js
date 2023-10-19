@@ -31,6 +31,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let row = {
         item_id: row_old.item.id,
         item: row_old.item,
+        import: row_old.import,
         currency_type_id: currency_type_id_new,
         quantity: row_old.quantity,
         unit_value: 0,
@@ -135,7 +136,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let unit_value = row.unit_price
 
-    if(row.purchase_has_igv || row.has_igv){
+    if(row.has_igv){
         if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
             unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
             //row.purchase_unit_value = unit_value
@@ -143,28 +144,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         }
     }
 
-    if(row.purchase_has_igv  == false || row.has_igv == false){
+    if(row.has_igv == false){
 
         if(row.has_igv === false){
             console.log("has_igv: "+row.has_igv,row_old.unit_price)
 
             if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-                unit_value = (row_old.unit_price_value)?row_old.unit_price_value:row_old.unit_value
-                row.unit_price = row_old.unit_price
-            }
-        }
-
-        if(row.purchase_has_igv === false){
-
-            console.log("purchase_has_igv: "+row.purchase_has_igv,row.unit_price)
-            if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-                unit_value = row.unit_price
-
-                row.has_igv = row.purchase_has_igv
-                row.unit_price = row.unit_price * (1 + (row.percentage_igv / 100))
-                row.purchase_unit_price = row.unit_price * (1 + (row.percentage_igv / 100))
-                row.purchase_unit_value =  unit_value
-
+                row.unit_price = (row_old.unit_price_value)?row_old.unit_price_value:(row.unit_price * (1 + (row.percentage_igv / 100)))
+                unit_value = row_old.unit_price
             }
         }
     }

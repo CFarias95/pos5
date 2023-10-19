@@ -1463,7 +1463,7 @@ export default {
                     toal_retenido += (retention_iva + retention_renta)
                     this.haveRetentions = true
                     this.maxLength1 = 15
-                    this.maxLength2 = 45
+                    this.maxLength2 = 49
                     let nuevaRetIVA = true
                     let nuevaRetRENTA= true
 

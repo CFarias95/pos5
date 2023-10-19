@@ -682,7 +682,7 @@ export default {
                 this.form.has_igv = this.recordItem.has_igv
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
-
+                this.form.import = this.recordItem.import
                 this.form.attributes = this.recordItem.attributes;
                 this.form.discounts = this.recordItem.discounts;
                 this.form.charges = this.recordItem.charges;
