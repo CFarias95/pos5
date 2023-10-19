@@ -205,14 +205,14 @@
 
         @endphp
         <tr>
-            <td class="text-center align-top">
+            <td class="text-center">
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
                     {{ number_format($row->quantity, 0) }}
                 @endif
             </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
+            <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
                   @if($row->item->name_product_pdf ?? false) {!!$row->item->name_product_pdf ?? ''!!} @else {!!$row->item->description!!} @endif
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
@@ -248,8 +248,8 @@
             </td>
             <td class="text-left">{{ $brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
-            <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right align-top">
+            <td class="text-right">{{ number_format($row->unit_price, 2) }}</td>
+            <td class="text-right">
                 @if($row->discounts)
                     @php
                         $total_discount_line = 0;
@@ -262,7 +262,7 @@
                 0
                 @endif
             </td>
-            <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right">{{ number_format($row->total, 2) }}</td>
         </tr>
         <tr>
             <td colspan="8" class="border-bottom"></td>

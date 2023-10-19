@@ -83,6 +83,14 @@ class UnpaidCollection extends ResourceCollection
             } else {
                 $web_platforms = new \Illuminate\Database\Eloquent\Collection();
             }
+            $now = Carbon::now();
+            $ve=($row->date) ? $row->date : $date_of_due;
+            $vence=Carbon::parse($ve)->format('Y-m-d');
+            if ($vence > $now) {
+                $delay_payment=0;
+            }else{
+                $delay_payment = $now->diffInDays($vence);
+            }
 
             $data = [
                 'id' => $row->id,
@@ -107,6 +115,8 @@ class UnpaidCollection extends ResourceCollection
                 "web_platforms" => $web_platforms,
                 "purchase_order" => $purchase_order,
                 "fee_id" => $row->fee_id,
+                "f_posdated" => ($row->f_posdated)?Carbon::parse($row->f_posdated)->format('Y/m/d'):null,
+                "posdated" => $row->posdated??null,
             ];
             return $data;
 

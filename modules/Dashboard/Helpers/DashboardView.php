@@ -45,9 +45,9 @@ class DashboardView
 
         /** @todo: Eliminar periodo, fechas y cambiar por
 
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+        *$date_start = $request['date_start'];
+        *$date_end = $request['date_end'];
+       * \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
          */
         switch ($period) {
             case 'month':
@@ -67,6 +67,10 @@ class DashboardView
                 $d_end = $date_end;
                 break;
             case 'expired':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'posdated':
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
@@ -100,6 +104,9 @@ class DashboardView
                     "'document' AS 'type', " . "documents.currency_type_id, " . "documents.exchange_rate_sale"));
             if($period == 'expired'){
                 $documents->whereBetween('invoices.date_of_due', [$d_start, $d_end]);
+            }else if($period == 'posdated'){
+                $documents->whereBetween('fee.f_posdated', [$d_start, $d_end]);
+                //->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
             }else{
                 $documents->whereBetween('documents.date_of_issue', [$d_start, $d_end]);
             }
@@ -286,9 +293,9 @@ class DashboardView
 
         /** @todo: Eliminar periodo, fechas y cambiar por
 
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+        *$date_start = $request['date_start'];
+        *$date_end = $request['date_end'];
+        *\App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
          */ switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
@@ -307,6 +314,10 @@ class DashboardView
                 $d_end = $date_end;
                 break;
             case 'expired':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'posdated':
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
@@ -337,6 +348,8 @@ class DashboardView
             " fee.amount as amount, " .
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
+            " DATE_FORMAT(fee.f_posdated, '%Y/%m/%d') f_posdated, " .
+            " fee.posdated as posdated, " .
             "users.name as username";
 
         $sale_note_select = "sale_notes.id as id, " .
@@ -356,6 +369,8 @@ class DashboardView
             " 0 as amount, " .
             " null as date, " .
             " null as fee_id, " .
+            " null as f_posdated, " .
+            " null as posdated, " .
             "users.name as username";
 
         $documents = DB::connection('tenant')
@@ -429,6 +444,9 @@ class DashboardView
 
             if($period == 'expired'){
                 $documents->whereBetween('fee.date', [$d_start, $d_end]);
+                //->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
+            } else if($period == 'posdated'){
+                $documents->whereBetween('fee.f_posdated', [$d_start, $d_end]);
                 //->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
             }else{
                 $sale_notes->whereBetween('sale_notes.date_of_issue', [$d_start, $d_end]);

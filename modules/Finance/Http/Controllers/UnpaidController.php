@@ -37,7 +37,8 @@ use Mpdf\Mpdf;
 use App\CoreFacturalo\Template;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
-
+use App\Http\Requests\Tenant\PosDatedRequest;
+use App\Models\Tenant\DocumentFee;
 
 class UnpaidController extends Controller
 {
@@ -431,5 +432,28 @@ class UnpaidController extends Controller
     public function uploadFile($filename, $file_content, $file_type)
     {
         $this->uploadStorage($filename, $file_content, $file_type);
+    }
+
+    //agregado 18-10-23
+    public function PosDatedShow($document_id, $fee_id) {
+        $record = DocumentFee::where('id','=',$fee_id)
+        ->where('document_id','=',$document_id)
+        ->select('id','document_id','f_posdated','posdated')->first();
+        return $record;
+    }
+
+    public function PosDatedUpdate(PosDatedRequest $request)
+    {
+        $record = DocumentFee::where('id','=',$request->id)
+        ->where('document_id','=',$request->document_id);
+        $record->update([
+            'f_posdated'=>$request->f_posdated,
+            'posdated'=>$request->posdated
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Se ha registrado con éxito',
+        ];
     }
 }

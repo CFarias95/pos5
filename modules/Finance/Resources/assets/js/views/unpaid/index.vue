@@ -45,6 +45,8 @@
                                                 label="Entre fechas"></el-option>
                                             <el-option key="expired" value="expired"
                                                 label="Fecha de vencimiento"></el-option>
+                                            <el-option key="posdated" value="posdated"
+                                                label="POSfechado"></el-option>
                                         </el-select>
                                     </div>
                                     <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -64,7 +66,7 @@
                                         </div>
                                     </template>
                                     <template
-                                        v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired'">
+                                        v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'" >
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha del</label>
                                             <el-date-picker v-model="form.date_start" type="date"
@@ -72,7 +74,7 @@
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
-                                    <template v-if="form.period === 'between_dates' || form.period == 'expired'">
+                                    <template v-if="form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'">
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha al</label>
                                             <el-date-picker v-model="form.date_end" type="date"
@@ -217,7 +219,8 @@
                                                     <th>#</th>
                                                     <th>F.Emisión</th>
                                                     <th>F.Vencimiento</th>
-                                                    <th>F.Límite de Pago</th>
+                                                    <th>Fecha Posfechado</th>
+                                                    <th>Ref. Posfechado</th>
                                                     <th>Número</th>
                                                     <th>Cliente</th>
                                                     <th>Usuario</th>
@@ -243,7 +246,8 @@
                                                         <td>{{ customIndex(index) }}</td>
                                                         <td>{{ row.date_of_issue }}</td>
                                                         <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                                                        <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
+                                                        <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                                        <td>{{ row.posdated }}</td>
                                                         <td>{{ row.number_full }}</td>
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
@@ -336,6 +340,13 @@
                                                                 <button type="button" style="min-width: 41px"
                                                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                                                     @click.prevent="clickSaleNotePayment(row.id)">Pagos</button>
+                                                            </template>
+
+                                                            <template>
+                                                                <button type="button" style="min-width: 41px"
+                                                                    class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                                                    @click.prevent="clickPosFechado(row.fee_id, row.id, row.customer_id)">POSfechar
+                                                                </button>
                                                             </template>
 
                                                         </td>
@@ -345,7 +356,8 @@
                                                         <td>{{ customIndex(index) }}</td>
                                                         <td>{{ row.date_of_issue }}</td>
                                                         <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                                                        <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha límite.'}}</td>
+                                                        <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                                        <td>{{ row.posdated }}</td>
                                                         <td>{{ row.number_full }}</td>
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
@@ -439,7 +451,12 @@
                                                                     class="btn waves-effect waves-light btn-xs btn-info m-1__2"
                                                                     @click.prevent="clickSaleNotePayment(row.id)">Pagos</button>
                                                             </template>
-
+                                                            <template>
+                                                                <button type="button" style="min-width: 41px" v-if="row.total_to_pay > 0"
+                                                                    class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                                                    @click.prevent="clickPosFechado(row.fee_id, row.id, row.customer_id)">POSfechar
+                                                                </button>
+                                                            </template>
                                                         </td>
                                                     </tr>
                                                 </template>
@@ -463,6 +480,8 @@
         <document-payments :showDialog.sync="showDialogDocumentPayments" :documentId="recordId" :customerId="customerId"
             :external="true" :configuration="this.configuration" :documentFeeId="feeID"></document-payments>
 
+        <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId" :documentFeeId="feeID"></pos-fechado>
+
         <sale-note-payments :showDialog.sync="showDialogSaleNotePayments" :documentId="recordId" :external="true"
             :configuration="this.configuration"></sale-note-payments>
 
@@ -473,12 +492,13 @@
 
 import DocumentPayments from "@views/documents/partials/payments.vue";
 import SaleNotePayments from "@views/sale_notes/partials/payments.vue";
+import PosFechado from "@views/documents/partials/posFechado.vue";
 // import DataTable from '../../components/DataTableWithoutPaging.vue'
 import queryString from "query-string";
 
 export default {
     props: ['typeUser', 'configuration'],
-    components: { DocumentPayments, SaleNotePayments },
+    components: { DocumentPayments, SaleNotePayments,PosFechado },
     data() {
         return {
             resource: 'finances/unpaid',
@@ -503,6 +523,7 @@ export default {
                 }
             },
             showDialogDocumentPayments: false,
+            showDialogPosFechado: false,
             showDialogSaleNotePayments: false,
             users: [],
             payment_method_types: [],
@@ -700,6 +721,12 @@ export default {
             this.customerId = customer
             this.feeID = feeID;
             this.showDialogDocumentPayments = true;
+        },
+        clickPosFechado(feeID, recordId, customer) {
+            this.recordId = recordId;
+            this.customerId = customer
+            this.feeID = feeID;
+            this.showDialogPosFechado = true;
         },
         clickSaleNotePayment(recordId) {
             this.recordId = recordId;
