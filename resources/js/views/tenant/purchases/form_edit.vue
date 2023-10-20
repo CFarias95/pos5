@@ -1257,7 +1257,8 @@ export default {
                 sequential_number: '',
                 observation: '',
                 is_aproved: false,
-
+                tipo_doc_id:null,
+                import_id:null,
             }
             // this.clickAddPayment()
             this.initInputPerson()

@@ -1268,6 +1268,7 @@ class PurchaseController extends Controller
                 $row['quantity'] = $row['quantity'] * $signo;
                 $p_item->fill($row);
                 $p_item->purchase_id = $doc->id;
+                $p_item->has_igv = true;
                 $p_item->save();
 
                 if (array_key_exists('lots', $row)) {

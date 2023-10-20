@@ -40,7 +40,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         total_base_igv: 0,
         percentage_igv: pigv,
         total_igv: 0,
-        has_igv: (row_old.purchase_has_igv)?row_old.purchase_has_igv:row_old.has_igv,
+        has_igv: (row_old.has_igv == true || row_old.has_igv == false)?row_old.has_igv:row_old.purchase_has_igv,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
         total_base_isc: 0,
         percentage_isc: has_isc ? parseFloat(row_old.percentage_isc) : 0,
