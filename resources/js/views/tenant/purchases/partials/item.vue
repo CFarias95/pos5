@@ -854,6 +854,7 @@ export default {
                 update_date_of_due: false,
                 update_purchase_price: this.config.checked_update_purchase_price,
                 concepto: null,
+                import:null,
                 // update_purchase_price: true,
             }
 

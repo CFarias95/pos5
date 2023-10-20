@@ -811,6 +811,28 @@ class PurchaseController extends Controller
                         }
                     }
 
+                    if ($iva > 0 && $configuration->cta_iva_tax) {
+                        $n += 1;
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $configuration->cta_iva_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
+                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
+                        $detalle->save();
+                    }
+
+                    if ($renta > 0 && $configuration->cta_income_tax) {
+                        $n += 1;
+                        $detalle = new AccountingEntryItems();
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $configuration->cta_income_tax;
+                        $detalle->seat_line = $n;
+                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
+                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
+                        $detalle->save();
+                    }
+
 
                 }else{
 
