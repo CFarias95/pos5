@@ -32,6 +32,8 @@ use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
+use App\Http\Requests\Tenant\PosDatedRequest;
+use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\PurchasePayment;
 use Illuminate\Support\Facades\Log;
 
@@ -268,5 +270,28 @@ class ToPayController extends Controller
     public function uploadFile1($filename, $file_content, $file_type)
     {
         $this->uploadStorage($filename, $file_content, $file_type);
+    }
+
+     //agregado 19-10-23
+     public function PosDatedShow($document_id, $fee_id) {
+        $record = PurchaseFee::where('id','=',$fee_id)
+        ->where('purchase_id','=',$document_id)
+        ->select('id','purchase_id','f_posdated','posdated')->first();
+        return $record;
+    }
+
+    public function PosDatedUpdate(PosDatedRequest $request)
+    {
+        $record = PurchaseFee::where('id','=',$request->id)
+        ->where('purchase_id','=',$request->purchase_id);
+        $record->update([
+            'f_posdated'=>$request->f_posdated,
+            'posdated'=>$request->posdated
+        ]);
+
+        return [
+            'success' => true,
+            'message' => 'Se ha registrado con éxito',
+        ];
     }
 }

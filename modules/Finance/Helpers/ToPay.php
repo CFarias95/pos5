@@ -44,9 +44,9 @@ class ToPay
 
         /** @todo: Eliminar periodo, fechas y cambiar por
 
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
+        *$date_start = $request['date_start'];
+        *$date_end = $request['date_end'];
+        *\App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
          */
         switch ($period) {
             case 'month':
@@ -66,6 +66,10 @@ class ToPay
                 $d_end = $date_end;
                 break;
             case 'expired':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'posdated':
                 $d_start = $date_start;
                 $d_end = $date_end;
                 break;
@@ -107,6 +111,8 @@ class ToPay
             " fee.amount as amount, " .
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
+            " fee.f_posdated as f_posdated, " .
+            " fee.posdated as posdated, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ' .
             "'purchase' AS 'type', " . 'purchases.currency_type_id, ' . 'purchases.exchange_rate_sale');
 
@@ -117,6 +123,9 @@ class ToPay
             if($period == 'expired'){
                 $purchases->whereBetween('fee.date', [$d_start, $d_end]);
                 //->orWhereBetween('purchases.date_of_due', [$d_start, $d_end]);
+            }else if($period == 'posdated'){
+                $purchases->whereBetween('fee.f_posdated', [$d_start, $d_end]);
+                //->orWhereBetween('invoices.date_of_due', [$d_start, $d_end]);
             }else{
 
                 $purchases->whereBetween('purchases.date_of_issue', [$d_start, $d_end]);
@@ -168,6 +177,8 @@ class ToPay
             " 0 as amount, " .
             " null as date, " .
             " null as fee_id, " .
+            " null as f_posdated, " .
+            " null as posdated, " .
             'IFNULL(payments.total_payment, 0) as total_payment, ';
 
         if ($d_start && $d_end) {
@@ -219,6 +230,8 @@ class ToPay
                 " 0 as amount, " .
                 " null as date, " .
                 " null as fee_id, " .
+                " null as f_posdated, " .
+                " null as posdated, " .
                 'IFNULL(payments.total_payment, 0) as total_payment, ';
             if ($d_start && $d_end) {
 
@@ -332,7 +345,9 @@ class ToPay
                     'date_of_due' =>  ($row->date)?$row->date:$date_of_due,
                     'currency_type_id' => $row->currency_type_id,
                     'exchange_rate_sale' => (float)$row->exchange_rate_sale,
-                    'fee_id' =>$row->fee_id
+                    'fee_id' =>$row->fee_id,
+                    "f_posdated" => ($row->f_posdated)?Carbon::parse($row->f_posdated)->format('Y/m/d'):null,
+                    "posdated" => $row->posdated??null,
                 ];
         });
     }

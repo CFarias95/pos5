@@ -81,6 +81,9 @@ if($hostname) {
                     Route::get('/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
                     Route::get('/pdf', 'ToPayController@pdf');
                     Route::get('/print/{format}/{id}/{index}','ToPayController@toPrint');
+                    //agregado 19-10-23
+                    Route::get('/posdated/{document_id}/{fee_id}', 'ToPayController@PosDatedShow');
+                    Route::post('/posdated', 'ToPayController@PosDatedUpdate');
                 });
 
                 Route::prefix('income')->group(function () {

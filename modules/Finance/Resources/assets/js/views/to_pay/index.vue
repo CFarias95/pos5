@@ -38,6 +38,7 @@
                                         <el-option key="date" value="date" label="Por fecha"></el-option>
                                         <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
                                         <el-option key="expired" value="expired" label="Fecha de vencimiento"></el-option>
+                                        <el-option key="posdated" value="posdated" label="POSfechado"></el-option>
                                     </el-select>
                                 </div>
                                 <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -56,7 +57,7 @@
                                                         value-format="yyyy-MM" format="MM/yyyy" :clearable="false"></el-date-picker>
                                     </div>
                                 </template>
-                                <template v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired'">
+                                <template v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'">
                                     <div class="col-md-3">
                                         <label class="control-label">Fecha del</label>
                                         <el-date-picker v-model="form.date_start" type="date"
@@ -64,7 +65,7 @@
                                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                                     </div>
                                 </template>
-                                <template v-if="form.period === 'between_dates' || form.period == 'expired'">
+                                <template v-if="form.period === 'between_dates' || form.period == 'expired'  || form.period == 'posdated'">
                                     <div class="col-md-3">
                                         <label class="control-label">Fecha al</label>
                                         <el-date-picker v-model="form.date_end" type="date"
@@ -186,6 +187,8 @@
                                     <th>#</th>
                                     <th>F.Emisión</th>
                                     <th>F.Vencimiento</th>
+                                    <th>Fecha Posfechado</th>
+                                    <th>Ref. Posfechado</th>
                                     <th>Número</th>
                                     <th>Proveedor</th>
                                     <th>Días de retraso</th>
@@ -202,6 +205,8 @@
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.date_of_issue }}</td>
                                             <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                            <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                            <td>{{ row.posdated }}</td>
                                             <td>{{ row.number_full }}</td>
                                             <td>{{ row.supplier_name }}</td>
                                             <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
@@ -255,13 +260,20 @@
                                                     @click.prevent="clickExpensePayment(row.id)"
                                                 >Pagos</button>
                                                 </template>
-
+                                                <template>
+                                                <button type="button" style="min-width: 41px" v-if="row.total_to_pay > 0"
+                                                  class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                                  @click.prevent="clickPosFechado(row.fee_id, row.id)">POSfechar
+                                                   </button>
+                                                   </template>
                                             </td>
                                         </tr>
                                         <tr v-if="include_liquidated" :key="index" :class="{'bg-success text-white': (row.total_to_pay == 0)}">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{ row.date_of_issue }}</td>
                                             <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
+                                            <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                            <td>{{ row.posdated }}</td>
                                             <td>{{ row.number_full }}</td>
                                             <td>{{ row.supplier_name }}</td>
                                             <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
@@ -315,7 +327,12 @@
                                                     @click.prevent="clickExpensePayment(row.id)"
                                                 >Pagos</button>
                                                 </template>
-
+                                                <template>
+                                                <button type="button" style="min-width: 41px" v-if="row.total_to_pay > 0"
+                                                      class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                                           @click.prevent="clickPosFechado(row.fee_id, row.id)">POSfechar
+                                                 </button>
+                                                 </template>
                                             </td>
                                         </tr>
                                     </template>
@@ -337,6 +354,7 @@
             :documentFeeId = "feeID"
             ></purchase-payments>
 
+            <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId" :documentFeeId="feeID"></pos-fechado>
         <expense-payments
             :showDialog.sync="showDialogExpensePayments"
             :expenseId="recordId"
@@ -350,15 +368,17 @@
 
     import ExpensePayments from "@viewsModuleExpense/expense_payments/payments.vue";
     import PurchasePayments from "@viewsModulePurchase/purchase_payments/payments.vue";
+    import PosFechado from "@views/purchases/partials/posFechado.vue";
     import DataTable from '../../components/DataTableWithoutPaging.vue'
     import queryString from "query-string";
 
     export default {
-        components: {ExpensePayments, PurchasePayments, DataTable},
+        components: {ExpensePayments, PurchasePayments, DataTable,PosFechado},
         data() {
             return {
                 resource: 'finances/to-pay',
                 users: [],
+                showDialogPosFechado: false,
                 form: {},
                 suppliers: [],
                 recordId: null,
@@ -585,6 +605,12 @@
                     this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
                 }
             },
+            //agregado 19-10-23
+            clickPosFechado(feeID, recordId) {
+            this.recordId = recordId;
+            this.feeID = feeID;
+            this.showDialogPosFechado = true;
+        },
 
         }
     }
