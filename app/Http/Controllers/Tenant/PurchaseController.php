@@ -400,7 +400,7 @@ class PurchaseController extends Controller
         $alteraStock = (bool)($docIntern && $docIntern[0]->stock) ? $docIntern[0]->stock : 0;
         $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
 
-        $validar = Purchase::where('supplier_id',$data['supplier_id'])->where('sequential_number',$$data['sequential_number'])->get();
+        $validar = Purchase::where('supplier_id',$data['supplier_id'])->where('sequential_number',$data['sequential_number'])->get();
             if($validar && $validar->count() > 0){
                 return [
                     'success' => false,
@@ -1923,9 +1923,7 @@ class PurchaseController extends Controller
                     $doc->save();
 
                     foreach ($data['items'] as $row) {
-
-
-                        log::info("Purchase item to create : ". json_encode($row['item']));
+                        //log::info("Purchase item to create : ". json_encode($row['item']));
                         $row['has_igv'] = true;
                         $doc->items()->create($row);
                     }
