@@ -1926,7 +1926,7 @@ class PurchaseController extends Controller
 
 
                         log::info("Purchase item to create : ". json_encode($row['item']));
-                        $row['has_igv'] = false;
+                        $row['has_igv'] = true;
                         $doc->items()->create($row);
                     }
 
