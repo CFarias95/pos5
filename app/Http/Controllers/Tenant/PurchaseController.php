@@ -400,6 +400,14 @@ class PurchaseController extends Controller
         $alteraStock = (bool)($docIntern && $docIntern[0]->stock) ? $docIntern[0]->stock : 0;
         $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
 
+        $validar = Purchase::where('supplier_id',$data['supplier_id'])->where('sequential_number',$$data['sequential_number'])->get();
+            if($validar && $validar->count() > 0){
+                return [
+                    'success' => false,
+                    'message' => 'La factura '.$data['sequential_number'].' ya se encuentra registrada con ese proveedor',
+                ];
+            }
+
         try {
             $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                 $numero = Purchase::where('establishment_id', $data['establishment_id'])->where('series', $data['series'])->count();
@@ -1871,6 +1879,14 @@ class PurchaseController extends Controller
             $model['supplier_id'] = $supplier->id;
             $formaPagoDefecto = PaymentMethodType::find($supplier->default_payment);
             $company = Company::active();
+
+            $validar = Purchase::where('supplier_id',$supplier->id)->where('sequential_number',$model['sequential_number'])->get();
+            if($validar && $validar->count() > 0){
+                return [
+                    'success' => false,
+                    'message' => 'La factura '.$model['sequential_number'].' de proveedor '. $model['supplier_ruc'].' ya se encuentra registrada ',
+                ];
+            }
 
             $values = [
                 'user_id' => auth()->id(),
