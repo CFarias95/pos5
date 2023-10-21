@@ -1059,7 +1059,7 @@ export default {
                     this.changePaymentMethodType(0);
 
                     console.log("FORM ITEMS: ", this.form.items)
-                    //this.changeCurrencyType();
+                    this.changeCurrencyType();
                 })
 
         },
