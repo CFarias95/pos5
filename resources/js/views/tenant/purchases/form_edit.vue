@@ -1056,10 +1056,11 @@ export default {
                     if(dato.fee.length > 0){
                         this.form.fee = dato.fee
                     }
-                    this.changePaymentMethodType(0);
+                    //this.changePaymentMethodType(0);
 
                     console.log("FORM ITEMS: ", this.form.items)
-                    this.changeCurrencyType();
+                    this.changeCurrencyType()
+                    this.calculateTotal()
                 })
 
         },
@@ -1620,6 +1621,7 @@ export default {
         validarEntradas() {
             let total = this.form.total
             let suma = 0;
+
             if (this.form.payment_condition_id === '01') {
                 //Contado
                 _.forEach(this.form.payments, row => {
@@ -1639,7 +1641,7 @@ export default {
             } else {
                 //Credito cuotas
                 _.forEach(this.form.fee, row => {
-                    suma += row.amount
+                    suma += _.round(row.amount,2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1663,7 +1665,6 @@ export default {
             }
 
             let validate_payment_destination = await this.validatePaymentDestination()
-
             if (validate_payment_destination.error_by_item > 0) {
                 return this.$message.error('El destino del pago es obligatorio');
             }

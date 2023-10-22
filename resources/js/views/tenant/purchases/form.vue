@@ -1748,7 +1748,7 @@ export default {
             } else {
                 //Credito cuotas
                 _.forEach(this.form.fee, row => {
-                    suma += _.round( row.amount,2)
+                    suma += _.round(row.amount,2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1771,12 +1771,7 @@ export default {
             if (!validate_item_series.success) {
                 return this.$message.error(validate_item_series.message);
             }
-            /*
-            let val_digits = await this.validateDigits()
-            if (!val_digits.success) {
-                return this.$message.error(val_digits.message)
-            }
-            */
+
             let validate = await this.validate_payments()
             if (!validate.success) {
                 return this.$message.error(validate.message);
