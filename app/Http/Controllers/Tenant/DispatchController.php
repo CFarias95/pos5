@@ -163,7 +163,7 @@ class DispatchController extends Controller
         if (isset($document->inventories)) {
             Log::info(json_encode($document));
 
-            if($type != 't'){
+            if ($type != 't') {
                 foreach ($document->items as $item) {
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $items[] = [
@@ -174,7 +174,7 @@ class DispatchController extends Controller
                         'name_product_pdf' => $name_product_pdf
                     ];
                 }
-            }else{
+            } else {
                 $origin = [];
                 $delivery = [];
                 $document->establishment_id = $document->warehouse_id;
@@ -185,13 +185,13 @@ class DispatchController extends Controller
                 $document->transfer_reason_description = $document->description;
                 $document->customer =  $document->warehouse_destination->establishment->associated;
                 $document->reference_transfer_id = $document_id;
-                $origin['location_id'] = [$document->warehouse->establishment->department_id,$document->warehouse->establishment->province_id,$document->warehouse->establishment->district_id];
+                $origin['location_id'] = [$document->warehouse->establishment->department_id, $document->warehouse->establishment->province_id, $document->warehouse->establishment->district_id];
                 $origin['address'] = $document->warehouse->establishment->address;
                 $origin['country_id'] = $document->warehouse->establishment->country_id;
                 $document->origin = $origin;
 
                 $delivery['country_id'] = $document->warehouse_destination->establishment->country_id;
-                $delivery['location_id'] = [$document->warehouse_destination->establishment->department_id,$document->warehouse_destination->establishment->province_id,$document->warehouse_destination->establishment->district_id];
+                $delivery['location_id'] = [$document->warehouse_destination->establishment->department_id, $document->warehouse_destination->establishment->province_id, $document->warehouse_destination->establishment->district_id];
                 $delivery['address'] = $document->warehouse_destination->establishment->address;
                 $document->delivery = $delivery;
 
@@ -206,7 +206,6 @@ class DispatchController extends Controller
                     ];
                 }
             }
-
         } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
@@ -267,53 +266,61 @@ class DispatchController extends Controller
 
     public function store(DispatchRequest $request)
     {
+        try {
+            $configuration = Configuration::first();
 
-        $configuration = Configuration::first();
+            if ($request->series[0] == 'T') {
+                /** @var Facturalo $fact */
+                $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
+                    $facturalo = new Facturalo();
+                    $facturalo->save($request->all());
+                    $facturalo->createXmlUnsigned();
+                    $facturalo->signXmlUnsigned();
+                    $facturalo->createPdf();
+                    if ($configuration->isAutoSendDispatchsToSunat()) {
+                        $facturalo->senderXmlSignedBill();
+                    }
+                    return $facturalo;
+                });
 
-        if ($request->series[0] == 'T') {
-            /** @var Facturalo $fact */
-            $fact = DB::connection('tenant')->transaction(function () use ($request, $configuration) {
-                $facturalo = new Facturalo();
-                $facturalo->save($request->all());
-                $facturalo->createXmlUnsigned();
-                $facturalo->signXmlUnsigned();
-                $facturalo->createPdf();
-                if ($configuration->isAutoSendDispatchsToSunat()) {
-                    $facturalo->senderXmlSignedBill();
-                }
-                return $facturalo;
-            });
+                $document = $fact->getDocument();
+                // $response = $fact->getResponse();
+            } else {
+                /** @var Facturalo $fact */
+                $fact = DB::connection('tenant')->transaction(function () use ($request) {
+                    $facturalo = new Facturalo();
+                    $facturalo->save($request->all());
+                    $facturalo->createPdf();
 
-            $document = $fact->getDocument();
-            // $response = $fact->getResponse();
-        } else {
-            /** @var Facturalo $fact */
-            $fact = DB::connection('tenant')->transaction(function () use ($request) {
-                $facturalo = new Facturalo();
-                $facturalo->save($request->all());
-                $facturalo->createPdf();
+                    return $facturalo;
+                });
 
-                return $facturalo;
-            });
-
-            $document = $fact->getDocument();
-            // $response = $fact->getResponse();
-        }
-
-        if (!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
-            $reference = Document::find($document->reference_document_id);
-            if (!empty($reference)) {
-                $reference->updatePdfs();
+                $document = $fact->getDocument();
+                // $response = $fact->getResponse();
             }
-        }
 
-        return [
-            'success' => true,
-            'message' => ($request->id) ? ("Se actualizo la guía de remisión {$document->series}-{$document->number}") : ("Se creo la guía de remisión {$document->series}-{$document->number}"),
-            'data'    => [
-                'id' => $document->id,
-            ],
-        ];
+            if (!empty($document->reference_document_id) && $configuration->getUpdateDocumentOnDispaches()) {
+                $reference = Document::find($document->reference_document_id);
+                if (!empty($reference)) {
+                    $reference->updatePdfs();
+                }
+            }
+
+            return [
+                'success' => true,
+                'message' => ($request->id) ? ("Se actualizo la guía de remisión {$document->series}-{$document->number}") : ("Se creo la guía de remisión {$document->series}-{$document->number}"),
+                'data'    => [
+                    'id' => $document->id,
+                ],
+            ];
+
+        } catch (Exception $ex) {
+            Log::error($ex->getMessage());
+            return [
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ];
+        }
     }
 
     /**

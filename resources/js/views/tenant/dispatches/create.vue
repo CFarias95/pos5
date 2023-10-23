@@ -630,9 +630,7 @@
                                             <!-- Selector para item -->
                                             <div :class="{'has-danger': errors.items}"
                                                  class="form-group" id="custom-select">
-
                                                 <el-input id="custom-input">
-
                                                     <el-select v-model="current_item"
                                                             id="select-width"
                                                             :loading="loading_search"
@@ -669,7 +667,8 @@
                                                        class="form-control-feedback"
                                                        v-text="errors.items[0]"></small>
                                             </div>
-                                            <template v-if="item">
+
+                                            <template v-if="current_item">
                                                 <div v-if="item.lots_enabled && item.lots_group.length > 0"
                                                      class="col-12 mt-2">
                                                     <a class="text-center font-weight-bold text-info"
@@ -679,6 +678,7 @@
                                                     </a>
                                                 </div>
                                             </template>
+
                                             <!-- Selector para item -->
                                         </div>
                                         <div class="col-4">
@@ -1046,11 +1046,13 @@ export default {
         onChangeItem() {
             this.IdLoteSelected = null;
             this.$store.commit('setItem', this.items.find(it => it.id == this.current_item))
+            console.log(this.item)
         },
         filterItems() {
             this.$store.commit('setItems', this.all_items)
         },
         addAItemInRow() {
+
             this.errors = {};
             if (this.item.lots_enabled) {
                 if (!this.IdLoteSelected)

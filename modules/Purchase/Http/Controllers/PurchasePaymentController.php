@@ -47,15 +47,13 @@ class PurchasePaymentController extends Controller
     public function purchase($purchase_id, $fee_id)
     {
         $purchase = Purchase::find($purchase_id);
-
         $total_paid = collect($purchase->payments)->sum('payment');
         $total = $purchase->total;
         $total_difference = round($total - $total_paid, 2);
 
         if (isset($fee_id) && $fee_id != 'undefined' && $fee_id != null) {
 
-            $cuota = PurchaseFee::find($fee_id)->amount;
-
+            $cuota = (PurchaseFee::find($fee_id))?PurchaseFee::find($fee_id)->amount:0;
             $total_paid = PurchasePayment::where('fee_id', $fee_id)->get()->sum('payment');
             $total_difference = round($cuota - $total_paid, 2);
         }

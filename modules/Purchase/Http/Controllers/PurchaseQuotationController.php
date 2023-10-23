@@ -24,6 +24,7 @@ use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 use Exception;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Mail;
 use Modules\Purchase\Models\PurchaseQuotation;
 use Modules\Purchase\Http\Resources\PurchaseQuotationCollection;
@@ -62,20 +63,21 @@ class PurchaseQuotationController extends Controller
     public function records(Request $request)
     {
         $records = PurchaseQuotation::where($request->column, 'like', "%{$request->value}%")
-                            ->whereTypeUser()
-                            ->latest();
+            ->whereTypeUser()
+            ->latest();
 
         return new PurchaseQuotationCollection($records->paginate(config('tenant.items_per_page')));
     }
 
 
-    public function tables() {
+    public function tables()
+    {
 
         $suppliers = $this->table('suppliers');
         $establishments = Establishment::where('id', auth()->user()->establishment_id)->get();
         $company = Company::active();
         $iternalRequest = InternalRequest::all();
-        return compact('suppliers', 'establishments','company','iternalRequest');
+        return compact('suppliers', 'establishments', 'company', 'iternalRequest');
     }
 
 
@@ -98,9 +100,10 @@ class PurchaseQuotationController extends Controller
     }
 
 
-    public function getFullDescription($row){
+    public function getFullDescription($row)
+    {
 
-        $desc = ($row->internal_id)?$row->internal_id.' - '.$row->description : $row->description;
+        $desc = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
         $category = ($row->category) ? " - {$row->category->name}" : "";
         $brand = ($row->brand) ? " - {$row->brand->name}" : "";
 
@@ -110,32 +113,42 @@ class PurchaseQuotationController extends Controller
     }
 
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
 
-        DB::connection('tenant')->transaction(function () use ($request) {
-            $data = $this->mergeData($request);
+        try {
+            DB::connection('tenant')->transaction(function () use ($request) {
+                $data = $this->mergeData($request);
 
-            $this->purchase_quotation =  PurchaseQuotation::updateOrCreate(
-                ['id' => $request->input('id')],
-                $data);
+                $this->purchase_quotation =  PurchaseQuotation::updateOrCreate(
+                    ['id' => $request->input('id')],
+                    $data
+                );
 
-            $this->purchase_quotation->items()->delete();
+                $this->purchase_quotation->items()->delete();
 
-            foreach ($data['items'] as $row) {
-                $this->purchase_quotation->items()->create($row);
-            }
+                foreach ($data['items'] as $row) {
+                    $this->purchase_quotation->items()->create($row);
+                }
 
-            $this->setFilename();
-            $this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
-            $this->email($this->purchase_quotation);
-        });
+                $this->setFilename();
+                $this->createPdf($this->purchase_quotation, "a4", $this->purchase_quotation->filename);
+                $this->email($this->purchase_quotation);
+            });
 
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $this->purchase_quotation->id,
-            ],
-        ];
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $this->purchase_quotation->id,
+                ],
+            ];
+        } catch (Exception $ex) {
+            Log::error($ex->getMessage());
+            return [
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ];
+        }
     }
 
 
@@ -159,12 +172,12 @@ class PurchaseQuotationController extends Controller
 
 
 
-    private function setFilename(){
+    private function setFilename()
+    {
 
-        $name = [$this->purchase_quotation->prefix,$this->purchase_quotation->id,date('Ymd')];
+        $name = [$this->purchase_quotation->prefix, $this->purchase_quotation->id, date('Ymd')];
         $this->purchase_quotation->filename = join('-', $name);
         $this->purchase_quotation->save();
-
     }
 
 
@@ -173,10 +186,10 @@ class PurchaseQuotationController extends Controller
         switch ($table) {
             case 'suppliers':
 
-                $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function($row) {
+                $suppliers = Person::whereType('suppliers')->orderBy('name')->get()->transform(function ($row) {
                     return [
                         'id' => $row->id,
-                        'description' => $row->number.' - '.$row->name,
+                        'description' => $row->number . ' - ' . $row->name,
                         'name' => $row->name,
                         'number' => $row->number,
                         'email' => $row->email,
@@ -193,16 +206,16 @@ class PurchaseQuotationController extends Controller
                 $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
                 $items = Item::orderBy('description')->whereNotIsSet()
-                    ->get()->transform(function($row) {
-                    $full_description = $this->getFullDescription($row);
-                    return [
-                        'id' => $row->id,
-                        'full_description' => $full_description,
-                        'description' => $row->description,
-                        'unit_type_id' => $row->unit_type_id,
-                        'is_set' => (bool) $row->is_set,
-                    ];
-                });
+                    ->get()->transform(function ($row) {
+                        $full_description = $this->getFullDescription($row);
+                        return [
+                            'id' => $row->id,
+                            'full_description' => $full_description,
+                            'description' => $row->description,
+                            'unit_type_id' => $row->unit_type_id,
+                            'is_set' => (bool) $row->is_set,
+                        ];
+                    });
                 return $items;
 
                 break;
@@ -214,7 +227,8 @@ class PurchaseQuotationController extends Controller
     }
 
 
-    public function download($external_id, $format = "a4") {
+    public function download($external_id, $format = "a4")
+    {
 
         $purchase_quotation = PurchaseQuotation::where('external_id', $external_id)->first();
 
@@ -223,10 +237,10 @@ class PurchaseQuotationController extends Controller
         $this->reloadPDF($purchase_quotation, $format, $purchase_quotation->filename);
 
         return $this->downloadStorage($purchase_quotation->filename, 'purchase_quotation');
-
     }
 
-    public function toPrint($external_id, $format) {
+    public function toPrint($external_id, $format)
+    {
 
         $purchase_quotation = PurchaseQuotation::where('external_id', $external_id)->first();
 
@@ -247,11 +261,13 @@ class PurchaseQuotationController extends Controller
         return response()->file($temp, $this->generalPdfResponseFileHeaders($purchase_quotation->filename));
     }
 
-    private function reloadPDF($purchase_quotation, $format, $filename) {
+    private function reloadPDF($purchase_quotation, $format, $filename)
+    {
         $this->createPdf($purchase_quotation, $format, $filename);
     }
 
-    public function createPdf($purchase_quotation = null, $format_pdf = null, $filename = null) {
+    public function createPdf($purchase_quotation = null, $format_pdf = null, $filename = null)
+    {
 
         $template = new Template();
         $pdf = new Mpdf();
@@ -276,26 +292,26 @@ class PurchaseQuotationController extends Controller
 
             $pdf = new Mpdf([
                 'fontDir' => array_merge($fontDirs, [
-                    app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                                DIRECTORY_SEPARATOR.'pdf'.
-                                                DIRECTORY_SEPARATOR.$base_template.
-                                                DIRECTORY_SEPARATOR.'font')
+                    app_path('CoreFacturalo' . DIRECTORY_SEPARATOR . 'Templates' .
+                        DIRECTORY_SEPARATOR . 'pdf' .
+                        DIRECTORY_SEPARATOR . $base_template .
+                        DIRECTORY_SEPARATOR . 'font')
                 ]),
                 'fontdata' => $fontData + [
                     'custom_bold' => [
-                        'R' => $pdf_font_bold.'.ttf',
+                        'R' => $pdf_font_bold . '.ttf',
                     ],
                     'custom_regular' => [
-                        'R' => $pdf_font_regular.'.ttf',
+                        'R' => $pdf_font_regular . '.ttf',
                     ],
                 ]
             ]);
         }
 
-        $path_css = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.
-                                             DIRECTORY_SEPARATOR.'pdf'.
-                                             DIRECTORY_SEPARATOR.$base_template.
-                                             DIRECTORY_SEPARATOR.'style.css');
+        $path_css = app_path('CoreFacturalo' . DIRECTORY_SEPARATOR . 'Templates' .
+            DIRECTORY_SEPARATOR . 'pdf' .
+            DIRECTORY_SEPARATOR . $base_template .
+            DIRECTORY_SEPARATOR . 'style.css');
 
         $stylesheet = file_get_contents($path_css);
 
@@ -303,8 +319,8 @@ class PurchaseQuotationController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         if ($format_pdf != 'ticket') {
-            if(config('tenant.pdf_template_footer')) {
-                $html_footer = $template->pdfFooter($base_template,$this->purchase_quotation);
+            if (config('tenant.pdf_template_footer')) {
+                $html_footer = $template->pdfFooter($base_template, $this->purchase_quotation);
                 $pdf->SetHTMLFooter($html_footer);
             }
         }
@@ -312,7 +328,8 @@ class PurchaseQuotationController extends Controller
         $this->uploadFile($filename, $pdf->output('', 'S'), 'purchase_quotation');
     }
 
-    public function uploadFile($filename, $file_content, $file_type) {
+    public function uploadFile($filename, $file_content, $file_type)
+    {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
 
@@ -328,11 +345,11 @@ class PurchaseQuotationController extends Controller
             $supplier_email = $supplier->email;
 
             $email = $supplier_email;
-            $mailable =new  PurchaseQuotationEmail($client, $purchase_quotation);
+            $mailable = new  PurchaseQuotationEmail($client, $purchase_quotation);
             //$id = (int)$purchase_quotation->id;
             //$model = __FILE__.";;".__LINE__;
             //$sendIt = EmailController::SendMail($email, $mailable, $id, $model);
-             /*
+            /*
 
             $array_email = explode(',', $supplier_email);
             if (count($array_email) > 1) {
@@ -372,7 +389,6 @@ class PurchaseQuotationController extends Controller
         $items = SearchItemController::getItemToPurchaseQuotation(null, $id);
 
         return compact('items');
-
     }
 
     /**
