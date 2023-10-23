@@ -618,7 +618,6 @@ class PurchaseController extends Controller
     /* Crear los asientos contables del documento */
     private function createAccountingEntry($document_id, $ret)
     {
-
         $document = Purchase::find($document_id);
         $documentoInterno = $document->document_type2;
 
@@ -626,7 +625,6 @@ class PurchaseController extends Controller
         $iva = 0;
         $renta = 0;
 
-        //Log::info("retenciones: ".json_encode($ret));
         if ($ret && count($ret) > 0) {
 
             foreach ($ret as $rett) {
@@ -640,12 +638,11 @@ class PurchaseController extends Controller
             }
         }
 
-        if($document->document_type_id != '01' || $document->document_type_id != '376'){
+        if($document->document_type_id != '01' && $document->document_type_id != '376'){
             return;
         }
 
         if ($document && $documentoInterno->accountant > 0) {
-
             try {
                 $idauth = auth()->user()->id;
                 $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
