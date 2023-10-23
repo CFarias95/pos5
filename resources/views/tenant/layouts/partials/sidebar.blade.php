@@ -1097,7 +1097,7 @@
                                 @if(in_array('accounting_audit', $vc_module_levels))
                                 <li class="{{(($firstLevel === 'accounting_audit') )   ? 'nav-active' : ''}}">
                                     <a class="nav-link"
-                                       href="{{ route('tenant.accounting_reconciliation.create') }}">
+                                       href="{{ route('tenant.accounting_audit.create') }}">
                                         Auditoria contabilidad
                                     </a>
                                 </li>

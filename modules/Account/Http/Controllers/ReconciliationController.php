@@ -10,8 +10,13 @@ use App\Http\Controllers\Controller;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
+use App\Models\Tenant\Advance;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\PurchasePayment;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Account\Models\CompanyAccount;
 use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
@@ -118,16 +123,44 @@ class ReconciliationController extends Controller
     // Retorna la informacion aplicando filtros
     public function getRecords($request)
     {
-
         $fecha = $request->date;
         $cta = $request->cta;
+        $include = $request->include;
+        $reference = $request->reference;
 
         $records = AccountingEntries::where('document_id', 'like', 'CF%');
         $records2 = AccountingEntries::where('document_id', 'like', 'PC%');
 
+        if(isset($reference) && $reference != ''){
+
+            $reference = str_replace(' ','',$reference);
+
+            if(str_contains($reference,'A,')){
+                Log::info('Referencia a buscr : '.str_replace('A,','',$reference));
+                $id = Advance::select('id')->where('reference','like','%'. trim(str_replace('A,','',$reference)).'%')->get();
+
+                $idPDocu = DocumentPayment::whereIn('reference',$id)->get()->transform(function($row){return['CF'.$row->id];});
+                $idPPurc = PurchasePayment::whereIn('reference',$id)->get()->transform(function($row){return['PC'.$row->id];});
+
+                $records->whereIn('document_id',$idPDocu);
+                $records2->whereIn('document_id',$idPPurc);
+            }else{
+
+                $idPDocu = DocumentPayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['CF'.$row->id];});
+                $idPPurc = PurchasePayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['PC'.$row->id];});
+                $records->whereIn('document_id',$idPDocu);
+                $records2->whereIn('document_id',$idPPurc);
+            }
+        }
+
         if (isset($fecha)) {
             $records->where('seat_date', $fecha);
             $records2->where('seat_date', $fecha);
+        }
+
+        if(isset($include) && $include != 2){
+            $records->where('revised1',$include);
+            $records2->where('revised1',$include);
         }
 
         if (isset($cta)) {
@@ -135,10 +168,17 @@ class ReconciliationController extends Controller
                 $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                     ->where('accounting_entry_items.account_movement_id', $cta);
             });
-            $records->groupBy('accounting_entries.id');
+            $records->select('accounting_entries.*');
+
+            $records2->join('accounting_entry_items', function ($join) use($cta){
+                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                    ->where('accounting_entry_items.account_movement_id', $cta);
+            });
+            $records2->select('accounting_entries.*');
+
         }
 
-        return $records->union($records2);
+        return $records->union($records2)->orderBy('seat_date', 'desc');
 
     }
     //retorna la lista de valores para filtrar

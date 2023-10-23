@@ -1427,6 +1427,7 @@ class PurchaseController extends Controller
 
             foreach ($request['payments'] as $payment) {
 
+                //Log::info("purchase_payments",$payment);
                 $record_payment = $doc->purchase_payments()->create($payment);
 
                 if (isset($payment['payment_destination_id'])) {

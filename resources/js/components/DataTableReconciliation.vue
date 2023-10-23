@@ -6,7 +6,7 @@
                     <h1>Filtrar Por</h1>
 
                 <div class="row" v-if="applyFilter">
-                    <div class="col-lg-4 col-md-4">
+                    <div class="col-lg-3 col-md-3">
                         <label>
                             Cuenta Contable:
                         </label>
@@ -14,17 +14,32 @@
                             <el-option v-for="option in ctas" :key="option.id" :value="option.id" :label="option.name"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-lg-4 col-md-4">
+                    <div class="col-lg-3 col-md-3">
                         <label>
-                            Fecha:
+                            Visualizar
+                        </label>
+                        <el-select v-model="search.include" placeholder="Select" @change="changeClearInput" clearable>
+                            <el-option value="2" label="Todos"></el-option>
+                            <el-option value="1" label="Solo punteados"></el-option>
+                            <el-option value="0" label="Solo no punteados"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-lg-3 col-md-3">
+                        <label>
+                            Fecha del asiento:
                         </label>
                         <el-date-picker v-model="search.date" type="date" placeholder="Buscar"
                                 value-format="yyyy-MM-dd" @change="getRecords">
                         </el-date-picker>
                     </div>
+                    <div class="col-lg-3 col-md-3">
+                        <label>
+                            Referencia
+                        </label>
+                        <el-input v-model="search.reference" @change="getRecords"></el-input>
+                    </div>
                 </div>
             </div>
-
             <div class="col-md-12">
                 <div class="table-responsive">
                     <table class="table">
@@ -36,9 +51,12 @@
                         </tbody>
                     </table>
                     <div>
-                        <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
-                            :total="pagination.total" :current-page.sync="pagination.current_page"
-                            :page-size="pagination.per_page">
+                        <el-pagination
+                                @current-change="getRecords"
+                                layout="total, prev, pager, next"
+                                :total="pagination.total"
+                                :current-page.sync="pagination.current_page"
+                                :page-size="pagination.per_page">
                         </el-pagination>
                     </div>
                 </div>
@@ -124,6 +142,8 @@ export default {
         getQueryParameters() {
 
             return queryString.stringify({
+                page: this.pagination.current_page,
+                limit: this.limit,
                 ...this.search
             });
         },

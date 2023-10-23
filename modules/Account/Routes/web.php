@@ -49,6 +49,13 @@ if($hostname) {
                 Route::get('reconciliate/{id}', 'ReconciliationController@reconciliate');
             });
 
+            Route::prefix('accounting_audit')->group(function () {
+                Route::get('/', 'AuditController@index')->name('tenant.accounting_audit.create');
+                Route::get('records', 'AuditController@records');
+                Route::get('columns', 'AuditController@columns');
+                Route::get('audit/{id}', 'AuditController@audit');
+            });
+
 
         });
     });

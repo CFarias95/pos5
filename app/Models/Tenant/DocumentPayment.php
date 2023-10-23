@@ -29,7 +29,7 @@ class DocumentPayment extends ModelTenant
         'fee_id',
         'postdated',
     ];
-
+    
     protected $casts = [
         'date_of_payment' => 'date',
         'payment_received' => 'bool',

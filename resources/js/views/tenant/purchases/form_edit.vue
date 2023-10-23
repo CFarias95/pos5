@@ -1055,8 +1055,9 @@ export default {
                     }
                     if(dato.fee.length > 0){
                         this.form.fee = dato.fee
+                    }else{
+                        //this.changePaymentMethodType(0);
                     }
-                    //this.changePaymentMethodType(0);
 
                     console.log("FORM ITEMS: ", this.form.items)
                     this.changeCurrencyType()

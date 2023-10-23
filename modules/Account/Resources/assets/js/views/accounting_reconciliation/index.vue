@@ -1,7 +1,7 @@
 <template>
     <div class="card">
         <div class="card-header bg-info">
-            <h3 class="my-0">Lista de asientos contables para puntear</h3>
+            <h3 class="my-0">Lista de asientos contables PUNTEO</h3>
         </div>
         <div class="card-body">
             <div class="table-responsive">
