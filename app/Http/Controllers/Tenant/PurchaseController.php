@@ -640,7 +640,11 @@ class PurchaseController extends Controller
             }
         }
 
-        if ($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0) {
+        if($document->document_type_id != '01' || $document->document_type_id != '376'){
+            return;
+        }
+
+        if ($document && $documentoInterno->accountant > 0) {
 
             try {
                 $idauth = auth()->user()->id;
@@ -706,23 +710,18 @@ class PurchaseController extends Controller
 
                 if($importCTA != ''){
 
-                    /*
-                    $detalle = new AccountingEntryItems();
-                    $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = $importCTA;
-                    $detalle->seat_line = 1;
-                    $detalle->haber = 0;
-                    $detalle->debe = $document->total;
-                    $detalle->save();
-                    */
-
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
                     $detalle2->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $detalle2->seat_line = 1;
                     $detalle2->haber = $document->total;
                     $detalle2->debe = 0;
-                    $detalle2->save();
+
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                     $arrayEntrys = [];
                     $n = 1;
@@ -807,7 +806,11 @@ class PurchaseController extends Controller
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
-                            $detalle->save();
+                            if($detalle->save() == false){
+                                $cabeceraC->delete();
+                                break;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
                         }
                     }
 
@@ -819,7 +822,11 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            return;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
 
                     if ($renta > 0 && $configuration->cta_income_tax) {
@@ -830,7 +837,11 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            return;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
 
 
@@ -842,7 +853,11 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
                     $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
-                    $detalle->save();
+                    if($detalle->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                     $arrayEntrys = [];
                     $n = 1;
@@ -1050,7 +1065,11 @@ class PurchaseController extends Controller
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
-                            $detalle->save();
+                            if($detalle->save() == false){
+                                $cabeceraC->delete();
+                                break;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
                         }
                     }
 
@@ -1062,7 +1081,11 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            return;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
 
                     if ($renta > 0 && $configuration->cta_income_tax) {
@@ -1073,7 +1096,11 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            return;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
 
                 }
@@ -1091,7 +1118,6 @@ class PurchaseController extends Controller
     /* Crear los asientos contables de los pagos */
     private function createAccountingEntryPayment($document_id)
     {
-
         $document = Purchase::find($document_id);
         $entry = (AccountingEntries::get())->last();
         $documentoInterno = $document->document_type2;
@@ -1161,7 +1187,11 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
-                    $detalle->save();
+                    if($detalle->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
@@ -1169,9 +1199,12 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    $detalle2->save();
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
                 } catch (Exception $ex) {
-
                     Log::error('Error al intentar generar el asiento contable del pago de compra');
                     Log::error($ex->getMessage());
                 }

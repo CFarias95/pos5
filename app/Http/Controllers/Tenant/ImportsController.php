@@ -486,17 +486,23 @@ class ImportsController extends Controller
             $detalle->seat_line = 1;
             $detalle->debe = $valor;
             $detalle->haber = 0;
-            $detalle->save();
+
+            if($detalle->save() == false){
+                $cabeceraC->delete();
+                return;
+            }
 
             $detalle2 = new AccountingEntryItems();
-
             $detalle2->accounting_entrie_id = $cabeceraC->id;
             $detalle2->account_movement_id = (isset($document->cuenta_contable))?$document->cuenta_contable:$configuration->cta_transit_imports;
             $detalle2->seat_line = 2;
             $detalle2->debe = 0;
             $detalle2->haber = $valor;
-            $detalle2->save();
 
+            if($detalle2->save() == false){
+                $cabeceraC->delete();
+                return;
+            }
 
         }catch(Exception $ex){
 

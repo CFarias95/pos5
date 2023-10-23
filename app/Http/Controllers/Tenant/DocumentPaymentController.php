@@ -342,7 +342,12 @@ class DocumentPaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
                 $detalle->haber = $request->payment;
-                $detalle->save();
+
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
 
                 if($request->payment_method_type_id == '99'){
                     $debe = $request->payment;
@@ -381,7 +386,11 @@ class DocumentPaymentController extends Controller
                             $detalle2->seat_line = $seat;
                             $detalle2->debe = $debeInterno;
                             $detalle2->haber = 0;
-                            $detalle2->save();
+                            if($detalle2->save() == false){
+                                $cabeceraC->delete();
+                                break;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
 
                             $seat += 1;
                         }
@@ -393,7 +402,11 @@ class DocumentPaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->debe = $request->payment;
                     $detalle2->haber = 0;
-                    $detalle2->save();
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
                 }
 
 
