@@ -96,17 +96,17 @@ class AccountingEntriesController extends Controller
         if (!is_null($search)) {
             $query->where('comment', 'like', "%{$search}%");
         }
-        
+
         if (!is_null($typeid) && $typeid>0) {
             $query->where('types_accounting_entrie_id', '=', $typeid);
         }
-        
+
         if (!is_null($accountid) && $accountid>0) {
             $query->whereHas('items', function ($q) use ($accountid) {
                 $q->where('account_movement_id','=',$accountid);
             });
         };
-    
+
         if (!is_null($cost) ) {
             $query->whereHas('items', function ($q) use ($cost) {
                 $q->where('cost', 'like', "%{$cost}%");
@@ -179,7 +179,7 @@ class AccountingEntriesController extends Controller
         return compact('suppliers');
     }
 
-    
+
     public function tables()
     {
         $idauth = auth()->user()->id;
@@ -232,7 +232,7 @@ class AccountingEntriesController extends Controller
 
     public function store(AccountEntriesRequest $request)
     {
-       
+
         DB::connection('tenant')->transaction(function () use ($request) {
 
             $data = $this->mergeData($request);
@@ -279,7 +279,7 @@ class AccountingEntriesController extends Controller
 
         file_put_contents($temp, $this->getStorage($account->filename, 'account_entry'));
 
- 
+
         return response()->file($temp, $this->generalPdfResponseFileHeaders($account->filename));
     }
 
@@ -493,9 +493,9 @@ class AccountingEntriesController extends Controller
 
         $base_template = Establishment::find(1)->template_pdf;
         //$base_template = Establishment::find($document->establishment_id)->template_pdf;
-        
+
         $html = $template->pdf($base_template, "account_entry", $company, $document, $format_pdf);
-        
+
         if ($format_pdf === 'ticket' or $format_pdf === 'ticket_80') {
 
             $width = 78;
@@ -678,7 +678,7 @@ class AccountingEntriesController extends Controller
         $stylesheet = file_get_contents($path_css);
 
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
-  
+
         if ($format_pdf != 'ticket') {
             if (config('tenant.pdf_template_footer')) {
 
@@ -692,12 +692,11 @@ class AccountingEntriesController extends Controller
 
                 $pdf->setAutoBottomMargin = 'stretch';
                 $pdf->setAutoTopMargin = 'stretch';
-               
+
 
                 $pdf->SetHTMLFooter($html_footer_term_condition . $html_footer . $html_footer_legend);
             }
         }
-
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
         $this->uploadFile($filename, $pdf->output('', 'S'), 'account_entry');
@@ -706,5 +705,21 @@ class AccountingEntriesController extends Controller
     public function uploadFile($filename, $file_content, $file_type)
     {
         $this->uploadStorage($filename, $file_content, $file_type);
+    }
+
+    public function download($externalId,$type){
+
+        $account = AccountingEntries::where('external_id', $externalId)->first();
+
+        if (!$account) throw new Exception("El código {$externalId} es inválido, no se encontro el asiento contable relacionado");
+
+        $this->reloadPDF($account, $type, $account->filename);
+        $temp = tempnam(sys_get_temp_dir(), 'account_entry');
+
+        file_put_contents($temp, $this->getStorage($account->filename, 'account_entry'));
+
+
+        return response()->download($temp, $account->filename.'.pdf');
+
     }
 }
