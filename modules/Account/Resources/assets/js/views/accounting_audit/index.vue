@@ -26,7 +26,7 @@
                         <td>{{ row.ctaHaber }}</td>
                         <td>{{ row.comment }}</td>
                         <td>
-                            <button v-if="row.audited == 0 " type="button" class="btn waves-effect waves-light btn-xs btn-primary"
+                            <button v-if="row.audited == 0 && row.reconciliated == 1" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
                                 @click.prevent="clickAudit(row.id)">Auditar</button>
                         </td>
                     </tr>

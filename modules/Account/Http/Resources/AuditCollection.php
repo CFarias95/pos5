@@ -48,6 +48,7 @@ class AuditCollection extends ResourceCollection
             $data['ctaDebe'] = $ctaDebe;
             $data['ctaHaber'] = $ctaHaber;
             $data['audited'] = $row->revised2;
+            $data['reconciliated'] = $row->revised1;
             //$data['row'] = $row;
             return $data;
         });
