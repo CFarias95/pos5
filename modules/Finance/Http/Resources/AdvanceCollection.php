@@ -26,6 +26,15 @@ class AdvanceCollection extends ResourceCollection
             $usadoD = DocumentPayment::whereIn('payment_method_type_id',[14,15])->where('reference',$row->id)->sum('payment');
             $usadoP = PurchasePayment::whereIn('payment_method_type_id',[14,15])->where('reference',$row->id)->sum('payment');
 
+            $purchases = PurchasePayment::select('purchase_payments.id','purchase_payments.payment','purchases.series','purchases.number')->whereIn('purchase_payments.payment_method_type_id',[14,15])->where('reference',$row->id)->join('purchases', function($join){
+                $join->on('purchases.id','purchase_payments.purchase_id');
+            });
+            $documents = DocumentPayment::select('document_payments.id','document_payments.payment','documents.series','documents.number')->whereIn('document_payments.payment_method_type_id',[14,15])->where('reference',$row->id)->join('documents', function($join){
+                $join->on('documents.id','document_payments.document_id');
+            });
+
+            $docs = $purchases ->union($documents)->get();
+
             return [
                 'id' => $row->id,
                 'method' => ($method && $method->count() > 0 ) ? $method->description:'Sin metodo de pago',
@@ -34,10 +43,11 @@ class AdvanceCollection extends ResourceCollection
                 'is_supplier' => (bool) $row->is_supplier,
                 'in_use' => $row->in_use,
                 'used' => $usadoD+$usadoP,
-                'free' => $row->valor-$usadoD-$usadoP,
+                'free' => round($row->valor-$usadoD-$usadoP,2),
                 'observation' => ($row->observation) ? $row->observation : '',
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                'documents' => $docs,
             ];
         });
     }

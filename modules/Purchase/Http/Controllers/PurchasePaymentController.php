@@ -5,6 +5,7 @@ namespace Modules\Purchase\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Advance;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use Modules\Purchase\Http\Resources\PurchasePaymentCollection;
@@ -211,12 +212,25 @@ class PurchasePaymentController extends Controller
 
             $this->createAccountingEntryPayment($data->purchase_id, $data);
         }
+        $this->verifyPayment($request);
+
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito'
         ];
     }
 
+    /*VERIFICAR SI ES PAGO CON ANTICIPO Y ACTUALIZAR */
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
+    }
     /* Crear los asientos contables de los pagos */
     private function createAccountingEntryPayment($document_id, $payment)
     {

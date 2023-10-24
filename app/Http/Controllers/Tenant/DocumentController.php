@@ -609,7 +609,20 @@ class DocumentController extends Controller
             $this->createAccountingEntryPayments($document_id);
         }
 
+        $this->verifyPayment($request);
+
         return $res;
+    }
+
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
     }
 
     /* CREARE ACCOUNTING ENTRIES INVOICE*/

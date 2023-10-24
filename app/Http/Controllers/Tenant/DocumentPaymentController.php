@@ -12,6 +12,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Exports\DocumentPaymentExport;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Advance;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Finance\Traits\FinanceTrait;
@@ -265,6 +266,8 @@ class DocumentPaymentController extends Controller
             $this->createAccountingEntry($request->document_id, $data);
         }
 
+        $this->verifyPayment($request);
+
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
@@ -272,6 +275,17 @@ class DocumentPaymentController extends Controller
         ];
     }
 
+    /*VERIFICAR SI ES PAGO CON ANTICIPO Y ACTUALIZAR */
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
+    }
     /* Crear los asientos contables del documento */
     private function createAccountingEntry($document_id, $request){
 
