@@ -3,6 +3,7 @@
 namespace Modules\Account\Http\Resources;
 
 use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
@@ -15,7 +16,10 @@ class ReconciliationCollection extends ResourceCollection
 
         return $this->collection->transform(function(AccountingEntries $row, $key) {
 
-            $pago = $row->document_id;
+            $account_movement = AccountMovement::find($row->account_movement_id);
+            $account_entry = AccountingEntries::find($row->accounting_entrie_id);
+
+            $pago = $account_entry->document_id;
 
             if(str_contains($pago,"CF")){
                 $pagoC = DocumentPayment::find(preg_replace("/[a-zA-Z]/", "", $pago));
@@ -30,24 +34,23 @@ class ReconciliationCollection extends ResourceCollection
                 $referenceP = $advance->reference;
             }
 
-            foreach ($row->items as $value) {
-                if($value->haber > 0){
-                    $ctaHaber = $value->account_movement->account_group_id.$value->account_movement->code." - ".$value->account_movement->description;
-                }
-                if($value->debe > 0){
-                    $ctaDebe = $value->account_movement->account_group_id.$value->account_movement->code." - ".$value->account_movement->description;
-                }
+            if($row->haber > 0){
+                $ctaHaber = $account_movement->account_group_id.$account_movement->code." - ".$account_movement->description;
+            }
+            if($row->debe > 0){
+                $ctaDebe = $account_movement->account_group_id.$account_movement->code." - ".$account_movement->description;
             }
 
-            $data['comment'] = $row->comment;
+
+            $data['comment'] = $account_entry->comment;
             $data['reference'] = (isset($referenceP))?$referenceP:(is_null($pagoC)?'':$pagoC->reference);
-            $data['date'] = $row->seat_date;
-            $data['value'] = $row->total_debe;
+            $data['date'] = $account_entry->seat_date;
+            $data['value'] = round($row->debe + $row->haber,2);
             $data['id'] = $row->id;
 
-            $data['ctaDebe'] = $ctaDebe;
-            $data['ctaHaber'] = $ctaHaber;
-            $data['reconciliated'] = $row->revised1;
+            $data['ctaDebe'] = (isset($ctaDebe))?$ctaDebe:'';
+            $data['ctaHaber'] = (isset($ctaHaber))?$ctaHaber:'';
+            $data['reconciliated'] = $row->reconciliation;
             //$data['row'] = $row;
             return $data;
         });

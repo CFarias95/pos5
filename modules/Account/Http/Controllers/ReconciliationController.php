@@ -116,7 +116,7 @@ class ReconciliationController extends Controller
 
         $records = $this->getRecords($request);
 
-        //return $records;
+        //return $records->get();
         return new ReconciliationCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -130,6 +130,7 @@ class ReconciliationController extends Controller
 
         $records = AccountingEntries::where('document_id', 'like', 'CF%');
         $records2 = AccountingEntries::where('document_id', 'like', 'PC%');
+        $records3 = AccountingEntries::where('document_id', 'not like', 'PC%')->where('document_id', 'not like', 'CF%');
 
         if(isset($reference) && $reference != ''){
 
@@ -156,31 +157,46 @@ class ReconciliationController extends Controller
         if (isset($fecha)) {
             $records->where('seat_date', $fecha);
             $records2->where('seat_date', $fecha);
+            $records3->where('seat_date', $fecha);
         }
 
-        if(isset($include) && $include != 2){
-            $records->where('revised1',$include);
-            $records2->where('revised1',$include);
-        }
+        $records->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.reconciliation','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records->select('accounting_entry_items.*');
 
-        if (isset($cta)) {
-            $records->join('accounting_entry_items', function ($join) use($cta){
-                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                    ->where('accounting_entry_items.account_movement_id', $cta);
-            });
-            $records->select('accounting_entries.*');
+        $records2->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.reconciliation','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records2->select('accounting_entry_items.*');
 
-            $records2->join('accounting_entry_items', function ($join) use($cta){
-                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                    ->where('accounting_entry_items.account_movement_id', $cta);
-            });
-            $records2->select('accounting_entries.*');
+        $records3->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.reconciliation','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records3->select('accounting_entry_items.*');
 
-        }
-
-        return $records->union($records2)->orderBy('seat_date', 'desc');
-
+        $data = $records->union($records2);
+        return $data->orderBy('id','desc');
     }
+
     //retorna la lista de valores para filtrar
     public function columns()
     {
@@ -200,19 +216,19 @@ class ReconciliationController extends Controller
     //funciona para puntear los asientos contables
     public function reconciliate($id)
     {
-        $record = AccountingEntries::find($id);
+        $record = AccountingEntryItems::find($id);
         if ($record) {
-            $record->revised1 = true;
-            $record->user_revised1 = Auth()->user()->id;
+            $record->reconciliation = true;
+            $record->user_id_reconciliation = Auth()->user()->id;
             $record->save();
             return [
                 'success' => true,
-                'message' => "Asiento punteado correctamente"
+                'message' => "Linea del asiento punteada correctamente"
             ];
         } else {
             return [
                 'success' => false,
-                'message' => "No se pudo puntear el asiento contable"
+                'message' => "No se pudo puntear la linea del asiento contable"
             ];
         }
     }

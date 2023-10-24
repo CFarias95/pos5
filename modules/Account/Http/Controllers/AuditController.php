@@ -114,7 +114,6 @@ class AuditController extends Controller
     //recupera todos los datos de accounting entrys items
     public function records(Request $request)
     {
-
         $records = $this->getRecords($request);
         return new AuditCollection($records->paginate(config('tenant.items_per_page')));
     }

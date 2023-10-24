@@ -10,7 +10,7 @@
                         <label>
                             Cuenta Contable:
                         </label>
-                        <el-select v-model="search.cta" placeholder="Select" @change="changeClearInput" clearable>
+                        <el-select v-model="search.cta" placeholder="Select" @change="changeClearInput" clearable filterable>
                             <el-option v-for="option in ctas" :key="option.id" :value="option.id"
                                 :label="option.name"></el-option>
                         </el-select>
