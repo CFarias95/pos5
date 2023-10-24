@@ -400,13 +400,13 @@ class PurchaseController extends Controller
         $alteraStock = (bool)($docIntern && $docIntern[0]->stock) ? $docIntern[0]->stock : 0;
         $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
 
-        $validar = Purchase::where('supplier_id',$data['supplier_id'])->where('sequential_number',$data['sequential_number'])->get();
-            if($validar && $validar->count() > 0){
-                return [
-                    'success' => false,
-                    'message' => 'La factura '.$data['sequential_number'].' ya se encuentra registrada con ese proveedor',
-                ];
-            }
+        $validar = Purchase::where('supplier_id', $data['supplier_id'])->where('sequential_number', $data['sequential_number'])->get();
+        if ($validar && $validar->count() > 0) {
+            return [
+                'success' => false,
+                'message' => 'La factura ' . $data['sequential_number'] . ' ya se encuentra registrada con ese proveedor',
+            ];
+        }
 
         try {
             $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
@@ -481,7 +481,7 @@ class PurchaseController extends Controller
 
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => floatval($row['unit_price']),'purchase_has_igv' => true]);
+                            ->update(['purchase_unit_price' => floatval($row['unit_price']), 'purchase_has_igv' => true]);
                         // actualizacion de precios
                         $item = $row['item'];
                         if (isset($item['item_unit_types'])) {
@@ -606,12 +606,11 @@ class PurchaseController extends Controller
     {
         foreach ($fee as $row) {
 
-            if(key_exists('currency_type_id',$row) == false){
+            if (key_exists('currency_type_id', $row) == false) {
                 $row['currency_type_id'] = $purchase->currency_type_id;
             }
             $purchase->fee()->create($row);
             $purchase->date_of_due = $row['date'];
-
         }
     }
 
@@ -638,7 +637,7 @@ class PurchaseController extends Controller
             }
         }
 
-        if($document->document_type_id != '01' && $document->document_type_id != '376'){
+        if ($document->document_type_id != '01' && $document->document_type_id != '376') {
             return;
         }
 
@@ -705,7 +704,7 @@ class PurchaseController extends Controller
                 }
 
 
-                if($importCTA != ''){
+                if ($importCTA != '') {
 
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
@@ -714,7 +713,7 @@ class PurchaseController extends Controller
                     $detalle2->haber = $document->total;
                     $detalle2->debe = 0;
 
-                    if($detalle2->save() == false){
+                    if ($detalle2->save() == false) {
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
@@ -791,7 +790,6 @@ class PurchaseController extends Controller
                                 }
                             }
                         }
-
                     }
 
                     foreach ($arrayEntrys as $key => $value) {
@@ -803,7 +801,7 @@ class PurchaseController extends Controller
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
-                            if($detalle->save() == false){
+                            if ($detalle->save() == false) {
                                 $cabeceraC->delete();
                                 break;
                                 //abort(500,'No se pudo generar el asiento contable del documento');
@@ -819,7 +817,7 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        if($detalle->save() == false){
+                        if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
                             //abort(500,'No se pudo generar el asiento contable del documento');
@@ -834,15 +832,13 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        if($detalle->save() == false){
+                        if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
                             //abort(500,'No se pudo generar el asiento contable del documento');
                         }
                     }
-
-
-                }else{
+                } else {
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -850,7 +846,7 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
                     $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
-                    if($detalle->save() == false){
+                    if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
@@ -1062,7 +1058,7 @@ class PurchaseController extends Controller
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
-                            if($detalle->save() == false){
+                            if ($detalle->save() == false) {
                                 $cabeceraC->delete();
                                 break;
                                 //abort(500,'No se pudo generar el asiento contable del documento');
@@ -1078,7 +1074,7 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        if($detalle->save() == false){
+                        if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
                             //abort(500,'No se pudo generar el asiento contable del documento');
@@ -1093,15 +1089,13 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        if($detalle->save() == false){
+                        if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
                             //abort(500,'No se pudo generar el asiento contable del documento');
                         }
                     }
-
                 }
-
             } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
@@ -1184,7 +1178,7 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
-                    if($detalle->save() == false){
+                    if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
@@ -1196,7 +1190,7 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    if($detalle2->save() == false){
+                    if ($detalle2->save() == false) {
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
@@ -1336,179 +1330,187 @@ class PurchaseController extends Controller
 
     public function update(PurchaseRequest $request)
     {
+        try {
+            $docIntern = PurchaseDocumentTypes2::where('idType', $request->document_type_intern)->get();
+            $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
+            $purchase = DB::connection('tenant')->transaction(function () use ($request, $signo) {
 
-        $docIntern = PurchaseDocumentTypes2::where('idType', $request->document_type_intern)->get();
+                $doc = Purchase::firstOrNew(['id' => $request['id']]);
+                $doc->fill($request->all());
+                $doc->supplier = PersonInput::set($request['supplier_id']);
+                $doc->group_id = ($request->document_type_id === '01') ? '01' : '02';
+                $doc->user_id = auth()->id();
+                $doc->save();
 
-        $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
+                if (count($request['ret']) > 0) {
 
-        $purchase = DB::connection('tenant')->transaction(function () use ($request, $signo) {
+                    $retenciones = RetentionsEC::where('idDocumento', $doc->id)->first();
+                    $IdRetencionHistorico = ($retenciones && $retenciones->count() > 0)?$retenciones->idRetencion:null;
+                    if($retenciones && $retenciones->count() > 0 ){
+                        $retenciones->delete();
+                    }
+                    /*
+                    foreach ($retenciones as $ret) {
+                        $ret->delete();
+                    }
+                    */
+                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
+                    $tipoSerie = null;
+                    $tiposerieText = '';
+                    if ($serie->count() > 0) {
+                        $tipoSerie = Series::find($serie[0]->series_id);
+                        $tiposerieText = $tipoSerie->number;
+                    } else {
+                        $tipoSerie = Series::where('document_type_id', '20')->get();
+                        $tiposerieText = $tipoSerie[0]->number;
+                    }
 
-            $doc = Purchase::firstOrNew(['id' => $request['id']]);
-            $doc->fill($request->all());
-            $doc->supplier = PersonInput::set($request['supplier_id']);
-            $doc->group_id = ($request->document_type_id === '01') ? '01' : '02';
-            $doc->user_id = auth()->id();
-            $doc->save();
+                    $establecimiento = Establishment::find($doc->establishment_id);
+                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
 
-            if (count($request['ret']) > 0) {
+                    $ret = new RetentionsEC();
+                    $ret->idRetencion = ($IdRetencionHistorico)?$IdRetencionHistorico:'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
+                    $ret->idDocumento = $doc->id;
+                    $ret->fechaFizcal = $doc->date_of_issue->format('m/Y');
+                    $ret->idProveedor = $doc->supplier_id;
+                    $ret->establecimiento = $establecimiento->code;
+                    $ret->ptoEmision = $tiposerieText;
+                    $ret->secuencial = $doc->sequential_number;
+                    $ret->codSustento = $doc->document_type_id;
+                    $ret->codDocSustento = $doc->codSustento;
+                    $ret->numAuthSustento = $doc->auth_number;
+                    $ret->status_id = '01';
+                    $ret->save();
 
-                $retenciones = RetentionsEC::where('idDocumento', $doc->id)->delete();
-                /*
-                foreach ($retenciones as $ret) {
-                    $ret->delete();
+                    foreach ($request['ret'] as $retDet) {
+                        //Log::info(json_encode($retDet));
+                        $detRet = new RetentionsDetailEC();
+                        $detRet->idRetencion = $ret->idRetencion;
+                        $detRet->codRetencion = $retDet['code'];
+                        $detRet->baseRet = $retDet['base'];
+                        $detRet->porcentajeRet = $retDet['porcentajeRet'];
+                        $detRet->valorRet = $retDet['valor'];
+                        $detRet->save();
+                    }
                 }
-                */
-                $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
-                $tipoSerie = null;
-                $tiposerieText = '';
-                if ($serie->count() > 0) {
-                    $tipoSerie = Series::find($serie[0]->series_id);
-                    $tiposerieText = $tipoSerie->number;
-                } else {
-                    $tipoSerie = Series::where('document_type_id', '20')->get();
-                    $tiposerieText = $tipoSerie[0]->number;
+
+                foreach ($doc->items as $it) {
+
+                    $p_i = PurchaseItem::findOrFail($it->id);
+                    $p_i->delete();
                 }
 
-                $establecimiento = Establishment::find($doc->establishment_id);
-                $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
+                foreach ($request['items'] as $row) {
+                    $p_item = new PurchaseItem();
+                    $row['quantity'] = $row['quantity'] * $signo;
+                    $p_item->fill($row);
+                    $p_item->purchase_id = $doc->id;
+                    $p_item->has_igv = true;
+                    $p_item->save();
 
-                $ret = new RetentionsEC();
-                $ret->idRetencion = 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
-                $ret->idDocumento = $doc->id;
-                $ret->fechaFizcal = $doc->date_of_issue->format('m/Y');
-                $ret->idProveedor = $doc->supplier_id;
-                $ret->establecimiento = $establecimiento->code;
-                $ret->ptoEmision = $tiposerieText;
-                $ret->secuencial = $doc->sequential_number;
-                $ret->codSustento = $doc->document_type_id;
-                $ret->codDocSustento = $doc->codSustento;
-                $ret->numAuthSustento = $doc->auth_number;
-                $ret->status_id = '01';
-                $ret->save();
+                    if (array_key_exists('lots', $row)) {
 
-                foreach ($request['ret'] as $retDet) {
-                    //Log::info(json_encode($retDet));
-                    $detRet = new RetentionsDetailEC();
-                    $detRet->idRetencion = $ret->idRetencion;
-                    $detRet->codRetencion = $retDet['code'];
-                    $detRet->baseRet = $retDet['base'];
-                    $detRet->porcentajeRet = $retDet['porcentajeRet'];
-                    $detRet->valorRet = $retDet['valor'];
-                    $detRet->save();
+                        foreach ($row['lots'] as $lot) {
+
+                            $p_item->lots()->create([
+                                'date' => $lot['date'],
+                                'series' => $lot['series'],
+                                'item_id' => $row['item_id'],
+                                'warehouse_id' => $row['warehouse_id'],
+                                'has_sale' => false
+                            ]);
+                        }
+                    }
+
+                    if (array_key_exists('item', $row)) {
+                        if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
+
+                            /*
+                                // factor de lista de precios
+                                $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
+
+                                ItemLotsGroup::create([
+                                    'code' => $row['lot_code'],
+                                    'quantity' => $row['quantity'] * $presentation_quantity,
+                                    // 'quantity' => $row['quantity'],
+                                    'date_of_due' => $row['date_of_due'],
+                                    'item_id' => $row['item_id']
+                                ]);
+                                */
+
+                            $this->processUpdateItemLotsGroup($row, $p_item);
+                        }
+                    }
                 }
-            }
 
-            foreach ($doc->items as $it) {
+                $this->deleteAllPayments($doc->purchase_payments);
 
-                $p_i = PurchaseItem::findOrFail($it->id);
-                $p_i->delete();
-            }
+                $asientos = AccountingEntries::where('document_id', 'C' . $request['id'])->get();
 
-            foreach ($request['items'] as $row) {
-                $p_item = new PurchaseItem();
-                $row['quantity'] = $row['quantity'] * $signo;
-                $p_item->fill($row);
-                $p_item->purchase_id = $doc->id;
-                $p_item->has_igv = true;
-                $p_item->save();
+                foreach ($asientos as $ass) {
+                    $ass->delete();
+                }
 
-                if (array_key_exists('lots', $row)) {
+                foreach ($request['payments'] as $payment) {
 
-                    foreach ($row['lots'] as $lot) {
+                    //Log::info("purchase_payments",$payment);
+                    $record_payment = $doc->purchase_payments()->create($payment);
 
-                        $p_item->lots()->create([
-                            'date' => $lot['date'],
-                            'series' => $lot['series'],
-                            'item_id' => $row['item_id'],
-                            'warehouse_id' => $row['warehouse_id'],
-                            'has_sale' => false
+                    if (isset($payment['payment_destination_id'])) {
+                        $this->createGlobalPayment($record_payment, $payment);
+                    }
+
+                    if (isset($payment['payment_filename'])) {
+                        $record_payment->payment_file()->create([
+                            'filename' => $payment['payment_filename']
                         ]);
                     }
-                }
 
-                if (array_key_exists('item', $row)) {
-                    if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
+                    if ($payment['payment_method_type_id'] == '99') {
 
-                        /*
-                            // factor de lista de precios
-                            $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
-
-                            ItemLotsGroup::create([
-                                'code' => $row['lot_code'],
-                                'quantity' => $row['quantity'] * $presentation_quantity,
-                                // 'quantity' => $row['quantity'],
-                                'date_of_due' => $row['date_of_due'],
-                                'item_id' => $row['item_id']
-                            ]);
-                            */
-
-                        $this->processUpdateItemLotsGroup($row, $p_item);
+                        $reference = $payment['reference'];
+                        $monto = floatval($payment['payment']);
+                        $retention = Retention::find($reference);
+                        $valor = $retention->total_used;
+                        $montoUsado = $valor + $monto;
+                        $retention->total_used = $montoUsado;
+                        $retention->in_use = true;
+                        $retention->save();
                     }
-                }
-            }
 
-            $this->deleteAllPayments($doc->purchase_payments);
 
-            $asientos = AccountingEntries::where('document_id', 'C' . $request['id'])->get();
-
-            foreach ($asientos as $ass) {
-                $ass->delete();
-            }
-
-            foreach ($request['payments'] as $payment) {
-
-                //Log::info("purchase_payments",$payment);
-                $record_payment = $doc->purchase_payments()->create($payment);
-
-                if (isset($payment['payment_destination_id'])) {
-                    $this->createGlobalPayment($record_payment, $payment);
+                    //$this->createAccountingEntryPayment($doc->id,$payment['payment']);
                 }
 
-                if (isset($payment['payment_filename'])) {
-                    $record_payment->payment_file()->create([
-                        'filename' => $payment['payment_filename']
-                    ]);
+                $doc->fee()->delete();
+                $this->savePurchaseFee($doc, $request['fee']);
+
+
+                if (!$doc->filename) {
+                    $this->setFilename($doc);
+                }
+                $this->createPdf($doc, "a4", $doc->filename);
+
+                if ((Company::active())->countable > 0) {
+                    $this->createAccountingEntry($doc->id, $request['ret']);
+                    $this->createAccountingEntryPayment($doc->id);
                 }
 
-                if ($payment['payment_method_type_id'] == '99') {
-
-                    $reference = $payment['reference'];
-                    $monto = floatval($payment['payment']);
-                    $retention = Retention::find($reference);
-                    $valor = $retention->total_used;
-                    $montoUsado = $valor + $monto;
-                    $retention->total_used = $montoUsado;
-                    $retention->in_use = true;
-                    $retention->save();
-                }
-
-
-                //$this->createAccountingEntryPayment($doc->id,$payment['payment']);
-            }
-
-            $doc->fee()->delete();
-            $this->savePurchaseFee($doc, $request['fee']);
-
-
-            if (!$doc->filename) {
-                $this->setFilename($doc);
-            }
-            $this->createPdf($doc, "a4", $doc->filename);
-
-            if ((Company::active())->countable > 0) {
-                $this->createAccountingEntry($doc->id, $request['ret']);
-                $this->createAccountingEntryPayment($doc->id);
-            }
-
-            return $doc;
-        });
-
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $purchase->id,
-            ],
-        ];
+                return $doc;
+            });
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $purchase->id,
+                ],
+            ];
+        } catch (Exception $ex) {
+            Log::info($ex->getMessage());
+            return [
+                'success' => false,
+                'message' => $ex->getMessage()
+            ];
+        }
     }
 
 
@@ -2023,11 +2025,11 @@ class PurchaseController extends Controller
             $formaPagoDefecto = PaymentMethodType::find($supplier->default_payment);
             $company = Company::active();
 
-            $validar = Purchase::where('supplier_id',$supplier->id)->where('sequential_number',$model['sequential_number'])->get();
-            if($validar && $validar->count() > 0){
+            $validar = Purchase::where('supplier_id', $supplier->id)->where('sequential_number', $model['sequential_number'])->get();
+            if ($validar && $validar->count() > 0) {
                 return [
                     'success' => false,
-                    'message' => 'La factura '.$model['sequential_number'].' de proveedor '. $model['supplier_ruc'].' ya se encuentra registrada ',
+                    'message' => 'La factura ' . $model['sequential_number'] . ' de proveedor ' . $model['supplier_ruc'] . ' ya se encuentra registrada ',
                 ];
             }
 
@@ -2078,7 +2080,6 @@ class PurchaseController extends Controller
                     ]);
 
                     return $doc;
-
                 } catch (Exception $ex) {
                     Log::error($ex->getMessage());
                     return false;
