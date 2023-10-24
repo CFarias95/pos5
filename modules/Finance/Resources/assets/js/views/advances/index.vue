@@ -42,7 +42,7 @@
                                     <el-table-column width="100" property="payment" label="Valor" />
                                     <el-table-column width="100" property="id" label="ID Pago" />
                                 </el-table>
-                                <el-button class="btn waves-effect waves-light btn-xs btn-warnning m-1__2" slot="reference" icon="el-icon-circle-plus"></el-button>
+                                <el-button slot="reference" icon="fa fa-list fa-2"></el-button>
                             </el-popover>
                         </td>
                         <td class="text-center">
