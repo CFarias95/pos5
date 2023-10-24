@@ -997,8 +997,8 @@
                                         <tr v-for="(row, index) in form.supplies" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <!--                                        <td>{{ row.item_id }}</td>-->
-                                            <!-- <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td> -->
-                                            <td>{{ row.description }}</td>
+                                            <td>{{ (row.individual_item)?row.individual_item.description:row.description }}</td>
+                                            <!-- <td>{{ row.description }}</td> -->
                                             <td>
                                                 <el-input-number v-model="row.percentage_decimal"
                                                     @change="calcularCantidad()"></el-input-number>
