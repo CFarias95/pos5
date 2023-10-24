@@ -163,14 +163,6 @@
                     ];
                 }),
                 'web_platform_id' => $this->web_platform_id,
-
-                // 'warehouses' => collect($this->warehouses)->transform(function($row) {
-                //     return [
-                //         'warehouse_description' => $row->warehouse->description,
-                //         'stock' => $row->stock,
-                //     ];
-                // })
-                // 'warehouse_prices' => $this->warehousePrices,
                 'item_warehouse_prices' => $this->warehousePrices->transform(function ($row) {
                     return [
                         'id' => $row->id,
@@ -183,7 +175,6 @@
                 'sanitary' => $this->sanitary,
                 'cod_digemid' => $this->cod_digemid,
                 'supplies' => $itemSupply,
-
                 'purchase_has_isc' => $this->purchase_has_isc,
                 'purchase_system_isc_type_id' => $this->purchase_system_isc_type_id,
                 'purchase_percentage_isc' => $this->purchase_percentage_isc,
@@ -201,7 +192,6 @@
                 'sale_cost_cta' => $this->sale_cost_cta,
                 'purchase_cta' => $this->purchase_cta,
                 'item_rate' => $this->item_rates,
-
                 'total_producir' => $this->total_producir,
                 'lugar_produccion' => $this->lugar_produccion,
 

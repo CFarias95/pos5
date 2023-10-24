@@ -32,10 +32,14 @@
             'quantity',
             'modifiable',
             'percentage_decimal',
+            'cost_per_unit',
+            'cost_total',
         ];
 
         protected $casts = [
             'quantity' => 'float',
+            'cost_per_unit' => 'float',
+            'cost_total' => 'float',
         ];
 
         /**
