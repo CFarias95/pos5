@@ -14,6 +14,7 @@ use App\Models\Tenant\Advance;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
+use App\Models\Tenant\Retention;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -145,12 +146,28 @@ class ReconciliationController extends Controller
 
                 $records->whereIn('document_id',$idPDocu);
                 $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
+
+            }
+            elseif(str_contains($reference,'R,')){
+                Log::info('Retencial a buscar : '.str_replace('R,','',$reference));
+                $id = Retention::select('id')->where('ubl_version','like','%'. trim(str_replace('R,','',$reference)).'%')->get();
+
+                $idPDocu = DocumentPayment::whereIn('reference',$id)->get()->transform(function($row){return['CF'.$row->id];});
+                $idPPurc = PurchasePayment::whereIn('reference',$id)->get()->transform(function($row){return['PC'.$row->id];});
+
+                $records->whereIn('document_id',$idPDocu);
+                $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
+
             }else{
 
                 $idPDocu = DocumentPayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['CF'.$row->id];});
                 $idPPurc = PurchasePayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['PC'.$row->id];});
+
                 $records->whereIn('document_id',$idPDocu);
                 $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
             }
         }
 

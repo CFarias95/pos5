@@ -28,7 +28,7 @@
                         <label>
                             Fecha del asiento:
                         </label>
-                        <el-date-picker v-model="search.date" type="date" placeholder="Buscar"
+                        <el-date-picker v-model="search.date" type="date" placeholder="Buscar" clearable
                                 value-format="yyyy-MM-dd" @change="getRecords">
                         </el-date-picker>
                     </div>
@@ -36,7 +36,10 @@
                         <label>
                             Referencia
                         </label>
-                        <el-input v-model="search.reference" @change="getRecords"></el-input>
+                        <el-tooltip class="box-item" effect="dark" content="Si la referencia pertenece a un acticipo o retencion coloar (A o R segun corresponda) seguido de una ',' y la referencia" placement="top-end">
+                            <i class="fa fa-question-circle" aria-hidden="true"></i>
+                        </el-tooltip>
+                        <el-input v-model="search.reference" @change="getRecords" clearable></el-input>
                     </div>
                 </div>
             </div>

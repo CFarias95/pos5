@@ -7,12 +7,12 @@ use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
+use App\Models\Tenant\Retention;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class ReconciliationCollection extends ResourceCollection
 {
     public function toArray($request) {
-
 
         return $this->collection->transform(function(AccountingEntries $row, $key) {
 
@@ -31,7 +31,13 @@ class ReconciliationCollection extends ResourceCollection
             if($pagoC && ($pagoC->payment_method_type_id == '14' || $pagoC->payment_method_type_id == '15')){
                 $reference = $pagoC->reference;
                 $advance = Advance::find($reference);
-                $referenceP = $advance->reference;
+                $referenceP = 'A,'.$advance->reference;
+            }
+
+            if($pagoC && $pagoC->payment_method_type_id == '99'){
+                $reference = $pagoC->reference;
+                $retention = Retention::find($reference);
+                $referenceP = ($retention)?'R,'.$retention->ubl_version:null;
             }
 
             if($row->haber > 0){

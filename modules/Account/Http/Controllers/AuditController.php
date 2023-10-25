@@ -14,6 +14,7 @@ use App\Models\Tenant\Advance;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
+use App\Models\Tenant\Retention;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -128,6 +129,7 @@ class AuditController extends Controller
 
         $records = AccountingEntries::where('document_id', 'like', 'CF%');
         $records2 = AccountingEntries::where('document_id', 'like', 'PC%');
+        $records3 = AccountingEntries::where('document_id', 'not like', 'PC%')->where('document_id', 'not like', 'CF%');
 
         if(isset($reference) && $reference != ''){
 
@@ -142,42 +144,72 @@ class AuditController extends Controller
 
                 $records->whereIn('document_id',$idPDocu);
                 $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
+
+            }
+            elseif(str_contains($reference,'R,')){
+                Log::info('Retencial a buscar : '.str_replace('R,','',$reference));
+                $id = Retention::select('id')->where('ubl_version','like','%'. trim(str_replace('R,','',$reference)).'%')->get();
+
+                $idPDocu = DocumentPayment::whereIn('reference',$id)->get()->transform(function($row){return['CF'.$row->id];});
+                $idPPurc = PurchasePayment::whereIn('reference',$id)->get()->transform(function($row){return['PC'.$row->id];});
+
+                $records->whereIn('document_id',$idPDocu);
+                $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
+
             }else{
 
                 $idPDocu = DocumentPayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['CF'.$row->id];});
                 $idPPurc = PurchasePayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['PC'.$row->id];});
+
                 $records->whereIn('document_id',$idPDocu);
                 $records2->whereIn('document_id',$idPPurc);
+                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
             }
         }
 
         if (isset($fecha)) {
             $records->where('seat_date', $fecha);
             $records2->where('seat_date', $fecha);
+            $records3->where('seat_date', $fecha);
         }
 
-        if(isset($include) && $include != 2){
-            $records->where('revised2',$include);
-            $records2->where('revised2',$include);
-        }
+        $records->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.audited','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records->select('accounting_entry_items.*');
 
-        if (isset($cta)) {
-            $records->join('accounting_entry_items', function ($join) use($cta){
-                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                    ->where('accounting_entry_items.account_movement_id', $cta);
-            });
-            $records->select('accounting_entries.*');
+        $records2->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.audited','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records2->select('accounting_entry_items.*');
 
-            $records2->join('accounting_entry_items', function ($join) use($cta){
-                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                    ->where('accounting_entry_items.account_movement_id', $cta);
-            });
-            $records2->select('accounting_entries.*');
+        $records3->join('accounting_entry_items', function ($join) use($include,$cta){
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+            if(isset($include) && $include != 2){
+                $join->where('accounting_entry_items.audited','=',$include);
+            }
+            if(isset($cta)){
+                $join->where('accounting_entry_items.account_movement_id','=', $cta);
+            }
+        });
+        $records3->select('accounting_entry_items.*');
 
-        }
-
-        return $records->union($records2)->orderBy('seat_date', 'desc');
-
+        $data = $records->union($records2);
+        return $data->orderBy('id','desc');
     }
     //retorna la lista de valores para filtrar
     public function columns()
@@ -198,19 +230,19 @@ class AuditController extends Controller
     //funciona para puntear los asientos contables
     public function audit($id)
     {
-        $record = AccountingEntries::find($id);
+        $record = AccountingEntryItems::find($id);
         if ($record) {
-            $record->revised2 = true;
-            $record->user_revised2 = Auth()->user()->id;
+            $record->audited = true;
+            $record->user_id_audited = Auth()->user()->id;
             $record->save();
             return [
                 'success' => true,
-                'message' => "Asiento auditado correctamente"
+                'message' => "Linea del asiento auditada correctamente"
             ];
         } else {
             return [
                 'success' => false,
-                'message' => "No se pudo auditar el asiento contable"
+                'message' => "No se pudo auditar la linea del asiento contable"
             ];
         }
     }
