@@ -106,7 +106,7 @@ class PurchasePaymentController extends Controller
 
                 $pago = PurchasePayment::where('fee_id', $cuotas->id)->get();
                 $pagado = $pago->sum('payment');
-                Log::info("fee pago:" . json_encode($pago));
+                //Log::info("fee pago:" . json_encode($pago));
                 $valorCuota = $cuotas->amount - $pagado;
                 $cuotaid = $cuotas->id;
 
@@ -234,9 +234,7 @@ class PurchasePaymentController extends Controller
     /* Crear los asientos contables de los pagos */
     private function createAccountingEntryPayment($document_id, $payment)
     {
-
         $document = Purchase::find($document_id);
-        log::info('Documento type : ' . $document->document_type_id);
         if ($document && $document->document_type_id == '01') {
 
             try {
@@ -307,13 +305,15 @@ class PurchasePaymentController extends Controller
                 }
 
                 if($payment->payment_method_type_id == '99'){
+
                     $haber = $payment->payment;
                     $reference = $payment->reference;
                     $retention = Retention::find($reference);
                     $detRet = $retention->optional;
                     $seat = 2;
+
                     foreach ($detRet as $ret) {
-                        $valor = floatval($ret->valorRetenido);
+                        $valor = floatval($ret['valorRetenido']);
                         $haberInterno = 0;
                         if($valor >=  $haber){
                             $haberInterno = $haber;
@@ -323,6 +323,7 @@ class PurchasePaymentController extends Controller
                             $haberInterno = $valor;
                             $haber -=  $valor;
                         }
+
                         $detalle2 = new AccountingEntryItems();
                         $detalle2->accounting_entrie_id = $cabeceraC->id;
                         $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;

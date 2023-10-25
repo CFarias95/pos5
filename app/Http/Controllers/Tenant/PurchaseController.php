@@ -407,7 +407,6 @@ class PurchaseController extends Controller
                 'message' => 'La factura ' . $data['sequential_number'] . ' ya se encuentra registrada con ese proveedor',
             ];
         }
-
         try {
             $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                 $numero = Purchase::where('establishment_id', $data['establishment_id'])->where('series', $data['series'])->count();
@@ -619,7 +618,6 @@ class PurchaseController extends Controller
     {
         $document = Purchase::find($document_id);
         $documentoInterno = $document->document_type2;
-
         $entry = (AccountingEntries::get())->last();
         $iva = 0;
         $renta = 0;
@@ -692,17 +690,14 @@ class PurchaseController extends Controller
 
                 $cabeceraC->save();
                 $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
-                $cabeceraC->save();
+                //$cabeceraC->save();
 
                 $customer = Person::find($cabeceraC->person_id);
-
                 $importP = Imports::find($document->import_id);
                 $importCTA = '';
-
                 if ($importP && $importP->count() > 0) {
                     $importCTA = $importP->cuenta_contable;
                 }
-
 
                 if ($importCTA != '') {
 
@@ -721,7 +716,7 @@ class PurchaseController extends Controller
 
                     $arrayEntrys = [];
                     $n = 1;
-
+                    
                     foreach ($document->items as $key => $value) {
 
                         $importCTAItem = $value->import;
@@ -733,19 +728,17 @@ class PurchaseController extends Controller
 
                         $item = Item::find($value->item_id);
                         $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
-
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if ($documentoInterno->sign > 0) {
 
                             if ($importCTA) {
 
-                                if (array_key_exists($importCTA, $arrayEntrys)) {
+                                if (array_key_exists($importCTA, $arrayEntrys) == true) {
 
-                                    $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$importCTA]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($importCTA, $arrayEntrys)) {
+                                if (array_key_exists($importCTA, $arrayEntrys) == false) {
                                     $n += 1;
-
                                     $arrayEntrys[$importCTA] = [
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
@@ -789,10 +782,12 @@ class PurchaseController extends Controller
                                     ];
                                 }
                             }
+
                         }
                     }
 
                     foreach ($arrayEntrys as $key => $value) {
+
                         if ($value['debe'] > 0 || $value['haber'] > 0) {
 
                             $detalle = new AccountingEntryItems();
@@ -842,7 +837,7 @@ class PurchaseController extends Controller
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = ($importCTA != '') ? $importCTA : (($customer->account) ? $customer->account : $configuration->cta_suppliers);
+                    $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
                     $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
@@ -1096,11 +1091,12 @@ class PurchaseController extends Controller
                         }
                     }
                 }
+
             } catch (Exception $ex) {
 
-                Log::error('Error al intentar generar el asiento contable');
-                Log::error($ex->getMessage());
+                Log::error('Error al intentar generar el asiento contable: '.$ex->getMessage());
             }
+
         } else {
             Log::info('tipo de documento no genera asiento contable de momento');
         }
