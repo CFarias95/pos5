@@ -134,7 +134,7 @@
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
                                         </td>
-                                        <td v-if="row.payment_method_type_id == '13'">
+                                        <td v-else-if="row.payment_method_type_id == '13'">
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-date-picker v-model="row.postdated" type="date" :clearable="false"
                                                     format="dd/MM/yyyy" value-format="yyyy-MM-dd" placeholder="Postfechado"></el-date-picker>

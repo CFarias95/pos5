@@ -170,7 +170,7 @@
                         <div class="col-lg-2">
                             <div :class="{ 'has-danger': errors.import_id }" class="form-group">
                                 <label class="control-label">Importacion</label>
-                                <el-select v-model="form.import_id">
+                                <el-select v-model="form.import_id" clearable filterable>
                                     <el-option v-for="option in imports" :key="option.id" :label="option.numeroImportacion"
                                         :value="option.id"></el-option>
                                 </el-select>
@@ -181,7 +181,7 @@
                         <div class="col-lg-3">
                             <div :class="{ 'has-danger': errors.tipo_doc_id }" class="form-group">
                                 <label class="control-label">Tipo documento</label>
-                                <el-select v-model="form.tipo_doc_id">
+                                <el-select v-model="form.tipo_doc_id" clearable filterable >
                                     <el-option v-for="option in type_docs" :key="option.id" :label="option.description"
                                         :value="option.id"></el-option>
                                 </el-select>

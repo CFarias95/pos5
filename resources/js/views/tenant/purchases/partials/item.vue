@@ -168,7 +168,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                                <el-select v-model="form.import" filterable>
+                                <el-select v-model="form.import" clearable filterable>
                                     <el-option v-for="option in imports" :key="option.id" :label="option.numeroImportacion"
                                         :value="option.id"></el-option>
                                 </el-select>
