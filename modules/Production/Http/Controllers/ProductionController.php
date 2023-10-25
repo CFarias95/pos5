@@ -1193,6 +1193,24 @@ class ProductionController extends Controller
         return $pdf->stream($filename . '.pdf');
     }
 
+    public function plantillaMezcla($recordId){
+
+        $order = Production::find($recordId);
+        $company = Company::first();
+
+        $pdf = PDF::loadView('production::production.plantilla_mezcla',compact("order","company"));
+        return $pdf->stream('Plantilla Mezcla.pdf');
+    }
+
+    public function plantillaNoConforme($recordId){
+
+        $order = Production::find($recordId);
+        $company = Company::first();
+
+        $pdf = PDF::loadView('production::production.plantilla_no_conforme',compact("order","company"));
+        return $pdf->stream('Plantilla No Conforme.pdf');
+    }
+
     public function pdf_Atributos($recordId)
     {
         $fechas =  Production::find($recordId);
