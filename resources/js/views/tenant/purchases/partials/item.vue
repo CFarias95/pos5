@@ -86,7 +86,7 @@
                                 <!-- JOINSOFTWARE -->
                                 <!-- Afectación Igv -> Tipo de Impuesto -->
                                 <label class="control-label">Tipo retención IVA</label>
-                                <el-select v-model="form.retention_type_id_iva" filterable
+                                <el-select v-model="form.retention_type_id_iva" clearable filterable
                                     @change="changeRetentionTypeIva($event)">
                                     <el-option v-for="option in retention_types_iva" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
@@ -103,7 +103,7 @@
                                 <!-- JOINSOFTWARE -->
                                 <!-- Afectación Igv -> Tipo de Impuesto -->
                                 <label class="control-label">Tipo retención RENTA</label>
-                                <el-select v-model="form.retention_type_id_income" filterable
+                                <el-select v-model="form.retention_type_id_income" clearable filterable
                                     @change="changeRetentionTypeIncome($event)">
                                     <el-option v-for="option in retention_types_income" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
@@ -152,7 +152,7 @@
                                         <i class="fa fa-info-circle"></i>
                                     </el-tooltip>
                                 </label>
-                                <el-select v-model="form.warehouse_id" filterable>
+                                <el-select v-model="form.warehouse_id" clearable filterable>
                                     <el-option v-for="option in warehouses" :key="option.id" :label="option.description"
                                         :value="option.id"></el-option>
                                 </el-select>
