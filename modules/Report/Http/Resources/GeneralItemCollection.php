@@ -2,9 +2,11 @@
 
 namespace Modules\Report\Http\Resources;
 
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class GeneralItemCollection extends ResourceCollection
 {
@@ -40,7 +42,7 @@ class GeneralItemCollection extends ResourceCollection
 
             $utility_item = $row_total - $total_item_purchase;
             // $utility_item = $row->total - $total_item_purchase;
-            
+
             $item = $row->getModelItem();
             $model = $item->model;
             $platform = $item->getWebPlatformModel();
@@ -104,14 +106,21 @@ class GeneralItemCollection extends ResourceCollection
         if($resource === null){
             $resource = self::getDocument($record);
         }
-        $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
+
+        //$purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
+        //Log::info($record);
+        //Log::info($record->item);
+
+        $purchase_unit_price = (Item::find($record->item_id))->getPurchaseUnitPrice() * $record->quantity;
+
+        //Log::info($purchase_unit_price);
+
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
             foreach ($record->relation_item->sets as $item_set) {
                 $purchase_unit_price += (self::getIndividualPurchaseUnitPrice($item_set,$resource,$purchase_item) * $item_set->quantity) * $record->quantity;
             }
-        } /*elseif() {
-        }*/
+        }
 
         return $purchase_unit_price;
     }
@@ -139,7 +148,7 @@ class GeneralItemCollection extends ResourceCollection
                 ->latest('id')
                 ->first();
 
-            $purchase_unit_price = $purchase_item->unit_price;
+            $purchase_unit_price = $purchase_item->getPurchaseUnitPrice();
             $purchase = Purchase::find($purchase_item->purchase_id);
             $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
             // Si la venta es en soles, y la compra del producto es en dolares, se hace la transformcaion
@@ -158,8 +167,8 @@ class GeneralItemCollection extends ResourceCollection
         // en conculusión esta condición nunca será 0, para los productos que no tienen una compra luego de registrarse
         // $purchase_unit_price = ($purchase_item) ? $purchase_item->unit_price : $record->unit_price;
 
-        if ($purchase_unit_price == 0 && $record->relation_item->purchase_unit_price > 0) {
-            $purchase_unit_price = $record->relation_item->purchase_unit_price;
+        if ($purchase_unit_price == 0 && $record->relation_item->getPurchaseUnitPrice() > 0) {
+            $purchase_unit_price = $record->relation_item->getPurchaseUnitPrice();
         }
 
 
