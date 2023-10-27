@@ -14,6 +14,8 @@ if ($hostname) {
         Route::get('search/tables', 'Tenant\SearchController@tables');
         Route::post('search', 'Tenant\SearchController@store');
 
+        Route::get('invoices/due','Tenant\Api\ToCollectController@getInvoicesDue');
+
         Route::get('downloads/{model}/{type}/{external_id}/{format?}', 'Tenant\DownloadController@downloadExternal')->name('tenant.download.external_id');
         Route::get('print/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toPrint');
         Route::get('printticket/{model}/{external_id}/{format?}', 'Tenant\DownloadController@toTicket');
