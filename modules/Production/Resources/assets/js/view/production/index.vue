@@ -188,13 +188,12 @@
                                         <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
                                             @click.prevent="clickEtiqueta(row.id)">Etiquetas
                                         </button>
-                                        <button class="btn waves-effect waves-light btn-xs btn-primary" type="button"
+                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
                                             @click.prevent="clickMezcla(row.id)">P.Mezcla
                                         </button>
-                                        <button class="btn waves-effect waves-light btn-xs btn-secondary" type="button"
+                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-secondary" type="button"
                                             @click.prevent="clickNoConforme(row.id)">P. producto no conforme
                                         </button>
-
                                     </td>
                                 </tr>
                             </tbody>

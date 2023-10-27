@@ -1195,10 +1195,10 @@ class ProductionController extends Controller
 
     public function plantillaMezcla($recordId){
 
-        $order = Production::find($recordId);
+        $records = Production::find($recordId);
         $company = Company::first();
 
-        $pdf = PDF::loadView('production::production.plantilla_mezcla',compact("order","company"));
+        $pdf = PDF::loadView('production::production.plantilla_mezcla',compact("records","company"));
         return $pdf->stream('Plantilla Mezcla.pdf');
     }
 
@@ -1207,7 +1207,7 @@ class ProductionController extends Controller
         $order = Production::find($recordId);
         $company = Company::first();
 
-        $pdf = PDF::loadView('production::production.plantilla_no_conforme',compact("order","company"));
+        $pdf = PDF::loadView('production::production.plantilla_no_conforme',compact("records","company"));
         return $pdf->stream('Plantilla No Conforme.pdf');
     }
 

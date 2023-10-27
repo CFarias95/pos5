@@ -114,8 +114,8 @@
                     Route::get('/pdf', 'ProductionController@pdf');
                     Route::get('/pdf_Atributos/{recordId}', 'ProductionController@pdf_Atributos');
                     Route::get('/etiqueta/{recordId}', 'ProductionController@etiqueta');
-                    Route::get('/plantilla/mezcla/{id}','ProductionControlles@plantillaMezcla');
-                    Route::get('/plantilla/noConforme/{id}','ProductionControlles@plantillaNoConforme');
+                    Route::get('/plantilla/mezcla/{id}','ProductionController@plantillaMezcla');
+                    Route::get('/plantilla/noConforme/{id}','ProductionController@plantillaNoConforme');
                     Route::post('/import', 'ProductionController@import');
                 });
                 Route::prefix('packaging')->group(function () {

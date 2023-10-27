@@ -4,37 +4,6 @@ $logo = "";
 if(isset($company->logo)){
     $logo = "storage/uploads/logos/{$company->logo}";
 }
-$atributos = $records->attributes;
-$bpm = null;
-$psn = null;
-$em = null;
-$array1 = [];
-$array2 = [];
-foreach ($atributos as $key => $value) {
-    if($value->attribute_type_id == 'BPM')
-    {
-        $bpm = $value->value;
-    }
-    if($value->attribute_type_id == 'PSN')
-    {
-        $psn = $value->value;
-    }
-    if($value->attribute_type_id == 'EM')
-    {
-        $em = $value->value;
-    }
-    if(starts_with($value->attribute_type_id, 'ET'))
-    {
-        $array1[] = $value;
-    }
-    if(starts_with($value->attribute_type_id, 'CM'))
-    {
-
-        $value->resultdo = str_before($value->value, ' || ');
-        $value->metodo = str_after($value->value, ' || ');
-        $array2[] = $value;
-    }
-}
 
 @endphp
 <!DOCTYPE html>
@@ -49,162 +18,385 @@ foreach ($atributos as $key => $value) {
             html {
                 font-family: sans-serif;
                 font-size: 12px;
+                align-content: center;
             }
-
-            table {
-                width: 100%;
-                border-spacing: 0;
+            table, th, td {
                 border: 1px solid black;
-            }
-
-            .celda {
                 text-align: center;
-                padding: 5px;
-                border: 0.1px solid black;
-            }
-
-            th {
-                padding: 5px;
-                text-align: center;
-                border-color: #0088cc;
-                border: 0.1px solid black;
-            }
-
-            .title {
-                font-weight: bold;
-                padding: 5px;
-                font-size: 20px !important;
-                text-decoration: underline;
-            }
-
-            p>strong {
-                margin-left: 5px;
-                font-size: 13px;
-            }
-
-            thead {
-                font-weight: bold;
-                background: #0088cc;
-                color: white;
-                text-align: center;
-            }
-            p {
-                text-align:center;
-            }
-            img {
-                text-align:left;
-            }
-            hr {
-                display: block;
-                margin-top: 0.5em;
-                margin-bottom: 0.5em;
-                margin-left: auto;
-                margin-right: auto;
-                border-style: inset;
-                border-width: 1px;
-            }
-            .container {
-                display: flex;
             }
 
         </style>
     </head>
-    <body>
-        <div class="container">
-            <div id="column_1">
-                @if(isset($logo) && $logo != '' )
-                <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 150px" >
-                @endif
-            </div>
-        </div>
-        <div>
-            <h2 align="center" class="title"><strong>Certificado de Calidad</strong></h2>
-        </div>
-        <div style="margin-top:20px; margin-bottom:20px;">
-        <div>
-            <label><strong>Producto:</strong> {{$records->name}}</label>
-            <br>
-            <label><strong>Lote:</strong> {{$fechas->lot_code}}</label>
-            <br>
-            <label><strong>F. Elaboracion:</strong> {{$fechas->date_start}}</label>
-            <br>
-            <label><strong>F. Vencimiento:</strong> {{$fechas->date_end}}</label>
-            <br>
-            <label><strong>BPM:</strong>{{$bpm}}</label>
-            <br>
-        </div>
-        <div>
-            <label><strong>Ingregientes/Insumos: </strong></label>
-            @foreach($records['supplies'] as $ingre)
-                <label>{{$ingre['individual_item']['second_name']}};</label>
-            @endforeach
-        </div>
-        </div>
-        @if(!empty($records))
-            <div class="">
-                <div class=" ">
-                    <label><strong>Características Físico-Químicas:</strong></label>
-                    <br>
-                    <table class="">
-                        <thead>
-                            <tr>
-                                <th class="text-center">Categoria</th>
-                                <th class="text-center">Descripción</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($array1 as $row)
-                                <tr>
-                                    <td class="celda">{{$row->description}}</td>
-                                    <td class="celda">{{$row->value}}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                    <br>
-                    <br>
-                    <label><strong>Características Microbiológicas:</strong></label>
-                    <br>
-                    <table class="">
-                        <thead>
-                            <tr>
-                                <th class="text-center">Ensayo</th>
-                                <th class="text-center">Resultado</th>
-                                <th class="text-center">Método</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($array2 as $row)
-                                <tr>
-                                    <td class="celda">{{$row->description}}</td>
-                                    <td class="celda">{{$row->resultdo}}</td>
-                                    <td class="celda">{{$row->metodo}}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table>
-                </div>
-            </div>
-            <br>
-            <label><strong>Empaque:</strong>{{$em}}</label>
-            <br>
-            <label><strong>Peso Neto:</strong>{{$psn}}</label>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <br>
-            <div>
-                <p alignment="center">________________________</p>
-                <p alignment="center">Ing. Leonardo Cajiao</p>
-                <p alignment="center">DEPARTAMENTO CALIDAD</p>
-                <p alignment="center">{{$company->name}}</p>
-            </div>
-        @else
-            <div class="callout callout-info">
-                <p>No se encontraron registros.</p>
-            </div>
-        @endif
+    <body style="align-content: center;">
+
+        <table width="100%">
+            <tr>
+                <th rowspan="3">
+                    @if(isset($logo) && $logo != '' )
+                    <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 100px" >
+                    @endif
+                </th>
+                <th>
+                    SISTEMA DE GESTIÓN DE SEGURIDAD ALIMENTARIA
+                </th>
+                <th colspan="2">
+                    CCA-BPM-005
+                </th>
+            </tr>
+            <tr>
+                <td rowspan="2">
+                   CHECK LIST ARRANQUE Y TÉRMINO DE PROCESO MEZCLADO
+                </td>
+                <td colspan="2">
+                    Actualización: MARZO 2023
+                </td>
+            </tr>
+            <tr>
+                <td colspan="2">
+                    REV:04
+                </td>
+            </tr>
+            <tr>
+                <td colspan="4" style="text-align:right;">
+                    No Orden: {{ $records->production_order}}
+                </td>
+            </tr>
+            <tr>
+                <td  style="text-align:left;">
+                    FECHA:
+                </td>
+                <td  style="text-align:left;">
+                    {{ $records->date_end.'-'.$records->time_end}}
+                </td>
+            </tr>
+            <tr>
+                <td  style="text-align:left;">
+                    PRODUCTO:
+                </td>
+                <td  style="text-align:left;">
+                    {{ $records->item->name}}
+                </td>
+            </tr>
+            <tr>
+                <td  style="text-align:left;">
+                    SUBLOTE #:
+                </td>
+                <td  style="text-align:left;">
+                    {{ $records->lot_code}}
+                </td>
+            </tr>
+            <tr>
+                <td  colspan="4">
+                    CHECK LIST PARA EL ARRANQUE Y TÉRMINO DEL PROCESO DE MEZCLADO
+                </td>
+            </tr>
+        </table>
+        <table width="100%">
+            <tr>
+                <th rowspan="2">
+                    ÁREA DE TRABAJO
+                </th>
+                <th colspan="2">
+                    Arranque
+                </th>
+                <th colspan="2">
+                    Término
+                </th>
+                <th rowspan="2">
+                    Observaciones
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+            </tr>
+            <tr >
+                <td style="text-align: left">Adana Sanitaria limpia y con dotación completa</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Pisos y Paredes limpios y secos</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Balanza area de pesado verificada?</td>
+                <td></td>
+                <td></td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td style="text-align: left">Patron=           Resultado=</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Balanza area de envasado verificada?</td>
+                <td></td>
+                <td></td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td style="text-align: left">Patron=           Resultado=</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Balanza grama verificada?</td>
+                <td></td>
+                <td></td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td style="text-align: left">Patron=           Resultado=</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Brixometro verificado?</td>
+                <td></td>
+                <td></td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td style="text-align: left">Patron=           Resultado=</td>
+            </tr>
+            <tr>
+                <td style="text-align: left">pHmetro verificado?</td>
+                <td></td>
+                <td></td>
+                <td>N/A</td>
+                <td>N/A</td>
+                <td style="text-align: left">Patron=           Resultado=</td>
+            </tr>
+            <tr>
+                <th rowspan="2">
+                    LIMPIEZA DE EQUIPOS
+                </th>
+                <th colspan="2">
+                    Arranque
+                </th>
+                <th colspan="2">
+                    Término
+                </th>
+                <th rowspan="2">
+                    Observaciones
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    PARTE INTERNA
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Cuchillas del mezclador limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Paredes internas del mezclador limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Cuchillas y plato del cutter limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Malla y superficies del tamizador limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="6">
+                    PARTE EXTERNA
+                </td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Parte acrilica y metálica del cutter limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">La tapa del mezclador limpia y seca</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Cortinas plasticas limpias y secas</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th rowspan="2">
+                    OPERACIÓN Y MOVIMIENTOS
+                </th>
+                <th colspan="2">
+                    Arranque
+                </th>
+                <th colspan="2">
+                    Término
+                </th>
+                <th rowspan="2">
+                    Observaciones
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+            </tr>
+            <tr>
+                <td style="text-align: left">Verificar luz de encendido de equipos</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Verificar funcionamiento de sensores de seguridad de equipos</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <th rowspan="2">
+                    INVENTARIO DE UTENSILIOS DE PLANTA
+                </th>
+                <th colspan="2">
+                    Arranque
+                </th>
+                <th colspan="2">
+                    Término
+                </th>
+                <th rowspan="2">
+                    Observaciones/Cantidad de Utensilios utilizados
+                </th>
+            </tr>
+            <tr>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+                <th>
+                    Cumple
+                </th>
+                <th>
+                    No cumple
+                </th>
+            </tr>
+            <tr>
+                <td style="text-align: left">Cucharetas plásticas y metálicas limpias, secas y en buen estado</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Estilete y cuchillas limpias, secas y en buen estado</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Fundas limpias y en buen estado</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Amarras contabilizadas para cada saco</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td style="text-align: left">Brochas para la limpieza limpias, secas y en buen estado</td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+                <td></td>
+            </tr>
+            <tr>
+                <td colspan="6" style=" height:100px; text-align:top;" >
+                    OBSEERVACIONES:
+                </td>
+            </tr>
+            <tr>
+                <td colspan="3"style="text-align: end; height:50px;">
+                    Firma operador
+                </td>
+                <td colspan="3" style="text-align:justify; text-justify:  height:50px;">
+                    Firma encargado de producción
+                </td>
+            </tr>
+        </table>
+
+
     </body>
 </html>
