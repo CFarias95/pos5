@@ -1086,7 +1086,22 @@
                                         </ul>
                                     </li>
                                 @endif
-
+                                @if(in_array('accounting_reconciliation', $vc_module_levels))
+                                <li class="{{(($firstLevel === 'accounting_reconciliation') )   ? 'nav-active' : ''}}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.accounting_reconciliation.create') }}">
+                                        Punteo contable
+                                    </a>
+                                </li>
+                                @endif
+                                @if(in_array('accounting_audit', $vc_module_levels))
+                                <li class="{{(($firstLevel === 'accounting_audit') )   ? 'nav-active' : ''}}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.accounting_audit.create') }}">
+                                        Auditoria contabilidad
+                                    </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif

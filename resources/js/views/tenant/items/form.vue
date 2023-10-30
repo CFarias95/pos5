@@ -989,6 +989,8 @@
                                             <th>Cantidad</th>
                                             <th>Unidades de medida</th>
                                             <th>Modificable?</th>
+                                            <th>Costo Individual</th>
+                                            <th>Costo Total</th>
                                             <th>Borrar</th>
                                             <!--                                        <th class="text-right">Acciones</th>-->
                                         </tr>
@@ -997,8 +999,8 @@
                                         <tr v-for="(row, index) in form.supplies" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <!--                                        <td>{{ row.item_id }}</td>-->
-                                            <!-- <td>{{ (row.individual_item)?row.individual_item.description:row.individual_item }}</td> -->
-                                            <td>{{ row.description }}</td>
+                                            <td>{{ (row.individual_item)?row.individual_item.description:row.description }}</td>
+                                            <!-- <td>{{ row.description }}</td> -->
                                             <td>
                                                 <el-input-number v-model="row.percentage_decimal"
                                                     @change="calcularCantidad()"></el-input-number>
@@ -1021,6 +1023,14 @@
                                             <td>
                                                 <el-checkbox v-model="row.modifiable"
                                                     :checked="row.modifiable > 0">Si</el-checkbox>
+
+                                            </td>
+                                            <td>
+                                                <el-input-number v-model="row.cost_per_unit" min="0" step="0.01"></el-input-number>
+
+                                            </td>
+                                            <td>
+                                                <el-input-number v-model="row.cost_total" min="0" step="0.01"></el-input-number>
 
                                             </td>
                                             <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"

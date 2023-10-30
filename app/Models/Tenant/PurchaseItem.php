@@ -38,6 +38,7 @@ class PurchaseItem extends ModelTenant
 
     protected $fillable = [
         'purchase_id',
+        'has_igv',
         'item_id',
         'item',
         'quantity',
@@ -78,6 +79,12 @@ class PurchaseItem extends ModelTenant
         'iva_retention',
         'import',
         'concepto',
+    ];
+
+    protected $casts = [
+        'has_igv' => 'bool',
+        'unit_price' => 'float',
+        'unit_value' => 'float',
     ];
 
 

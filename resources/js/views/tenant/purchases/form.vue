@@ -174,7 +174,7 @@
                         <div class="col-lg-2">
                             <div :class="{ 'has-danger': errors.import_id }" class="form-group">
                                 <label class="control-label">Importacion</label>
-                                <el-select v-model="form.import_id">
+                                <el-select v-model="form.import_id" clearable filterable>
                                     <el-option v-for="option in imports" :key="option.id" :label="option.numeroImportacion"
                                         :value="option.id"></el-option>
                                 </el-select>
@@ -185,7 +185,7 @@
                         <div class="col-lg-3">
                             <div :class="{ 'has-danger': errors.tipo_doc_id }" class="form-group">
                                 <label class="control-label">Tipo documento</label>
-                                <el-select v-model="form.tipo_doc_id">
+                                <el-select v-model="form.tipo_doc_id" clearable filterable>
                                     <el-option v-for="option in type_docs" :key="option.id" :label="option.description"
                                         :value="option.id"></el-option>
                                 </el-select>
@@ -1463,7 +1463,7 @@ export default {
                     toal_retenido += (retention_iva + retention_renta)
                     this.haveRetentions = true
                     this.maxLength1 = 15
-                    this.maxLength2 = 45
+                    this.maxLength2 = 49
                     let nuevaRetIVA = true
                     let nuevaRetRENTA= true
 
@@ -1748,7 +1748,7 @@ export default {
             } else {
                 //Credito cuotas
                 _.forEach(this.form.fee, row => {
-                    suma += _.round( row.amount,2)
+                    suma += _.round(row.amount,2)
                 })
                 if (total != _.round(suma, 2)) {
                     //this.$message.error("Los montos deben coincidir del total y la suma de los montos a pagar!")
@@ -1771,12 +1771,7 @@ export default {
             if (!validate_item_series.success) {
                 return this.$message.error(validate_item_series.message);
             }
-            /*
-            let val_digits = await this.validateDigits()
-            if (!val_digits.success) {
-                return this.$message.error(val_digits.message)
-            }
-            */
+
             let validate = await this.validate_payments()
             if (!validate.success) {
                 return this.$message.error(validate.message);

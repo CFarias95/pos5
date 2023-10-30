@@ -2,6 +2,7 @@
 
 namespace Modules\Report\Http\Resources;
 
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use Illuminate\Http\Resources\Json\ResourceCollection;
@@ -40,7 +41,7 @@ class GeneralItemCollection extends ResourceCollection
 
             $utility_item = $row_total - $total_item_purchase;
             // $utility_item = $row->total - $total_item_purchase;
-            
+
             $item = $row->getModelItem();
             $model = $item->model;
             $platform = $item->getWebPlatformModel();
@@ -104,7 +105,8 @@ class GeneralItemCollection extends ResourceCollection
         if($resource === null){
             $resource = self::getDocument($record);
         }
-        $purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
+        //$purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
+        $purchase_unit_price = (Item::find($record->item_id))->getPurchaseUnitPrice() * $record->quantity;
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
             foreach ($record->relation_item->sets as $item_set) {

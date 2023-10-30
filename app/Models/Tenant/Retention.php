@@ -62,6 +62,7 @@ class Retention extends ModelTenant
         'has_xml' =>'bool',
         'has_pdf' => 'bool',
         'has_cdr' => 'bool',
+        'optional' =>'json',
     ];
 
     public function getEstablishmentAttribute($value)

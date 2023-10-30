@@ -5,6 +5,7 @@ namespace Modules\Purchase\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Advance;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use Modules\Purchase\Http\Resources\PurchasePaymentCollection;
@@ -47,15 +48,13 @@ class PurchasePaymentController extends Controller
     public function purchase($purchase_id, $fee_id)
     {
         $purchase = Purchase::find($purchase_id);
-
         $total_paid = collect($purchase->payments)->sum('payment');
         $total = $purchase->total;
         $total_difference = round($total - $total_paid, 2);
 
         if (isset($fee_id) && $fee_id != 'undefined' && $fee_id != null) {
 
-            $cuota = PurchaseFee::find($fee_id)->amount;
-
+            $cuota = (PurchaseFee::find($fee_id))?PurchaseFee::find($fee_id)->amount:0;
             $total_paid = PurchasePayment::where('fee_id', $fee_id)->get()->sum('payment');
             $total_difference = round($cuota - $total_paid, 2);
         }
@@ -107,7 +106,7 @@ class PurchasePaymentController extends Controller
 
                 $pago = PurchasePayment::where('fee_id', $cuotas->id)->get();
                 $pagado = $pago->sum('payment');
-                Log::info("fee pago:" . json_encode($pago));
+                //Log::info("fee pago:" . json_encode($pago));
                 $valorCuota = $cuotas->amount - $pagado;
                 $cuotaid = $cuotas->id;
 
@@ -213,18 +212,29 @@ class PurchasePaymentController extends Controller
 
             $this->createAccountingEntryPayment($data->purchase_id, $data);
         }
+        $this->verifyPayment($request);
+
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito'
         ];
     }
 
+    /*VERIFICAR SI ES PAGO CON ANTICIPO Y ACTUALIZAR */
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
+    }
     /* Crear los asientos contables de los pagos */
     private function createAccountingEntryPayment($document_id, $payment)
     {
-
         $document = Purchase::find($document_id);
-        log::info('Documento type : ' . $document->document_type_id);
         if ($document && $document->document_type_id == '01') {
 
             try {
@@ -288,16 +298,22 @@ class PurchasePaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->haber = 0;
                 $detalle->debe = $payment->payment;
-                $detalle->save();
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
 
                 if($payment->payment_method_type_id == '99'){
+
                     $haber = $payment->payment;
                     $reference = $payment->reference;
                     $retention = Retention::find($reference);
                     $detRet = $retention->optional;
                     $seat = 2;
+
                     foreach ($detRet as $ret) {
-                        $valor = floatval($ret->valorRetenido);
+                        $valor = floatval($ret['valorRetenido']);
                         $haberInterno = 0;
                         if($valor >=  $haber){
                             $haberInterno = $haber;
@@ -307,13 +323,18 @@ class PurchasePaymentController extends Controller
                             $haberInterno = $valor;
                             $haber -=  $valor;
                         }
+
                         $detalle2 = new AccountingEntryItems();
                         $detalle2->accounting_entrie_id = $cabeceraC->id;
                         $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
                         $detalle2->seat_line = $seat;
                         $detalle2->haber = $haberInterno;
                         $detalle2->debe = 0;
-                        $detalle2->save();
+                        if($detalle2->save() == false){
+                            $cabeceraC->delete();
+                            break;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
 
                         $seat += 1;
                     }
@@ -324,7 +345,11 @@ class PurchasePaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    $detalle2->save();
+                    if($detalle->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
                 }
 
 

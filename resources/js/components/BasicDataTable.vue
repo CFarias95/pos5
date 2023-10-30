@@ -8,47 +8,25 @@
                             <div style="width:100px">
                                 Filtrar por:
                             </div>
-                            <el-select
-                                v-model="search.column"
-                                placeholder="Select"
-                                @change="changeClearInput"
-                            >
-                                <el-option
-                                    v-for="(label, key) in columns"
-                                    :key="key"
-                                    :value="key"
-                                    :label="label"
-                                ></el-option>
+                            <el-select v-model="search.column" placeholder="Select" @change="changeClearInput">
+                                <el-option v-for="(label, key) in columns" :key="key" :value="key"
+                                    :label="label"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="col-lg-6 col-md-6 col-sm-12 pb-2">
-                        <template
-                            v-if="
-                                search.column === 'date_of_issue' ||
-                                    search.column === 'date_of_due' ||
-                                    search.column === 'date_of_payment' ||
-                                    search.column === 'delivery_date'
-                            "
-                        >
-                            <el-date-picker
-                                v-model="search.value"
-                                type="date"
-                                style="width: 100%;"
-                                placeholder="Buscar"
-                                value-format="yyyy-MM-dd"
-                                @change="getRecords"
-                            >
+                        <template v-if="search.column === 'date_of_issue' ||
+                            search.column === 'date_of_due' ||
+                            search.column === 'date_of_payment' ||
+                            search.column === 'delivery_date'
+                            ">
+                            <el-date-picker v-model="search.value" type="date" style="width: 100%;" placeholder="Buscar"
+                                value-format="yyyy-MM-dd" @change="getRecords">
                             </el-date-picker>
                         </template>
                         <template v-else>
-                            <el-input
-                                placeholder="Buscar"
-                                v-model="search.value"
-                                style="width: 100%;"
-                                prefix-icon="el-icon-search"
-                                @input="getRecords"
-                            >
+                            <el-input placeholder="Buscar" v-model="search.value" style="width: 100%;"
+                                prefix-icon="el-icon-search" @input="getRecords">
                             </el-input>
                         </template>
                     </div>
@@ -62,21 +40,13 @@
                             <slot name="heading"></slot>
                         </thead>
                         <tbody>
-                            <slot
-                                v-for="(row, index) in records"
-                                :row="row"
-                                :index="customIndex(index)"
-                            ></slot>
+                            <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
                         </tbody>
                     </table>
                     <div>
-                        <el-pagination
-                            @current-change="getRecords"
-                            layout="total, prev, pager, next"
-                            :total="pagination.total"
-                            :current-page.sync="pagination.current_page"
-                            :page-size="pagination.per_page"
-                        >
+                        <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
+                            :total="pagination.total" :current-page.sync="pagination.current_page"
+                            :page-size="pagination.per_page">
                         </el-pagination>
                     </div>
                 </div>
@@ -137,7 +107,7 @@ export default {
                         response.data.meta.per_page
                     );
                 })
-                .catch(error => {})
+                .catch(error => { })
                 .then(() => {
                     this.loading_submit = false;
                 });

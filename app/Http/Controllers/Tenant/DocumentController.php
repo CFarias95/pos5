@@ -609,7 +609,20 @@ class DocumentController extends Controller
             $this->createAccountingEntryPayments($document_id);
         }
 
+        $this->verifyPayment($request);
+
         return $res;
+    }
+
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
     }
 
     /* CREARE ACCOUNTING ENTRIES INVOICE*/
@@ -683,7 +696,12 @@ class DocumentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = $document->total;
                 $detalle->haber = 0;
-                $detalle->save();
+
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
 
                 $arrayEntrys = [];
                 $n = 1;
@@ -855,17 +873,19 @@ class DocumentController extends Controller
                         $detalle->seat_line = $value['seat_line'];
                         $detalle->debe = $value['debe'];
                         $detalle->haber = $value['haber'];
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            break;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
-
                 }
-
-                Log::info('arreglo de items cuentas',$arrayEntrys);
 
             }catch(Exception $ex){
 
                 Log::error('Error al intentar generar el asiento contable');
                 Log::error($ex->getMessage());
+
             }
 
         }else if($document && $document->document_type_id == '07'){
@@ -930,7 +950,11 @@ class DocumentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
                 $detalle->haber = $document->total;
-                $detalle->save();
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
 
                 $arrayEntrys = [];
                 $n = 1;
@@ -1102,13 +1126,18 @@ class DocumentController extends Controller
                         $detalle->seat_line = $value['seat_line'];
                         $detalle->debe = $value['debe'];
                         $detalle->haber = $value['haber'];
-                        $detalle->save();
+                        if($detalle->save() == false){
+                            $cabeceraC->delete();
+                            break;
+                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        }
                     }
                 }
             }catch(Exception $ex){
 
                 Log::error('Error al intentar generar el asiento contable de nota de crédito');
                 Log::error($ex->getMessage());
+                //abort(500,$ex->getMessage());
             }
         }else{
             Log::info('tipo de documento no genera asiento contable de momento');
@@ -1120,8 +1149,6 @@ class DocumentController extends Controller
     private function createAccountingEntryPayments($document_id){
 
         $document = Document::find($document_id);
-
-
         if($document && $document->document_type_id == '01'){
 
             foreach($document->payments as $payment){
@@ -1184,7 +1211,11 @@ class DocumentController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->debe = 0;
                     $detalle->haber = $payment->payment;
-                    $detalle->save();
+                    if($detalle->save() == false){
+                        $cabeceraC->delete();
+                        break;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
@@ -1192,7 +1223,11 @@ class DocumentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->debe = $payment->payment;
                     $detalle2->haber = 0;
-                    $detalle2->save();
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        break;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                 }catch(Exception $ex){
 
@@ -1263,7 +1298,11 @@ class DocumentController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->debe = $payment->payment;
                     $detalle->haber = 0;
-                    $detalle->save();
+                    if($detalle->save() == false){
+                        $cabeceraC->delete();
+                        break;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
@@ -1271,7 +1310,11 @@ class DocumentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->debe = 0;
                     $detalle2->haber = $payment->payment;
-                    $detalle2->save();
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        break;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
 
                 }catch(Exception $ex){
 

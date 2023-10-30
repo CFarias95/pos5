@@ -86,18 +86,18 @@
                                         </td>
                                         <td>
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
-                                                v-if="row.payment_method_type_id_desc && row.payment_method_type_id != '99'">
-                                                <el-select v-model="row.reference" @change="changeAdvance(index, $event)">
+                                                v-if="row.payment_method_type_id == '14' || row.payment_method_type_id == '15'">
+                                                <el-select v-model="row.reference" @change="changeAdvance(index, $event)" placeholder="Referencia Anticipo">
                                                     <el-option v-for="option in advances" :key="option.id"
-                                                        :label="option.id" :value="option.id"></el-option>
+                                                        :label="'AT'+option.id+' - '+option.reference" :value="option.id"></el-option>
                                                 </el-select>
                                                 <small class="form-control-feedback" v-if="row.errors.reference"
                                                     v-text="row.errors.reference[0]"></small>
                                             </div>
 
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
-                                                v-if="row.payment_method_type_id == '99'">
-                                                <el-select v-model="row.reference"
+                                                v-else-if="row.payment_method_type_id == '99'">
+                                                <el-select v-model="row.reference" placeholder="Referencia Retención"
                                                     @change="changeRetention(index, $event)">
                                                     <el-option v-for="option in retentions" :key="option.id"
                                                         :label="option.name" :value="option.id"></el-option>
@@ -134,7 +134,7 @@
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
                                         </td>
-                                        <td v-if="row.payment_method_type_id == '13'">
+                                        <td v-else-if="row.payment_method_type_id == '13'">
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-date-picker v-model="row.postdated" type="date" :clearable="false"
                                                     format="dd/MM/yyyy" value-format="yyyy-MM-dd" placeholder="Postfechado"></el-date-picker>
@@ -375,16 +375,14 @@ export default {
                     type: 'success'
                 })
 
-            } else if (payment_method_type.description.includes('Anticipo')) {
+            } else if (payment_method_type.id == '14' || payment_method_type.id == '15') {
 
                 this.$notify({
                     title: '',
                     message: 'Debes seleccionar un anticipo disponible',
                     type: 'success'
                 })
-                this.records[index].payment_method_type_id_desc = 'Anticipo';
-
-
+                //this.records[index].payment_method_type_id_desc = 'Anticipo';
             }
 
         },

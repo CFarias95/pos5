@@ -20,6 +20,10 @@ class Imports extends ModelTenant
         'isd',
         'comunications',
     ];
+    protected $casts = [
+        'comunications' => 'double',
+        'isd' => 'double',
+    ];
 
     public function getCollectionData()
     {

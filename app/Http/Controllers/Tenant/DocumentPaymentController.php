@@ -12,6 +12,7 @@ use App\Models\Tenant\PaymentMethodType;
 use App\Exports\DocumentPaymentExport;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Advance;
 use Exception, Illuminate\Support\Facades\DB;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Finance\Traits\FinanceTrait;
@@ -265,6 +266,8 @@ class DocumentPaymentController extends Controller
             $this->createAccountingEntry($request->document_id, $data);
         }
 
+        $this->verifyPayment($request);
+
         return [
             'success' => true,
             'message' => ($id) ? 'Pago editado con éxito' : 'Pago registrado con éxito',
@@ -272,6 +275,17 @@ class DocumentPaymentController extends Controller
         ];
     }
 
+    /*VERIFICAR SI ES PAGO CON ANTICIPO Y ACTUALIZAR */
+    public function verifyPayment($request){
+
+        if($request['payment_method_type_id'] == 14 || $request['payment_method_type_id'] == 15){
+            //ANTICIPOS DE CLIENTES O PROVEEDORES
+            $ref = $request['reference'];
+            $acticipo  = Advance::find($ref);
+            $acticipo->in_use = true;
+            $acticipo->save();
+        }
+    }
     /* Crear los asientos contables del documento */
     private function createAccountingEntry($document_id, $request){
 
@@ -342,7 +356,12 @@ class DocumentPaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
                 $detalle->haber = $request->payment;
-                $detalle->save();
+
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
 
                 if($request->payment_method_type_id == '99'){
                     $debe = $request->payment;
@@ -381,7 +400,11 @@ class DocumentPaymentController extends Controller
                             $detalle2->seat_line = $seat;
                             $detalle2->debe = $debeInterno;
                             $detalle2->haber = 0;
-                            $detalle2->save();
+                            if($detalle2->save() == false){
+                                $cabeceraC->delete();
+                                break;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
 
                             $seat += 1;
                         }
@@ -393,7 +416,11 @@ class DocumentPaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->debe = $request->payment;
                     $detalle2->haber = 0;
-                    $detalle2->save();
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
                 }
 
 

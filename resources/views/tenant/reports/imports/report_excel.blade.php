@@ -30,6 +30,7 @@
                                 <th rowspan="2">Porcentaje advaloren</th>
                                 <th rowspan="2">Porcentaje fodinfa</th>
                                 <th rowspan="2">Unidades total</th>
+                                <th rowspan="2">Euros</th>
                                 <th rowspan="1" colspan="2">FOB FACTURA</th>
                                 <th rowspan="2">Gasto hasta FOB</th>
                                 <th rowspan="1" colspan="2">FOB FINAL</th>
@@ -73,6 +74,7 @@
                                 <td class="celda">{{$value->porcentaje }}</td>
                                 <td class="celda">{{$value->porcentajef }}</td>
                                 <td class="celda">{{$value->unidadestoal }}</td>
+                                <td class="celda">{{$value->Eur }}</td>
                                 <td class="celda">{{$value->fob }}</td>
                                 <td class="celda">{{$value->fobtotal }}</td>
                                 <td class="celda">{{$value->gastohastafob }}</td>

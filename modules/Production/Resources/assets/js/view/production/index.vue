@@ -10,20 +10,15 @@
                 </li>
             </ol>
             <div class="right-wrapper pull-right">
-                <template
-                >
-                    <button
-                        class="btn btn-custom btn-sm  mt-2 mr-2"
-                        type="button"
-                        @click.prevent="clickCreate()"
-                    >
+                <template>
+                    <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickCreate()">
                         <i class="fa fa-plus-circle"></i>
                         Nuevo
                     </button>
                 </template>
 
                 <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickImport()"><i
-                    class="fa fa-upload"></i> Importar
+                        class="fa fa-upload"></i> Importar
                 </button>
             </div>
         </div>
@@ -38,131 +33,100 @@
                 <div class="row">
                     <div class="col-md-3">
                         <label class="control-label">Fecha de envio</label>
-                        <el-select v-model="form.period"
-                                   @change="changePeriod">
-                            <el-option key="month"
-                                       label="Por mes"
-                                       value="month"></el-option>
-                            <el-option key="between_months"
-                                       label="Entre meses"
-                                       value="between_months"></el-option>
-                            <el-option key="date"
-                                       label="Por fecha"
-                                       value="date"></el-option>
-                            <el-option key="between_dates"
-                                       label="Entre fechas"
-                                       value="between_dates"></el-option>
+                        <el-select v-model="form.period" @change="changePeriod">
+                            <el-option key="month" label="Por mes" value="month"></el-option>
+                            <el-option key="between_months" label="Entre meses" value="between_months"></el-option>
+                            <el-option key="date" label="Por fecha" value="date"></el-option>
+                            <el-option key="between_dates" label="Entre fechas" value="between_dates"></el-option>
                         </el-select>
                     </div>
                     <template v-if="form.period === 'month' || form.period === 'between_months'">
                         <div class="col-md-3">
                             <label class="control-label">Mes de</label>
-                            <el-date-picker v-model="form.month_start"
-                                            :clearable="false"
-                                            format="MM/yyyy"
-                                            type="month"
-                                            value-format="yyyy-MM"
-                                            @change="changeDisabledMonths"></el-date-picker>
+                            <el-date-picker v-model="form.month_start" :clearable="false" format="MM/yyyy" type="month"
+                                value-format="yyyy-MM" @change="changeDisabledMonths"></el-date-picker>
                         </div>
                     </template>
                     <template v-if="form.period === 'between_months'">
                         <div class="col-md-3">
                             <label class="control-label">Mes al</label>
-                            <el-date-picker v-model="form.month_end"
-                                            :clearable="false"
-                                            :picker-options="pickerOptionsMonths"
-                                            format="MM/yyyy"
-                                            type="month"
-                                            value-format="yyyy-MM"></el-date-picker>
+                            <el-date-picker v-model="form.month_end" :clearable="false"
+                                :picker-options="pickerOptionsMonths" format="MM/yyyy" type="month"
+                                value-format="yyyy-MM"></el-date-picker>
                         </div>
                     </template>
                     <template v-if="form.period === 'date' || form.period === 'between_dates'">
                         <div class="col-md-3">
                             <label class="control-label">Fecha del</label>
-                            <el-date-picker v-model="form.date_start"
-                                            :clearable="false"
-                                            format="dd/MM/yyyy"
-                                            type="date"
-                                            value-format="yyyy-MM-dd"
-                                            @change="changeDisabledDates"></el-date-picker>
+                            <el-date-picker v-model="form.date_start" :clearable="false" format="dd/MM/yyyy" type="date"
+                                value-format="yyyy-MM-dd" @change="changeDisabledDates"></el-date-picker>
                         </div>
                     </template>
                     <template v-if="form.period === 'between_dates'">
                         <div class="col-md-3">
                             <label class="control-label">Fecha al</label>
-                            <el-date-picker v-model="form.date_end"
-                                            :clearable="false"
-                                            :picker-options="pickerOptionsDates"
-                                            format="dd/MM/yyyy"
-                                            type="date"
-                                            value-format="yyyy-MM-dd"></el-date-picker>
+                            <el-date-picker v-model="form.date_end" :clearable="false" :picker-options="pickerOptionsDates"
+                                format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
                     </template>
                     <div class="col-12 mt-4">
-                        <el-button :loading="loading_submit"
-                                   class="submit"
-                                   icon="el-icon-search"
-                                   type="primary"
-                                   @click.prevent="getRecordsByFilter">Buscar
+                        <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
+                            @click.prevent="getRecordsByFilter">Buscar
                         </el-button>
 
 
                         <!--                        <el-button class="submit" type="danger"  icon="el-icon-tickets" @click.prevent="clickDownloadPdf()" >Exportar PDF</el-button>-->
 
-                        <el-button class="submit"
-                                   type="success"
-                                   @click.prevent="clickDownloadExcel()"><i class="fa fa-file-excel"></i> Exportal Excel
-                                                                                                          (Productos
-                                                                                                          fabricados)
+                        <el-button class="submit" type="success" @click.prevent="clickDownloadExcel()"><i
+                                class="fa fa-file-excel"></i> Exportal Excel
+                            (Productos
+                            fabricados)
                         </el-button>
-                        <el-button class="submit"
-                                   type="success"
-                                   @click.prevent="clickDownloadExcel2()"><i class="fa fa-file-excel"></i> Exportal
-                                                                                                           Excel
-                                                                                                           (Productos en
-                                                                                                           proceso)
+                        <el-button class="submit" type="success" @click.prevent="clickDownloadExcel2()"><i
+                                class="fa fa-file-excel"></i> Exportal
+                            Excel
+                            (Productos en
+                            proceso)
                         </el-button>
                     </div>
                     <div class="col-12 p-t-20 table-responsive">
                         <table class="table">
                             <thead>
-                            <tr>
-                                <th>#</th>
-                                <th>Número de Ficha</th>
-                                <th>Cód. Interno</th>
-                                <th>Tipo de proceso</th>
-                                <th>Prod. F. de inicio</th>
-                                <th>Estado</th>
-                                <th>Prod. F. de Fin</th>
-                                <th>Colaborador de producción</th>
-                                <th>Cantidad</th>
-                                <th>Conformes</th>
-                                <th>Defectuosas</th>
-                                <th>Maquinaria</th>
-                                <th>Lote</th>
-                                <th>Color</th>
-                                <th>Producto</th>
-                                <th>Orden de Producción</th>
-                                <th>Mez. F. de inicio</th>
-                                <th>Mez. F. de Fin</th>
-                                <th>Colaborador de mezcla</th>
-                                <th>Comentario</th>
-                                <th>Fecha de registro</th>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Número de Ficha</th>
+                                    <th>Cód. Interno</th>
+                                    <th>Tipo de proceso</th>
+                                    <th>Prod. F. de inicio</th>
+                                    <th>Estado</th>
+                                    <th>Prod. F. de Fin</th>
+                                    <th>Colaborador de producción</th>
+                                    <th>Cantidad</th>
+                                    <th>Conformes</th>
+                                    <th>Defectuosas</th>
+                                    <th>Maquinaria</th>
+                                    <th>Lote</th>
+                                    <th>Color</th>
+                                    <th>Producto</th>
+                                    <th>Orden de Producción</th>
+                                    <th>Mez. F. de inicio</th>
+                                    <th>Mez. F. de Fin</th>
+                                    <th>Colaborador de mezcla</th>
+                                    <th>Comentario</th>
+                                    <th>Fecha de registro</th>
+                                    <th></th>
 
-                                <th></th>
-                                <th>Atributos PDF</th>
-                                <th>Etiquetas</th>
-                            </tr>
+                                </tr>
                             </thead>
                             <tbody>
-                            <tr v-for="(row, index) in records">
-                                <td>{{ index + 1 }}</td>
-                                <td>{{ row.name }}</td>
-                                <td>000{{ row.id }}</td>
-                                <td>{{ row.proccess_type }}</td>
-                                <td>{{ row.date_start }} - {{ row.time_start }}</td>
-                                <td>
-                                    <!--
+                                <tr v-for="(row, index) in records">
+                                    <td>{{ index + 1 }}</td>
+                                    <td>{{ row.name }}</td>
+                                    <td>000{{ row.id }}</td>
+                                    <td>{{ row.proccess_type }}</td>
+                                    <td>{{ row.date_start }} - {{ row.time_start }}</td>
+                                    <td>
+                                        <!--
                                         <el-tooltip v-if="tooltip(row, false)"
                                                 class="item"
                                                 effect="dark"
@@ -188,65 +152,55 @@
                                         </el-tooltip>
                                     </template>
                                     -->
-                                    <el-tooltip class="item"
-                                                effect="dark"
-                                                placement="bottom">
-                                        <span class="badge bg-secondary text-white"
-                                            :class="{'bg-danger': (row.state_type_id === '04'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '02'), 'bg-success': (row.state_type_id === '03')}">
-                                            {{ row.state_type_description }}
-                                        </span>
-                                    </el-tooltip>
-                                </td>
-                                <td>{{ row.date_end }} - {{ row.time_end }}</td>
-                                <td>{{ row.production_collaborator }}</td>
-                                <td>{{ row.quantity }}</td>
-                                <td>{{ row.agreed }}</td>
-                                <td>{{ row.imperfect }}</td>
-                                <td>
-                                    <div v-if="row.machine && row.machine.name">
-                                        {{ row.machine.name }}
-                                    </div>
-                                </td>
-                                <td>{{ row.lot_code }}</td>
-                                <td>{{ row.color }}</td>
-                                <td>{{ row.item_name }}</td>
-                                <td>{{ row.production_order }}</td>
-                                <td>{{ row.mix_date_start }} - {{ row.mix_time_start }}</td>
-                                <td>{{ row.mix_date_end }} - {{ row.mix_time_end }}</td>
-                                <td>{{ row.mix_collaborator }}</td>
-                                <td>{{ row.comment }}</td>
-                                <td>{{ row.created_at }}</td>
-                                <td v-if="row.state_type_id !== '04'">
-                                    <button
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        type="button"
-                                        @click.prevent="clickCreate(row.id)">Editar
-                                    </button>
-
-                                </td>
-                                <td>
-                                    <button
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        type="button"
-                                        @click.prevent="clickPDF(row.id)">PDF
-                                    </button>
-                                </td>
-                                <td>
-                                    <button
-                                        class="btn waves-effect waves-light btn-xs btn-info"
-                                        type="button"
-                                        @click.prevent="clickEtiqueta(row.id)">Etiqueta
-                                    </button>
-                                </td>
-                            </tr>
+                                        <el-tooltip class="item" effect="dark" placement="bottom">
+                                            <span class="badge bg-secondary text-white"
+                                                :class="{ 'bg-danger': (row.state_type_id === '04'), 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '02'), 'bg-success': (row.state_type_id === '03') }">
+                                                {{ row.state_type_description }}
+                                            </span>
+                                        </el-tooltip>
+                                    </td>
+                                    <td>{{ row.date_end }} - {{ row.time_end }}</td>
+                                    <td>{{ row.production_collaborator }}</td>
+                                    <td>{{ row.quantity }}</td>
+                                    <td>{{ row.agreed }}</td>
+                                    <td>{{ row.imperfect }}</td>
+                                    <td>
+                                        <div v-if="row.machine && row.machine.name">
+                                            {{ row.machine.name }}
+                                        </div>
+                                    </td>
+                                    <td>{{ row.lot_code }}</td>
+                                    <td>{{ row.color }}</td>
+                                    <td>{{ row.item_name }}</td>
+                                    <td>{{ row.production_order }}</td>
+                                    <td>{{ row.mix_date_start }} - {{ row.mix_time_start }}</td>
+                                    <td>{{ row.mix_date_end }} - {{ row.mix_time_end }}</td>
+                                    <td>{{ row.mix_collaborator }}</td>
+                                    <td>{{ row.comment }}</td>
+                                    <td>{{ row.created_at }}</td>
+                                    <td>
+                                        <button v-if="row.state_type_id !== '04'" class="btn waves-effect waves-light btn-xs btn-info" type="button"
+                                            @click.prevent="clickCreate(row.id)">Editar
+                                        </button>
+                                        <button class="btn waves-effect waves-light btn-xs btn-success" type="button"
+                                            @click.prevent="clickPDF(row.id)">Certificado Calidad
+                                        </button>
+                                        <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
+                                            @click.prevent="clickEtiqueta(row.id)">Etiquetas
+                                        </button>
+                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
+                                            @click.prevent="clickMezcla(row.id)">P.Mezcla
+                                        </button>
+                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-secondary" type="button"
+                                            @click.prevent="clickNoConforme(row.id)">P. producto no conforme
+                                        </button>
+                                    </td>
+                                </tr>
                             </tbody>
                         </table>
                         <div>
-                            <el-pagination
-                                @current-change="getRecords"
-                                layout="total, prev, pager, next"
-                                :total="pagination.total"
-                                :current-page.sync="pagination.current_page"
+                            <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
+                                :total="pagination.total" :current-page.sync="pagination.current_page"
                                 :page-size="pagination.per_page">
                             </el-pagination>
                         </div>
@@ -264,8 +218,8 @@
 <script>
 
 
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
-import {deletable} from "../../../../../../../resources/js/mixins/deletable";
+import { mapActions, mapState } from "vuex/dist/vuex.mjs";
+import { deletable } from "../../../../../../../resources/js/mixins/deletable";
 import moment from "moment";
 import queryString from 'query-string';
 import ProductionImport from './import.vue'
@@ -276,7 +230,7 @@ export default {
         'typeUser',
     ],
     mixins: [deletable],
-    components: {ProductionImport},
+    components: { ProductionImport },
     computed: {
         ...mapState([
             'config',
@@ -292,7 +246,7 @@ export default {
             loading_submit: false,
             showImportSetDialog: false,
             showImportSetIndividualDialog: false,
-            showImportDialog:false,
+            showImportDialog: false,
             showWarehousesDetail: false,
             resource: 'production',
             recordId: null,
@@ -413,12 +367,16 @@ export default {
             // this.recordId = recordId
             // this.showDialog = true
         },
-        clickPDF(recordId)
-        {
+        clickPDF(recordId) {
             window.open(`/${this.resource}/pdf_Atributos/${recordId}`, '_blank');
         },
-        clickEtiqueta(recordId)
-        {
+        clickMezcla(recordId){
+            window.open(`/${this.resource}/plantilla/mezcla/${recordId}`, '_blank');
+        },
+        clickNoConforme(recordId){
+            window.open(`/${this.resource}/plantilla/noConforme/${recordId}`, '_blank');
+        },
+        clickEtiqueta(recordId) {
             window.open(`/${this.resource}/etiqueta/${recordId}`, '_blank');
         },
         clickImportSet() {

@@ -66,6 +66,7 @@ if ($hostname) {
             Route::post('cash/restaurant', 'Tenant\Api\CashController@storeRestaurant');
 
         });
+
         Route::get('documents/search/customers', 'Tenant\DocumentController@searchCustomers');
 
         // Route::post('services/consult_status', 'Tenant\Api\ServiceController@consultStatus');
@@ -73,13 +74,14 @@ if ($hostname) {
 
         Route::get('sendserver/{document_id}/{query?}', 'Tenant\DocumentController@sendServer');
         Route::post('configurations/generateDispatch', 'Tenant\ConfigurationController@generateDispatch');
+        Route::get('invoices/due','Tenant\Api\ToCollectController@getInvoicesDue');
     });
 } else {
     Route::domain(env('APP_URL_BASE'))->group(function () {
 
 
         Route::middleware(['auth:system_api'])->group(function () {
-            
+
             //reseller
             Route::post('reseller/detail', 'System\Api\ResellerController@resellerDetail');
             // Route::post('reseller/lockedAdmin', 'System\Api\ResellerController@lockedAdmin');

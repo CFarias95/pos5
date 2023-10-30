@@ -820,7 +820,6 @@ class Item extends ModelTenant
     {
         $lots = [];
 
-
         if ($search_item_by_series) {
 
             $lots = $this->item_lots()->where('has_sale', false)

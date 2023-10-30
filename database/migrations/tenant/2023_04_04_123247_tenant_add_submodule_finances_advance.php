@@ -15,7 +15,6 @@ class TenantAddSubmoduleFinancesAdvance extends Migration
      */
     public function up()
     {
-
         DB::connection('tenant')->table('module_levels')->insert(['value'=>'finances_advances','description'=>'Anticipos de clientes', 'module_id'=>12]);
     }
 
