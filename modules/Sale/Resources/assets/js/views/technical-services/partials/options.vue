@@ -353,7 +353,7 @@ export default {
                         'affectation_igv_type_id': '10',
                         'description': item_description,
                         'percentage_igv': this.percentageIgv * 100,
-                        'currency_type_id': 'PEN',
+                        'currency_type_id': 'USD',
                         'unit_value': unit_value,
                         'unit_price': total,
                         'total_base_igv': total_taxed,
@@ -480,7 +480,7 @@ export default {
                 payment_method_type_id: "01",
                 payment_destination_id: null,
                 reference: null,
-                payment: 0,
+                payment: this.form.total,
             });
         },
         initDocument() {
@@ -572,16 +572,6 @@ export default {
                 this.resource_documents = "documents";
             }
 
-            // let item_id = null;
-            // await this.$http.post(`/generate-document/store_item`, this.form.items[0])
-            //     .then(res => {
-            //         item_id = res.data;
-            //     });
-            //
-            // console.log(item_id);
-            // this.form.items[0].item_id = item_id;
-
-            // await this.$http.post(`/${this.resource_documents}`, this.form)
             if (
                 this.form.exchange_rate_sale === undefined
             ) {
@@ -589,35 +579,50 @@ export default {
             }
 
             let paso = false;
+            let paymentsPass = true;
+            this.form.payments.forEach((row) => {
+                if (row.payment <= 0) {
+                    paymentsPass = false;
+                    return;
+                }
+            });
+
+            if(paymentsPass == false){
+                this.loading_submit = false;
+                return this.$message.error('El monto debe ser mayor a 0 en los pagos');
+            }
 
             this.form.payments.forEach((row) => {
-
                 let paymentSelected = _.filter(this.payment_method_types, { id: row.payment_method_type_id });
                 let valor = row.payment;
                 //console.log('payments',paymentSelected)
                 if (paymentSelected[0].is_credit == true) {
                     this.form.payment_condition_id = '02';
-                }else{
+                } else {
                     this.form.payment_condition_id = '01';
                 }
                 //validar cupo
                 this.total_cuenta = 0;
                 if (this.form.payment_condition_id == '02') {
                     this.calcularCupo(valor);
+
+                    let validar = this.validacionCupo();
+                    if (validar) {
+                        paso = true
+                    }
                 } else {
                     this.deuda = 0;
                     this.cupo = 0;
+                    paso = false;
                 }
-                let validar = this.validacionCupo();
-                if (validar) {
-                    paso = true
-                }
+
             });
 
             if (paso) {
                 this.$message.error('El monto es mayor al cupo disponible');
                 this.loading_submit = false;
                 return false;
+
             } else {
 
                 await this.$http.post(`/generate-document`, this.form)
@@ -627,12 +632,7 @@ export default {
                             this.documentNewId = response.data.data.id;
 
                             this.getRecord()
-                            // this.$http
-                            //     .get(`/${this.resource}/changed/${this.form.id}`)
-                            //     .then(() => {
-                            //         this.$eventHub.$emit("reloadData");
-                            //     });
-                            // // console.log(this.document.document_type_id)
+
                             if (this.form.document_type_id === "nv") {
                                 this.showDialogSaleNoteOptions = true;
                             } else {

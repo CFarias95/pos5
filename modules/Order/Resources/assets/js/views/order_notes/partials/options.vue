@@ -414,6 +414,7 @@ export default {
 
         },
         async submit() {
+
             await this.assignDocument();
 
             let validate_payment_destination = await this.validatePaymentDestination()
@@ -423,6 +424,7 @@ export default {
             }
 
             this.loading_submit = true;
+
             if (this.document.document_type_id === "80") {
                 this.document.prefix = "NV";
                 this.resource_documents = "sale-notes";
@@ -433,6 +435,19 @@ export default {
 
             let paso = false;
 
+            let paymentsPass = true;
+            this.document.payments.forEach((row) => {
+                if (row.payment <= 0) {
+                    paymentsPass = false;
+                    return;
+                }
+            });
+
+            if(paymentsPass == false){
+                this.loading_submit = false;
+                return this.$message.error('El monto debe ser mayor a 0 en los pagos');
+            }
+
             this.document.payments.forEach((row) => {
 
                 let paymentSelected = _.filter(this.payment_method_types,{id:row.payment_method_type_id});
@@ -440,22 +455,25 @@ export default {
 
                 if(paymentSelected[0].is_credit == true){
                     this.document.payment_condition_id =  '02';
+                }else {
+                    this.document.payment_condition_id = '01';
                 }
                 //validar cupo
                 this.total_cuenta=0;
                 if(this.document.payment_condition_id == '02'){
                     this.calcularCupo(valor);
+                    let validar= this.validacionCupo();
+
+                    if(validar){
+
+                        paso = true
+                    }
                 }else{
                     this.deuda=0;
                     this.cupo=0;
+                    paso = false;
                 }
-                let validar= this.validacionCupo();
 
-                if(validar){
-
-                    paso = true
-
-                }
             });
 
             if(paso){
@@ -476,12 +494,13 @@ export default {
                                 this.form_cash_document.document_id = response.data.data.id;
                                 this.showDialogDocumentOptions = true;
                             }
-                            this.saveCashDocument();
+
+                            //this.saveCashDocument();
 
                             this.$eventHub.$emit("reloadData");
-                            this.resetDocument();
-                            this.document.customer_id = this.form.order_note.customer_id;
-                            this.changeCustomer();
+                            //this.resetDocument();
+                            //this.document.customer_id = this.form.order_note.customer_id;
+                            //this.changeCustomer();
                         } else {
                             this.$message.error(response.data.message);
                         }

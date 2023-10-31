@@ -293,7 +293,7 @@ class DocumentPaymentController extends Controller
         //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
 
-        if($document && $document->document_type_id == '01'){
+        if($document && ($document->document_type_id == '01' || $document->document_type_id == '03')){
 
             try{
                 $idauth = auth()->user()->id;
