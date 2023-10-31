@@ -235,7 +235,7 @@ class PurchasePaymentController extends Controller
     private function createAccountingEntryPayment($document_id, $payment)
     {
         $document = Purchase::find($document_id);
-        if ($document && $document->document_type_id == '01') {
+        if ($document /*&& $document->document_type_id == '01' */) {
 
             try {
                 $idauth = auth()->user()->id;
