@@ -479,8 +479,11 @@ class PurchaseController extends Controller
                     }
 
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
+
+                        Log::info("update_purchase_price".json_encode($row));
+
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => floatval($row['unit_price']), 'purchase_has_igv' => true]);
+                            ->update(['purchase_unit_price' => round(floatval($row['total_base_igv_without_rounding']),2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                         $item = $row['item'];
                         if (isset($item['item_unit_types'])) {
@@ -1408,6 +1411,7 @@ class PurchaseController extends Controller
                 }
 
                 foreach ($request['items'] as $row) {
+                    
                     $p_item = new PurchaseItem();
                     $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
@@ -1415,6 +1419,13 @@ class PurchaseController extends Controller
                     $p_item->has_igv = true;
                     $p_item->save();
 
+                    if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
+
+                        Log::info("update_purchase_price_update".json_encode($row));
+                        Item::query()->where('id', $row['item_id'])
+                            ->update(['purchase_unit_price' => round(floatval($row['total_base_igv_without_rounding']),2), 'purchase_has_igv' => false]);
+                        // actualizacion de precios
+                    }
                     if (array_key_exists('lots', $row)) {
 
                         foreach ($row['lots'] as $lot) {
