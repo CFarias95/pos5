@@ -313,7 +313,7 @@ class DocumentPaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = ($document->document_type_id == '03')?'Cobro '.substr($document->series,0,1):'Cobro Factura F'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                $comment = (($document->document_type_id == '03')?'Cobro '.substr($document->series,0,1):'Cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
 
                 $total_debe = 0;
                 $total_haber = 0;
