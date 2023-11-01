@@ -12,7 +12,15 @@
     for($i = 0 ; $i <= $index ; $i++)
     {
         $valores += $data[$i]->payment;
-    } 
+    }
+    $referencia = '';
+    if($data[$index]->payment_method_type_id == '99'){
+        $referencia = 'R'.$data[$index]->retentions->ubl_version;
+    }
+    if($data[$index]->payment_method_type_id == '15' || $data[$index]->payment_method_type_id == '14'){
+        $referencia = 'AT'.$data[$index]->advances->id;
+    }
+
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
 @endphp
 <html>
@@ -78,7 +86,7 @@
                 @endphp
                 <td width="15%">{{ $data[$index]->date_of_payment->format('Y-m-d') }}</td>
                 @foreach($payments as $row)
-                    
+
                     @php
                         $payment += (float) $row->payment;
                     @endphp
@@ -92,7 +100,7 @@
 </table>
 
 
-<table class="full-width mt-10 mb-10">
+<table class="full-width">
     <thead class="">
     <tr class="bg-grey">
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
@@ -215,11 +223,11 @@
         </td>
     </tr>
     <tr>
-        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }}- {{ $data[$index]->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>   
+        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }} - {{ $referencia != '' ? $referencia:$data[$index]->reference }} - {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>
     </tr>
     @php
         $payment = 0;
-    @endphp   
+    @endphp
     @foreach($payments as $row)
         @php
             $payment += (float) $row->payment;

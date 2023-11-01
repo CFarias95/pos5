@@ -596,22 +596,32 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
-        $validate = $this->validateDocument($request);
-        if (!$validate['success']) return $validate;
-        $res = $this->storeWithData($request->all());
-        $document_id = $res['data']['id'];
+        try{
+            $validate = $this->validateDocument($request);
+            if (!$validate['success']) return $validate;
+            $res = $this->storeWithData($request->all());
+            $document_id = $res['data']['id'];
 
-        $this->associateDispatchesToDocument($request, $document_id);
-        $this->associateSaleNoteToDocument($request, $document_id);
+            $this->associateDispatchesToDocument($request, $document_id);
+            $this->associateSaleNoteToDocument($request, $document_id);
 
-        if((Company::active())->countable > 0 ){
-            $this->createAccountingEntry($document_id);
-            $this->createAccountingEntryPayments($document_id);
+            if((Company::active())->countable > 0 ){
+                $this->createAccountingEntry($document_id);
+                $this->createAccountingEntryPayments($document_id);
+            }
+
+            $this->verifyPayment($request);
+
+            return $res;
+
+        }catch(Exception $ex){
+
+            Log::error($ex->getMessage());
+            return [
+                'success' => false,
+                'message' => __('document.store_failure'),
+            ];
         }
-
-        $this->verifyPayment($request);
-
-        return $res;
     }
 
     public function verifyPayment($request){
@@ -1395,28 +1405,36 @@ class DocumentController extends Controller
      */
     public function storeWithData($data)
     {
-        self::setChildrenToData($data);
-        $fact = DB::connection('tenant')->transaction(function() use ($data) {
-            $facturalo = new Facturalo();
-            $facturalo->save($data);
-            $facturalo->createXmlUnsigned();
-            $facturalo->signXmlUnsigned();
-            $facturalo->updateHash();
-            $facturalo->updateQr();
-            return $facturalo;
-        });
+        try{
+            self::setChildrenToData($data);
+            $fact = DB::connection('tenant')->transaction(function() use ($data) {
+                $facturalo = new Facturalo();
+                $facturalo->save($data);
+                $facturalo->createXmlUnsigned();
+                $facturalo->signXmlUnsigned();
+                $facturalo->updateHash();
+                $facturalo->updateQr();
+                return $facturalo;
+            });
 
-        $document = $fact->getDocument();
-        $response = $fact->getResponse();
+            $document = $fact->getDocument();
+            $response = $fact->getResponse();
 
-        return [
-            'success' => true,
-            'data' => [
-                'id' => $document->id,
-                'number_full' => $document->number_full,
-                'response' => $response
-            ]
-        ];
+            return [
+                'success' => true,
+                'data' => [
+                    'id' => $document->id,
+                    'number_full' => $document->number_full,
+                    'response' => $response
+                ]
+            ];
+        }catch(Exception $ex){
+            Log::error($ex->getMessage());
+            return [
+                'success' => false,
+                'message' =>'Se produjo un error al tratar de generar el documento '.$ex->getMessage(),
+            ];
+        }
     }
 
     /*JOINSOFTWARE */

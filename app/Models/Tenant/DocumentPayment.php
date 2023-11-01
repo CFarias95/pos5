@@ -13,7 +13,7 @@ use Modules\Payment\Models\PaymentLink;
 
 class DocumentPayment extends ModelTenant
 {
-    protected $with = ['payment_method_type', 'card_brand'];
+    protected $with = ['payment_method_type', 'card_brand','advances','retentions'];
     public $timestamps = false;
 
     protected $fillable = [
@@ -29,7 +29,7 @@ class DocumentPayment extends ModelTenant
         'fee_id',
         'postdated',
     ];
-    
+
     protected $casts = [
         'date_of_payment' => 'date',
         'payment_received' => 'bool',
@@ -44,6 +44,16 @@ class DocumentPayment extends ModelTenant
     public function card_brand()
     {
         return $this->belongsTo(CardBrand::class);
+    }
+
+    public function advances()
+    {
+        return $this->belongsTo(Advance::class, 'reference');
+    }
+
+    public function retentions()
+    {
+        return $this->belongsTo(Retention::class, 'reference');
     }
 
     public function document()

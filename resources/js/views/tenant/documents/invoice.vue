@@ -3428,6 +3428,7 @@ export default {
 
         },
         async submit() {
+            
             if (this.form.show_terms_condition) {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }

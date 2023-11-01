@@ -39,6 +39,7 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 use App\Http\Requests\Tenant\PosDatedRequest;
 use App\Models\Tenant\DocumentFee;
+use Illuminate\Support\Facades\Log;
 
 class UnpaidController extends Controller
 {
@@ -149,15 +150,19 @@ class UnpaidController extends Controller
     }
 
     public function toPrint($external_id,$type,$format, $id) {
+
         if ($type=='sale') {
             $sale_note = SaleNote::where('external_id', $external_id)->first();
         } else {
             $sale_note = Document::where('external_id', $external_id)->first();
         }
 
+        Log::info(json_encode($sale_note));
 
         if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
+
         $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id);
+
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
 

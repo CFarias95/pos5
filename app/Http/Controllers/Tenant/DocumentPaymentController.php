@@ -33,15 +33,16 @@ class DocumentPaymentController extends Controller
 {
     use FinanceTrait, FilePaymentTrait;
 
-    public function records($document_id,$fee_id)
+    public function records($document_id,$fee_id = 'null')
     {
+        Log::info($fee_id);
+
         $records = DocumentPayment::where('document_id', $document_id)->get();
 
-        if($fee_id != 'undefined'){
+        if($fee_id != 'undefined' && $fee_id != 'null'){
 
             $records = DocumentPayment::where('fee_id', $fee_id)->get();
         }
-
 
         return new DocumentPaymentCollection($records);
     }
@@ -55,7 +56,7 @@ class DocumentPaymentController extends Controller
         ];
     }
 
-    public function document($document_id,$fee_id)
+    public function document($document_id,$fee_id = 'null' )
     {
         $document = Document::find($document_id);
 
@@ -65,21 +66,22 @@ class DocumentPaymentController extends Controller
             $total = $document->total;
         }
 
-
         $total_paid = collect($document->payments)->sum('payment');
         $credit_notes_total = $document->getCreditNotesTotal();
         $total_difference = round($total - $total_paid - $credit_notes_total, 2);
 
-        if(isset($fee_id) && $fee_id != 'undefined'){
+        $full_nale = $document->number_full;
 
-            $cuota = DocumentFee::find($fee_id)->amount;
+        if($fee_id !== 'null' ){
 
+            $document = DocumentFee::find($fee_id);
+            $cuota = ($document)?$document->amount:0;
             $total_paid = DocumentPayment::where('fee_id',$fee_id)->get()->sum('payment');
             $total_difference = round($cuota - $total_paid, 2);
-
         }
+
         return [
-            'number_full' => $document->number_full,
+            'number_full' => $full_nale,
             'total_paid' => $total_paid,
             'total' => $total,
             'total_difference' => $total_difference,
@@ -290,7 +292,6 @@ class DocumentPaymentController extends Controller
     private function createAccountingEntry($document_id, $request){
 
         $document = Document::find($document_id);
-        //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
 
         if($document && ($document->document_type_id == '01' || $document->document_type_id == '03')){
@@ -370,7 +371,8 @@ class DocumentPaymentController extends Controller
                     $detRet = $retention->optional;
                     //Log::alert($detRet);
                     $seat = 2;
-                    foreach (json_decode($detRet) as $ret) {
+
+                    foreach ($detRet as $ret) {
                         if($debe > 0){
                             $valor = floatval($ret->valorRetenido);
                             $debeInterno = 0;

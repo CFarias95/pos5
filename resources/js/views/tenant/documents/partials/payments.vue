@@ -457,21 +457,23 @@ export default {
                 this.title2 = "TOTAL DOCUMENTO"
                 this.title3 = "PENDIENTE DE PAGO CUOTA"
             }
-            await this.$http.get(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`)
-                .then(response => {
-
-                    console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`, response.data);
-                    this.document = response.data;
-                    this.title = 'Pagos del comprobante: ' + this.document.number_full;
-                });
-
-
             await this.$http.get(`/${this.resource}/records/${this.documentId}/${this.documentFeeId}`)
                 .then(response => {
+                    console.log(`/${this.resource}/records/${this.documentId}/${this.documentFeeId}`, response.data);
                     this.records = response.data.data
-                });
-            this.addAdvancesCustomer();
-            this.$eventHub.$emit('reloadDataUnpaid')
+                }).then(
+
+                    this.$http.get(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`)
+                    .then(response => {
+                        console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`, response.data);
+                        this.document = response.data;
+                        this.title = 'Pagos del comprobante: ' + this.document.number_full;
+                    })
+                );
+
+            //await
+            //this.addAdvancesCustomer();
+            //this.$eventHub.$emit('reloadDataUnpaid')
 
         },
         clickAddRow() {
