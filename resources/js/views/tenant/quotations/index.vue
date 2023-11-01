@@ -8,6 +8,9 @@
             <div class="right-wrapper pull-right">
                 <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2"><i
                     class="fa fa-plus-circle"></i> Nuevo</a>
+                <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickImport()"><i
+                        class="fa fa-upload"></i> Importar
+                </button>
             </div>
         </div>
         <div class="card mb-0">
@@ -238,6 +241,8 @@
 
             <quotation-payments :showDialog.sync="showDialogPayments"
                                 :recordId="recordId"></quotation-payments>
+
+            <quotation-import :showDialog.sync="showImportDialog"></quotation-import>
         </div>
     </div>
 </template>
@@ -253,6 +258,7 @@ import QuotationOptionsPdf from './partials/options_pdf.vue'
 import DataTable from '../../../components/DataTableQuotation.vue'
 import {deletable} from '../../../mixins/deletable'
 import QuotationPayments from './partials/payments.vue'
+import QuotationImport from './import.vue'
 import {mapActions, mapState} from "vuex";
 
 export default {
@@ -268,7 +274,8 @@ export default {
         DataTable,
         QuotationOptions,
         QuotationOptionsPdf,
-        QuotationPayments
+        QuotationPayments,
+        QuotationImport
     },
     computed: {
         ...mapState([
@@ -283,6 +290,7 @@ export default {
             showDialogPayments: false,
             showDialogOptions: false,
             showDialogOptionsPdf: false,
+            showImportDialog: false,
             state_types: [],
             columns: {
                 total_exportation: {
@@ -409,7 +417,10 @@ export default {
         },
         clickGenerateDocument(recordId) {
             window.location.href = `/documents/create/quotations/${recordId}`;
-        }
+        },
+        clickImport() {
+            this.showImportDialog = true
+        },
     }
 }
 </script>

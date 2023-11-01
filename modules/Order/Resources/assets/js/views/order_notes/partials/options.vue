@@ -1,89 +1,103 @@
 <template>
-<div>
-    <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false" :close-on-press-escape="false" :show-close="false">
-        <div class="row" v-show="!showGenerate">
-            <div class="col text-center font-weight-bold">
-                <p>Imprimir A4</p>
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
-                    <i class="fa fa-file-alt"></i>
-                </button>
-            </div>
-            <div class="col text-center font-weight-bold">
-                <p>Imprimir A5</p>
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
-                    <i class="fa fa-file-alt"></i>
-                </button>
-            </div>
-            <div class="col text-center font-weight-bold">
-                <p>Imprimir Ticket</p>
-                <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('ticket')">
-                    <i class="fa fa-receipt"></i>
-                </button>
-            </div>
-            <template v-if="configuration">
-                <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
-                    <p>Imprimir Ticket 58MM</p>
-                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('ticket_58')">
+    <div>
+        <el-dialog :title="titleDialog" :visible="showDialog" @open="create" width="30%" :close-on-click-modal="false"
+            :close-on-press-escape="false" :show-close="false">
+            <div class="row" v-show="!showGenerate">
+                <div class="col text-center font-weight-bold">
+                    <p>Imprimir A4</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a4')">
+                        <i class="fa fa-file-alt"></i>
+                    </button>
+                </div>
+                <div class="col text-center font-weight-bold">
+                    <p>Imprimir A5</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light" @click="clickToPrint('a5')">
+                        <i class="fa fa-file-alt"></i>
+                    </button>
+                </div>
+                <div class="col text-center font-weight-bold">
+                    <p>Imprimir Ticket</p>
+                    <button type="button" class="btn btn-lg btn-info waves-effect waves-light"
+                        @click="clickToPrint('ticket')">
                         <i class="fa fa-receipt"></i>
                     </button>
                 </div>
-            </template>
+                <template v-if="configuration">
+                    <div class="col text-center font-weight-bold" v-if="configuration.ticket_58">
+                        <p>Imprimir Ticket 58MM</p>
+                        <button type="button" class="btn btn-lg btn-info waves-effect waves-light"
+                            @click="clickToPrint('ticket_58')">
+                            <i class="fa fa-receipt"></i>
+                        </button>
+                    </div>
+                </template>
 
-        </div>
-        <br />
-        <div class="row" v-show="!showGenerate">
-            <div class="col-md-12">
-                <el-input v-model="customer_email">
-                    <el-button slot="append" icon="el-icon-message" @click="clickSendEmail" :loading="loading">Enviar</el-button>
-                </el-input>
-                <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
             </div>
-        </div>
-        <br />
-        <div class="row" v-if="typeUser == 'admin'">
-            <div class="col-md-9" v-show="!showGenerate">
-                <div class="form-group">
-                    <el-checkbox v-model="generate">Generar comprobante electrónico</el-checkbox>
+            <br />
+            <div class="row" v-show="!showGenerate">
+                <div class="col-md-12">
+                    <el-input v-model="customer_email">
+                        <el-button slot="append" icon="el-icon-message" @click="clickSendEmail"
+                            :loading="loading">Enviar</el-button>
+                    </el-input>
+                    <!--<small class="form-control-feedback" v-if="errors.customer_email" v-text="errors.customer_email[0]"></small> -->
                 </div>
             </div>
-        </div>
-        <div class="row" v-if="generate">
-            <div class="col-lg-12 pb-2">
-                <div class="form-group">
-                    <label class="control-label font-weight-bold text-info">
-                        Cliente
-                        <!-- <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
-                    </label>
-                    <el-select v-model="document.customer_id" filterable remote class="border-left rounded-left border-info" popper-class="el-select-customers" dusk="customer_id" placeholder="Escriba el nombre o número de documento del cliente" :remote-method="searchRemoteCustomers" @change="changeCustomer" :loading="loading_search">
-                        <el-option v-for="option in customers" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                    </el-select>
-                    <small class="form-control-feedback" v-if="errors.customer_id" v-text="errors.customer_id[0]"></small>
+            <br />
+            <div class="row" v-if="typeUser == 'admin'">
+                <div class="col-md-9" v-show="!showGenerate">
+                    <div class="form-group">
+                        <el-checkbox v-model="generate">Generar comprobante electrónico</el-checkbox>
+                    </div>
                 </div>
             </div>
+            <div class="row" v-if="generate">
+                <div class="col-lg-12 pb-2">
+                    <div class="form-group">
+                        <label class="control-label font-weight-bold text-info">
+                            Cliente
+                            <!-- <a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a> -->
+                        </label>
+                        <el-select v-model="document.customer_id" filterable remote
+                            class="border-left rounded-left border-info" popper-class="el-select-customers"
+                            dusk="customer_id" placeholder="Escriba el nombre o número de documento del cliente"
+                            :remote-method="searchRemoteCustomers" @change="changeCustomer" :loading="loading_search">
+                            <el-option v-for="option in customers" :key="option.id" :value="option.id"
+                                :label="option.description"></el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.customer_id"
+                            v-text="errors.customer_id[0]"></small>
+                    </div>
+                </div>
 
-            <div class="col-lg-8">
-                <div class="form-group" :class="{'has-danger': errors.document_type_id}">
-                    <label class="control-label">Tipo comprobante</label>
-                    <el-select v-model="document.document_type_id" @change="changeDocumentType" popper-class="el-select-document_type" dusk="document_type_id" class="border-left rounded-left border-info">
-                        <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                    </el-select>
-                    <small class="form-control-feedback" v-if="errors.document_type_id" v-text="errors.document_type_id[0]"></small>
+                <div class="col-lg-8">
+                    <div class="form-group" :class="{ 'has-danger': errors.document_type_id }">
+                        <label class="control-label">Tipo comprobante</label>
+                        <el-select v-model="document.document_type_id" @change="changeDocumentType"
+                            popper-class="el-select-document_type" dusk="document_type_id"
+                            class="border-left rounded-left border-info">
+                            <el-option v-for="option in document_types" :key="option.id" :value="option.id"
+                                :label="option.description"></el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.document_type_id"
+                            v-text="errors.document_type_id[0]"></small>
+                    </div>
                 </div>
-            </div>
-            <div class="col-lg-4">
-                <div class="form-group" :class="{'has-danger': errors.series_id}">
-                    <label class="control-label">Serie</label>
-                    <el-select v-model="document.series_id">
-                        <el-option v-for="option in series" :key="option.id" :value="option.id" :label="option.number"></el-option>
-                    </el-select>
-                    <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                <div class="col-lg-4">
+                    <div class="form-group" :class="{ 'has-danger': errors.series_id }">
+                        <label class="control-label">Serie</label>
+                        <el-select v-model="document.series_id">
+                            <el-option v-for="option in series" :key="option.id" :value="option.id"
+                                :label="option.number"></el-option>
+                        </el-select>
+                        <small class="form-control-feedback" v-if="errors.series_id" v-text="errors.series_id[0]"></small>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-lg-6">
-                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                    <label class="control-label">Fecha de emisión</label>
-                    <!-- <el-date-picker
+                <div class="col-lg-6">
+                    <div class="form-group" :class="{ 'has-danger': errors.date_of_issue }">
+                        <label class="control-label">Fecha de emisión</label>
+                        <!-- <el-date-picker
               readonly
               v-model="document.date_of_issue"
               type="date"
@@ -91,114 +105,128 @@
               :clearable="false"
               @change="changeDateOfIssue"
             ></el-date-picker> -->
-                    <el-date-picker v-model="document.date_of_issue" type="date" value-format="yyyy-MM-dd" :clearable="false" @change="changeDateOfIssue"></el-date-picker>
-                    <small class="form-control-feedback" v-if="errors.date_of_issue" v-text="errors.date_of_issue[0]"></small>
+                        <el-date-picker v-model="document.date_of_issue" type="date" value-format="yyyy-MM-dd"
+                            :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                        <small class="form-control-feedback" v-if="errors.date_of_issue"
+                            v-text="errors.date_of_issue[0]"></small>
+                    </div>
                 </div>
-            </div>
 
-            <div class="col-lg-6">
-                <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
-                    <!--<label class="control-label">Fecha de emisión</label>-->
-                    <label class="control-label">Fecha de vencimiento</label>
-                    <el-date-picker v-model="document.date_of_due" type="date" value-format="yyyy-MM-dd" :clearable="false"></el-date-picker>
-                    <small class="form-control-feedback" v-if="errors.date_of_due" v-text="errors.date_of_due[0]"></small>
+                <div class="col-lg-6">
+                    <div class="form-group" :class="{ 'has-danger': errors.date_of_issue }">
+                        <!--<label class="control-label">Fecha de emisión</label>-->
+                        <label class="control-label">Fecha de vencimiento</label>
+                        <el-date-picker v-model="document.date_of_due" type="date" value-format="yyyy-MM-dd"
+                            :clearable="false"></el-date-picker>
+                        <small class="form-control-feedback" v-if="errors.date_of_due"
+                            v-text="errors.date_of_due[0]"></small>
+                    </div>
                 </div>
-            </div>
-            <br>
-            <div class="col-lg-4">
-                <div class="form-group" v-show="document.document_type_id == '03'">
-                    <el-checkbox v-model="document.is_receivable" class="font-weight-bold">¿Es venta por cobrar?</el-checkbox>
+                <br>
+                <div class="col-lg-4">
+                    <div class="form-group" v-show="document.document_type_id == '03'">
+                        <el-checkbox v-model="document.is_receivable" class="font-weight-bold">¿Es venta por
+                            cobrar?</el-checkbox>
+                    </div>
+                </div> <br>
+                <div class="col-lg-12" v-show="is_document_type_invoice">
+                    <table>
+                        <thead>
+                            <tr width="100%">
+                                <th v-if="document.payments.length > 0">M. Pago</th>
+                                <th v-if="document.payments.length > 0">Destino</th>
+                                <th v-if="document.payments.length > 0">Referencia</th>
+                                <th v-if="document.payments.length > 0">Monto</th>
+                                <th width="15%">
+                                    <a href="#" @click.prevent="clickAddPayment"
+                                        class="text-center font-weight-bold text-info">[+ Agregar pago]</a>
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr v-for="(row, index) in document.payments" :key="index">
+                                <td>
+                                    <div class="form-group mb-2 mr-2">
+                                        <el-select v-model="row.payment_method_type_id">
+                                            <el-option v-for="option in payment_method_types" :key="option.id"
+                                                :value="option.id" :label="option.description"></el-option>
+                                        </el-select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-2 mr-2">
+                                        <el-select v-model="row.payment_destination_id" filterable
+                                            :disabled="row.payment_destination_disabled">
+                                            <el-option v-for="option in payment_destinations" :key="option.id"
+                                                :value="option.id" :label="option.description"></el-option>
+                                        </el-select>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-2 mr-2">
+                                        <el-input v-model="row.reference"></el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-2 mr-2">
+                                        <el-input v-model="row.payment"></el-input>
+                                    </div>
+                                </td>
+                                <td class="series-table-actions text-center">
+                                    <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
+                                        @click.prevent="clickCancel(index)">
+                                        <i class="fa fa-trash"></i>
+                                    </button>
+                                </td>
+                                <br />
+                            </tr>
+                        </tbody>
+                    </table>
                 </div>
-            </div> <br>
-            <div class="col-lg-12" v-show="is_document_type_invoice">
-                <table>
-                    <thead>
-                        <tr width="100%">
-                            <th v-if="document.payments.length>0">M. Pago</th>
-                            <th v-if="document.payments.length>0">Destino</th>
-                            <th v-if="document.payments.length>0">Referencia</th>
-                            <th v-if="document.payments.length>0">Monto</th>
-                            <th width="15%">
-                                <a href="#" @click.prevent="clickAddPayment" class="text-center font-weight-bold text-info">[+ Agregar pago]</a>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <tr v-for="(row, index) in document.payments" :key="index">
-                            <td>
-                                <div class="form-group mb-2 mr-2">
-                                    <el-select v-model="row.payment_method_type_id">
-                                        <el-option v-for="option in payment_method_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group mb-2 mr-2">
-                                    <el-select v-model="row.payment_destination_id" filterable :disabled="row.payment_destination_disabled">
-                                        <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                    </el-select>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group mb-2 mr-2">
-                                    <el-input v-model="row.reference"></el-input>
-                                </div>
-                            </td>
-                            <td>
-                                <div class="form-group mb-2 mr-2">
-                                    <el-input v-model="row.payment"></el-input>
-                                </div>
-                            </td>
-                            <td class="series-table-actions text-center">
-                                <button type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickCancel(index)">
-                                    <i class="fa fa-trash"></i>
-                                </button>
-                            </td>
-                            <br />
-                        </tr>
-                    </tbody>
-                </table>
-            </div>
-            <div style="display: grid;justify-items: end;" v-if="total_cuenta>0">
-                <p style="color: red; margin-bottom: 2px;width: 70%;">
-                    <b>Nota: </b>
-                </p>
-                <p style="color: red; margin-bottom: 2px;width: 70%;" v-if="cuenta_pagar>0">
-                    Pendiente a pago: {{ this.document.currency_type_id }} <b>{{ cuenta_pagar }} </b>
-                </p>
-                <p style="color: red; margin-bottom: 2px;width: 70%;">
-                    Cupo de crédito: {{ this.document.currency_type_id }} <b>{{ cupo_credito }}</b>
-                </p>
-                <p style="color: red; margin-bottom: 2px;width: 70%;">
-                    <b>SELECCIONE OTRO METODO DE PAGO </b>
-                </p>
+                <div style="display: grid;justify-items: end;" v-if="total_cuenta > 0">
+                    <p style="color: red; margin-bottom: 2px;width: 70%;">
+                        <b>Nota: </b>
+                    </p>
+                    <p style="color: red; margin-bottom: 2px;width: 70%;" v-if="cuenta_pagar > 0">
+                        Pendiente a pago: {{ this.document.currency_type_id }} <b>{{ cuenta_pagar }} </b>
+                    </p>
+                    <p style="color: red; margin-bottom: 2px;width: 70%;">
+                        Cupo de crédito: {{ this.document.currency_type_id }} <b>{{ cupo_credito }}</b>
+                    </p>
+                    <p style="color: red; margin-bottom: 2px;width: 70%;">
+                        <b>SELECCIONE OTRO METODO DE PAGO </b>
+                    </p>
+                </div>
+
+                <!-- propinas -->
+                <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
+                    <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
+                </template>
+                <!-- propinas -->
             </div>
 
-            <!-- propinas -->
-            <template v-if="configuration.enabled_tips_pos && isInvoiceDocument">
-                <set-tip class="full py-2 border-top mt-2" @changeDataTip="changeDataTip"></set-tip>
-            </template>
-            <!-- propinas -->
-        </div>
+            <span slot="footer" class="dialog-footer">
+                <template v-if="showClose">
+                    <el-button @click="clickClose">Cerrar</el-button>
+                    <el-button class="submit" type="primary" @click="submit" :loading="loading_submit"
+                        v-if="generate">Generar</el-button>
+                </template>
+                <template v-else>
+                    <el-button class="submit" type="primary" plain @click="submit" :loading="loading_submit"
+                        v-if="generate">Generar comprobante</el-button>
+                    <el-button @click="clickFinalize" v-else>Ir al listado</el-button>
+                    <el-button type="primary" @click="clickNewOrderNote">Nuevo pedido</el-button>
+                </template>
+            </span>
+        </el-dialog>
 
-        <span slot="footer" class="dialog-footer">
-            <template v-if="showClose">
-                <el-button @click="clickClose">Cerrar</el-button>
-                <el-button class="submit" type="primary" @click="submit" :loading="loading_submit" v-if="generate">Generar</el-button>
-            </template>
-            <template v-else>
-                <el-button class="submit" type="primary" plain @click="submit" :loading="loading_submit" v-if="generate">Generar comprobante</el-button>
-                <el-button @click="clickFinalize" v-else>Ir al listado</el-button>
-                <el-button type="primary" @click="clickNewOrderNote">Nuevo pedido</el-button>
-            </template>
-        </span>
-    </el-dialog>
+        <document-options :showDialog.sync="showDialogDocumentOptions" :recordId="documentNewId" :isContingency="false"
+            :showClose="true" :configuration="configuration"></document-options>
 
-    <document-options :showDialog.sync="showDialogDocumentOptions" :recordId="documentNewId" :isContingency="false" :showClose="true" :configuration="configuration"></document-options>
+        <sale-note-options :showDialog.sync="showDialogSaleNoteOptions" :recordId="documentNewId" :showClose="true"
+            :configuration="configuration"></sale-note-options>
 
-    <sale-note-options :showDialog.sync="showDialogSaleNoteOptions" :recordId="documentNewId" :showClose="true" :configuration="configuration"></sale-note-options>
-
-</div>
+    </div>
 </template>
 
 <script>
@@ -239,13 +267,13 @@ export default {
             payment_destinations: [],
             form_cash_document: {},
             payment_method_types: [],
-            cuenta_pagar:0,
-            cupo_credito:0,
-            total_cuenta:0,
-            cupo:0,
-            cuenta:0,
+            cuenta_pagar: 0,
+            cupo_credito: 0,
+            total_cuenta: 0,
+            cupo: 0,
+            cuenta: 0,
             record: {},
-            deuda:0,
+            deuda: 0,
         };
     },
     created() {
@@ -255,22 +283,18 @@ export default {
     },
     computed:
     {
-        isInvoiceDocument()
-        {
+        isInvoiceDocument() {
             return ['01', '03'].includes(this.document.document_type_id)
         }
     },
     methods: {
-        changeDataTip(tip)
-        {
-            if(tip)
-            {
+        changeDataTip(tip) {
+            if (tip) {
                 this.document.worker_full_name_tips = tip.worker_full_name_tips
                 this.document.total_tips = tip.total_tips
             }
         },
-        cleanFormTip()
-        {
+        cleanFormTip() {
             this.document.worker_full_name_tips = null
             this.document.total_tips = 0
             this.$eventHub.$emit('eventInitTip')
@@ -314,7 +338,7 @@ export default {
                     `/${this.resource_documents}/search/customer/${this.form.order_note.customer_id}`
                 )
                 .then(response => {
-                    console.log('customer search: ',response)
+                    console.log('customer search: ', response)
                     this.customers = response.data.customers;
                     this.document.customer_id = this.form.order_note.customer_id;
                     this.changeCustomer();
@@ -384,7 +408,7 @@ export default {
 
                 worker_full_name_tips: null, //propinas
                 total_tips: 0, //propinas
-                payment_condition_id:'01', //condicion de pago por defecto contado
+                payment_condition_id: '01', //condicion de pago por defecto contado
             };
 
             this.cleanFormTip()
@@ -436,51 +460,60 @@ export default {
             let paso = false;
 
             let paymentsPass = true;
+            let paymentAmount = 0;
+
             this.document.payments.forEach((row) => {
+                paymentAmount += parseFloat(row.payment);
                 if (row.payment <= 0) {
                     paymentsPass = false;
                     return;
                 }
             });
 
-            if(paymentsPass == false){
+            if (paymentsPass == false) {
                 this.loading_submit = false;
                 return this.$message.error('El monto debe ser mayor a 0 en los pagos');
             }
 
+            if (paymentAmount > this.form.total || paymentAmount < this.form.total) {
+
+                this.loading_submit = false;
+                return this.$message.error('La suma de los pagos ' + paymentAmount + ' no es igual al total ' + this.form.total);
+            }
+
             this.document.payments.forEach((row) => {
 
-                let paymentSelected = _.filter(this.payment_method_types,{id:row.payment_method_type_id});
+                let paymentSelected = _.filter(this.payment_method_types, { id: row.payment_method_type_id });
                 let valor = row.payment;
 
-                if(paymentSelected[0].is_credit == true){
-                    this.document.payment_condition_id =  '02';
-                }else {
+                if (paymentSelected[0].is_credit == true) {
+                    this.document.payment_condition_id = '02';
+                } else {
                     this.document.payment_condition_id = '01';
                 }
                 //validar cupo
-                this.total_cuenta=0;
-                if(this.document.payment_condition_id == '02'){
+                this.total_cuenta = 0;
+                if (this.document.payment_condition_id == '02') {
                     this.calcularCupo(valor);
-                    let validar= this.validacionCupo();
+                    let validar = this.validacionCupo();
 
-                    if(validar){
+                    if (validar) {
 
                         paso = true
                     }
-                }else{
-                    this.deuda=0;
-                    this.cupo=0;
+                } else {
+                    this.deuda = 0;
+                    this.cupo = 0;
                     paso = false;
                 }
 
             });
 
-            if(paso){
+            if (paso) {
                 this.$message.error('El monto es mayor al cupo disponible');
                 this.loading_submit = false;
                 return false;
-            }else{
+            } else {
                 this.$http
                     .post(`/${this.resource_documents}`, this.document)
                     .then(response => {
@@ -596,31 +629,25 @@ export default {
             })
 
         },
-        getDataItems(items){
+        getDataItems(items) {
 
             let new_items = items
 
-            if (this.document.document_type_id != '80')
-            {
+            if (this.document.document_type_id != '80') {
                 new_items = items.map((row) => {
 
                     // si existe propiedad regularizada en json item
-                    if(row.item.IdLoteSelected)
-                    {
-                        if (Array.isArray(row.item.IdLoteSelected))
-                        {
+                    if (row.item.IdLoteSelected) {
+                        if (Array.isArray(row.item.IdLoteSelected)) {
                             row.IdLoteSelected = row.item.IdLoteSelected
                         }
                     }
-                    else
-                    {
-                        if (Array.isArray(row.item.lots_group))
-                        {
+                    else {
+                        if (Array.isArray(row.item.lots_group)) {
                             // obtener lotes vendidos, con cantidad mayor a 0
                             let sale_lots_group = this.getSaleLotsGroup(row.item.lots_group)
 
-                            if (sale_lots_group.length > 0)
-                            {
+                            if (sale_lots_group.length > 0) {
                                 // generar arreglo de lotes vendidos con la data necesaria para que sea procesado en registro de cpe
                                 row.IdLoteSelected = this.transformSaleLotsGroup(sale_lots_group)
                             }
@@ -668,7 +695,7 @@ export default {
                 this.is_document_type_invoice = false;
             }
 
-            if(this.configuration && this.configuration.enabled_tips_pos && !this.isInvoiceDocument) this.cleanFormTip()
+            if (this.configuration && this.configuration.enabled_tips_pos && !this.isInvoiceDocument) this.cleanFormTip()
         },
         async validateIdentityDocumentType() {
             let identity_document_types = ["0", "1"];
@@ -749,50 +776,50 @@ export default {
                     this.loading = false;
                 });
         },
-        calcularCupo(valor){
-            this.deuda=0;
-            this.cupo=0;
+        calcularCupo(valor) {
+            this.deuda = 0;
+            this.cupo = 0;
             this.$http.get(`/finances/unpaid/records?customer_id=${this.document.customer_id}&establishment_id=${this.document.establishment_id}`).then((response) => {
                 var datos;
-                datos=response.data.data;
-                datos.map((i)=>{
-                    this.cuenta_pagar=parseFloat( this.cuenta_pagar)+ parseFloat(i.total);
+                datos = response.data.data;
+                datos.map((i) => {
+                    this.cuenta_pagar = parseFloat(this.cuenta_pagar) + parseFloat(i.total);
                 })
-                 })
-                 .catch(error => {
-                  })
-                  .then(() => {
-                 });
-                 this.$http.get(`/persons/record/${this.document.customer_id}`).then((response) => {
-                    this.record = response.data.data
-                    this.cupo_credito=this.record.credit_quota;
+            })
+                .catch(error => {
                 })
+                .then(() => {
+                });
+            this.$http.get(`/persons/record/${this.document.customer_id}`).then((response) => {
+                this.record = response.data.data
+                this.cupo_credito = this.record.credit_quota;
+            })
                 .catch(error => {
                 })
                 .then(() => {
 
                 });
-                this.deuda=parseFloat(this.cuenta_pagar)+parseFloat(valor);
-                this.cupo=parseFloat(this.cupo_credito);
-                if(this.deuda>this.cupo){
-                    this.total_cuenta=this.deuda;
-                }else{
-                    this.total_cuenta=0
-                }
+            this.deuda = parseFloat(this.cuenta_pagar) + parseFloat(valor);
+            this.cupo = parseFloat(this.cupo_credito);
+            if (this.deuda > this.cupo) {
+                this.total_cuenta = this.deuda;
+            } else {
+                this.total_cuenta = 0
+            }
         },
-        validacionCupo(){
-            console.log(" validar cupo deuda: "+this.deuda +" cupo:"+ this.cupo )
-            if(this.deuda > this.cupo){
+        validacionCupo() {
+            console.log(" validar cupo deuda: " + this.deuda + " cupo:" + this.cupo)
+            if (this.deuda > this.cupo) {
                 return true;
-            }else{
+            } else {
                 return false;
             }
         },
-        mpagoChange(event){
+        mpagoChange(event) {
 
-            let paymentSelected = _.filter(this.payment_method_types,{id:event});
-            if(paymentSelected[0].is_credit == 1){
-                this.document.payment_condition_id =  '02';
+            let paymentSelected = _.filter(this.payment_method_types, { id: event });
+            if (paymentSelected[0].is_credit == 1) {
+                this.document.payment_condition_id = '02';
             }
 
         }

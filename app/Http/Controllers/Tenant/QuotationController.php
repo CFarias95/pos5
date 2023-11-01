@@ -11,6 +11,7 @@ use App\Http\Controllers\SearchItemController;
 use App\Http\Requests\Tenant\QuotationRequest;
 use App\Http\Resources\Tenant\QuotationCollection;
 use App\Http\Resources\Tenant\QuotationResource;
+use App\Imports\QuotationImport;
 use App\Mail\Tenant\QuotationEmail;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
@@ -46,6 +47,7 @@ use Mpdf\Mpdf;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Swift_SmtpTransport;
 use Illuminate\Support\Facades\Config;
+use Maatwebsite\Excel\Excel;
 use Swift_Mailer;
 
 
@@ -902,5 +904,31 @@ class QuotationController extends Controller
             ];
         });
 
+    }
+
+    public function import(Request $request)
+    {
+        if ($request->hasFile('file')) {
+            try {
+                $import = new QuotationImport();
+                $import->import($request->file('file'), null, Excel::XLSX);
+                $data = $import->getData();
+
+                return [
+                    'success' => true,
+                    'message' => __('app.actions.upload.success'),
+                    'data' => $data,
+                ];
+            } catch (Exception $e) {
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
+            }
+        }
+        return [
+            'success' => false,
+            'message' => __('app.actions.upload.error'),
+        ];
     }
 }
