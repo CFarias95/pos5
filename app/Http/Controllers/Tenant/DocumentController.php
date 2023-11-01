@@ -619,7 +619,7 @@ class DocumentController extends Controller
             Log::error($ex->getMessage());
             return [
                 'success' => false,
-                'message' => __('document.store_failure'),
+                'message' => __($ex->getMessage()),
             ];
         }
     }
