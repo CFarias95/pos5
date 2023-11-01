@@ -4022,13 +4022,13 @@ export default {
             let letPaymentsTotal = 0;
             //validar pagos diferentes de o
             this.form.payments.forEach((row) =>{
-                letPaymentsTotal += row.payment;
+                letPaymentsTotal += parseFloat(row.payment);
                 if(row.payment <= 0 ){
                     PaymentsPass=false;
                 }
             })
             this.form.fee.forEach((row)=>{
-                letPaymentsTotal += row.payment;
+                letPaymentsTotal += parseFloat(row.payment);
                 if(row.payment <= 0 ){
                     PaymentsPass=false;
                 }
@@ -4038,7 +4038,7 @@ export default {
                 this.$message.error('El monto en los pagos debe ser mayor a 0');
                 return false;
             }
-            if(letPaymentsTotal != this.form.total){
+            if(letPaymentsTotal > this.form.total || letPaymentsTotal < this.form.total){
                 this.$message.error('La suma del total de los pagos'+letPaymentsTotal+'no es correcta');
                 return;
             }

@@ -580,7 +580,9 @@ export default {
 
             let paso = false;
             let paymentsPass = true;
+            let paymentAmount = 0;
             this.form.payments.forEach((row) => {
+                paymentAmount += parseFloat(row.payment);
                 if (row.payment <= 0) {
                     paymentsPass = false;
                     return;
@@ -590,6 +592,12 @@ export default {
             if(paymentsPass == false){
                 this.loading_submit = false;
                 return this.$message.error('El monto debe ser mayor a 0 en los pagos');
+            }
+
+            if(paymentAmount > this.form.total || paymentAmount < this.form.total){
+
+                this.loading_submit = false;
+                return this.$message.error('La suma de los pagos ' + paymentAmount + ' no es igual al total ' + this.form.total);
             }
 
             this.form.payments.forEach((row) => {
