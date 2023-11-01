@@ -600,19 +600,25 @@ class DocumentController extends Controller
             $validate = $this->validateDocument($request);
             if (!$validate['success']) return $validate;
             $res = $this->storeWithData($request->all());
-            $document_id = $res['data']['id'];
+            if($res['success'] == true){
+                $document_id = $res['data']['id'];
 
-            $this->associateDispatchesToDocument($request, $document_id);
-            $this->associateSaleNoteToDocument($request, $document_id);
+                $this->associateDispatchesToDocument($request, $document_id);
+                $this->associateSaleNoteToDocument($request, $document_id);
 
-            if((Company::active())->countable > 0 ){
-                $this->createAccountingEntry($document_id);
-                $this->createAccountingEntryPayments($document_id);
+                if((Company::active())->countable > 0 ){
+                    $this->createAccountingEntry($document_id);
+                    $this->createAccountingEntryPayments($document_id);
+                }
+
+                $this->verifyPayment($request);
+
+                return $res;
             }
 
-            $this->verifyPayment($request);
-
-            return $res;
+            if($res['success'] == false){
+                return $res;
+            }
 
         }catch(Exception $ex){
 
