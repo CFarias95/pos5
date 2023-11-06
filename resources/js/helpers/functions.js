@@ -1,10 +1,10 @@
-import { isArray } from "lodash";
+import { isArray, isSet, round } from "lodash";
 
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null ) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null, change_currency = 0) {
     //console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
     let currency_type_id_old = row_old.item.currency_type_id
-    let unit_price = parseFloat(row_old.unit_price )
+    let unit_price = parseFloat(row_old.unit_price)
     let unit_value_est = parseFloat(row_old.item.sale_unit_price)
     let warehouse_id = row_old.warehouse_id
 
@@ -26,7 +26,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    console.log("OLD ROW: ",row_old);
+    console.log("OLD ROW: ", row_old);
 
     let row = {
         item_id: row_old.item.id,
@@ -34,13 +34,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         import: row_old.import,
         currency_type_id: currency_type_id_new,
         quantity: row_old.quantity,
-        unit_value: 0,
+        unit_value: (row_old.unit_value)?row_old.unit_value:0,
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,
         total_base_igv: 0,
         percentage_igv: pigv,
         total_igv: 0,
-        has_igv: (row_old.has_igv == true || row_old.has_igv == false)?row_old.has_igv:row_old.purchase_has_igv,
+        has_igv: (row_old.has_igv == true || row_old.has_igv == false) ? row_old.has_igv : row_old.purchase_has_igv,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
         total_base_isc: 0,
         percentage_isc: has_isc ? parseFloat(row_old.percentage_isc) : 0,
@@ -86,84 +86,81 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let percentage_igv_a = pigv;
 
-    console.log("percentage_igv: "+ pigv );
+    console.log("percentage_igv: " + pigv);
 
-    if(pigv == null || row.affectation_igv_type_id){
+    if (pigv == null || row.affectation_igv_type_id) {
 
-        if(row.affectation_igv_type_id === '11'){
+        if (row.affectation_igv_type_id === '11') {
 
             row.percentage_igv = 8;
 
-        }else if (row.affectation_igv_type_id === '12'){
+        } else if (row.affectation_igv_type_id === '12') {
 
             row.percentage_igv = 14;
 
-        }else if(row.affectation_igv_type_id === '10'){
+        } else if (row.affectation_igv_type_id === '10') {
 
             row.percentage_igv = 12;
         }
-        else if(row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20' ){
+        else if (row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20') {
 
             row.percentage_igv = 0;
 
-        }else{
+        } else {
 
             row.percentage_igv = 18;
         }
 
-    }else{
+    } else {
 
-        if(percentage_igv_a === 8){
+        if (percentage_igv_a === 8) {
 
             row.affectation_igv_type_id = '11';
         }
 
-        if(percentage_igv_a === 14){
+        if (percentage_igv_a === 14) {
 
             row.affectation_igv_type_id = '12';
         }
 
-        if(percentage_igv_a === 12 ){
+        if (percentage_igv_a === 12) {
 
             row.affectation_igv_type_id = '10';
         }
 
-        if(percentage_igv_a === 0){
+        if (percentage_igv_a === 0) {
 
             row.affectation_igv_type_id = '30';
         }
 
     }
 
-    let unit_value = row.unit_price
+    let unit_value = row.unit_value
 
-    if(row.has_igv){
-        if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-            unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
-            //row.purchase_unit_value = unit_value
-
-        }
-    }
-
-    if(row.has_igv == false){
-
-        if(row.has_igv === false){
-            console.log("has_igv: "+row.has_igv,row_old.unit_price)
-
+        if (row.has_igv && row.unit_value == 0) {
             if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-                row.unit_price = (row_old.unit_price_value)?row_old.unit_price_value:(row.unit_price * (1 + (row.percentage_igv / 100)))
+                unit_value = row.unit_price / (1 + (row.percentage_igv / 100))
+                //row.purchase_unit_value = unit_value
+
+            }
+        }
+
+        if (row.has_igv === false && row.unit_value == 0 ) {
+            console.log("has_igv: " + row.has_igv, row_old.unit_price)
+            if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
+                row.unit_price = (row.unit_price * (1 + (row.percentage_igv / 100)))
                 unit_value = row_old.unit_price
             }
         }
-    }
+
 
     row.unit_value = unit_value
 
     //SERVICIO
     let total_service_taxes = 0
-    if(row_old.has_service_taxes == true || row_old.total_service_taxes > 0){
+    if (row_old.has_service_taxes == true || row_old.total_service_taxes > 0) {
 
-        total_service_taxes = _.round(row.quantity * (row.unit_value * (row.item.amount_service_taxes/100)), 3)
+        total_service_taxes = _.round(row.quantity * (row.unit_value * (row.item.amount_service_taxes / 100)), 3)
         row.total_service_taxes = total_service_taxes
 
     }
@@ -188,15 +185,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //     }
     //     row.discounts.splice(index, discount)
     // })
-    if (row.discounts && row.discounts.length > 0 ) {
+    if (row.discounts && row.discounts.length > 0) {
         row.discounts.forEach((discount, index) => {
 
             let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
 
-            if (discount.is_amount)
-            {
-                if (discount.discount_type.base)
-                {
+            if (discount.is_amount) {
+                if (discount.discount_type.base) {
                     discount.base = _.round(total_value_partial, 2)
                     //amount and percentage are equals in input
                     // discount.amount = _.round(discount.percentage, 2)
@@ -278,14 +273,14 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //console.log('charge JS:',row.charges);
 
     //console.log('total base charge:', row.charges[0])
-    if (row.charges.length > 0) {
+    if (row.charges && row.charges.length > 0) {
         row.charges.forEach((charge, index) => {
             charge.percentage = parseFloat(charge.percentage)
             charge.factor = charge.percentage / 100
             charge.base = _.round(total_value_partial, 2)
             charge.amount = _.round(charge.base * charge.factor, 2)
             if (charge.charge_type) {
-                if(charge.charge_type.base){
+                if (charge.charge_type.base) {
                     charge_base += charge.amount
                 }
 
@@ -306,12 +301,12 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
 
-    console.log(total_base_igv , (row.percentage_igv / 100))
-    console.log( row.affectation_igv_type_id)
+    console.log(total_base_igv, (row.percentage_igv / 100))
+    console.log(row.affectation_igv_type_id)
 
     let total_igv = 0
 
-    if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12' ) {
+    if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
         total_igv = (total_base_igv * (row.percentage_igv / 100))
     }
     if (row.affectation_igv_type_id === '20') { //Exonerated
@@ -331,7 +326,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         row.total_plastic_bag_taxes = total_plastic_bag_taxes
 
     }
-    if(row_old.has_service_taxes){
+    if (row_old.has_service_taxes) {
         total_service_taxes = _.round(row.quantity * row.item.amount_service_taxes, 1)
         row.total_service_taxes = total_service_taxes
     }
@@ -434,7 +429,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     row.total_taxes_without_rounding = total_taxes
     row.total_without_rounding = total
 
-    if(row.affectation_igv_type){
+    if (row.affectation_igv_type) {
         if (row.affectation_igv_type.free) {
             row.price_type_id = '02'
             row.unit_value = 0
@@ -453,7 +448,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     //     row.total_plastic_bag_taxes = total_plastic_bag_taxes
     // }
 
-    console.log('RETURNED ROW: ',row)
+    console.log('RETURNED ROW: ', row)
     return row
 }
 
@@ -464,16 +459,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 * use_input_amount propiedad para determinar si se toma el valor de discount.amount
 * y no de discount.percentage cuando es descuento por monto
 */
-function getAmountFromInputDiscount(discount)
-{
+function getAmountFromInputDiscount(discount) {
     let value = 0
 
-    if(discount.use_input_amount !== undefined && discount.use_input_amount === true)
-    {
+    if (discount.use_input_amount !== undefined && discount.use_input_amount === true) {
         value = _.round(discount.amount, 2)
     }
-    else
-    {
+    else {
         //flujo antiguo con propiedad no regularizada (algunos componentes item.vue lo usan)
         value = _.round(discount.percentage, 2)
     }
@@ -546,12 +538,10 @@ const filterWords = (input, items) => {
  * Retorna datos del lote en la edicion de compra
  *
  */
-function getDataItemLotGroup(row_old)
-{
+function getDataItemLotGroup(row_old) {
     let data = null
 
-    if(row_old.date_of_due && row_old.lot_code)
-    {
+    if (row_old.date_of_due && row_old.lot_code) {
         data = {
             date_of_due: row_old.date_of_due,
             lot_code: row_old.lot_code,

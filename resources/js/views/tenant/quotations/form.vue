@@ -470,7 +470,7 @@ export default {
                 this.discount_types = data.discount_types
                 this.charges_types = data.charges_types
                 this.company = data.company
-                this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
+                this.form.currency_type_id = this.configuration.currency_type_id
                 this.form.establishment_id = (this.establishments.length > 0) ? this.establishments[0].id : null
                 this.payment_method_types = data.payment_method_types
                 this.payment_destinations = data.payment_destinations
@@ -909,7 +909,7 @@ export default {
 
 
             this.loading_submit = true
-
+            console.log("SUBMIT QUOTATION: ",this.form)
             await this.$http.post(`/${this.resource}`, this.form).then(response => {
                 if (response.data.success) {
 

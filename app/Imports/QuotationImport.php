@@ -2,6 +2,7 @@
 
 namespace App\Imports;
 
+use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
@@ -10,14 +11,17 @@ use App\Models\Tenant\ItemSupplyLot;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\PersonType;
 use App\Models\Tenant\ProductionSupply;
+use App\Models\Tenant\Quotation;
 use Exception;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Concerns\Importable;
 use Maatwebsite\Excel\Concerns\ToCollection;
 use Modules\Production\Http\Controllers\ProductionController;
 use Modules\Production\Models\Machine;
 use Modules\Production\Models\Production;
+use Illuminate\Support\Str;
 
 class QuotationImport implements ToCollection
 {
@@ -33,110 +37,157 @@ class QuotationImport implements ToCollection
         unset($rows[0]);
 
         $config = Company::first();
-
+        $quotation = null;
+        $number = null;
+        $quotation = new Quotation();
         foreach ($rows as $row) {
-            Log::info(json_encode($row));
-            if ($row[0] == null) {
+
+            if($row[0] == null){
                 break;
             }
+
             try {
 
-                $item = Item::where('internal_id', $row[0])->orWhere('id', $row[0])->first();
-                $maquina = Machine::where('name', $row[3])->orWhere('model', $row[3])->first();
-                $bodega = Establishment::where('code', $row[2])->first();
-                $maximoB = $maquina->maximum_force;
-                $minimoB = $maquina->minimum_force;
-                $aProducir = floatval($row[1]);
-                $contador = 0;
-                $aProducirOP = 0;
+                if($number ==  null || $number != $row[0]){
 
-                while ($aProducir > 0) {
+                    $number = $row[0];
+                    $quotation = new Quotation();
+                    $item = Item::where('internal_id', $row[6])->orWhere('id', $row[6])->orWhere('barcode', $row[6])->first();
+                    $client = Person::where('number',$row[1])->first();
+                    $establishmnet = Establishment::find(Auth()->user()->establishment_id);
+                    $config = Configuration::first();
+                    $company = Company::active();
 
-                    $contador += 1;
+                    $quotation->currency_type_id = $config->currency_type_id;
+                    $quotation->soap_type_id = $company->soap_type_id;
+                    $quotation->customer_id = $client->id;
+                    $quotation->customer = $client;
+                    $quotation->date_of_due = $row[3];
+                    $quotation->date_of_issue = $row[2];
+                    $quotation->delivery_date = $row[4];
+                    $quotation->user_id = auth()->user()->id;
+                    $quotation->seller_id = auth()->user()->id;
+                    $quotation->establishment_id =$establishmnet->id;
+                    $quotation->establishment = $establishmnet;
+                    $quotation->exchange_rate_sale = 1;
+                    $quotation->payment_method_type_id = "01";
+                    $quotation->prefix = "COT";
+                    $quotation->shipping_address = $row[5];
+                    $quotation->subtotal = 0;
+                    $quotation->time_of_issue = date("h:i:s");
+                    $quotation->total = 0;
+                    $quotation->total_base_isc = 0;
+                    $quotation->total_base_other_taxes = 0;
+                    $quotation->total_charge = 0;
+                    $quotation->total_discount = 0;
+                    $quotation->total_exonerated = 0;
+                    $quotation->total_exportation = 0 ;
+                    $quotation->total_free = 0;
+                    $quotation->total_igv = 0;
+                    $quotation->total_isc = 0;
+                    $quotation->total_igv_free = 0;
+                    $quotation->total_other_taxes = 0;
+                    $quotation->total_prepayment = 0;
+                    $quotation->total_taxed = 0;
+                    $quotation->total_unaffected = 0;
+                    $quotation->total_value = 0;
+                    $quotation->external_id = Str::uuid()->toString();
+                    $quotation->state_type_id = '01';
+                    $quotation->save();
+                    $name = [$quotation->prefix, $quotation->id, date('Ymd')];
+                    $quotation->filename = join('-', $name);
+                    $registered += 1;
 
-                    if (($aProducir / $maximoB) >= 1) {
-                        $aProducirOP = $maximoB;
-                    } else {
+                    $dataItem = null;
+                    $unit_price = $item->sale_unit_price;
+                    $has_igv = $item->has_igv;
 
-                        if ($aProducir > $minimoB) {
-                            $aProducirOP = $aProducir;
-                        } else if ($aProducir == $minimoB) {
-                            $aProducirOP = $minimoB;
-                        } else {
-                            $surplus = $aProducir;
-                            $aProducir = 0;
-                        }
+                    $affectation_igv = AffectationIgvType::find($item->sale_affectation_igv_type_id);
+                    $percentage_igv = intval(filter_var(str_replace('-','',$affectation_igv->description), FILTER_SANITIZE_NUMBER_INT));
+
+                    if($has_igv ==  true){
+                        $unit_value = round($unit_price / ((100+$percentage_igv)/100),2);
+                    }else{
+                        $unit_value = $unit_price;
+                        $unit_price = round($unit_price * ((100+$percentage_igv)/100),2);
                     }
 
-                    if ($aProducir == 0) {
-                        break;
-                    }
-                    $data['user_id'] = auth()->user()->id;
-                    $data['soap_type_id'] = $config->soap_type_id;
-                    $data['item_id'] = $item->id;
-                    $data['quantity'] = $aProducirOP;
-                    $data['warehouse_id'] = $bodega->id;
-                    $data['machine_id'] = $maquina->id;
-                    $data['production_order'] = $row[4] . "-" . $contador;
-                    $data['name'] = $row[5];
-                    $data['comment'] = $row[6];
-                    $data['lot_code'] = $row[7];
-                    $data['state_type_id'] = '01';
+                    $dataItem['item_id'] = $item->id;
+                    $dataItem['quantity'] = $row[7];
+                    $dataItem['item'] = $item;
+                    $dataItem['unit_value'] = $unit_value;
+                    $dataItem['affectation_igv_type_id'] = $affectation_igv->id;
+                    $dataItem['total_base_igv'] = round($row[7] * $unit_value,2);
+                    $dataItem['percentage_igv'] = $percentage_igv;
+                    $dataItem['total_igv'] = round(($unit_price-$unit_value)*$row[7],2);
+                    $dataItem['total_taxes'] = round(($unit_price-$unit_value)*$row[7],2);
+                    $dataItem['price_type_id'] = '01';
+                    $dataItem['unit_price'] = $unit_price;
+                    $dataItem['total_value'] = round($row[7] * $unit_value,2);
+                    $dataItem['total'] = round($row[7] * $unit_price,2);
+                    $dataItem['name_product_pdf'] = $row[8];
 
-                    $production = Production::where('production_order', 'like', '%' . $row[4] . "-" . $contador . '%')
-                        ->where('name', $row[5])
-                        ->first();
-
-                    if (!$production) {
-
-                        $production = production::create($data);
-                        $registered += 1;
-
-                        $itemSupplo = ProductionController::optionsItemProduction($item->id);
-
-                        foreach ($itemSupplo[0]["supplies"] as $supplie) {
-
-                            $production_supply = new ProductionSupply();
-                            $production_id = $production->id;
-                            $qty = $supplie['quantityD'] ?? 0;
-                            $production_supply->production_name = $production->name;
-                            $production_supply->production_id = $production_id;
-                            $production_supply->item_supply_name = $supplie['description'];
-                            $production_supply->item_supply_id = $supplie['id'];
-                            $production_supply->warehouse_name = $supplie['warehouse_name'] ?? null;
-                            $production_supply->warehouse_id = $supplie['warehouse_id'] ?? null;
-                            $production_supply->quantity = (float) $qty;
-                            $production_supply->cost_per_unit = (isset($supplie['cost_per_unit'])) ? $supplie['cost_per_unit'] : null;
-                            $production_supply->save();
-
-                            $lots_group = $item["lots_group"];
-                            foreach ($lots_group as $lots) {
-
-                                $item_lots_groups = new ItemSupplyLot();
-                                $item_lots_groups->item_supply_id = $supplie['id'];
-                                $item_lots_groups->item_supply_name = $supplie['description'];
-                                $item_lots_groups->lot_code = $lots["code"];
-                                $item_lots_groups->lot_id = $lots["id"];
-                                $item_lots_groups->production_name = $production->name;
-                                $item_lots_groups->production_id = $production_id;
-                                $item_lots_groups->quantity = 0;
-                                $item_lots_groups->expiration_date = $lots["date_of_due"];
-                                $item_lots_groups->save();
-                            }
-                        }
-                    }
-
-                    $aProducir = ($aProducir - $aProducirOP);
+                    $quotation->items()->create($dataItem);
+                    $quotation->total = $dataItem['total'];
+                    $quotation->total_taxes = $dataItem['total_taxes'];
+                    $quotation->subtotal = $dataItem['total'];
+                    $quotation->total_value = $dataItem['total_value'];
+                    $quotation->total_igv = $dataItem['total_igv'];
+                    $quotation->total_taxed = $dataItem['total_base_igv'];
+                    $quotation->total_unaffected = ($affectation_igv->free > 0)?$dataItem['total_value']:0;
+                    $quotation->save();
                 }
+                elseif($number != null && $number == $row[0]){
+
+                    $item = Item::where('internal_id', $row[6])->orWhere('id', $row[6])->orWhere('barcode', $row[6])->first();
+                    $dataItem = null;
+                    $unit_price = $item->sale_unit_price;
+                    $has_igv = $item->has_igv;
+
+                    $affectation_igv = AffectationIgvType::find($item->sale_affectation_igv_type_id);
+                    $percentage_igv = intval(filter_var(str_replace('-','',$affectation_igv->description), FILTER_SANITIZE_NUMBER_INT));
+
+                    if($has_igv ==  true){
+                        $unit_value = round($unit_price / ((100+$percentage_igv)/100),2);
+                    }else{
+                        $unit_value = $unit_price;
+                        $unit_price = round($unit_price * ((100+$percentage_igv)/100),2);
+                    }
+
+                    $dataItem['item_id'] = $item->id;
+                    $dataItem['quantity'] = $row[7];
+                    $dataItem['item'] = $item;
+                    $dataItem['unit_value'] = $unit_value;
+                    $dataItem['affectation_igv_type_id'] = $affectation_igv->id;
+                    $dataItem['total_base_igv'] = round($row[7] * $unit_value,2);
+                    $dataItem['percentage_igv'] = $percentage_igv;
+                    $dataItem['total_igv'] = round(($unit_price-$unit_value)*$row[7],2);
+                    $dataItem['total_taxes'] = round(($unit_price-$unit_value)*$row[7],2);
+                    $dataItem['price_type_id'] = '01';
+                    $dataItem['unit_price'] = $unit_price;
+                    $dataItem['total_value'] = round($row[7] * $unit_value,2);
+                    $dataItem['total'] = round($row[7] * $unit_price,2);
+                    $dataItem['name_product_pdf'] = $row[8];
+
+                    $quotation->items()->create($dataItem);
+                    $quotation->total += $dataItem['total'];
+                    $quotation->total_taxes += $dataItem['total_taxes'];
+                    $quotation->subtotal += $dataItem['total'];
+                    $quotation->total_value += $dataItem['total_value'];
+                    $quotation->total_igv += $dataItem['total_igv'];
+                    $quotation->total_taxed += $dataItem['total_base_igv'];
+                    $quotation->total_unaffected += ($affectation_igv->free > 0)?$dataItem['total_value']:0;
+                    $quotation->save();
+                }
+
             } catch (Exception $ex) {
+
                 Log::error("No se pudo procesar la orden de produccion: " . $row[4]);
                 Log::error($ex->getMessage());
                 $noRegistered += 1;
             }
         }
-
         $this->result = compact('registered', 'noRegistered', 'surplus');
-
     }
 
     public function getData()

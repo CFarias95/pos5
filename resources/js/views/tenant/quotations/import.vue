@@ -75,7 +75,7 @@
                 if (response.success) {
                     this.$message.success(response.message)
                     console.log(response);
-                    let mensaje = "Cotizaciones generadas: "+response.data.registered + " <br/>Sobrante: "+response.data.surplus+"<br/>";
+                    let mensaje = "Cotizaciones generadas: "+response.data.registered + " <br/>Error: "+response.data.noRegistered+"<br/>";
                         this.$notify({
                             title: "",
                             dangerouslyUseHTMLString: true,

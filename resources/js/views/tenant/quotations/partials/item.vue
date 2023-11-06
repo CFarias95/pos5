@@ -1212,6 +1212,7 @@ export default {
             let affectation_igv_type_id = this.form.affectation_igv_type_id
             // let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price_value * 1.18;
             let unit_price = this.form.unit_price;
+            /*
             if (this.form.has_igv === false) {
                 if (
                     affectation_igv_type_id === "20" ||
@@ -1236,6 +1237,7 @@ export default {
 
                 }
             }
+            */
             //validar precio compra y venta
             if (this.configuration) {
                 if (this.configuration.validate_purchase_sale_unit_price) {
