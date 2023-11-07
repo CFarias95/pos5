@@ -207,6 +207,7 @@ export default {
         async getRecordsByFilter() {
 
             this.loading_submit = await true
+            this.pagination.current_page = 1
             await this.getRecords()
             this.loading_submit = await false
 

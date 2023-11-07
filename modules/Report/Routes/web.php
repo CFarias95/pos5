@@ -35,7 +35,7 @@ if ($current_hostname) {
                     Route::prefix('statement')->group(
                         function () {
                             Route::get('/', 'ReportPurchaseController@reportStatementIndex')->name('tenant.reports.purchases.statement.index');
-                            Route::get('records', 'ReportPurchaseController@reportStatementRecords')->name('tenant.reports.purchases.statement.index');
+                            Route::get('records', 'ReportPurchaseController@reportStatementRecords');
 
                         }
                     );

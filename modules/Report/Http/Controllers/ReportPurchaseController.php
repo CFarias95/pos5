@@ -29,31 +29,33 @@ class ReportPurchaseController extends Controller
     use ReportTrait;
 
 
-    public function filter() {
+    public function filter()
+    {
 
-        $document_types = DocumentType::whereIn('id', ['01', '03','GU75', 'NE76'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', 'GU75', 'NE76'])->get();
 
         $persons = $this->getPersons('suppliers');
         $sellers = $this->getSellers();
 
-        $establishments = Establishment::all()->transform(function($row) {
+        $establishments = Establishment::all()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'name' => $row->description
             ];
         });
 
-        return compact('document_types','establishments', 'persons', 'sellers');
+        return compact('document_types', 'establishments', 'persons', 'sellers');
     }
 
-    public function orderfilter() {
+    public function orderfilter()
+    {
 
-        $document_types = DocumentType::whereIn('id', ['01', '03','GU75', 'NE76'])->get();
+        $document_types = DocumentType::whereIn('id', ['01', '03', 'GU75', 'NE76'])->get();
 
         $persons = $this->getPersons('suppliers');
         $sellers = $this->getSellers();
 
-        $establishments = Establishment::all()->transform(function($row) {
+        $establishments = Establishment::all()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'name' => $row->description
@@ -62,7 +64,7 @@ class ReportPurchaseController extends Controller
 
         $orders = PurchaseOrder::get();
 
-        return compact('document_types','establishments', 'persons', 'sellers','orders');
+        return compact('document_types', 'establishments', 'persons', 'sellers', 'orders');
     }
 
     public function index(Request $request)
@@ -100,25 +102,27 @@ class ReportPurchaseController extends Controller
         return $records;
     }
 
-    public function getRecordsStatement($request){
+    public function getRecordsStatement($request)
+    {
 
         $period = FunctionController::InArray($request, 'period');
         $date_start = FunctionController::InArray($request, 'date_start');
         $date_end = FunctionController::InArray($request, 'date_end');
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
 
         $d_start = null;
         $d_end = null;
 
         switch ($period) {
             case 'month':
-                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
                 break;
             case 'between_months':
-                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
-                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
                 break;
             case 'date':
                 $d_start = $date_start;
@@ -130,28 +134,37 @@ class ReportPurchaseController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)',[$d_start, $d_end]);
-
-        $paginator = new LengthAwarePaginator($records, count($records), config('tenant.items_per_page'));
+        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)', [$d_start, $d_end]);
+        $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
+        $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
+    }
+
+    public function paginarArray($array, $paginaActual, $paginacion)
+    {
+        $inicio = ($paginaActual - 1) * $paginacion;
+        $fin = $inicio + $paginacion;
+
+        return array_slice($array, $inicio, $paginacion);
     }
 
     public function orderRecords(Request $request)
     {
         $ordernC = $request->input('order');
 
-        $compra = Purchase::where('purchase_order_id',$ordernC)->get();
+        $compra = Purchase::where('purchase_order_id', $ordernC)->get();
         $records = null;
-        if($compra->count() > 0){
-            $records = PurchaseItem::where('purchase_id',$compra[0]->id)->paginate(config('tenant.items_per_page'));
+        if ($compra->count() > 0) {
+            $records = PurchaseItem::where('purchase_id', $compra[0]->id)->paginate(config('tenant.items_per_page'));
             return new PurchaseOrderCollection($records);
-        }else{
-            $records = PurchaseItem::where('purchase_id','CARLOS')->paginate(config('tenant.items_per_page'));
+        } else {
+            $records = PurchaseItem::where('purchase_id', 'CARLOS')->paginate(config('tenant.items_per_page'));
             return new PurchaseOrderCollection($records);
         }
     }
 
-    public function pdf(Request $request) {
+    public function pdf(Request $request)
+    {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
@@ -160,37 +173,38 @@ class ReportPurchaseController extends Controller
 
         $pdf = PDF::loadView('report::purchases.report_pdf', compact("records", "company", "establishment", "filters"))->setPaper('a4', 'landscape');
 
-        $filename = 'Reporte_Compras_'.date('YmdHis');
+        $filename = 'Reporte_Compras_' . date('YmdHis');
 
-        return $pdf->download($filename.'.pdf');
+        return $pdf->download($filename . '.pdf');
     }
 
-    public function orderExcel(Request $request) {
+    public function orderExcel(Request $request)
+    {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $ordernC = $request->input('order');
-        $compra = Purchase::where('purchase_order_id',$ordernC)->get();
+        $compra = Purchase::where('purchase_order_id', $ordernC)->get();
         $records1 = null;
-        if($compra->count()>0){
-            $records1 = PurchaseItem::where('purchase_id',$compra[0]->id)->paginate(100);
-        }else{
-            $records1 = PurchaseItem::where('purchase_id','CARLOS')->paginate(100);
+        if ($compra->count() > 0) {
+            $records1 = PurchaseItem::where('purchase_id', $compra[0]->id)->paginate(100);
+        } else {
+            $records1 = PurchaseItem::where('purchase_id', 'CARLOS')->paginate(100);
         }
         $records = new PurchaseOrderCollection($records1);
         $filters = $request->all();
 
         Log::info("RECORDS: " . json_encode($records));
         return (new PurchaseOrderExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->filters($filters)
-                ->download('Reporte_CompraVsOrdenCompra_'.Carbon::now().'.xlsx');
-
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->download('Reporte_CompraVsOrdenCompra_' . Carbon::now() . '.xlsx');
     }
 
-    public function excel(Request $request) {
+    public function excel(Request $request)
+    {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
@@ -198,11 +212,10 @@ class ReportPurchaseController extends Controller
         $filters = $request->all();
 
         return (new PurchaseExport)
-                ->records($records)
-                ->company($company)
-                ->establishment($establishment)
-                ->filters($filters)
-                ->download('Reporte_Compras_'.Carbon::now().'.xlsx');
-
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->download('Reporte_Compras_' . Carbon::now() . '.xlsx');
     }
 }
