@@ -115,6 +115,7 @@ class QuotationImport implements ToCollection
                     $dataItem['item_id'] = $item->id;
                     $dataItem['quantity'] = $row[7];
                     $dataItem['item'] = $item;
+                    $dataItem['item']['name_product_pdf'] = '<p>'.$row[8].'</p>';
                     $dataItem['unit_value'] = $unit_value;
                     $dataItem['affectation_igv_type_id'] = $affectation_igv->id;
                     $dataItem['total_base_igv'] = round($row[7] * $unit_value,2);
@@ -125,7 +126,7 @@ class QuotationImport implements ToCollection
                     $dataItem['unit_price'] = $unit_price;
                     $dataItem['total_value'] = round($row[7] * $unit_value,2);
                     $dataItem['total'] = round($row[7] * $unit_price,2);
-                    $dataItem['name_product_pdf'] = $row[8];
+                    $dataItem['name_product_pdf'] = '<p>'.$row[8].'</p>';
 
                     $quotation->items()->create($dataItem);
                     $quotation->total = $dataItem['total'];

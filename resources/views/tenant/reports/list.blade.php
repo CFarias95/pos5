@@ -294,5 +294,18 @@
                 </div>
             </div>
         </div>
+        <!-- Finanzas-->
+        <div class="col-6 col-md-4 mb-4">
+            <div class="card card-dashboard card-reports">
+                <div class="card-body">
+                    <h6 class="card-title">Finanzas</h6>
+                    <ul class="card-report-links">
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.statement.index')}}">Estracto de Compras</a>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
     </div>
 @endsection

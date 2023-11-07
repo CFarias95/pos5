@@ -31,6 +31,17 @@ if ($current_hostname) {
                      * reports/purchases/records
                      */
                     Route::get('/', 'ReportPurchaseController@index')->name('tenant.reports.purchases.index');
+
+                    Route::prefix('statement')->group(
+                        function () {
+                            Route::get('/', 'ReportPurchaseController@reportStatementIndex')->name('tenant.reports.purchases.statement.index');
+                            Route::get('records', 'ReportPurchaseController@reportStatementRecords')->name('tenant.reports.purchases.statement.index');
+
+                        }
+                    );
+
+                    Route::prefix('orders')->group(function () {
+                    }); //end orders prefix
                     /** Nuevo */
 
                     Route::get('items', 'ReportPurchaseItemController@index')->name('tenant.reports.purchases.items.index');

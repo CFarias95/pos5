@@ -4,6 +4,7 @@ namespace Modules\Report\Http\Controllers;
 
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\FunctionController;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\PurchaseExport;
 use Illuminate\Http\Request;
@@ -13,6 +14,8 @@ use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\PurchaseItem;
 use Carbon\Carbon;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Modules\Purchase\Http\Controllers\PurchaseOrderController;
 use Modules\Purchase\Models\PurchaseOrder;
@@ -69,6 +72,14 @@ class ReportPurchaseController extends Controller
         return view('report::purchases.index', compact('apply_conversion_to_pen'));
     }
 
+    public function reportStatementIndex(Request $request)
+    {
+        $apply_conversion_to_pen = $this->applyConversiontoPen($request);
+
+        return view('report::purchase_statement.index', compact('apply_conversion_to_pen'));
+    }
+
+
     public function orders(Request $request)
     {
         $apply_conversion_to_pen = $this->applyConversiontoPen($request);
@@ -81,6 +92,48 @@ class ReportPurchaseController extends Controller
         $records = $this->getRecords($request->all(), Purchase::class);
 
         return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
+    }
+
+    public function reportStatementRecords(Request $request)
+    {
+        $records = $this->getRecordsStatement($request->all());
+        return $records;
+    }
+
+    public function getRecordsStatement($request){
+
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end.'-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)',[$d_start, $d_end]);
+
+        $paginator = new LengthAwarePaginator($records, count($records), config('tenant.items_per_page'));
+        return $paginator;
     }
 
     public function orderRecords(Request $request)
