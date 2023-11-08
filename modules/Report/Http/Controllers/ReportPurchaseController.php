@@ -222,9 +222,40 @@ class ReportPurchaseController extends Controller
     public function excelStatement(Request $request)
     {
 
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)', [$d_start, $d_end]);
+
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = $this->getRecordsStatement($request);
+
         $filters = $request->all();
 
         return (new PurchaseStatementExport)
