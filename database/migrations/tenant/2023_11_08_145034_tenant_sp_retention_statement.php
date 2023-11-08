@@ -47,6 +47,8 @@ class TenantSpRetentionStatement extends Migration
         left join cat_retention_types as cr on pi.retention_type_id_income = cr.id
         where p.date_of_issue >= @desde
         and  p.date_of_issue <= @hasta
+        AND (0 = supplier_id OR pr.id = supplier_id)
+        AND (0 = import_id OR i.id = import_id)
         and pi.retention_type_id_income IS NOT NULL
         UNION ALL
         select
