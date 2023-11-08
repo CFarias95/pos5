@@ -301,7 +301,7 @@
                     <h6 class="card-title">Finanzas</h6>
                     <ul class="card-report-links">
                         <li>
-                            <a href="{{route('tenant.reports.purchases.statement.index')}}">Estracto de Compras</a>
+                            <a href="{{route('tenant.reports.purchases.statement.index')}}">Extracto de Compras</a>
                         </li>
                     </ul>
                 </div>

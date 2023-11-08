@@ -87,7 +87,7 @@ class ToPay
         $purchases = DB::connection('tenant')
             ->table('purchases')
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
-            ->whereIn('document_type_id', ['01', '03', 'GU75', 'NE76'])
+            ->whereIn('document_type_id', ['01', '03', 'GU75', 'NE76','376'])
             ->join('persons', 'persons.id', '=', 'purchases.supplier_id')
             ->leftJoinSub($purchase_payments, 'payments', function ($join) {
                 $join->on('purchases.id', '=', 'payments.purchase_id');
