@@ -5,11 +5,11 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Compras</title>
+        <title>Finanzas</title>
     </head>
     <body>
         <div>
-            <h3 align="center" class="title"><strong>Extracto Compras</strong></h3>
+            <h3 align="center" class="title"><strong>{{$title}}</strong></h3>
         </div>
         <br>
         <div style="margin-top:20px; margin-bottom:15px;">

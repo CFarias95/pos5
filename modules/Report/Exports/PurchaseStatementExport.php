@@ -36,10 +36,17 @@ class PurchaseStatementExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
+    public function title($title) {
+        $this->title = $title;
+
+        return $this;
+    }
+
     public function view(): View {
         return view('report::purchase_statement.report_excel', [
             'records'=> $this->records,
             'company' => $this->company,
+            'title' => $this->title,
             'establishment'=>$this->establishment,
             'filters'=>$this->filters
         ]);

@@ -299,6 +299,7 @@ class ReportPurchaseController extends Controller
             ->company($company)
             ->establishment($establishment)
             ->filters($filters)
+            ->title('Extracto Compras')
             ->download('Extracto_Compras_' . Carbon::now() . '.xlsx');
     }
 }

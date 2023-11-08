@@ -20,9 +20,10 @@ if ($current_hostname) {
                 Route::get('data-table/persons/{type}', 'ReportController@dataTablePerson');
                 Route::get('data-table/items', 'ReportController@dataTableItem');
 
-                Route::get('retentions')->name('tenant.reports.retentions.statement.index');
-                Route::get('retentions/records');
-                Route::get('retentions/excel');
+                Route::get('retentions','ReportsFinancesController@reportRetentionIndex')->name('tenant.reports.retentions.statement.index');
+                Route::get('retentions/records', 'ReportsFinancesController@reportRetentionRecords');
+                Route::get('retentions/excel','ReportsFinancesController@excelRetentions');
+                Route::get('retentions/tables','ReportsFinancesController@tablesStatement');
 
                 Route::prefix('purchases')->group(function () {
                     /**
