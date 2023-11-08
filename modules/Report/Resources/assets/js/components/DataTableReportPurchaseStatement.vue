@@ -47,13 +47,13 @@
 
                     <div class="col-md-3">
                         <label class="control-label">Proveedor</label>
-                        <el-select v-model="form.supplier">
+                        <el-select v-model="form.supplier" filterable clearable>
                             <el-option v-for="supplier in suppliers" :key="supplier.id" :label="supplier.name" :value="supplier.id"></el-option>
                         </el-select>
                     </div>
                     <div class="col-md-3">
                         <label class="control-label">Importación</label>
-                        <el-select v-model="form.import">
+                        <el-select v-model="form.import" filterable clearable>
                             <el-option v-for="row in imports" :key="row.id" :label="row.name" :value="row.id"></el-option>
                         </el-select>
                     </div>
