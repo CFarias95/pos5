@@ -85,6 +85,7 @@ class PurchaseItem extends ModelTenant
         'has_igv' => 'bool',
         'unit_price' => 'float',
         'unit_value' => 'float',
+        'attributes' => 'json',
     ];
 
 

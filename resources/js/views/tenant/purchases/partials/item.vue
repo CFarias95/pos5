@@ -177,7 +177,8 @@
                             </div>
                         </div>
                         <div v-if="form.item_id" class="col-md-6 mt-2">
-                            <div v-if="form.item.lots_enabled" :class="{ 'has-danger': errors.lot_code }" class="form-group">
+                            <div v-if="form.item.lots_enabled" :class="{ 'has-danger': errors.lot_code }"
+                                class="form-group">
                                 <label class="control-label">
                                     Código lote
                                 </label>
@@ -678,12 +679,18 @@ export default {
 
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.has_service_taxes = (this.recordItem.total_service_taxes > 0) ? true : false
-                //this.form.purchase_has_igv = this.recordItem.purchase_has_igv
+
                 this.form.has_igv = this.recordItem.has_igv
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
                 this.form.import = this.recordItem.import
-                this.form.attributes = this.recordItem.attributes;
+
+                for (const key in this.recordItem.attributes) {
+                    const person = this.recordItem.attributes[key];
+                    this.form.attributes.push(person)
+                    console.log(person);
+                }
+
                 this.form.discounts = this.recordItem.discounts;
                 this.form.charges = this.recordItem.charges;
 
@@ -854,7 +861,7 @@ export default {
                 update_date_of_due: false,
                 update_purchase_price: this.config.checked_update_purchase_price,
                 concepto: null,
-                import:null,
+                import: null,
                 // update_purchase_price: true,
             }
 
@@ -978,7 +985,7 @@ export default {
             const val = _.find(this.retention_types_iva, { 'id': event });
             const item = { ..._.find(this.items, { 'id': this.form.item_id }) };
 
-            console.log("retention_types_iva: ",this.form.has_igv)
+            console.log("retention_types_iva: ", this.form.has_igv)
 
 
             if (val && val.type_id == '02') {
@@ -1019,7 +1026,7 @@ export default {
             //console.log("changeRetentionTypeIncome: ",this.val)
 
             if (val && val.type_id == '01') {
-                if ( this.form.has_igv) {
+                if (this.form.has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.12), 4)

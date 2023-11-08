@@ -68,7 +68,7 @@ class Purchase extends ModelTenant
 {
     // use SoftDeletes;
 
-protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'document_type2','currency_type', 'group', 'items','purchase_payments'/*, 'retention_type'*/];
+    protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'document_type2', 'currency_type', 'group', 'items', 'purchase_payments'/*, 'retention_type'*/];
 
     protected $fillable = [
         'user_id',
@@ -169,92 +169,92 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
 
     public function getSupplierAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setSupplierAttribute($value)
     {
-        $this->attributes['supplier'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['supplier'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getChargesAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setChargesAttribute($value)
     {
-        $this->attributes['charges'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['charges'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getDiscountsAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setDiscountsAttribute($value)
     {
-        $this->attributes['discounts'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['discounts'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getPrepaymentsAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setPrepaymentsAttribute($value)
     {
-        $this->attributes['prepayments'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['prepayments'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getGuidesAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setGuidesAttribute($value)
     {
-        $this->attributes['guides'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['guides'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getRelatedAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setRelatedDocumentsAttribute($value)
     {
-        $this->attributes['related'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['related'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getPerceptionAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setPerceptionAttribute($value)
     {
-        $this->attributes['perception'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['perception'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getDetractionAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setDetractionAttribute($value)
     {
-        $this->attributes['detraction'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['detraction'] = (is_null($value)) ? null : json_encode($value);
     }
 
     public function getLegendsAttribute($value)
     {
-        return (is_null($value))?null:(object) json_decode($value);
+        return (is_null($value)) ? null : (object) json_decode($value);
     }
 
     public function setLegendsAttribute($value)
     {
-        $this->attributes['legends'] = (is_null($value))?null:json_encode($value);
+        $this->attributes['legends'] = (is_null($value)) ? null : json_encode($value);
     }
 
     /**
@@ -307,7 +307,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
 
     public function document_type2()
     {
-        return $this->belongsTo(PurchaseDocumentTypes2::class, 'document_type_intern','idType');
+        return $this->belongsTo(PurchaseDocumentTypes2::class, 'document_type_intern', 'idType');
     }
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
@@ -320,7 +320,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function supplier() {
+    public function supplier()
+    {
         return $this->belongsTo(Person::class, 'supplier_id');
     }
 
@@ -345,7 +346,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      */
     public function getNumberFullAttribute()
     {
-        return $this->series.'-'.$this->number;
+        return $this->series . '-' . $this->number;
     }
 
     public function getNumber()
@@ -404,17 +405,16 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      *
      * @return \Illuminate\Database\Query\Builder|\Illuminate\Database\Eloquent\Builder|null
      */
-    public function scopeWhereTypeUser( $query, $params= [])
+    public function scopeWhereTypeUser($query, $params = [])
     {
         /** @var \App\Models\Tenant\User $user */
-        if(isset($params['user_id'])) {
+        if (isset($params['user_id'])) {
             $user_id = (int)$params['user_id'];
             $user = User::find($user_id);
-            if(!$user) {
+            if (!$user) {
                 $user = new User();
             }
-        }
-        else {
+        } else {
             $user = auth()->user();
         }
         return ($user->type === 'seller') ? $query->where('user_id', $user->id) : null;
@@ -436,7 +436,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      */
     public function scopeWhereStateTypeAccepted($query)
     {
-        return $query->whereIn('state_type_id', ['01','03','05','07','13']);
+        return $query->whereIn('state_type_id', ['01', '03', '05', '07', '13']);
     }
 
     /**
@@ -450,7 +450,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
      */
-    public function customer() {
+    public function customer()
+    {
         return $this->belongsTo(Person::class, 'customer_id');
     }
 
@@ -468,7 +469,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeDasboardSalePurchase( $query, $establishment_id = 0) {
+    public function scopeDasboardSalePurchase($query, $establishment_id = 0)
+    {
         $query->without(
             [
                 'user', 'soap_type', 'state_type', 'document_type', 'currency_type', 'group', 'items',
@@ -478,10 +480,16 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
         $query->WhereStateTypeAccepted();
         $query->where('establishment_id', $establishment_id);
         $query->select(
-            'id', 'state_type_id', 'establishment_id', 'currency_type_id', 'total', 'exchange_rate_sale',
-            'total_perception', 'date_of_issue',
-            \DB::raw( "(CASE WHEN currency_type_id = 'PEN' THEN total ELSE (exchange_rate_sale * total) END) as total_purchase"),
-            \DB::raw( "(CASE WHEN currency_type_id = 'PEN' THEN total_perception ELSE (exchange_rate_sale * total_perception) END) as total_perception_purchase")
+            'id',
+            'state_type_id',
+            'establishment_id',
+            'currency_type_id',
+            'total',
+            'exchange_rate_sale',
+            'total_perception',
+            'date_of_issue',
+            \DB::raw("(CASE WHEN currency_type_id = 'PEN' THEN total ELSE (exchange_rate_sale * total) END) as total_purchase"),
+            \DB::raw("(CASE WHEN currency_type_id = 'PEN' THEN total_perception ELSE (exchange_rate_sale * total_perception) END) as total_perception_purchase")
         );
 
         return $query;
@@ -496,7 +504,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      *
      * @return \Illuminate\Database\Eloquent\Builder
      */
-    public function scopeOnlyDateOfIssueByYear($query, $year = 0) {
+    public function scopeOnlyDateOfIssueByYear($query, $year = 0)
+    {
         if ($year == 0) {
             $year = (int)Carbon::now()->format('Y');
         }
@@ -510,14 +519,16 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      *
      * @return string
      */
-    protected static function NumberFormat($number,$decimal = 2){
-        return number_format($number,$decimal,'.','');
+    protected static function NumberFormat($number, $decimal = 2)
+    {
+        return number_format($number, $decimal, '.', '');
     }
 
     /**
      * @return array
      */
-    public function  getCollectionData() {
+    public function  getCollectionData()
+    {
         $total = $this->total;
         if ($this->total_perception) {
             $total += round($this->total_perception, 2);
@@ -532,7 +543,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
                 $customer_name = $customer->name;
             }
         }
-            /*
+        /*
             alone_number
             internal_id
             brand
@@ -546,23 +557,23 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
             */
 
 
-                            // --    total_item_purchase
-                            // --    utility_item
+        // --    total_item_purchase
+        // --    utility_item
 
         $guides = (array)$this->guides;
 
-        $retencionesID = RetentionsEC::where('idDocumento',$this->id)->get();
+        $retencionesID = RetentionsEC::where('idDocumento', $this->id)->get();
         $retencoinesArray = [];
         $idRetentionsState = '';
         $nameRetentionsState = 'N/A';
         $fileRetentions = '';
         $idRetentions = null;
 
-        if($retencionesID && $retencionesID->count() > 0){
+        if ($retencionesID && $retencionesID->count() > 0) {
             //Log::info(json_encode($retencionesID));
-            $retencoinesArray =  RetentionsDetailEC::where('idRetencion',$retencionesID[0]->idRetencion)->get();
-            $idRetentionsState = ( $retencionesID->count() > 0 )? $retencionesID[0]->status_id:'';
-            $estados = RetencionesStateTypes::where('idEstado',$retencionesID[0]->status_id)->get();
+            $retencoinesArray =  RetentionsDetailEC::where('idRetencion', $retencionesID[0]->idRetencion)->get();
+            $idRetentionsState = ($retencionesID->count() > 0) ? $retencionesID[0]->status_id : '';
+            $estados = RetencionesStateTypes::where('idEstado', $retencionesID[0]->status_id)->get();
             $nameRetentionsState = $estados[0]->name;
             $fileRetentions = $retencionesID[0]->claveAcceso;
             $idRetentions = $retencionesID[0]->id;
@@ -571,13 +582,13 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
 
         //Log::info("RETENCIONES: ".json_encode($retencoinesArray));
 
-        foreach($retencoinesArray as $key => $retencionLocal){
+        foreach ($retencoinesArray as $key => $retencionLocal) {
 
-            $catType = RetentionType::where('code',$retencionLocal->codRetencion)->get();
+            $catType = RetentionType::where('code', $retencionLocal->codRetencion)->get();
             //Log::info("RETENCIONES: ".json_encode($catType));
-            if($catType &&  $catType->count() > 0 ){
+            if ($catType &&  $catType->count() > 0) {
                 $tipo = 'RENTA';
-                if($catType[0]->type_id == '01'){
+                if ($catType[0]->type_id == '01') {
                     $tipo = 'IVA';
                 }
                 $retMejora[] = [
@@ -585,7 +596,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
                     'type' => $tipo,
                     'serie' => $retencionLocal->idRetencion,
                     'description' => $catType[0]->description,
-                    'value' => round($retencionLocal->valorRet,2)
+                    'value' => round($retencionLocal->valorRet, 2)
                 ];
             }
         }
@@ -649,7 +660,7 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
             'retenciones_id' => $idRetentions,
             'retenciones_state_name' => $nameRetentionsState,
             'retenciones_unique_name' => $fileRetentions,
-            'print_a4'                       => url('')."/purchases/print/{$this->external_id}/a4",
+            'print_a4'                       => url('') . "/purchases/print/{$this->external_id}/a4",
             'filename'                         => $this->filename,
         ];
     }
@@ -663,8 +674,8 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
     public function scopeWhereValuedKardexFormatSunat($query, $params)
     {
         return $query->whereStateTypeAccepted()
-                    ->whereTypeUser()
-                    ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
+            ->whereTypeUser()
+            ->whereBetween('date_of_issue', [$params->date_start, $params->date_end]);
     }
 
     /**
@@ -693,7 +704,6 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
     {
         /** @var stdClass $guide */
         return (array) $this->guides;
-
     }
 
 
@@ -816,9 +826,10 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
      */
     public function getCashPayments()
     {
-        return $this->payments()->whereFilterCashPayment()->get()->transform(function($row){{
-            return $row->getRowResourceCashPayment();
-        }});
+        return $this->payments()->whereFilterCashPayment()->get()->transform(function ($row) { {
+                return $row->getRowResourceCashPayment();
+            }
+        });
     }
 
 
@@ -870,12 +881,10 @@ protected $with = ['user', 'soap_type', 'state_type', 'document_type',  'documen
     public function scopeFilterRelationsGlobalPayment($query)
     {
         return $query->whereFilterWithOutRelations()
-                    ->with([
-                        'document_type'=> function($q){
-                            $q->select('id', 'description');
-                        },
-                    ]);
+            ->with([
+                'document_type' => function ($q) {
+                    $q->select('id', 'description');
+                },
+            ]);
     }
-
-
 }
