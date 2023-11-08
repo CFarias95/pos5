@@ -49,18 +49,20 @@
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
                         </el-button>
+                        <el-button v-if="this.records.length > 0" icon="el-icon-excel" type="success"
+                            @click.prevent="clickDownload('excel')">Descargar excel
+                        </el-button>
+
                     </div>
 
                 </div>
                 <div class="row mt-1 mb-4">
-
                 </div>
             </div>
 
-
             <div class="col-md-12">
                 <div class="table-responsive">
-                    <table class="table">
+                    <table class="table" v-if="this.records.length > 0">
                         <thead>
                             <tr>
                                 <th v-for="(rowH, indexH) in all_keys">{{ rowH }}</th>
@@ -70,6 +72,9 @@
                             <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row"></slot>
                         </tbody>
                     </table>
+                    <div v-else>
+                        <el-alert title="No Data" description="No se encontraron registros para mostrar" type="error" effect="dark" :closable="false" show-icon center />
+                    </div>
                     <div>
                         <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
                             :total="pagination.total" layout="total, prev, pager, next" @current-change="getRecords">
@@ -189,7 +194,7 @@ export default {
             delete (query.user_id)
             delete (query.document_type_id)
 
-            window.open(`/${this.resource}/${type}/?${query}&user_id=${JSON.stringify(this.form.user_id)}&document_type_id=${JSON.stringify(this.form.document_type_id)}`, '_blank');
+            window.open(`/${this.resource}/${type}/?${query}`, '_blank');
         },
 
         initForm() {
@@ -220,10 +225,14 @@ export default {
                 delete dataR.data.data
                 this.pagination = dataR
                 this.pagination.per_page = parseInt(response.data.per_page)
-                var keys = Object.keys(this.records[0]);
-                this.all_keys = keys
+                if(this.records.length > 0){
+
+                    var keys = Object.keys(this.records[0]);
+                    this.all_keys = keys
+                }
+
                 this.loading_submit = false
-                console.log(this.all_keys);
+
             });
 
         },

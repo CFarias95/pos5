@@ -21,6 +21,7 @@ use Modules\Purchase\Http\Controllers\PurchaseOrderController;
 use Modules\Purchase\Models\PurchaseOrder;
 use Modules\Purchase\Models\PurchaseOrderItem;
 use Modules\Report\Exports\PurchaseOrderExport;
+use Modules\Report\Exports\PurchaseStatementExport;
 use Modules\Report\Http\Resources\PurchaseCollection;
 use Modules\Report\Http\Resources\PurchaseOrderCollection;
 
@@ -217,5 +218,20 @@ class ReportPurchaseController extends Controller
             ->establishment($establishment)
             ->filters($filters)
             ->download('Reporte_Compras_' . Carbon::now() . '.xlsx');
+    }
+    public function excelStatement(Request $request)
+    {
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $records = $this->getRecordsStatement($request);
+        $filters = $request->all();
+
+        return (new PurchaseStatementExport)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->download('Extracto_Compras_' . Carbon::now() . '.xlsx');
     }
 }

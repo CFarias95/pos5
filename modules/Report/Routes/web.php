@@ -36,6 +36,7 @@ if ($current_hostname) {
                         function () {
                             Route::get('/', 'ReportPurchaseController@reportStatementIndex')->name('tenant.reports.purchases.statement.index');
                             Route::get('records', 'ReportPurchaseController@reportStatementRecords');
+                            Route::get('excel', 'ReportPurchaseController@excelStatement');
 
                         }
                     );
