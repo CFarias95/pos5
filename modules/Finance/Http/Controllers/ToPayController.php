@@ -56,7 +56,7 @@ class ToPayController extends Controller
     public function filter()
     {
 
-        $supplier_temp = Person::whereType('suppliers')->orderBy('name')->take(100)->get()->transform(function ($row) {
+        $supplier_temp = Person::whereType('suppliers')->orderBy('name')->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number . ' - ' . $row->name,
