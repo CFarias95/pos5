@@ -45,6 +45,19 @@
                         </div>
                     </template>
 
+                    <div class="col-md-3">
+                        <label class="control-label">Proveedor</label>
+                        <el-select v-model="form.supplier">
+                            <el-option v-for="supplier in suppliers" :key="supplier.id" :label="supplier.name" :value="supplier.id"></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="control-label">Importación</label>
+                        <el-select v-model="form.import">
+                            <el-option v-for="row in imports" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                        </el-select>
+                    </div>
+
                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
@@ -152,7 +165,9 @@ export default {
             sellers: [],
             items: [],
             all_keys: [],
-            loading_search_items: false
+            loading_search_items: false,
+            imports : [],
+            suppliers : [],
         }
     },
     computed: {
@@ -170,6 +185,7 @@ export default {
     },
     async mounted() {
 
+        await this.getFilters()
         await this.getRecords()
     },
     methods: {
@@ -204,6 +220,8 @@ export default {
                 date_end: moment().format('YYYY-MM-DD'),
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
+                import : 0,
+                supplier : 0,
             }
         },
         customIndex(index) {
@@ -216,6 +234,14 @@ export default {
             await this.getRecords()
             this.loading_submit = await false
 
+        },
+        async getFilters(){
+
+            await this.$http.get(`/${this.resource}/tables`).then((response) => {
+                this.suppliers = response.data.suppliers
+                this.imports = response.data.imports
+
+            });
         },
         getRecords() {
 

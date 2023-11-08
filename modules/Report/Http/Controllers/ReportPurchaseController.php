@@ -12,6 +12,8 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Imports;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\PurchaseItem;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -112,6 +114,8 @@ class ReportPurchaseController extends Controller
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
 
         $d_start = null;
         $d_end = null;
@@ -135,7 +139,7 @@ class ReportPurchaseController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)', [$d_start, $d_end]);
+        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?, ?, ?)', [$d_start, $d_end,$supplier, $import]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -219,6 +223,36 @@ class ReportPurchaseController extends Controller
             ->filters($filters)
             ->download('Reporte_Compras_' . Carbon::now() . '.xlsx');
     }
+
+    public function tablesStatement(){
+        $suppliersB = Person::where('type','suppliers')->get()->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->name
+            ];
+        });
+
+
+        $suppliersT[] = [
+            'id' => 0,
+            'name' => 'todos'
+        ];
+        $suppliers = array_merge($suppliersT,$suppliersB->toArray());
+        $importsB = Imports::all()->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->numeroImportacion
+            ];
+        });
+        $importsT[] = [
+            'id' => 0,
+            'name' => 'todos'
+        ];
+        $imports = array_merge($importsT,$importsB->toArray());
+
+        return compact("suppliers","imports");
+
+    }
     public function excelStatement(Request $request)
     {
 
@@ -228,6 +262,8 @@ class ReportPurchaseController extends Controller
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
 
         $d_start = null;
         $d_end = null;
@@ -251,7 +287,7 @@ class ReportPurchaseController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?)', [$d_start, $d_end]);
+        $records = DB::connection('tenant')->select('CALL SP_purchase_statement(?, ?, ? ,?)', [$d_start, $d_end,$supplier,$import]);
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;

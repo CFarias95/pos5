@@ -20,6 +20,9 @@ if ($current_hostname) {
                 Route::get('data-table/persons/{type}', 'ReportController@dataTablePerson');
                 Route::get('data-table/items', 'ReportController@dataTableItem');
 
+                Route::get('retentions')->name('tenant.reports.retentions.statement.index');
+                Route::get('retentions/records');
+                Route::get('retentions/excel');
 
                 Route::prefix('purchases')->group(function () {
                     /**
@@ -37,7 +40,7 @@ if ($current_hostname) {
                             Route::get('/', 'ReportPurchaseController@reportStatementIndex')->name('tenant.reports.purchases.statement.index');
                             Route::get('records', 'ReportPurchaseController@reportStatementRecords');
                             Route::get('excel', 'ReportPurchaseController@excelStatement');
-
+                            Route::get('tables', 'ReportPurchaseController@tablesStatement');
                         }
                     );
 
@@ -85,8 +88,6 @@ if ($current_hostname) {
                         Route::get('datosSP', 'ReportBaseImpuestosController@datosSP');
                     });
                 });
-
-
                 /**
                  * /reports/sales
                  * /reports/sales/pdf
@@ -127,22 +128,26 @@ if ($current_hostname) {
                         ->name('tenant.reports.sale_notes.records');
                 });
 
-                Route::get('quotations', 'ReportQuotationController@index')
-                    ->name('tenant.reports.quotations.index');
-                Route::get('quotations/pdf', 'ReportQuotationController@pdf')
-                    ->name('tenant.reports.quotations.pdf');
-                Route::get('quotations/excel', 'ReportQuotationController@excel')
-                    ->name('tenant.reports.quotations.excel');
-                Route::get('quotations/filter', 'ReportQuotationController@filter')
-                    ->name('tenant.reports.quotations.filter');
-                Route::get('quotations/records', 'ReportQuotationController@records')
-                    ->name('tenant.reports.quotations.records');
+                Route::prefix('quotations')->group(function () {
+                    Route::get('', 'ReportQuotationController@index')
+                        ->name('tenant.reports.quotations.index');
+                    Route::get('pdf', 'ReportQuotationController@pdf')
+                        ->name('tenant.reports.quotations.pdf');
+                    Route::get('excel', 'ReportQuotationController@excel')
+                        ->name('tenant.reports.quotations.excel');
+                    Route::get('filter', 'ReportQuotationController@filter')
+                        ->name('tenant.reports.quotations.filter');
+                    Route::get('records', 'ReportQuotationController@records')
+                        ->name('tenant.reports.quotations.records');
+                });
 
-                Route::get('cash', 'ReportCashController@index')->name('tenant.reports.cash.index');
-                Route::get('cash/pdf', 'ReportCashController@pdf')->name('tenant.reports.cash.pdf');
-                Route::get('cash/excel', 'ReportCashController@excel')->name('tenant.reports.cash.excel');
-                Route::get('cash/filter', 'ReportCashController@filter')->name('tenant.reports.cash.filter');
-                Route::get('cash/records', 'ReportCashController@records')->name('tenant.reports.cash.records');
+                Route::prefix('cash')->group(function(){
+                    Route::get('', 'ReportCashController@index')->name('tenant.reports.cash.index');
+                    Route::get('pdf', 'ReportCashController@pdf')->name('tenant.reports.cash.pdf');
+                    Route::get('excel', 'ReportCashController@excel')->name('tenant.reports.cash.excel');
+                    Route::get('filter', 'ReportCashController@filter')->name('tenant.reports.cash.filter');
+                    Route::get('records', 'ReportCashController@records')->name('tenant.reports.cash.records');
+                });
 
                 /**
                  * reports/document-hotels
