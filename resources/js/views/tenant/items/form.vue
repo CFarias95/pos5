@@ -1680,7 +1680,7 @@ export default {
 
             if (is_exonerated) {
                 this.show_has_igv = false
-                this.form.has_igv = true
+                this.form.has_igv = false
             } else {
                 //JOINSOFTWARE//
                 this.show_has_igv = true
@@ -1694,7 +1694,7 @@ export default {
 
             if (is_exonerated) {
                 this.purchase_show_has_igv = false
-                this.form.purchase_has_igv = true
+                this.form.purchase_has_igv = false
             } else {
                 this.purchase_show_has_igv = true
             }
