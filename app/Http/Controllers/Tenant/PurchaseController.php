@@ -707,6 +707,7 @@ class PurchaseController extends Controller
 
                 if(isset($importCTA)){
 
+                    /*
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id = $importCTA;
@@ -714,7 +715,8 @@ class PurchaseController extends Controller
                     $detalle->haber = 0;
                     $detalle->debe = $document->total;
                     $detalle->save();
-
+                    */
+                    
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
                     $detalle2->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
@@ -736,6 +738,7 @@ class PurchaseController extends Controller
                         $importCTAItem = $value->import;
                         $ctaImportItem = Imports::find($importCTAItem);
                         $itemCTA = "";
+
                         if ($ctaImportItem && $ctaImportItem->count() > 0) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
