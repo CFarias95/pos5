@@ -30,6 +30,21 @@ if ($current_hostname) {
                 Route::get('payable/excel','ReportsFinancesController@excelPayable');
                 Route::get('payable/tables','ReportsFinancesController@tablesStatement');
 
+                Route::get('receivable','ReportsFinancesController@reportReceivableIndex')->name('tenant.reports.receivable.statement.index');
+                Route::get('receivable/records', 'ReportsFinancesController@reportReceivableRecords');
+                Route::get('receivable/excel','ReportsFinancesController@excelReceivable');
+                Route::get('receivable/tables','ReportsFinancesController@tablesStatement');
+
+                Route::get('topay','ReportsFinancesController@reportToPayIndex')->name('tenant.reports.topay.statement.index');
+                Route::get('topay/records', 'ReportsFinancesController@reportToPayRecords');
+                Route::get('topay/excel','ReportsFinancesController@excelToPay');
+                Route::get('topay/tables','ReportsFinancesController@tablesStatement');
+
+                Route::get('tocollect','ReportsFinancesController@reportToCollectIndex')->name('tenant.reports.tocollect.statement.index');
+                Route::get('tocollect/records', 'ReportsFinancesController@reportToCollectRecords');
+                Route::get('tocollect/excel','ReportsFinancesController@excelToCollect');
+                Route::get('tocollect/tables','ReportsFinancesController@tablesStatement');
+
                 Route::prefix('purchases')->group(function () {
                     /**
                      * reports/purchases/

@@ -309,6 +309,15 @@
                         <li>
                             <a href="{{route('tenant.reports.payable.statement.index')}}">Extracto Cuentas por Pagar</a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.reports.receivable.statement.index')}}">Extracto Cuentas por Cobrar</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.topay.statement.index')}}">Cuentas por Pagar</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.tocollect.statement.index')}}">Cuentas por Cobrar</a>
+                        </li>
 
                     </ul>
                 </div>

@@ -188,7 +188,9 @@ Vue.component('tenant-report-items-extra-index', require('../../modules/Report/R
 Vue.component('tenant-report-purchase-statement-index', require('../../modules/Report/Resources/assets/js/views/purchase_statement/index.vue'));
 Vue.component('tenant-report-retention-statement-index', require('../../modules/Report/Resources/assets/js/views/finances/retentions/index.vue'));
 Vue.component('tenant-report-payable-statement-index', require('../../modules/Report/Resources/assets/js/views/finances/payable/index.vue'));
-
+Vue.component('tenant-report-receivable-statement-index', require('../../modules/Report/Resources/assets/js/views/finances/receivable/index.vue'));
+Vue.component('tenant-report-to-pay-statement-index', require('../../modules/Report/Resources/assets/js/views/finances/toPay/index.vue'));
+Vue.component('tenant-report-to-collect-statement-index', require('../../modules/Report/Resources/assets/js/views/finances/toCollect/index.vue'));
 
 Vue.component('tenant-report-download-tray-index', require('../../modules/Report/Resources/assets/js/views/download_tray/index.vue'));
 

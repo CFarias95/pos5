@@ -207,9 +207,7 @@ export default {
     },
     async mounted() {
 
-        await this.getFilters()
-        await this.getRecords()
-        if(this.resource == 'reports/payable'){
+        if(this.resource == 'reports/payable' || this.resource == 'reports/receivable' || this.resource == 'reports/topay'){
             this.show_imports = false
             this.show_suppliers = false
             this.dates_array = [
@@ -219,7 +217,12 @@ export default {
                     'value': 'date'
                 }
             ]
+            this.form.period = 'date'
         }
+
+        await this.getFilters()
+        await this.getRecords()
+
     },
     methods: {
 

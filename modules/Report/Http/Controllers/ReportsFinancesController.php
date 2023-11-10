@@ -37,11 +37,28 @@ class ReportsFinancesController extends Controller
         return view('report::finances.retentions.index');
     }
 
-    //index para reporte de cuentas por pagar
+    //index para reporte extracto de cuentas por pagar
     public function reportPayableIndex(Request $request)
     {
-
         return view('report::finances.payable.index');
+    }
+
+    //index para reporte extracto de cuentas por cobrar
+    public function reportReceivableIndex(Request $request)
+    {
+        return view('report::finances.receivable.index');
+    }
+
+    //index para reporte de cuentas por pagar
+    public function reportToPayIndex(Request $request)
+    {
+        return view('report::finances.toPay.index');
+    }
+
+    //index para reporte de cuentas por cobrar
+    public function reportToCollectIndex(Request $request)
+    {
+        return view('report::finances.toCollect.index');
     }
 
     //RECORDS DE RETENCIONES
@@ -51,7 +68,7 @@ class ReportsFinancesController extends Controller
         return $records;
     }
 
-    //RECORDS DE CUENTAS POR PAGAR
+    //RECORDS EXTRACTO DE CUENTAS POR PAGAR
     public function reportPayableRecords(Request $request)
     {
         $period = FunctionController::InArray($request, 'period');
@@ -84,8 +101,88 @@ class ReportsFinancesController extends Controller
                 $d_end = $date_end;
                 break;
         }
-        Log::info("fecha de consulta ".$d_start);
+
         $records = DB::connection('tenant')->select('CALL SP_payable_statement(?)', [$d_start]);
+        $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
+        $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
+        return $paginator;
+    }
+
+    //RECORDS EXTRACTO DE CUENTAS POR COBRAR
+    public function reportReceivableRecords(Request $request)
+    {
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?)', [$d_start]);
+        $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
+        $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
+        return $paginator;
+    }
+
+    //RECORDS DE CUENTAS POR PAGAR
+    public function reportToPayRecords(Request $request)
+    {
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?)', [$d_start]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -389,5 +486,99 @@ class ReportsFinancesController extends Controller
             ->filters($filters)
             ->title('Extracto Cuentas por Pagar')
             ->download('Extracto_Cuentas_por_Pagar_' . Carbon::now() . '.xlsx');
+    }
+
+    public function excelReceivable(Request $request){
+
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?)', [$d_start]);
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $filters = $request->all();
+
+        return (new PurchaseStatementExport)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->title('Extracto Cuentas por Cobrar')
+            ->download('Extracto_Cuentas_por_Cobrar_' . Carbon::now() . '.xlsx');
+    }
+
+    public function excelToPay(Request $request){
+
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?)', [$d_start]);
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $filters = $request->all();
+
+        return (new PurchaseStatementExport)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->title('Cuentas por Pagar')
+            ->download('Cuentas_por_Pagar_' . Carbon::now() . '.xlsx');
     }
 }
