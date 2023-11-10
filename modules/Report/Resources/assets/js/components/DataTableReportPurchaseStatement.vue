@@ -9,10 +9,7 @@
                     <div class="col-md-3">
                         <label class="control-label">Periodo</label>
                         <el-select v-model="form.period" @change="changePeriod">
-                            <el-option key="month" label="Por mes" value="month"></el-option>
-                            <el-option key="between_months" label="Entre meses" value="between_months"></el-option>
-                            <el-option key="date" label="Por fecha" value="date"></el-option>
-                            <el-option key="between_dates" label="Entre fechas" value="between_dates"></el-option>
+                            <el-option v-for=" row in dates_array" :key="row.key" :label="row.name" :value="row.value"/>
                         </el-select>
                     </div>
                     <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -45,13 +42,14 @@
                         </div>
                     </template>
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" v-if="show_suppliers">
                         <label class="control-label">Proveedor</label>
                         <el-select v-model="form.supplier" filterable clearable>
                             <el-option v-for="supplier in suppliers" :key="supplier.id" :label="supplier.name" :value="supplier.id"></el-option>
                         </el-select>
                     </div>
-                    <div class="col-md-3">
+
+                    <div class="col-md-3" v-if="show_imports">
                         <label class="control-label">Importación</label>
                         <el-select v-model="form.import" filterable clearable>
                             <el-option v-for="row in imports" :key="row.id" :label="row.name" :value="row.id"></el-option>
@@ -168,6 +166,30 @@ export default {
             loading_search_items: false,
             imports : [],
             suppliers : [],
+            show_suppliers : true,
+            show_imports : true,
+            dates_array : [
+                {
+                    'key':'between_months',
+                    'name': 'Entre meses',
+                    'value': 'between_months'
+                },
+                {
+                    'key':'month',
+                    'name': 'Por mes',
+                    'value': 'month'
+                },
+                {
+                    'key':'date',
+                    'name': 'Por fecha',
+                    'value': 'date'
+                },
+                {
+                    'key':'between_dates',
+                    'name': 'Entre fechas',
+                    'value': 'between_dates'
+                },
+            ]
         }
     },
     computed: {
@@ -187,6 +209,17 @@ export default {
 
         await this.getFilters()
         await this.getRecords()
+        if(this.resource == 'reports/payable'){
+            this.show_imports = false
+            this.show_suppliers = false
+            this.dates_array = [
+                {
+                    'key':'date',
+                    'name': 'Por fecha',
+                    'value': 'date'
+                }
+            ]
+        }
     },
     methods: {
 

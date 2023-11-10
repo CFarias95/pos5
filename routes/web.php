@@ -3,6 +3,7 @@
 $hostname = app(Hyn\Tenancy\Contracts\CurrentHostname::class);
 
 if ($hostname) {
+
     Route::domain($hostname->fqdn)->group(function () {
         Auth::routes([
             'register' => false,

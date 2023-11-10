@@ -306,6 +306,9 @@
                         <li>
                             <a href="{{route('tenant.reports.retentions.statement.index')}}">Extracto Retenciones</a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.reports.payable.statement.index')}}">Extracto Cuentas por Pagar</a>
+                        </li>
 
                     </ul>
                 </div>

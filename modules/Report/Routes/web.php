@@ -25,6 +25,11 @@ if ($current_hostname) {
                 Route::get('retentions/excel','ReportsFinancesController@excelRetentions');
                 Route::get('retentions/tables','ReportsFinancesController@tablesStatement');
 
+                Route::get('payable','ReportsFinancesController@reportPayableIndex')->name('tenant.reports.payable.statement.index');
+                Route::get('payable/records', 'ReportsFinancesController@reportPayableRecords');
+                Route::get('payable/excel','ReportsFinancesController@excelPayable');
+                Route::get('payable/tables','ReportsFinancesController@tablesStatement');
+
                 Route::prefix('purchases')->group(function () {
                     /**
                      * reports/purchases/
