@@ -913,6 +913,7 @@ class ProductionController extends Controller
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
+                Log::info("ITEM SUPPLIES: ".json_encode($supplies));
                 $transformed_supplies = [];
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
@@ -920,10 +921,11 @@ class ProductionController extends Controller
                     foreach ($lots_group as $lot) {
                         $lot["item_supply_id"] = $value["id"];
                     }
+                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["description"] : $value["individual_item"]["name"];
                     $transformed_supply = [
                         'id' => $value["id"],
                         'individual_item_id' => $value["individual_item_id"],
-                        'description' => $value["individual_item"]["description"] ?? '',
+                        'description' => $descriotion,
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
