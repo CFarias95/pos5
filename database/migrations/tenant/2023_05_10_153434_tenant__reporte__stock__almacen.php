@@ -14,9 +14,7 @@ class TenantReporteStockAlmacen extends Migration
      */
     public function up()
     {
-        $sql_delete = "
-            DROP PROCEDURE SP_StockAlmacen();
-        ";
+        $sql_delete = "DROP PROCEDURE IF EXISTS SP_StockAlmacen";
         DB::connection('tenant')->statement($sql_delete);
 
         $sql_create = "CREATE PROCEDURE `SP_StockAlmacen`(
@@ -76,7 +74,7 @@ class TenantReporteStockAlmacen extends Migration
     public function down()
     {
         $sql_delete = "
-            DROP PROCEDURE SP_StockAlmacen();
+            DROP PROCEDURE SP_StockAlmacen;
         ";
         DB::connection('tenant')->statement($sql_delete);
     }
