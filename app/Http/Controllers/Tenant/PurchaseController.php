@@ -2070,13 +2070,16 @@ class PurchaseController extends Controller
 
             foreach ($data['payments'] as $payment) {
                 if ($formaPagoDefecto) {
-                    $date=date_create($data['date_of_issue']);
 
-                    $fecha = date_add($date,date_interval_create_from_date_string($formaPagoDefecto->number_days." days"));
+                    $date=date_create($data['date_of_issue']);
+                    $numberDays = ($formaPagoDefecto && $formaPagoDefecto->number_days >= 0)?$formaPagoDefecto->number_days:0;
+
+                    $fecha = date_add($date,date_interval_create_from_date_string($numberDays." days"));
                     $data['payments'][$indice]['payment_method_type_id'] = $supplier->default_payment;
                     $data['payment_method_type_id'] = $supplier->default_payment;
                     $data['payments'][$indice]['date_of_payment'] = date_format($fecha,"Y-m-d");
                     $data['payment_condition_id'] = ($formaPagoDefecto->is_cash) ? '01' : '02';
+
                 }
                 $indice += 1;
             }
