@@ -207,7 +207,7 @@ export default {
     },
     async mounted() {
 
-        if(this.resource == 'reports/payable' || this.resource == 'reports/receivable' || this.resource == 'reports/topay'){
+        if(this.resource == 'reports/payable' || this.resource == 'reports/receivable' || this.resource == 'reports/topay' || this.resource == 'reports/tocollect'){
             this.show_imports = false
             this.show_suppliers = false
             this.dates_array = [

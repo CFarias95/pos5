@@ -909,6 +909,9 @@ class ProductionController extends Controller
         if ($itemId !== null) {
             $query->find($itemId);
         }
+
+        Log::info("ITEM: ".json_encode($query->get()));
+
         $result = $query->get()
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
@@ -940,6 +943,7 @@ class ProductionController extends Controller
                 $data["supplies"] = $transformed_supplies;
                 return $data;
             });
+        Log::info("ITEM RETURNED: ".json_encode($result));
         return $result;
     }
 

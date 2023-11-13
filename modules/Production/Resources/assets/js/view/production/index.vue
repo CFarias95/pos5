@@ -179,7 +179,7 @@
                                     <td>{{ row.comment }}</td>
                                     <td>{{ row.created_at }}</td>
                                     <td>
-                                        <button v-if="row.state_type_id !== '04'" class="btn waves-effect waves-light btn-xs btn-info" type="button"
+                                        <button v-if="row.state_type_id != '03' && row.state_type_id != '04'" class="btn waves-effect waves-light btn-xs btn-info" type="button"
                                             @click.prevent="clickCreate(row.id)">Editar
                                         </button>
                                         <button class="btn waves-effect waves-light btn-xs btn-success" type="button"
@@ -188,10 +188,10 @@
                                         <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
                                             @click.prevent="clickEtiqueta(row.id)">Etiquetas
                                         </button>
-                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
+                                        <button v-if="row.state_type_id == '03'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
                                             @click.prevent="clickMezcla(row.id)">P.Mezcla
                                         </button>
-                                        <button v-if="row.state_type_id == '04'" class="btn waves-effect waves-light btn-xs btn-secondary" type="button"
+                                        <button v-if="row.state_type_id == '03'" class="btn waves-effect waves-light btn-xs btn-secondary" type="button"
                                             @click.prevent="clickNoConforme(row.id)">P. producto no conforme
                                         </button>
                                     </td>

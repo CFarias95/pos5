@@ -243,6 +243,7 @@ if ($current_hostname) {
                     Route::get('excel', 'ReportStockAlmacenController@excel');
                     Route::get('pdf', 'ReportStockAlmacenController@pdf');
                     Route::get('datosSP', 'ReportStockAlmacenController@datosSP');
+                    Route::get('tables', 'ReportStockAlmacenController@tables');
                 });
 
                 Route::get('commissions', 'ReportCommissionController@index')

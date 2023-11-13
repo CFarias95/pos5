@@ -10,11 +10,14 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Rate;
+use App\Models\Tenant\Warehouse;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 use Modules\Report\Exports\StockAlmacenExport;
 use Modules\Report\Http\Resources\ReportStockAlmacenCollection;
 
@@ -30,7 +33,8 @@ class ReportStockAlmacenController extends Controller
 
     public function datosSP()
     {
-        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen();");
+
+        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[request()->query('warehouse_id'),request()->query('item_id')]);
         $sp1 = array();
         $sp2 = [];
         foreach($sp as $row)
@@ -56,7 +60,7 @@ class ReportStockAlmacenController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen();");
+        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[request()->query('warehouse_id'),request()->query('item_id')]);
         $sp1 = array();
         $sp2 = [];
         foreach($records as $row)
@@ -78,13 +82,11 @@ class ReportStockAlmacenController extends Controller
         return $pdf->download($filename.'.pdf');
     }
 
-
-
-
     public function excel(Request $request) {
 
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen();");
+        Log::info($request->input('warehouse_id'));
+        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[$request['warehouse_id'],$request['item_id']]);
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
@@ -108,5 +110,24 @@ class ReportStockAlmacenController extends Controller
                 ->fechaActual($fechaActual)
                 ->download('Reporte_Stock_Almacen_'.Carbon::now().'.xlsx');
 
+    }
+
+    public function tables(){
+
+        $warehouses = Warehouse::all()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->description,
+            ];
+        });
+
+        $items = Item::get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' =>$row->name,
+            ];
+        });
+
+        return compact("warehouses","items");
     }
 }

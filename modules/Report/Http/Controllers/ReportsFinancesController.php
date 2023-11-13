@@ -188,6 +188,46 @@ class ReportsFinancesController extends Controller
         return $paginator;
     }
 
+    //RECORDS DE CUENTAS POR Cobrar
+    public function reportToCollectRecords(Request $request)
+    {
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?)', [$d_start]);
+        $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
+        $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
+        return $paginator;
+    }
+
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), Purchase::class);
@@ -580,5 +620,52 @@ class ReportsFinancesController extends Controller
             ->filters($filters)
             ->title('Cuentas por Pagar')
             ->download('Cuentas_por_Pagar_' . Carbon::now() . '.xlsx');
+    }
+
+    public function excelToCollect(Request $request){
+
+        $period = FunctionController::InArray($request, 'period');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $date_end = FunctionController::InArray($request, 'date_end');
+        $month_start = FunctionController::InArray($request, 'month_start');
+        $month_end = FunctionController::InArray($request, 'month_end');
+        $page = FunctionController::InArray($request, 'page');
+        $supplier = FunctionController::InArray($request, 'supplier');
+        $import = FunctionController::InArray($request, 'import');
+
+        $d_start = null;
+        $d_end = null;
+
+        switch ($period) {
+            case 'month':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'between_months':
+                $d_start = Carbon::parse($month_start . '-01')->format('Y-m-d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y-m-d');
+                break;
+            case 'date':
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?)', [$d_start]);
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+        $filters = $request->all();
+
+        return (new PurchaseStatementExport)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters($filters)
+            ->title('Cuentas por Cobrar')
+            ->download('Cuentas_por_Cobrar_' . Carbon::now() . '.xlsx');
     }
 }
