@@ -226,7 +226,7 @@ export default {
                             payment_method_type_id: "01",
                             reference: null,
                             payment_destination_id: "cash",
-                            payment: this.form.total = parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
+                            payment: parseFloat(Invoice.factura.infoFactura.importeTotal["_text"])
 
                         }
                     ];
