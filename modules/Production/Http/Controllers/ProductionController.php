@@ -645,7 +645,6 @@ class ProductionController extends Controller
                     foreach($totalSupply as $supp){
                         $costoT += ($supp->quantity * $supp->cost_per_unit);
                     }
-
                     $production->cost_supplies = $costoT;
                     $production->save();
 

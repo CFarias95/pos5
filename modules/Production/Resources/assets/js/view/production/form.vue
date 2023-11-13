@@ -546,8 +546,8 @@ export default {
         fetchMachineInfo() {
             if (this.form.machine_id) {
                 const machine = this.machines.find(m => m.id === this.form.machine_id);
-                this.min_force = parseInt(machine.minimum_force);
-                this.max_force = parseInt(machine.maximum_force);
+                this.min_force = parseFloat(machine.minimum_force);
+                this.max_force = parseFloat(machine.maximum_force);
             } else {
                 this.min_force = null;
                 this.max_force = null;
@@ -692,11 +692,7 @@ export default {
                         }
                     })
                     .catch(error => {
-                        if (error.response.status === 422) {
-                            this.errors = error.response.data;
-                        } else {
-                            console.log(error);
-                        }
+                        this.errors = error.response.data;
                     })
                     .finally(() => {
                         this.loading_submit = false;
