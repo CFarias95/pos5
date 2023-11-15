@@ -672,9 +672,7 @@ export default {
 
 
             this.loading_submit = true;
-
             this.form.supplies = this.supplies;
-
             // Si no existe un ID, estás creando un nuevo registro
             console.log("submit production",this.form)
 
@@ -714,6 +712,7 @@ export default {
                             window.location.href = '/production';
                         } else {
                             this.$message.error(response.data.message);
+                            
                         }
                     })
                     .catch(error => {

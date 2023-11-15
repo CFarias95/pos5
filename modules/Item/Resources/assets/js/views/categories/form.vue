@@ -60,7 +60,6 @@
 
 <script>
 
-
     export default {
         props: ['showDialog', 'recordId'],
         data() {

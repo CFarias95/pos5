@@ -573,12 +573,13 @@ class ProductionController extends Controller
             $informative = ($request->informative) ?: false;
             $production->user_id = auth()->user()->id;
             $production->soap_type_id = $this->getCompanySoapTypeId();
-            $production->save();
+
 
             $items_supplies = $request->supplies;
             $costoT= 0;
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
+                Log::info("Actualiza a elaboracion");
                 try {
                     foreach ($items_supplies as $item) {
                         $sitienelote = false;
@@ -597,13 +598,11 @@ class ProductionController extends Controller
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
                         $lots_group = $item["lots_group"];
-
                         foreach ($lots_group as $lots) {
 
                             if (isset($lots["compromise_quantity"])) {
-
+                                Log::info("Se tiene cantidad en un lote selecionado");
                                 $sitienelote = true;
-
                                 $item_lots_groups = new ItemSupplyLot();
                                 $item_lots_groups->item_supply_id = $item['id'];
                                 $item_lots_groups->item_supply_name = $item['description'];
@@ -616,6 +615,7 @@ class ProductionController extends Controller
                                 $item_lots_groups->save();
                             }
                         }
+
                         if (count($lots_group) > 0) {
 
                             if ($sitienelote == false) {
@@ -638,6 +638,7 @@ class ProductionController extends Controller
                     ];
                 }
             }
+
             elseif($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
                 try {
 
@@ -657,30 +658,43 @@ class ProductionController extends Controller
                 }
             }
 
+            $production->save();
 
-            if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
-                //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
-                $inventory_transaction_item = InventoryTransaction::findOrFail(101);
-                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
-                $this->createAccountingEntry($production->id);
-            }
-            if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
-                //cuando pasa a terminado se aumenta el inventario del producto terminado
-                $inventory_transaction_item = InventoryTransaction::findOrFail(19);
-                $inventory_transaction_item_imperfect = InventoryTransaction::findOrFail('105');
+            try{
+                if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
+                    //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
+                    $inventory_transaction_item = InventoryTransaction::findOrFail(101);
+                    $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
+                    $this->createAccountingEntry($production->id);
 
-                $this->inventoryFinishedProduct($production, $inventory_transaction_item);
-                $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
-                $this->createAccountingEntry($production->id);
+                }
+                if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
+                    //cuando pasa a terminado se aumenta el inventario del producto terminado
+                    $inventory_transaction_item = InventoryTransaction::findOrFail(19);
+                    $inventory_transaction_item_imperfect = InventoryTransaction::findOrFail('105');
 
+                    $this->inventoryFinishedProduct($production, $inventory_transaction_item);
+                    $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
+                    $this->createAccountingEntry($production->id);
+
+                }
+                if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
+                    //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
+                    $inventory_transaction_item = InventoryTransaction::findOrFail(104);
+                    $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
+                    $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
+                    $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
+                }
+            }catch (Exception $ex) {
+                Log::error("Error UPDATE PRODUCTION: ".$ex->getMessage());
+                $production->state_type_id = '01';
+                $production->save();
+                return [
+                    'success' => false,
+                    'message' => $ex->getMessage()
+                ];
             }
-            if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
-                //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
-                $inventory_transaction_item = InventoryTransaction::findOrFail(104);
-                $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
-                $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
-                $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
-            }
+
 
             return [
                 'success' => true,

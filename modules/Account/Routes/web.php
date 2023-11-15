@@ -56,6 +56,14 @@ if($hostname) {
                 Route::get('audit/{id}', 'AuditController@audit');
             });
 
+            Route::prefix('cost_centers')->group(function () {
+                Route::get('', 'CostCenterController@index')->name('tenant.cost_centers.create');
+                Route::post('', 'CostCenterController@store');
+                Route::get('records', 'CostCenterController@records');
+                Route::get('columns', 'CostCenterController@columns');
+                Route::get('level/{level}/{id}', 'CostCenterController@levelRecords');
+            });
+
 
         });
     });

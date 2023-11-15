@@ -24,7 +24,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\ItemSupply;
 use App\Http\Controllers\Tenant\PurchaseController;
-
+use Illuminate\Support\Facades\Log;
 
 /**
  * Se debe tener en cuenta este trait para llevar el control de Kardex
@@ -366,13 +366,11 @@ trait InventoryTrait
         // dd($item_warehouse->item->unit_type_id);
         if ($quantity < 0 && $item_warehouse->item->unit_type_id !== 'ZZ') {
             if (($inventory_configuration->stock_control) && ($item_warehouse->stock < 0)) {
-                return [
-                    'success' => false,
-                    'message' => "El producto {$item_warehouse->item->description} no tiene suficiente stock!"
-                 ];
+
                 // dd('hasta aqui');
                 // return response()->json(['success' => false, 'message' => El producto {$item_warehouse->item->description} no tiene suficiente stock!]);
-                //throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
+                Log::info("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
+                throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock!",500);
             }
         }
         $item_warehouse->save();

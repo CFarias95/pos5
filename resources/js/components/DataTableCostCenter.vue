@@ -1,0 +1,125 @@
+<template>
+    <div>
+        <div class="row ">
+            <div class="col-md-12 col-lg-12 col-xl-12 ">
+                <h3>Filtrar Por</h3>
+                <div class="row" v-if="applyFilter">
+                    <div class="col-lg-3 col-md-3">
+                        <label>
+                           Nombre:
+                        </label>
+                        <el-input v-model="search.name" @change="getRecords"></el-input>
+                    </div>
+
+                    <div class="col-lg-3 col-md-3">
+                        <label>
+                            Fecha creación:
+                        </label>
+                        <el-date-picker v-model="search.date" type="date" placeholder="Buscar" value-format="yyyy-MM-dd" clearable
+                            @change="getRecords">
+                        </el-date-picker>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-12">
+                <div class="table-responsive">
+                    <table class="table">
+                        <thead>
+                            <slot name="heading"></slot>
+                        </thead>
+                        <tbody>
+                            <slot v-for="(row, index) in records" :row="row" :index="customIndex(index)"></slot>
+                        </tbody>
+                    </table>
+                    <div>
+                        <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
+                            :total="pagination.total" :current-page.sync="pagination.current_page"
+                            :page-size="pagination.per_page">
+                        </el-pagination>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</template>
+
+<script>
+import queryString from "query-string";
+
+export default {
+    props: {
+        resource: String,
+        applyFilter: {
+            type: Boolean,
+            default: true,
+            required: false
+        },
+    },
+    data() {
+        return {
+            search: {
+                name: null,
+                date: null,
+            },
+            columns: [],
+            records: [],
+            pagination: {},
+            loading_submit: false,
+            fromPharmacy: false,
+            parentsList: [],
+            ctas: [],
+        };
+    },
+    created() {
+        this.$eventHub.$on("reloadData", () => {
+            this.getRecords();
+        });
+
+        this.$root.$refs.DataTable = this;
+    },
+    async mounted() {
+
+        await this.getRecords();
+    },
+    methods: {
+        customIndex(index) {
+            return (
+                this.pagination.per_page * (this.pagination.current_page - 1) +
+                index +
+                1
+            );
+        },
+        getRecords() {
+            this.loading_submit = true;
+            return this.$http
+                .get(`/${this.resource}/records?${this.getQueryParameters()}`)
+                .then(response => {
+                    this.records = response.data.data;
+                    this.pagination = response.data;
+                    this.pagination.per_page = parseInt(
+                        response.data.per_page
+                    );
+                })
+                .catch(error => { })
+                .then(() => {
+                    this.loading_submit = false;
+                });
+        },
+        getQueryParameters() {
+
+            return queryString.stringify({
+                page: this.pagination.current_page,
+                limit: this.limit,
+                ...this.search
+            });
+        },
+        changeClearInput() {
+
+            this.getRecords();
+        },
+        getSearch() {
+            return this.search;
+        },
+    }
+};
+</script>

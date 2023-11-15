@@ -1102,6 +1102,14 @@
                                     </a>
                                 </li>
                                 @endif
+                                @if(in_array('cost_centers', $vc_module_levels))
+                                <li class="{{(($firstLevel === 'cost_centers') )   ? 'nav-active' : ''}}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.cost_centers.create') }}">
+                                        Centros de costo
+                                    </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif
