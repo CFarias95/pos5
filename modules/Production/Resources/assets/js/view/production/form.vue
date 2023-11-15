@@ -506,7 +506,7 @@ export default {
             },
             loading_search: false,
             warehouses: [],
-            precision: 2,
+            precision: 4,
             items: [],
             machines: [],
             // JOINSOFTWARE
@@ -534,7 +534,7 @@ export default {
             let donwloadQuantity = row.quantityD;
             this.selectSupply.supply_id = row.individual_item_id;
             this.selectSupply.lots_group = row.lots_group;
-            this.selectSupply.quantity = donwloadQuantity;
+            this.selectSupply.quantity = _.round(donwloadQuantity,4);
             this.showDialogLots = true;
         },
         deleteStatus(id) {
@@ -646,9 +646,9 @@ export default {
                 this.quantityD = value
                 this.supplies.forEach(row => {
                     if(value > 0 ){
-                        row.quantityD = value * row.quantity;
+                        row.quantityD = _.round(value * row.quantity,4);
                     }else{
-                        row.quantityD = row.quantity ;
+                        row.quantityD = _.round(row.quantity,4);
                     }
                 });
             } else {
@@ -712,7 +712,7 @@ export default {
                             window.location.href = '/production';
                         } else {
                             this.$message.error(response.data.message);
-                            
+
                         }
                     })
                     .catch(error => {
@@ -740,10 +740,10 @@ export default {
 
                 if(this.form.quantity > 0 ){
 
-                    row.quantityD = this.form.quantity * row.quantity;
+                    row.quantityD = _.round(this.form.quantity * row.quantity,4);
                 }else{
 
-                    row.quantityD = row.quantity ;
+                    row.quantityD = _.round(row.quantity,4);
                 }
             });
 
