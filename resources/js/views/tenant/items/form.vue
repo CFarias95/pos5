@@ -803,6 +803,15 @@
                                     v-text="errors.percentage_of_profit[0]"></small>
                             </div>
                         </div>
+                        <div class="col-md-4">
+                            <div :class="{ 'has-danger': errors.purchase_mean_cost }" class="form-group">
+                                <label class="control-label">Costo promedio</label>
+                                <el-input v-model="form.purchase_mean_cost" dusk="purchase_unit_price"
+                                    readonly ></el-input>
+                                <small v-if="errors.purchase_mean_cost" class="form-control-feedback"
+                                    v-text="errors.purchase_mean_cost[0]"></small>
+                            </div>
+                        </div>
 
                         <!-- isc compras -->
                         <div class="col-md-4">
@@ -1656,7 +1665,8 @@ export default {
                 lugar_produccion: null,
                 percentage_decimal: 0,
                 quantity: 0,
-                category_id_array:[]
+                category_id_array:[],
+                purchase_mean_cost:null,
 
             }
 

@@ -200,7 +200,8 @@ class Item extends ModelTenant
         'lugar_produccion',
         'total_producir',
         // 'warehouse_id'
-        'category_id_array'
+        'category_id_array',
+        'purchase_mean_cost',
     ];
 
     protected $casts = [
@@ -1259,6 +1260,7 @@ class Item extends ModelTenant
             'tariff_id' => $this->tariff_id,
             'concept_id' => $this->concept_id,
             'lugar_produccion' => $this->lugar_produccion,
+            'purchase_mean_cost' => $this->purchase_mean_cost,
 
         ];
     }

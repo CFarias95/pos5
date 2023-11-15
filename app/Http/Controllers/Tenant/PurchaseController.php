@@ -456,6 +456,26 @@ class PurchaseController extends Controller
                 }
 
                 foreach ($data['items'] as $row) {
+
+                    //Log::info(json_encode($row));
+                    //COSTO PROMEDIO COMPRA
+                    $item = Item::where('id', $row['item_id'])->first();
+                    $costoA = $item->purchase_unit_price;
+                    $stockA = $item->stock;
+                    $totalA = $costoA*$stockA;
+
+                    $costoN = floatval($row['unit_value']);
+                    $stockN = floatval($row['quantity']);
+                    $totalN = $costoN*$stockN;
+
+                    $stockT = $stockN+$stockA;
+                    $costoT = $totalA + $totalN;
+                    $costoT = round($costoT/$stockT,4);
+                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$costoN."-".$totalN);
+
+                    $item->purchase_mean_cost = $costoT;
+                    $item->save();
+
                     $p_item = new PurchaseItem();
                     $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
@@ -483,7 +503,7 @@ class PurchaseController extends Controller
                         Log::info("update_purchase_price".json_encode($row));
 
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => round(floatval($row['total_base_igv_without_rounding']),2), 'purchase_has_igv' => false]);
+                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']),2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                         $item = $row['item'];
                         if (isset($item['item_unit_types'])) {
