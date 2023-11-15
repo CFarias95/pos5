@@ -92,14 +92,26 @@ class CostCenterController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $record = CostCenter::find($id);
+        $name = $record->name;
+        $record->delete();
+        return [
+            "success" => true,
+            "message" => "El centro de costo $name  fue eliminado de forma exitosa"
+        ];
+    }
+
+    public function record($id)
+    {
+        $record = CostCenter::findOrFail($id);
+        return $record;
     }
 
     public function records()
     {
         $cost_centers = CostCenter::where('level_1', null)->paginate(config('tenant.items_per_page'));
         $cost_centers->transform(function ($row) {
-            $level1 = CostCenter::where('level_1', $row->id)->get();
+            $level1 = CostCenter::where('level_1', $row->id)->where('level_2', null)->get();
             return [
                 'id' => $row->id,
                 'name' => $row->name,
@@ -148,7 +160,7 @@ class CostCenterController extends Controller
             });
         }
         if ($tipo == "2") {
-            $levels = CostCenter::where('level_1', $id)->get()->transform(function ($row) {
+            $levels = CostCenter::where('level_1', $id)->where('level_2', null)->get()->transform(function ($row) {
                 return [
                     'id' => $row->id,
                     'name' => $row->name

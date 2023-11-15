@@ -39,37 +39,27 @@
                 </data-table> -->
                 <template>
                     <div>
-                        <b-table :items="items" :fields="fields" striped responsive="sm">
-                            <template #cell(show_details)="row">
-                                <b-button size="sm" @click="row.toggleDetails" class="mr-2">
-                                    {{ row.detailsShowing ? 'Hide' : 'Show' }} Details
-                                </b-button>
-
-                                <!-- As `row.showDetails` is one-way, we call the toggleDetails function on @change -->
-                                <b-form-checkbox v-model="row.detailsShowing" @change="row.toggleDetails">
-                                    Details via check
-                                </b-form-checkbox>
-                            </template>
-
-                            <template #row-details="row">
-                                <b-card>
-                                    <b-row class="mb-2">
-                                        <b-col sm="3" class="text-sm-right"><b>Age:</b></b-col>
-                                        <b-col>{{ row.item.age }}</b-col>
-                                    </b-row>
-
-                                    <b-row class="mb-2">
-                                        <b-col sm="3" class="text-sm-right"><b>Is Active:</b></b-col>
-                                        <b-col>{{ row.item.isActive }}</b-col>
-                                    </b-row>
-
-                                    <b-button size="sm" @click="row.toggleDetails">Hide Details</b-button>
-                                </b-card>
-                            </template>
-                        </b-table>
+                        <el-table :data="records" style="width: 100%; margin-bottom: 20px" row-key="id" border
+                            default-expand-all>
+                            <el-table-column prop="name" label="Nombre" sortable />
+                            <el-table-column prop="id" label="Id" sortable />
+                            <el-table-column prop="date" label="Fecha Creado" sortable />
+                            <el-table-column label="Acciones">
+                                <template slot-scope="scope" v-if="scope.row">
+                                    <el-button size="small" @click="handleEdit(scope.$index, scope.row.id)">Edit</el-button>
+                                    <el-button size="small" type="danger"
+                                        @click="handleDelete(scope.$index, scope.row.id)">Delete</el-button>
+                                </template>
+                            </el-table-column>
+                        </el-table>
+                    </div>
+                    <div>
+                        <el-pagination @current-change="getData()" layout="total, prev, pager, next"
+                            :total="pagination.total" :current-page.sync="pagination.current_page"
+                            :page-size="pagination.per_page">
+                        </el-pagination>
                     </div>
                 </template>
-
 
             </div>
             <cost-form :showDialog.sync="showDialog" :recordId="recordId"></cost-form>
@@ -92,21 +82,6 @@ export default {
             pagination: {},
             loading_submit: false,
             title: null,
-
-            fields: ['first_name', 'last_name', 'show_details'],
-            items: [
-                { isActive: true, age: 40, first_name: 'Dickerson', last_name: 'Macdonald' },
-                { isActive: false, age: 21, first_name: 'Larsen', last_name: 'Shaw' },
-                {
-                    isActive: false,
-                    age: 89,
-                    first_name: 'Geneva',
-                    last_name: 'Wilson',
-                    _showDetails: true
-                },
-                { isActive: true, age: 38, first_name: 'Jami', last_name: 'Carney' }
-            ]
-
         }
     },
     created() {
@@ -140,15 +115,55 @@ export default {
                     }
                 })
         },
+        getQueryParameters() {
+
+            return queryString.stringify({
+                page: this.pagination.current_page,
+                limit: this.limit,
+                ...this.search
+            });
+        },
         clickCreate(recordId = null) {
             this.recordId = recordId
             this.showDialog = true
         },
-        clickDelete(id) {
-            this.destroy(`/${this.resource}/${id}`).then(() =>
-                this.$eventHub.$emit('reloadData')
+        handleEdit(Index, row) {
+
+            this.recordId = row
+            this.showDialog = true
+        },
+        handleDelete(index, row) {
+
+            this.$http.delete(`/${this.resource}/${row}`).then((response) => {
+                if (response.data.success == true) {
+                    this.$message.success(response.data.message)
+                }else{
+                    this.$message.error(response.data.message)
+                }
+                this.getData()
+            }
             )
         }
     }
 }
 </script>
+<style>
+.el-el-table-v2__header-row .custom-header-cell {
+  border-right: 1px solid var(--el-border-color);
+}
+
+.el-el-table-v2__header-row .custom-header-cell:last-child {
+  border-right: none;
+}
+
+.el-primary-color {
+  background-color: var(--el-color-primary);
+  color: var(--el-color-white);
+  font-size: 14px;
+  font-weight: bold;
+}
+
+.el-primary-color .custom-header-cell {
+  padding: 0 4px;
+}
+</style>

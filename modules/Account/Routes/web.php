@@ -60,8 +60,10 @@ if($hostname) {
                 Route::get('', 'CostCenterController@index')->name('tenant.cost_centers.create');
                 Route::post('', 'CostCenterController@store');
                 Route::get('records', 'CostCenterController@records');
+                Route::get('record/{id}', 'CostCenterController@record');
                 Route::get('columns', 'CostCenterController@columns');
                 Route::get('level/{level}/{id}', 'CostCenterController@levelRecords');
+                Route::delete('{task}', 'CostCenterController@destroy');
             });
 
 

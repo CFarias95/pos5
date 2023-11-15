@@ -12,7 +12,7 @@
                         <div class="form-group" :class="{'has-danger': errors.level_1}">
                             <label class="control-label">Nivel 1</label>
                             <el-select v-model="form.level_1"
-                                        @change="changeParentCategorie()"
+                                        @change="changeParentCategorie2()"
                                         filterable
                                         clearable >
                                 <el-option
@@ -26,8 +26,7 @@
                             <label class="control-label">Nivel 2</label>
                             <el-select v-model="form.level_2"
                                         filterable
-                                        clearable
-                                        @change="changeParentCategorie2()">
+                                        clearable>
                                 <el-option
                                     v-for="option in level_2"
                                     :key="option.id"
