@@ -1475,7 +1475,7 @@ export default {
             if (total > 100) {
 
                 this.$message.warning('El porcentaje de suministros no debe superar el 100 %');
-                this.noSaveForm = true;
+                this.noSaveForm = false;
 
             } else {
 
