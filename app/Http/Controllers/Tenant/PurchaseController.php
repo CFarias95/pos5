@@ -1435,6 +1435,20 @@ class PurchaseController extends Controller
 
                 foreach ($request['items'] as $row) {
 
+                    $item = Item::where('id', $row['item_id'])->first();
+                    $costoA = $item->purchase_mean_cost;
+                    $stockA = $item->stock;
+                    $totalA = $costoA*$stockA;
+
+                    $costoN = floatval($row['unit_value']);
+                    $stockN = floatval($row['quantity']);
+                    $totalN = $costoN*$stockN;
+
+                    $stockT = $stockN+$stockA;
+                    $costoT = $totalA + $totalN;
+                    $costoT = round($costoT/$stockT,4);
+                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$costoN."-".$totalN);
+
                     $p_item = new PurchaseItem();
                     $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
@@ -1446,7 +1460,7 @@ class PurchaseController extends Controller
 
                         Log::info("update_purchase_price_update".json_encode($row));
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => round(floatval($row['total_base_igv_without_rounding']),2), 'purchase_has_igv' => false]);
+                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']),2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                     }
                     if (array_key_exists('lots', $row)) {

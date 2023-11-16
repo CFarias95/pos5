@@ -648,6 +648,21 @@ class ProductionController extends Controller
                     }
                     $production->cost_supplies = $costoT;
                     $production->save();
+                    
+                    $item = Item::where('id', $production->item_id)->first();
+                    $costoA = $item->purchase_mean_cost;
+                    $stockA = $item->stock;
+                    $totalA = $production->cost_supplies;
+
+                    
+                    $stockN = $production->quantity;
+                    $totalN = $production->cost_supplies;
+
+                    $stockT = $stockN+$stockA;
+                    $costoT = $totalA + $totalN;
+                    $costoT = round($costoT/$stockT,4);
+
+                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$stockN."-".$totalN);
 
                 } catch (Exception $ex2) {
                     //$production->delete();
