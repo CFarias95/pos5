@@ -460,7 +460,7 @@ class PurchaseController extends Controller
                     //Log::info(json_encode($row));
                     //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
-                    $costoA = $item->purchase_unit_price;
+                    $costoA = $item->purchase_mean_cost;
                     $stockA = $item->stock;
                     $totalA = $costoA*$stockA;
 
