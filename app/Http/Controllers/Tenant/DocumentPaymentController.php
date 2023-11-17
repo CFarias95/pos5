@@ -23,6 +23,7 @@ use App\Models\Tenant\Cash;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\CreditNotesPayment;
 use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Retention;
@@ -118,6 +119,27 @@ class DocumentPaymentController extends Controller
             $retention->total_used = $montoUsado;
             $retention->in_use = true;
             $retention->save();
+        }else if ($request['payment_method_type_id'] == '16' && $id) {
+
+            $pagoAnt = DocumentPayment::first(['id' => $id])->payment;
+            $reference = $request['reference'];
+            $monto = floatval($request['payment']);
+            $credit = CreditNotesPayment::find($reference);
+            $valor = $credit->used;
+            $montoUsado = $valor + $monto - $pagoAnt;
+            $credit->used = ($montoUsado > 0 )?$montoUsado:0;
+            $credit->in_use = ($montoUsado > 0)? true : false;
+            $credit->save();
+
+        }else if ($request['payment_method_type_id'] == '16' && !$id) {
+            $reference = $request['reference'];
+            $monto = floatval($request['payment']);
+            $credit = CreditNotesPayment::find($reference);
+            $valor = $credit->used;
+            $montoUsado = $valor + $monto;
+            $credit->used = ($montoUsado > 0 )?$montoUsado:0;
+            $credit->in_use = ($montoUsado > 0)? true : false;
+            $credit->save();
         }
 
         $fee = DocumentFee::where('document_id', $request->document_id)->orderBy('date')->get();
@@ -449,6 +471,19 @@ class DocumentPaymentController extends Controller
 
             $retention = Retention::find($reference);
             $valor = $retention->total_used;
+            $montoUsado = $valor - $monto;
+            $retention->total_used = $montoUsado;
+            $retention->in_use = ($montoUsado > 0 )?true:false;
+            $retention->save();
+
+        }
+
+        if($item->payment_method_type_id == '16'){
+            $monto = $item->payment;
+            $reference = $item->reference;
+
+            $retention = CreditNotesPayment::find($reference);
+            $valor = $retention->used;
             $montoUsado = $valor - $monto;
             $retention->total_used = $montoUsado;
             $retention->in_use = ($montoUsado > 0 )?true:false;

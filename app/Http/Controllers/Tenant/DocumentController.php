@@ -41,6 +41,7 @@ use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\CatItemSize;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\CreditNotesPayment;
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentPayment;
@@ -611,6 +612,10 @@ class DocumentController extends Controller
                     $this->createAccountingEntryPayments($document_id);
                 }
 
+                if($request['document_type_id'] == '07'){
+                    $this->createCreditNotePayment($document_id);
+                }
+
                 $this->verifyPayment($request);
 
                 return $res;
@@ -627,6 +632,44 @@ class DocumentController extends Controller
                 'success' => false,
                 'message' => __($ex->getMessage()),
             ];
+        }
+    }
+
+    //CREAMOS LA FORMA DE PAGO DE NOTAS DE CREDITO
+    private function createCreditNotePayment($id){
+        try{
+
+            $data = Document::find($id);
+            //Log::info("Creando nota de credito como forma de pago");
+            $creditPayment = new CreditNotesPayment();
+            $creditPayment->document_id = $data->id;
+            $creditPayment->amount = $data->total;
+            $creditPayment->user_id = $data->customer_id;
+            $creditPayment->save();
+
+        }catch(Exception $ex){
+
+            Log::error("Error al generar la forma de pago de Nota de Crédito");
+            Log::error($ex->getMessage());
+            return $ex;
+        }
+    }
+
+    //ACTUALIZAR FORMA DE PAGO TIPO NOTA DE CREDITO
+    private function updateCreditNotePayment($id){
+        try{
+            $note = Document::find($id);
+            //Log::info("Creando nota de credito como forma de pago ".$note->id);
+            $creditPayment = CreditNotesPayment::where('document_id',$note->id)->first();
+            $creditPayment->amount = $note->total;
+            $creditPayment->user_id = $note->customer_id;
+            $creditPayment->save();
+
+        }catch(Exception $ex){
+
+            Log::error("Error al actualizar la forma de pago de Nota de Crédito");
+            Log::error($ex->getMessage());
+            return $ex;
         }
     }
 
@@ -1574,6 +1617,9 @@ class DocumentController extends Controller
             return $facturalo;
         });
 
+        if($request['document_type_id'] == '07'){
+            $this->updateCreditNotePayment($id);
+        }
 
         if((Company::active())->countable > 0 ){
             $this->createAccountingEntry($id);

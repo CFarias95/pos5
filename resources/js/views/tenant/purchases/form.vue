@@ -650,6 +650,11 @@
                         v-if="form.items !== undefined && form.items.length > 0 && !hide_button && form.has_payment /*&& form.total ==*/"
                         :loading="loading_submit" native-type="submit" type="primary">Generar
                     </el-button>
+                    <el-button
+                        v-if="this.form.document_type_id == '04'"
+                        :loading="loading_submit" native-type="submit" type="primary">Generar
+                    </el-button>
+
                 </div>
             </form>
         </div>
@@ -1762,28 +1767,31 @@ export default {
         },
         async submit() {
 
-            let validarMontos = await this.validarEntradas()
-            if (!validarMontos.success) {
-                return this.$message.error(validarMontos.message);
+            if(this.form.document_type_id == '04'){
+                this.loading_submit = true
+            }else{
+                let validarMontos = await this.validarEntradas()
+                if (!validarMontos.success) {
+                    return this.$message.error(validarMontos.message);
+                }
+
+                let validate_item_series = await this.validationItemSeries()
+                if (!validate_item_series.success) {
+                    return this.$message.error(validate_item_series.message);
+                }
+
+                let validate = await this.validate_payments()
+                if (!validate.success) {
+                    return this.$message.error(validate.message);
+                }
+
+                let validate_payment_destination = await this.validatePaymentDestination()
+
+                if (validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
+                }
+                this.loading_submit = true
             }
-
-            let validate_item_series = await this.validationItemSeries()
-            if (!validate_item_series.success) {
-                return this.$message.error(validate_item_series.message);
-            }
-
-            let validate = await this.validate_payments()
-            if (!validate.success) {
-                return this.$message.error(validate.message);
-            }
-
-            let validate_payment_destination = await this.validatePaymentDestination()
-
-            if (validate_payment_destination.error_by_item > 0) {
-                return this.$message.error('El destino del pago es obligatorio');
-            }
-
-            this.loading_submit = true
             // await this.changePaymentMethodType(false)
             //console.log('Enviando Datos: ', this.form)
 

@@ -8,6 +8,7 @@ use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\CreditNotesPayment;
 use Modules\Purchase\Http\Resources\PurchasePaymentCollection;
 use Modules\Purchase\Http\Requests\PurchasePaymentRequest;
 use App\Models\Tenant\PaymentMethodType;
@@ -96,6 +97,28 @@ class PurchasePaymentController extends Controller
             $retention->total_used = $montoUsado;
             $retention->in_use = true;
             $retention->save();
+
+        }else if ($request['payment_method_type_id'] == '16' && $id) {
+
+            $reference = $request['reference'];
+            $pagoAnt = PurchasePayment::first(['id' => $id])->payment;
+            $monto = floatval($request['payment']);
+            $credit = CreditNotesPayment::find($reference);
+            $valor = $credit->used;
+            $montoUsado = $valor + $monto - $pagoAnt;
+            $credit->used = ($montoUsado > 0 )?$montoUsado:0;
+            $credit->in_use = ($montoUsado > 0)? true : false;
+            $credit->save();
+        }else if ($request['payment_method_type_id'] == '16' && !$id) {
+
+            $reference = $request['reference'];
+            $monto = floatval($request['payment']);
+            $credit = CreditNotesPayment::find($reference);
+            $valor = $credit->used;
+            $montoUsado = $valor + $monto;
+            $credit->used = ($montoUsado > 0 )?$montoUsado:0;
+            $credit->in_use = ($montoUsado > 0)? true : false;
+            $credit->save();
         }
 
         if ($fee->count() > 0) {
@@ -235,7 +258,7 @@ class PurchasePaymentController extends Controller
     private function createAccountingEntryPayment($document_id, $payment)
     {
         $document = Purchase::find($document_id);
-        if ($document /*&& $document->document_type_id == '01' */) {
+        if ($document && $document->document_type_id != '04' ) {
 
             try {
                 $idauth = auth()->user()->id;
@@ -338,7 +361,7 @@ class PurchasePaymentController extends Controller
 
                         $seat += 1;
                     }
-                }else{
+                }elseif($payment->payment_method_type_id != '14'){
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
                     $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
@@ -376,6 +399,20 @@ class PurchasePaymentController extends Controller
             $valor = $retention->total_used;
             $montoUsado = $valor - $monto;
             $retention->total_used = $montoUsado;
+            $retention->in_use = ($montoUsado > 0 )?true:false;
+            $retention->save();
+
+        }
+
+        if($item->payment_method_type_id == '16'){
+
+            $monto = $item->payment;
+            $reference = $item->reference;
+
+            $retention = CreditNotesPayment::find($reference);
+            $valor = $retention->amount;
+            $montoUsado = $valor - $monto;
+            $retention->used = $montoUsado;
             $retention->in_use = ($montoUsado > 0 )?true:false;
             $retention->save();
 

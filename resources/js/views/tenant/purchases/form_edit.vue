@@ -1656,21 +1656,26 @@ export default {
         },
         async submit() {
             console.log(this.form)
-            let validarMontos = await this.validarEntradas()
-            if (!validarMontos.success) {
-                return this.$message.error(validarMontos.message);
-            }
-            let validate = await this.validate_payments()
-            if (!validate.success) {
-                return this.$message.error(validate.message);
+            if(this.form.document_type_id == '04'){
+                this.loading_submit = true
+            }else{
+
+                let validarMontos = await this.validarEntradas()
+                if (!validarMontos.success) {
+                    return this.$message.error(validarMontos.message);
+                }
+                let validate = await this.validate_payments()
+                if (!validate.success) {
+                    return this.$message.error(validate.message);
+                }
+
+                let validate_payment_destination = await this.validatePaymentDestination()
+                if (validate_payment_destination.error_by_item > 0) {
+                    return this.$message.error('El destino del pago es obligatorio');
+                }
+                this.loading_submit = true
             }
 
-            let validate_payment_destination = await this.validatePaymentDestination()
-            if (validate_payment_destination.error_by_item > 0) {
-                return this.$message.error('El destino del pago es obligatorio');
-            }
-
-            this.loading_submit = true
             // await this.changePaymentMethodType(false)
             await this.$http.post(`/${this.resource}/update`, this.form)
                 .then(response => {

@@ -28,7 +28,8 @@
                                         <td>{{ row.date_of_payment }}</td>
                                         <td>{{ row.payment_method_type_description }}</td>
                                         <td>{{ row.destination_description }}</td>
-                                        <td class="text-center">{{ row.payment }}<br> {{ row.postdated ? row.postdated : '' }}
+                                        <td class="text-center">{{ row.payment }}<br> {{ row.postdated ? row.postdated : ''
+                                        }}
                                         </td>
                                         <td class="text-left">
                                             <!-- pagos que no cuenten con la opcion pago recibido -->
@@ -133,6 +134,14 @@
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
                                         </td>
+                                        <td v-else-if="row.payment_method_type_id == '16'">
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-input v-model="row.payment"
+                                                    @change="changeCreditsInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                        </td>
                                         <td v-else-if="row.payment_method_type_id == '13'">
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-date-picker v-model="row.postdated" type="date" :clearable="false"
@@ -215,7 +224,8 @@
                                                     <el-select v-model="row.reference" placeholder="Referencia Acticipo"
                                                         @change="changeAdvance(index, $event)">
                                                         <el-option v-for="option in advances" :key="option.id"
-                                                            :label="'AT'+option.id +' - '+option.reference" :value="option.id"></el-option>
+                                                            :label="'AT' + option.id + ' - ' + option.reference"
+                                                            :value="option.id"></el-option>
                                                     </el-select>
                                                     <small class="form-control-feedback" v-if="row.errors.reference"
                                                         v-text="row.errors.reference[0]"></small>
@@ -226,6 +236,16 @@
                                                     <el-select v-model="row.reference" placeholder="Referencia retención"
                                                         @change="changeRetention(index, $event)">
                                                         <el-option v-for="option in retentions" :key="option.id"
+                                                            :label="option.name" :value="option.id"></el-option>
+                                                    </el-select>
+                                                    <small class="form-control-feedback" v-if="row.errors.reference"
+                                                        v-text="row.errors.reference[0]"></small>
+                                                </div>
+                                                <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
+                                                    v-else-if="row.payment_method_type_id == '16'">
+                                                    <el-select v-model="row.reference" placeholder="Referencia retención"
+                                                        @change="changeCredits(index, $event)">
+                                                        <el-option v-for="option in credits" :key="option.id"
                                                             :label="option.name" :value="option.id"></el-option>
                                                     </el-select>
                                                     <small class="form-control-feedback" v-if="row.errors.reference"
@@ -332,6 +352,7 @@ export default {
             retentions: [],
             index: null,
             monto: 0,
+            credits : [],
         }
     },
     async created() {
@@ -362,6 +383,11 @@ export default {
                     this.retentions = response.data.retentions;
                 }
             )
+            this.$http.get(`/cnp/list/${this.customerId}`).then(
+                response => {
+                    this.credits = response.data.credits;
+                }
+            );
         },
         changeAdvanceInput(index, event, methodType, id) {
 
@@ -464,11 +490,11 @@ export default {
                 }).then(
 
                     this.$http.get(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`)
-                    .then(response => {
-                        console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`, response.data);
-                        this.document = response.data;
-                        this.title = 'Pagos del comprobante: ' + this.document.number_full;
-                    })
+                        .then(response => {
+                            console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`, response.data);
+                            this.document = response.data;
+                            this.title = 'Pagos del comprobante: ' + this.document.number_full;
+                        })
                 );
 
             //await
@@ -524,25 +550,25 @@ export default {
             };
 
             this.$http.post(`/${this.resource}`, form)
-            .then(response => {
-                if (response.data.success) {
-                    this.$message.success(response.data.message);
-                    this.getData();
-                    // this.initDocumentTypes()
-                    this.showAddButton = true;
-                    this.$eventHub.$emit('reloadData')
-                } else {
-                    this.$message.error(response.data.message);
-                }
-            })
-            .catch(error => {
-                if (error.response.status === 422) {
-                    this.records[index].errors = error.response.data;
-                } else {
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message);
+                        this.getData();
+                        // this.initDocumentTypes()
+                        this.showAddButton = true;
+                        this.$eventHub.$emit('reloadData')
+                    } else {
+                        this.$message.error(response.data.message);
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        this.records[index].errors = error.response.data;
+                    } else {
 
-                    this.$message.error(error.response.data.message)
-                }
-            })
+                        this.$message.error(error.response.data.message)
+                    }
+                })
         },
         changeAdvance(index, id) {
 
@@ -614,6 +640,13 @@ export default {
                 })
                 //this.records[index].payment_method_type_id_desc = 'Anticipo';
 
+            } else if (payment_method_type.id == '16') {
+
+                this.$notify({
+                    title: '',
+                    message: 'Debes seleccionar una de las notas de crédito disponibles para el canje',
+                    type: 'success'
+                })
             }
 
         },
@@ -699,6 +732,51 @@ export default {
 
                 }
             }
+        },
+        changeCredits(index, id) {
+
+            let selectedAdvance = _.find(this.credits, { 'id': id })
+            let maxAmount = selectedAdvance.amount
+
+            let payment_count = this.records.length;
+            // let total = this.form.total;
+            let total = this.document.total_difference;
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if (maxAmount >= amount) {
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+                this.records[index].payment = amount
+
+            } else if (amount > maxAmount) {
+
+                this.records[index].payment = maxAmount
+                let message = 'El monto maximo utilizable es de ' + maxAmount
+                this.$message.warning(message)
+            }
+
+
+        },
+        changeCreditsInput(index, event, methodType, id) {
+
+            let selectedCredit = _.find(this.credits, { 'id': id })
+            let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
+
+            //if (payment_method_type.description.includes('Anticipo')) {
+
+            let maxAmount = selectedCredit.amount
+
+            if (maxAmount >= event) {
+                /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+            } else {
+
+                this.records[index].payment = maxAmount
+                let message = 'El monto maximo utilizable es de ' + maxAmount
+                this.$message.warning(message)
+
+            }
+            //}
         },
     }
 }

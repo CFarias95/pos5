@@ -87,9 +87,21 @@
                                         <td>
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
                                                 v-if="row.payment_method_type_id == '14' || row.payment_method_type_id == '15'">
-                                                <el-select v-model="row.reference" @change="changeAdvance(index, $event)" placeholder="Referencia Anticipo">
+                                                <el-select v-model="row.reference" @change="changeAdvance(index, $event)"
+                                                    placeholder="Referencia Anticipo">
                                                     <el-option v-for="option in advances" :key="option.id"
-                                                        :label="'AT'+option.id+' - '+option.reference" :value="option.id"></el-option>
+                                                        :label="'AT' + option.id + ' - ' + option.reference"
+                                                        :value="option.id"></el-option>
+                                                </el-select>
+                                                <small class="form-control-feedback" v-if="row.errors.reference"
+                                                    v-text="row.errors.reference[0]"></small>
+                                            </div>
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.reference }"
+                                                v-if="row.payment_method_type_id == '16'">
+                                                <el-select v-model="row.reference" @change="changeCredits(index, $event)"
+                                                    placeholder="Referencia Anticipo">
+                                                    <el-option v-for="option in credits" :key="option.id"
+                                                        :label="option.name" :value="option.id"></el-option>
                                                 </el-select>
                                                 <small class="form-control-feedback" v-if="row.errors.reference"
                                                     v-text="row.errors.reference[0]"></small>
@@ -134,10 +146,19 @@
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
                                         </td>
+                                        <td v-else-if="row.payment_method_type_id == '16'">
+                                            <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
+                                                <el-input v-model="row.payment"
+                                                    @change="changeCreditsInput(index, $event, row.payment_method_type_id, row.reference)"></el-input>
+                                                <small class="form-control-feedback" v-if="row.errors.payment"
+                                                    v-text="row.errors.payment[0]"></small>
+                                            </div>
+                                        </td>
                                         <td v-else-if="row.payment_method_type_id == '13'">
                                             <div class="form-group mb-0" :class="{ 'has-danger': row.errors.payment }">
                                                 <el-date-picker v-model="row.postdated" type="date" :clearable="false"
-                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd" placeholder="Postfechado"></el-date-picker>
+                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd"
+                                                    placeholder="Postfechado"></el-date-picker>
                                                 <small class="form-control-feedback" v-if="row.errors.payment"
                                                     v-text="row.errors.payment[0]"></small>
                                             </div>
@@ -201,14 +222,14 @@
 import { deletable } from '@mixins/deletable'
 
 export default {
-    props: ['showDialog', 'purchaseId', 'customerId','documentFeeId'],
+    props: ['showDialog', 'purchaseId', 'customerId', 'documentFeeId'],
     mixins: [deletable],
     data() {
         return {
             title: null,
-            title1:'TOTAL PAGADO',
-            title2:'TOTAL A PAGAR',
-            title3:'PENDIENTE DE PAGO',
+            title1: 'TOTAL PAGADO',
+            title2: 'TOTAL A PAGAR',
+            title3: 'PENDIENTE DE PAGO',
             resource: 'purchase-payments',
             records: [],
             payment_destinations: [],
@@ -219,8 +240,9 @@ export default {
             showAddButton: true,
             purchase: {},
             advances: [],
-            retentions:[],
+            retentions: [],
             index: null,
+            credits: [],
         }
     },
     async created() {
@@ -246,6 +268,11 @@ export default {
                     this.retentions = response.data.retentions;
                 }
             )
+            this.$http.get(`/cnp/list/${this.customerId}`).then(
+                response => {
+                    this.credits = response.data.credits;
+                }
+            );
         },
         changeRetention(index, id) {
 
@@ -268,7 +295,7 @@ export default {
                 this.$message.warning(message)
             }
         },
-        changeRetentionInput(index, event, methodType, id){
+        changeRetentionInput(index, event, methodType, id) {
             let selectedRetention = _.find(this.retentions, { 'id': id })
             let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
             if (payment_method_type.id.includes('99')) {
@@ -331,6 +358,51 @@ export default {
 
 
         },
+        changeCredits(index, id) {
+
+            let selectedAdvance = _.find(this.credits, { 'id': id })
+            let maxAmount = selectedAdvance.amount
+
+            let payment_count = this.records.length;
+            // let total = this.form.total;
+            let total = this.purchase.total_difference;
+
+            let payment = 0;
+            let amount = _.round(total / payment_count, 2);
+
+            if (maxAmount >= amount) {
+                /* EL MONTO INGRESADO ESTA PERMITIDO */
+                this.records[index].payment = amount
+
+            } else if (amount > maxAmount) {
+
+                this.records[index].payment = maxAmount
+                let message = 'El monto maximo utilizable es de ' + maxAmount
+                this.$message.warning(message)
+            }
+
+
+        },
+        changeCreditsInput(index, event, methodType, id) {
+
+            let selectedCredit = _.find(this.credits, { 'id': id })
+            let payment_method_type = _.find(this.payment_method_types, { 'id': methodType });
+
+            //if (payment_method_type.description.includes('Anticipo')) {
+
+            let maxAmount = selectedCredit.amount
+
+            if (maxAmount >= event) {
+                /*EL VALOR INGRESADO EN PERMITIDO EN EL ANTICIPO */
+            } else {
+
+                this.records[index].payment = maxAmount
+                let message = 'El monto maximo utilizable es de ' + maxAmount
+                this.$message.warning(message)
+
+            }
+            //}
+        },
         changePaymentMethodType(index) {
 
             let id = '01';
@@ -382,6 +454,14 @@ export default {
                     message: 'Debes seleccionar un anticipo disponible',
                     type: 'success'
                 })
+            }
+            else if (payment_method_type.id == '16') {
+
+                this.$notify({
+                    title: '',
+                    message: 'Debes seleccionar una de las notas de crédito disponibles para canje',
+                    type: 'success'
+                })
                 //this.records[index].payment_method_type_id_desc = 'Anticipo';
             }
 
@@ -419,11 +499,11 @@ export default {
             this.showAddButton = true;
         },
         async getData() {
-            if(this.documentFeeId){
-                    this.title1 = "TOTAL PAGADO CUOTA"
-                    this.title2 = "TOTAL DOCUMENTO"
-                    this.title3 = "PENDIENTE DE PAGO CUOTA"
-                }
+            if (this.documentFeeId) {
+                this.title1 = "TOTAL PAGADO CUOTA"
+                this.title2 = "TOTAL DOCUMENTO"
+                this.title3 = "PENDIENTE DE PAGO CUOTA"
+            }
             this.initForm();
             await this.$http.get(`/${this.resource}/purchase/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
@@ -475,7 +555,7 @@ export default {
                 filename: this.records[index].filename,
                 temp_path: this.records[index].temp_path,
                 payment: this.records[index].payment,
-                fee_id:this.documentFeeId,
+                fee_id: this.documentFeeId,
             }
 
             this.$http.post(`/${this.resource}`, form)

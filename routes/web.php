@@ -135,6 +135,9 @@ if ($hostname) {
             Route::post('certificates/uploads', 'Tenant\CertificateController@uploadFile');
             Route::delete('certificates', 'Tenant\CertificateController@destroy');
 
+            //CREDIT NOTES AS PAYMENT
+            Route::get('cnp/list/{id}','Tenant\CreditNotesPaymentController@list');
+
             //Establishments
             Route::get('establishments', 'Tenant\EstablishmentController@index')->name('tenant.establishments.index');
             Route::get('establishments/create', 'Tenant\EstablishmentController@create');
