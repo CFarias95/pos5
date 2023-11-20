@@ -886,6 +886,12 @@
                                            href="{{route('tenant.retentions.index')}}">Retenciones recibidas</a>
                                     </li>
                                 @endif
+                                @if(in_array('credit_note_payments', $vc_module_levels))
+                                    <li class="{{ ($firstLevel === 'cnp')?'nav-active':'' }}">
+                                        <a class="nav-link"
+                                           href="{{route('tenant.credit.notes.payment.index')}}">Notas de Crédito Canje</a>
+                                    </li>
+                                @endif
                                 @if(in_array('advanced_dispatches', $vc_module_levels))
                                     <li class="{{ ($firstLevel === 'dispatches')?'nav-active':'' }}">
                                         <a class="nav-link"

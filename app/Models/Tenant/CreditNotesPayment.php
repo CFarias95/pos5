@@ -16,4 +16,7 @@ class CreditNotesPayment extends ModelTenant
         'in_use',
         'used',
     ];
+    protected $casts = [
+        'in_use' => 'bool',
+    ];
 }

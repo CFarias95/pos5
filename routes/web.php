@@ -137,6 +137,9 @@ if ($hostname) {
 
             //CREDIT NOTES AS PAYMENT
             Route::get('cnp/list/{id}','Tenant\CreditNotesPaymentController@list');
+            Route::get('cnp/records','Tenant\CreditNotesPaymentController@records');
+            Route::get('cnp','Tenant\CreditNotesPaymentController@index')->name('tenant.credit.notes.payment.index');
+            Route::get('cnp/columns','Tenant\CreditNotesPaymentController@columns');
 
             //Establishments
             Route::get('establishments', 'Tenant\EstablishmentController@index')->name('tenant.establishments.index');

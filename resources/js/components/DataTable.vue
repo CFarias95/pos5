@@ -31,6 +31,13 @@
                                 </el-option>
                             </el-select>
                         </template>
+                        <template v-else-if="search.column === 'user_id'">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Cliente/Proveedor" @change="getRecords">
+                                <el-option v-for="(item, index) of persons" :key="index"
+                                    :label="item.type +' - '+item.name" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </template>
                         <template v-else>
                             <el-input v-if="search.column != 'facturado'" placeholder="Buscar" v-model="search.value"
                                 style="width: 100%;" prefix-icon="el-icon-search" @input="getRecords">
@@ -96,6 +103,7 @@ export default {
             loading_submit: false,
             fromPharmacy: false,
             parentsList: [],
+            persons:[],
         };
     },
     created() {
@@ -116,6 +124,7 @@ export default {
                     this.columns = response.data.columns;
                     this.search.column = _.head(Object.keys(this.columns));
                     this.parentsList = response.data.categories;
+                    this.persons = response.data.persons
                 } else {
                     this.columns = response.data;
                     this.search.column = _.head(Object.keys(this.columns));
