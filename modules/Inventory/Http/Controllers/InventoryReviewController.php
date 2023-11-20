@@ -47,7 +47,7 @@ class InventoryReviewController extends Controller
     return compact('warehouses', 'categories', 'item_sizes', 'item_colors', 'brands', 'attributes');
     }
 
-    
+
     /**
      *
      * @param  Request $request
@@ -83,14 +83,18 @@ class InventoryReviewController extends Controller
 
                         // para variantes
                         if($filter_by_variants)
-                        {   
+                        {
                             $query->whereHas('item_movement_rel_extra', function($query_rel_extra) use ($request) {
 
-                                $item_color_id = $request->item_color_id ?? false;
-                                if($item_color_id) $query_rel_extra->where('item_color_id', $item_color_id);
-                                
-                                $item_size_id = $request->item_size_id ?? false;
-                                if($item_size_id) $query_rel_extra->where('item_size_id', $item_size_id);
+                                //$item_color_id = $request->item_color_id ?? false;
+                                if(isset($request->item_color_id) && $request->item_color_id != ''){
+                                    $query_rel_extra->where('item_color_id', $request->item_color_id);
+                                }
+
+                                //$item_size_id = $request->item_size_id ?? false;
+                                if(isset($request->item_size_id) && $request->item_size_id != ''){
+                                    $query_rel_extra->where('item_size_id', $request->item_size_id);
+                                }
 
                                 return $query_rel_extra;
                             });
@@ -103,7 +107,7 @@ class InventoryReviewController extends Controller
                     ->orderBy('item_id')
                     ->get()
                     ->transform(function($row, $index) use($filter_by_variants, $request){
-                        //Log::info($row);
+                        Log::info($row);
                         return [
                             'index' => $index + 1,
                             'id' => $row->id,
@@ -117,21 +121,23 @@ class InventoryReviewController extends Controller
                             'attribute_types' => $row->item->attributes
                         ];
                     });
-        //Log::info($records);
-        
+        Log::info($records);
+
         if($filter_by_variants)
         {
             $records = $this->transformDataForVariants($records, $request);
         }
 
+        Log::info($records);
+
         return [
             'data' => $records
         ];
     }
-    
-    
+
+
     /**
-     * 
+     *
      * Transformar datos de los items encontrados para las variantes
      *
      * @param  array $records
@@ -152,7 +158,12 @@ class InventoryReviewController extends Controller
             {
                 if($this->isSetDataVariant($request) || ($request->item_color_id && !$request->item_size_id))
                 {
-                    $this->setDataToVariant($colors['detailed'], $row, $data, $index, 'Color');
+                    $color = $colors['detailed']->filter(function ($value, $key) use($request){
+                        return $value->rel_id == $request->item_color_id;
+                    });
+
+                    //$this->setDataToVariant($colors['detailed'], $row, $data, $index, 'Color');
+                    $this->setDataToVariant($color, $row, $data, $index, 'Color');
                 }
             }
 
@@ -160,7 +171,11 @@ class InventoryReviewController extends Controller
             {
                 if($this->isSetDataVariant($request) || (!$request->item_color_id && $request->item_size_id))
                 {
-                    $this->setDataToVariant($sizes['detailed'], $row, $data, $index, 'Talla');
+                    $size = $sizes['detailed']->filter(function ($value, $key) use($request){
+                        return $value->rel_id == $request->item_size_id;
+                    });
+                    //$this->setDataToVariant($sizes['detailed'], $row, $data, $index, 'Talla');
+                    $this->setDataToVariant($size, $row, $data, $index, 'Talla');
                 }
             }
 
@@ -169,7 +184,7 @@ class InventoryReviewController extends Controller
         return $data;
     }
 
-        
+
     /**
      *
      * @param  Request $request
@@ -182,7 +197,7 @@ class InventoryReviewController extends Controller
 
 
     /**
-     * 
+     *
      * Asignar datos de las variante
      *
      * @param  array $data_detailed
@@ -213,15 +228,15 @@ class InventoryReviewController extends Controller
         }
     }
 
-    
+
     /**
-     * 
+     *
      * Exportar formato pdf/excel
      *
      * @param  Request $request
      * @return mixed
      */
-    public function export(Request $request) 
+    public function export(Request $request)
     {
         //Log::info($request);
         $this->initConfigurations();
@@ -244,11 +259,11 @@ class InventoryReviewController extends Controller
             $general_format_export->data($data)->view_name($view);
             $export = $general_format_export->download($filename);
         }
-            
+
         return $export;
     }
 
-    
+
     /**
      *
      * @return void
