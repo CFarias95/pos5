@@ -92,11 +92,15 @@ class ReportKardexController extends Controller
             ->get()
             ->transform(function ($row) {
                 $full_description = $this->getFullDescription($row);
+                $desciption = $row->name?$row->name:'N/A';
+                $model = $row->model?$row->model:'N/A';
+                $marca = ($row->brand && $row->brand->name)?$row->brand->name:'N/A';
                 return [
+
                     'id' => $row->id,
-                    'full_description' => $full_description,
+                    'full_description' => $desciption.' - '.$model.' - '.$marca,
                     'internal_id' => $row->internal_id,
-                    'description' => $row->description,
+                    'description' => $row->name,
                     'warehouses' => $row->warehouses
                 ];
             });
@@ -160,7 +164,7 @@ class ReportKardexController extends Controller
         //$warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
         //$inventory_kardexable_id = null;
         $data = InventoryKardex::with(['inventory_kardexable']);
-        /*$data['info_kardex'] = DB::connection('tenant')->select("SELECT * FROM inventory_kardex ik 
+        /*$data['info_kardex'] = DB::connection('tenant')->select("SELECT * FROM inventory_kardex ik
             LEFT JOIN inventories i ON ik.inventory_kardexable_id = i.id
             WHERE ik.item_id = :item_id", ['item_id' => $item_id]);*/
         //Log::info($data);
@@ -178,7 +182,7 @@ class ReportKardexController extends Controller
         }
         //Log::info(json_encode($data));
         //$data->where('inventory_kardexable_id', $inventory_kardexable_id);
-        
+
 
         // if($date_start && $date_end){
 
