@@ -378,7 +378,6 @@ export default {
 
             this.$http.get(`/documents/advance/${this.customerId}`).then(
                 response => {
-
                     this.advances = response.data.advances;
                     this.retentions = response.data.retentions;
                 }
@@ -498,7 +497,7 @@ export default {
                 );
 
             //await
-            //this.addAdvancesCustomer();
+            this.addAdvancesCustomer();
             //this.$eventHub.$emit('reloadDataUnpaid')
 
         },

@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\Person;
 use Illuminate\Http\Resources\Json\ResourceCollection;
 
 class RetentionCollection extends ResourceCollection
@@ -12,7 +13,7 @@ class RetentionCollection extends ResourceCollection
      * @param  \Illuminate\Http\Request  $request
      * @return mixed
      */
-    
+
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
@@ -22,6 +23,7 @@ class RetentionCollection extends ResourceCollection
             if (in_array($row->state_type_id, ['05', '07', '09'])) {
                 $has_cdr = false;
             }
+            $person = Person::find($row->supplier_id);
 
             return [
                 'id' => $row->id,
@@ -29,8 +31,8 @@ class RetentionCollection extends ResourceCollection
                 'number' => $row->number_full,
                 'secuencial' => $row->ubl_version,
                 'clave_acceso' => $row->observations,
-                'supplier_name' => ($row->supplier)?$row->supplier->name:null,
-                'supplier_number' => ($row->supplier)?$row->supplier->identity_document_type->description.' '.$row->supplier->number:null,
+                'supplier_name' => $person->name,
+                'supplier_number' => $person->identity_document_type->description.' '.$person->number,
                 'state_type_id' => $row->state_type_id,
                 'state_type_description' => $row->state_type->description,
                 'total_retention' => $row->total_retention,
