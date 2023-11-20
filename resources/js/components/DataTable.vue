@@ -32,7 +32,7 @@
                             </el-select>
                         </template>
                         <template v-else-if="search.column === 'user_id'">
-                            <el-select v-model="search.value" style="width: 100%;" placeholder="Cliente/Proveedor" @change="getRecords">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Cliente/Proveedor" @change="getRecords" filterable>
                                 <el-option v-for="(item, index) of persons" :key="index"
                                     :label="item.type +' - '+item.name" :value="item.id">
                                 </el-option>

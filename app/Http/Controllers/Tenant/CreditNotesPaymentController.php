@@ -69,7 +69,7 @@ class CreditNotesPaymentController extends Controller
     public function getRecords($request){
 
         if(isset($request->column)){
-            $records = CreditNotesPayment::where($request->column, 'like', "%{$request->value}%")
+            $records = CreditNotesPayment::where($request->column, $request->value)
             ->latest();
         }else{
             $records = CreditNotesPayment::all();
