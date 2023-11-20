@@ -205,7 +205,7 @@
 
                         <div class="col-12">&nbsp;</div>
 
-                        <div class="col-md-8 mt-2">
+                        <div class="col-md-8 mt-2" v-if="form.document_type_id != '04'">
                             <div class="form-group">
                                 <el-checkbox v-model="form.is_aproved">¿Desea Autorizar las retenciones de esta compra?
                                 </el-checkbox>
@@ -220,7 +220,7 @@
                             </div>
                         </div>
 
-                        <div class="col-md-8 mt-2 mb-2">
+                        <div class="col-md-8 mt-2 mb-2" v-if="form.document_type_id != '04'">
                             <div class="form-group">
                                 <el-checkbox v-model="form.has_payment" @change="changeHasPayment">Agregar vencimientos
                                 </el-checkbox>
@@ -651,7 +651,7 @@
                         :loading="loading_submit" native-type="submit" type="primary">Generar
                     </el-button>
                     <el-button
-                        v-if="this.form.document_type_id == '04'"
+                        v-else-if="this.form.document_type_id == '04'"
                         :loading="loading_submit" native-type="submit" type="primary">Generar
                     </el-button>
 
