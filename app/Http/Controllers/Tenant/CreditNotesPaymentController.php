@@ -68,11 +68,10 @@ class CreditNotesPaymentController extends Controller
 
     public function getRecords($request){
 
-        if(isset($request->column)){
-            $records = CreditNotesPayment::where($request->column, $request->value)
-            ->latest();
+        if(isset($request->column) && isset($request->value)){
+            $records = CreditNotesPayment::where($request->column, $request->value);
         }else{
-            $records = CreditNotesPayment::all();
+            $records = CreditNotesPayment::query();
         }
 
         return new CreditNotePaymentCollection($records->paginate(config('tenant.items_per_page')));
