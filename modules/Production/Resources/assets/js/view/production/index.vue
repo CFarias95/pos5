@@ -69,6 +69,10 @@
                                 format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
                     </template>
+                    <div class="col-md-3">
+                        <label class="control-label">Orden de producción</label>
+                        <el-input v-model="form.order" @change="getRecordsByFilter" clearable></el-input>
+                    </div>
                     <div class="col-12 mt-4">
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
@@ -338,6 +342,7 @@ export default {
                 date_end: moment().format('YYYY-MM-DD'),
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
+                order: null,
             }
 
         },

@@ -648,13 +648,13 @@ class ProductionController extends Controller
                     }
                     $production->cost_supplies = $costoT;
                     $production->save();
-                    
+
                     $item = Item::where('id', $production->item_id)->first();
                     $costoA = $item->purchase_mean_cost;
                     $stockA = $item->stock;
                     $totalA = $production->cost_supplies;
 
-                    
+
                     $stockN = $production->quantity;
                     $totalN = $production->cost_supplies;
 
@@ -1065,9 +1065,13 @@ class ProductionController extends Controller
 
     public function getRecords(Request $request)
     {
+        Log::info($request);
         $state_type_id = $request->state_type_id;
         $data_of_period = $this->getDatesOfPeriod($request);
 
+        $request = json_decode($request->form, true);
+        $order = $request['order'];
+        //Log::info($request['order']);
         $data = Production::query();
 
         if (!empty($data_of_period['d_start'])) {
@@ -1094,7 +1098,9 @@ class ProductionController extends Controller
             });
         }
 
-
+        if(isset($order)){
+            $data->where('production_order','like','%'.$order.'%');
+        }
 
         return $data;
     }
