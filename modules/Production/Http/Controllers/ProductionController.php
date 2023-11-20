@@ -1071,6 +1071,7 @@ class ProductionController extends Controller
 
         $request = json_decode($request->form, true);
         $order = $request['order'];
+        $status = $request['status'];
         //Log::info($request['order']);
         $data = Production::query();
 
@@ -1101,6 +1102,10 @@ class ProductionController extends Controller
         if(isset($order)){
             $data->where('production_order','like','%'.$order.'%');
         }
+        if(isset($status)){
+            $data->where('state_type_id',$status);
+        }
+
 
         return $data;
     }

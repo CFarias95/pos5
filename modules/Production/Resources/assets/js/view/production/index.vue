@@ -73,6 +73,15 @@
                         <label class="control-label">Orden de producción</label>
                         <el-input v-model="form.order" @change="getRecordsByFilter" clearable></el-input>
                     </div>
+                    <div class="col-md-3">
+                        <label class="control-label">Estado</label>
+                        <el-select v-model="form.status" @change="getRecordsByFilter">
+                            <el-option key="01" label="Registrada" value="01"></el-option>
+                            <el-option key="02" label="En elaboracion" value="02"></el-option>
+                            <el-option key="03" label="Finalizada" value="03"></el-option>
+                            <el-option key="04" label="Anulada" value="04"></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-12 mt-4">
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
@@ -343,6 +352,7 @@ export default {
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
                 order: null,
+                status: null,
             }
 
         },
