@@ -10,6 +10,7 @@ use App\Http\Resources\Tenant\CreditNotePaymentCollection;
 use App\Http\Resources\Tenant\RetentionCollection;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Document;
 use App\Models\Tenant\Person;
 
 class CreditNotesPaymentController extends Controller
@@ -47,8 +48,17 @@ class CreditNotesPaymentController extends Controller
     public function list($id){
         $credits = CreditNotesPayment::where('user_id',$id)->get();
         $credits->transform(function($row){
-            $purchase = Purchase::find($row->purchase_id);
-            $name = $purchase->series.'-'.$purchase->number;
+            $document = null;
+
+            if($row->purchase_id){
+                $document = Purchase::find($row->purchase_id);
+            }
+
+            if($row->document_id){
+                $document = Document::find($row->document_id);
+            }
+
+            $name = $document->series.'-'.$document->number;
             $valor = $row->amount - $row->used;
 
             return [
