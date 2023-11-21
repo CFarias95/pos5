@@ -1102,10 +1102,10 @@ class ProductionController extends Controller
             });
         }
 
-        if(isset($order)){
+        if(isset($order) && $order!=''){
             $data->where('production_order','like','%'.$order.'%');
         }
-        if(isset($status)){
+        if(isset($status) && $status != ''){
             $data->where('state_type_id',$status);
         }
 

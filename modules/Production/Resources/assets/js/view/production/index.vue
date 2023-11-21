@@ -75,7 +75,7 @@
                     </div>
                     <div class="col-md-3">
                         <label class="control-label">Estado</label>
-                        <el-select v-model="form.status" @change="getRecordsByFilter">
+                        <el-select v-model="form.status" @change="getRecordsByFilter" clearable>
                             <el-option key="01" label="Registrada" value="01"></el-option>
                             <el-option key="02" label="En elaboracion" value="02"></el-option>
                             <el-option key="03" label="Finalizada" value="03"></el-option>
