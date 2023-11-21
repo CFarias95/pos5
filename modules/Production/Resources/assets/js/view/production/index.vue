@@ -71,7 +71,7 @@
                     </template>
                     <div class="col-md-3">
                         <label class="control-label">Orden de producción</label>
-                        <el-input v-model="form.order" @change="getRecordsByFilter" clearable></el-input>
+                        <el-input v-model="form.order" @change="getRecordsByFilter" clearable ></el-input>
                     </div>
                     <div class="col-md-3">
                         <label class="control-label">Estado</label>

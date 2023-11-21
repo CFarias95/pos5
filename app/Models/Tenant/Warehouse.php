@@ -35,4 +35,9 @@ class Warehouse extends ModelTenant
     {
         return $this->hasMany(TechnicalServiceItem::class, 'warehouse_id');
     }
+
+    public function establishment()
+        {
+            return $this->belongsTo(Establishment::class);
+        }
 }

@@ -638,8 +638,8 @@ class ProductionController extends Controller
                     ];
                 }
             }
-
             elseif($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
+
                 try {
 
                     $totalSupply = ProductionSupply::where('production_id', $production->id)->get();
@@ -662,7 +662,9 @@ class ProductionController extends Controller
                     $costoT = $totalA + $totalN;
                     $costoT = round($costoT/$stockT,4);
 
-                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$stockN."-".$totalN);
+                    Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
+                    $item->purchase_mean_cost = $costoT;
+                    $item ->save();
 
                 } catch (Exception $ex2) {
                     //$production->delete();
@@ -743,6 +745,7 @@ class ProductionController extends Controller
 
 
     }
+
     public function inventoryFinishedProduct($production, $inventory_transaction_item)
     {
         try {
@@ -1284,7 +1287,8 @@ class ProductionController extends Controller
         //$usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        Log::info("rtiquetas".json_encode($records));
+        Log::info("rtiquetas".json_encode($produccion->warehouse));
+        Log::info("rtiquetas".json_encode($produccion->warehouse->establishment));
         $recordId = $produccion->item_id;
         $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
 

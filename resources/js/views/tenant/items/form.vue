@@ -150,6 +150,14 @@
                             </div>
                         </div>
                         <div v-show="form.unit_type_id != 'ZZ'" class="col-md-3">
+                            <div :class="{ 'has-danger': errors.validity }" class="form-group">
+                                <label class="control-label">Días de vencimiento</label>
+                                <el-input-number  step="1" max="9999999999" min="0" v-model="form.validity"></el-input-number>
+                                <small v-if="errors.validity" class="form-control-feedback"
+                                    v-text="errors.validity[0]"></small>
+                            </div>
+                        </div>
+                        <div v-show="form.unit_type_id != 'ZZ'" class="col-md-3">
                             <div :class="{ 'has-danger': errors.date_of_due }" class="form-group">
                                 <label class="control-label">Fec. Vencimiento</label>
                                 <el-date-picker v-model="form.date_of_due" :clearable="true" type="date"
@@ -1667,6 +1675,7 @@ export default {
                 quantity: 0,
                 category_id_array:[],
                 purchase_mean_cost:null,
+                validity:0
 
             }
 

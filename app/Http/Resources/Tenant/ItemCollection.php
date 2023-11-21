@@ -99,6 +99,7 @@ class ItemCollection extends ResourceCollection
                 }),
                 'tariff_id' => $row->tariff_id,
                 'concept_id' => $row->concept_id,
+                'validity' => $row->validity,
             ];
         });
     }

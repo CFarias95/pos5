@@ -35,6 +35,8 @@ foreach ($atributos as $key => $value) {
         $array2[] = $value;
     }
 }
+$date =  new DateTime($fechas->date_end.' '.$fechas->time_end);
+$fechaCaducidad = date_add($date, date_interval_create_from_date_string($records['validity']." days"));
 
 @endphp
 <!DOCTYPE html>
@@ -122,13 +124,13 @@ foreach ($atributos as $key => $value) {
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
         <div>
-            <label><strong>Producto:</strong> {{$records->name}}</label>
+            <label><strong>Producto:</strong> {{$records->description}}</label>
             <br>
             <label><strong>Lote:</strong> {{$fechas->lot_code}}</label>
             <br>
             <label><strong>F. Elaboracion:</strong> {{$fechas->date_start}}</label>
             <br>
-            <label><strong>F. Vencimiento:</strong> {{$fechas->date_end}}</label>
+            <label><strong>F. Vencimiento:</strong> {{date_format($fechaCaducidad, "Y-m-d")}}</label>
             <br>
             <label><strong>BPM:</strong>{{$bpm}}</label>
             <br>

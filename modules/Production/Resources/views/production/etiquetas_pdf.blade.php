@@ -41,6 +41,8 @@ foreach ($atributos as $key => $value) {
         $array2[] = $value;
     }
 }
+$date =  new DateTime($produccion->date_end.' '.$produccion->time_end);
+$fechaCaducudad = date_add($date, date_interval_create_from_date_string($records['validity']." days"));
 
 @endphp
 <!DOCTYPE html>
@@ -91,7 +93,7 @@ foreach ($atributos as $key => $value) {
         </style>
     </head>
     <body>
-        <table class="table" style="border: 1px solid black;">
+        <table class="table" style="border: 1px solid black;" width="75%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -102,11 +104,11 @@ foreach ($atributos as $key => $value) {
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
                 </tr>
                 <tr>
-                    <th colspan="2"><p><strong>{{$records['name']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
+                    <th colspan="2"><p><strong>{{$records['description']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2"><strong>{{$records['name']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -121,19 +123,35 @@ foreach ($atributos as $key => $value) {
                     Peso: {{$psn}} <br/>
                     Lote: {{$produccion->lot_code}} <br/>
                     Fecha de Producción: {{$produccion->date_start}} <br/>
-                    Fecha de Caducidad: {{$produccion->date_of_due}} <br/><br/>
+                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/><br/>
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="2"> PRODUCTO IMPORTADO, DISTRIBUIDO, Y COMERCIALIZADO POR {{$company->name}}</th>
-                <tr>
+                    <th style="text-align: left;">
+                        <h5>
+                        {{$produccion->warehouse->description }}<br/>
+                        {{$produccion->warehouse->establishment->address }}<br/>
+                        {{$produccion->warehouse->establishment->district->description }},
+                        {{$produccion->warehouse->establishment->province->description }},
+                        {{$produccion->warehouse->establishment->department->description }},
+                        {{$produccion->warehouse->establishment->country->description }}<br/>
+                        Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
+                        </h5>
+                    </th>
+                    <th style="text-align: left;">
+                        <h5>
+                        INDUSTRIA ECUATORIANA<br/>
+                        ELABORADO POR {{$company->name}}<br/>
+                        </h5>
+                    </th>
+                </tr>
 
             </thead>
         </table>
 
         <br>
         <br>
-        <table class="table" style="border: 1px solid black;">
+        <table class="table" style="border: 1px solid black;" width="75%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -146,11 +164,11 @@ foreach ($atributos as $key => $value) {
                     <th style="text-align: left"><p><strong>{{$company->name}}</strong></p></th>
                 </tr>
                 <tr>
-                    <th colspan="2"><p><strong>{{$records['name']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
+                    <th colspan="2"><p><strong>{{$records['description']}}</strong>  <strong>000{{$records['id']}}</strong></p></th>
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2"><strong>{{$records['name']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -165,13 +183,28 @@ foreach ($atributos as $key => $value) {
                     Peso: {{$psn}} <br/>
                     Lote: {{$produccion->lot_code}} <br/>
                     Fecha de Producción: {{$produccion->date_start}} <br/>
-                    Fecha de Caducidad: {{$produccion->date_of_due}} <br/><br/>
+                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/><br/>
                     </th>
                 </tr>
                 <tr>
-                    <th colspan="2"> PRODUCTO IMPORTADO, DISTRIBUIDO, Y COMERCIALIZADO POR {{$company->name}}</th>
-                <tr>
-
+                    <th style="text-align: left;">
+                        <h6>
+                        {{$produccion->warehouse->description }}<br/>
+                        {{$produccion->warehouse->establishment->address }}<br/>
+                        {{$produccion->warehouse->establishment->district->description }},
+                        {{$produccion->warehouse->establishment->province->description }}.
+                        {{$produccion->warehouse->establishment->department->description }},
+                        {{$produccion->warehouse->establishment->country->description }}<br/>
+                        Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
+                        </h6>
+                    </th>
+                    <th style="text-align: left;">
+                        <h6>
+                        INDUSTRIA ECUATORIANA<br/>
+                        ELABORADO POR {{$company->name}}<br/>
+                        </h6>
+                    </th>
+                </tr>
             </thead>
         </table>
     </body>
