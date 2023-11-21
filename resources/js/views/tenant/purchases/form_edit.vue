@@ -1411,7 +1411,6 @@ export default {
                     toal_retenido += (retention_iva + retention_renta)
                     let nuevaRetIVA = true
                     let nuevaRetRENTA = true
-
                     if (this.form.ret.length > 0) {
 
                         this.form.ret.forEach((data) => {
