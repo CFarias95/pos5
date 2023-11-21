@@ -18,23 +18,34 @@
                         <template v-if="search.column === 'date_of_issue' ||
                             search.column === 'date_of_due' ||
                             search.column === 'date_of_payment' ||
-                            search.column === 'delivery_date'
+                            search.column === 'delivery_date' ||
+                            search.column === 'created_at'
                             ">
                             <el-date-picker v-model="search.value" type="date" style="width: 100%;" placeholder="Buscar"
                                 value-format="yyyy-MM-dd" @change="getRecords">
                             </el-date-picker>
                         </template>
                         <template v-else-if="search.column === 'parent_id'">
-                            <el-select v-model="search.value" style="width: 100%;" placeholder="Departamento" @change="getRecords">
-                                <el-option v-for="(item, index) of parentsList" :key="index"
-                                    :label="item.name" :value="item.id">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Departamento"
+                                @change="getRecords">
+                                <el-option v-for="(item, index) of parentsList" :key="index" :label="item.name"
+                                    :value="item.id">
                                 </el-option>
                             </el-select>
                         </template>
                         <template v-else-if="search.column === 'user_id'">
-                            <el-select v-model="search.value" style="width: 100%;" placeholder="Cliente/Proveedor" @change="getRecords" filterable clearable>
-                                <el-option v-for="(item, index) of persons" :key="index"
-                                    :label="item.type +' - '+item.name" :value="item.id">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Cliente"
+                                @change="getRecords" filterable clearable>
+                                <el-option v-for="(item, index) of customers" :key="index"
+                                    :label="item.type + ' - ' + item.name" :value="item.id">
+                                </el-option>
+                            </el-select>
+                        </template>
+                        <template v-else-if="search.column === 'user_id_2'">
+                            <el-select v-model="search.value" style="width: 100%;" placeholder="Proveedor"
+                                @change="getRecords" filterable clearable>
+                                <el-option v-for="(item, index) of suppliers" :key="index"
+                                    :label="item.type + ' - ' + item.name" :value="item.id">
                                 </el-option>
                             </el-select>
                         </template>
@@ -46,6 +57,15 @@
                                 <el-option value="FP">Facturado Con Pendiente</el-option>
                                 <el-option value="FF">Facturado Finalizado</el-option>
                             </el-select>
+                        </template>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
+                        <template v-if="resource == 'cnp'">
+                            <div class="d-flex">
+                                <label>Incluir Liquidadas</label>
+                                <el-switch v-model="search.included" class="ml-2" @change="getRecords"
+                                    style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                            </div>
                         </template>
                     </div>
                 </div>
@@ -95,7 +115,8 @@ export default {
         return {
             search: {
                 column: null,
-                value: null
+                value: null,
+                included: false,
             },
             columns: [],
             records: [],
@@ -103,7 +124,9 @@ export default {
             loading_submit: false,
             fromPharmacy: false,
             parentsList: [],
-            persons:[],
+            suppliers: [],
+            customers: [],
+
         };
     },
     created() {
@@ -124,7 +147,8 @@ export default {
                     this.columns = response.data.columns;
                     this.search.column = _.head(Object.keys(this.columns));
                     this.parentsList = response.data.categories;
-                    this.persons = response.data.persons
+                    this.suppliers = response.data.suppliers,
+                    this.customers = response.data.customers
                 } else {
                     this.columns = response.data;
                     this.search.column = _.head(Object.keys(this.columns));

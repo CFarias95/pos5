@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Notas de crédito para canje</span></li>
+                <li class="active"><span>Notas de crédito</span></li>
             </ol>
             <div class="right-wrapper pull-right">
                 <!-- <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2" ><i class="fa fa-plus-circle"></i> Nuevo</a> -->
@@ -26,7 +26,8 @@
                         <th>Es uso</th>
                         <th>Usado</th>
                     </tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }"
+                                :class="{'bg-success': (row.used >= row.total) }">
                         <td class="text-center">{{ row.date_of_issue }}</td>
                         <td>{{ row.type }}</td>
                         <td>{{ row.id }}</td>

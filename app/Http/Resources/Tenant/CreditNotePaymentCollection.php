@@ -35,7 +35,7 @@ class CreditNotePaymentCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'type' => $tipo,
-                'date_of_issue' => $document->date_of_issue->format('y-m-d'),
+                'date_of_issue' => $document->date_of_issue->format('Y-m-d'),
                 'person' => $person->name,
                 'person_number' =>$person->number,
                 'document' => $document->series.' - '.$document->number,
