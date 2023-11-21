@@ -109,7 +109,6 @@ use Throwable;
         public function records(Request $request)
         {
             $records = $this->getRecords($request);
-
             return new OrderNoteCollection($records->paginate(config('tenant.items_per_page')));
         }
 

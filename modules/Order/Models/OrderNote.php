@@ -640,7 +640,6 @@
             ];
         }
 
-
         /**
          *
          * Obtener url para impresión
@@ -736,6 +735,5 @@
 
             return $query;
         }
-
 
     }
