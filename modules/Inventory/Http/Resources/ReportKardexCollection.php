@@ -52,8 +52,12 @@ class ReportKardexCollection extends ResourceCollection
 
             case $models[0]: //venta
 
-                $cpe_input = ($row->quantity > 0) ?  (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-";
-                $cpe_output = ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-";
+                //$cpe_input = ($row->quantity > 0) ?  (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-";
+                //$cpe_output = ($row->quantity < 0) ?  (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) ? "-" : $row->quantity):"-";
+                $cpe_input = ($row->quantity > 0) ? $row->quantity: '-';
+                $cpe_output = ($row->quantity < 0) ? $row->quantity: '-';
+
+
                 $cpe_discounted_stock = false;
                 $cpe_doc_asoc = isset($row->inventory_kardexable->note) ? $row->inventory_kardexable->note->affected_document->getNumberFullAttribute() : '-';
 
@@ -68,7 +72,8 @@ class ReportKardexCollection extends ResourceCollection
                     $cpe_doc_asoc = ($cpe_doc_asoc == '-') ? $row->inventory_kardexable->dispatch->number_full :  $cpe_doc_asoc.' | '.$row->inventory_kardexable->dispatch->number_full;
                 }
 
-                $doc_balance = (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) || $cpe_discounted_stock) ? self::$balance+=0 : self::$balance+= $row->quantity;
+                //$doc_balance = (isset($row->inventory_kardexable->sale_note_id) || isset($row->inventory_kardexable->order_note_id) || $cpe_discounted_stock) ? self::$balance+=0 : self::$balance+= $row->quantity;
+                $doc_balance = (isset($row->inventory_kardexable->sale_note_id) || $cpe_discounted_stock) ? self::$balance+=0 : self::$balance+= $row->quantity;
 
                 return [
                     'id' => $row->id,

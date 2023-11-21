@@ -114,7 +114,6 @@ class ReportKardexController extends Controller
     {
         $records = $this->getRecords($request->all());
         //Log::info($records);
-
         return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
     }
 
