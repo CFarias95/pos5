@@ -19,6 +19,7 @@ class Imports extends ModelTenant
         'cta_comunications',
         'isd',
         'comunications',
+        'incoterm'
     ];
     protected $casts = [
         'comunications' => 'double',
@@ -39,6 +40,7 @@ class Imports extends ModelTenant
             'cta_comunications' => $this->cta_comunications,
             'isd' => $this->isd,
             'comunications' => $this->comunications,
+            'incoterm' => $this->incoterm,
         ];
         return $data;
     }

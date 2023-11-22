@@ -12,6 +12,7 @@ use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Imports;
+use App\Models\Tenant\Incoterm;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
@@ -602,8 +603,10 @@ class ImportsController extends Controller
 
     public function table()
     {
-        $cuentas = AccountMovement::get();
-        return $cuentas;
+        $cta_accountants = AccountMovement::get();
+        $incoterms = Incoterm::all();
+
+        return compact("cta_accountants","incoterms");
     }
 
     /**

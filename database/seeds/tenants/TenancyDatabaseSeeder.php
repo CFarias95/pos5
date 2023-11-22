@@ -51,44 +51,92 @@ class TenancyDatabaseSeeder extends Seeder
         // DB::table('module_user')->insert([
         //     ['module_id' => 10, 'user_id' => 1, ]
         // ]);
-         DB::table('format_templates')->insert([
-            ['id'=> 1, 'formats' => 'con_valor_unitario'],
-            ['id'=> 2, 'formats' => 'default'],
-            ['id'=> 3, 'formats' => 'default2'],
-            ['id'=> 4, 'formats' => 'font_sm'],
-            ['id'=> 5, 'formats' => 'font_sw2'],
-            ['id'=> 6, 'formats' => 'legend_amazonia'],
-            ['id'=> 7, 'formats' => 'model1'],
-            ['id'=> 8, 'formats' => 'model2'],
-            ['id'=> 9, 'formats' => 'model3'],
-            ['id'=> 10, 'formats' => 'model4'],
-            ['id'=> 11, 'formats' => 'modelw80'],
-            ['id'=> 12, 'formats' => 'santiago'],
-            ['id'=> 13, 'formats' => 'top_placa'],
-            ['id'=> 14, 'formats' => 'unit_types_desc']
+        DB::table('format_templates')->insert([
+            ['id' => 1, 'formats' => 'con_valor_unitario'],
+            ['id' => 2, 'formats' => 'default'],
+            ['id' => 3, 'formats' => 'default2'],
+            ['id' => 4, 'formats' => 'font_sm'],
+            ['id' => 5, 'formats' => 'font_sw2'],
+            ['id' => 6, 'formats' => 'legend_amazonia'],
+            ['id' => 7, 'formats' => 'model1'],
+            ['id' => 8, 'formats' => 'model2'],
+            ['id' => 9, 'formats' => 'model3'],
+            ['id' => 10, 'formats' => 'model4'],
+            ['id' => 11, 'formats' => 'modelw80'],
+            ['id' => 12, 'formats' => 'santiago'],
+            ['id' => 13, 'formats' => 'top_placa'],
+            ['id' => 14, 'formats' => 'unit_types_desc']
         ]);
 
         DB::table('types_accounting_entries')->insert([
-            ['id'=> 1, 'name' => 'VENTA','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 2, 'name' => 'COMPRA','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 3, 'name' => 'LIQUIDACION IMPORTACION','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 4, 'name' => 'COBRO','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 5, 'name' => 'PAGO','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 6, 'name' => 'ANTICIPO CLIENTE','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 7, 'name' => 'ANTICIPO PROVEEDOR','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 8, 'name' => 'DEPRECIACION','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
-            ['id'=> 9, 'name' => 'ASIENTOS MANUALES','created_at'=>Carbon::now(),'updated_at'=>Carbon::now()],
+            ['id' => 1, 'name' => 'VENTA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 2, 'name' => 'COMPRA', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 3, 'name' => 'LIQUIDACION IMPORTACION', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 4, 'name' => 'COBRO', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 5, 'name' => 'PAGO', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 6, 'name' => 'ANTICIPO CLIENTE', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 7, 'name' => 'ANTICIPO PROVEEDOR', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 8, 'name' => 'DEPRECIACION', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
+            ['id' => 9, 'name' => 'ASIENTOS MANUALES', 'created_at' => Carbon::now(), 'updated_at' => Carbon::now()],
 
         ]);
 
         DB::table('rates')->insert([
             [
-            'id'=> 1,
-            'rate_name' => 'Tarifa PVP',
-            'rate_start'=>Carbon::now(),
-            'rate_end'=>Carbon::now()->addYear(2),
-            'created_at'=>Carbon::now(),
-            'updated_at'=>Carbon::now()
+                'id' => 1,
+                'rate_name' => 'Tarifa PVP',
+                'rate_start' => Carbon::now(),
+                'rate_end' => Carbon::now()->addYear(2),
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ]
+        ]);
+
+        DB::table('incoterms')->insert([
+            [
+                'code' => 'EXWORKS',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'FCA',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'FOB',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'FAS',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'CPT',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'CIP',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'CIF',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'CFR',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'DAP',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'DPU',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
+            ],[
+                'code' => 'DDP',
+                'created_at' => Carbon::now(),
+                'updated_at' => Carbon::now()
             ]
         ]);
     }

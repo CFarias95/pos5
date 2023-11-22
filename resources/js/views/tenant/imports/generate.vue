@@ -114,6 +114,12 @@
                                     <el-option v-for="cuenta in cuenta_contable" :key="cuenta.id" :value="cuenta.id" :label="cuenta.description"></el-option>
                                 </el-select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="control-label">INCOTERM</label>
+                                <el-select v-model="form.incoterm"  filterable clearable>
+                                    <el-option v-for="row in incoterms" :key="row.id" :value="row.id" :label="row.code"></el-option>
+                                </el-select>
+                            </div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -181,6 +187,7 @@ export default {
             activeName: 'first',
             isEditForm : false,
             cuenta_contable: null,
+            incoterms:[],
             estados: [{'id':1,'description':'Registrada'},{'id':2,'description':'Liberada'},{'id':3,'description':'Liquidada'}],
             tipoTransportes : [{'id':1,'description':'Aereo'},{'id':2,'description':'Maritimo'},{'id':3,'description':'Terrestre'}],
         }
@@ -225,7 +232,7 @@ export default {
                 cta_comunications:null,
                 isd:null,
                 comunications:null,
-
+                incoterm:null,
             }
             this.resource = 'imports'
 
@@ -243,7 +250,8 @@ export default {
             this.$http.get(`/${this.resource}/tables`)
             .then(response =>{
                 //console.log('DATA', response)
-                this.cuenta_contable = response.data
+                this.cuenta_contable = response.data.cta_accountants
+                this.incoterms = response.data.incoterms
             })
             if (this.recordId) {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`)
