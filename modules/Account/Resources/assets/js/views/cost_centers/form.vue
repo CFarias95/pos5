@@ -3,35 +3,30 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
+                    <div class="form- col-md-6" :class="{ 'has-danger': errors.code }">
+                        <label class="control-label">Código</label>
+                        <el-input v-model="form.code"></el-input>
+                        <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
+                    </div>
+                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
+                        <label class="control-label">Nombre</label>
+                        <el-input v-model="form.name"></el-input>
+                        <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                    </div>
+
                     <div class="col-md-12">
-                        <div class="form-group" :class="{'has-danger': errors.name}">
-                            <label class="control-label">Nombre</label>
-                            <el-input v-model="form.name"></el-input>
-                            <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
-                        </div>
-                        <div class="form-group" :class="{'has-danger': errors.level_1}">
+                        <div class="form-group" :class="{ 'has-danger': errors.level_1 }">
                             <label class="control-label">Nivel 1</label>
-                            <el-select v-model="form.level_1"
-                                        @change="changeParentCategorie2()"
-                                        filterable
-                                        clearable >
-                                <el-option
-                                    v-for="option in level_1"
-                                    :key="option.id"
-                                    :label="option.name"
+                            <el-select v-model="form.level_1" @change="changeParentCategorie2()" filterable clearable>
+                                <el-option v-for="option in level_1" :key="option.id" :label="option.name"
                                     :value="option.id" v-if="option.id != form.id"></el-option>
                             </el-select>
                         </div>
-                        <div v-if="form.level_1" class="form-group" :class="{'has-danger': errors.level_2}">
+                        <div v-if="form.level_1" class="form-group" :class="{ 'has-danger': errors.level_2 }">
                             <label class="control-label">Nivel 2</label>
-                            <el-select v-model="form.level_2"
-                                        filterable
-                                        clearable>
-                                <el-option
-                                    v-for="option in level_2"
-                                    :key="option.id"
-                                    :label="option.name"
-                                    :value="option.id" v-if="option.id != form.id" ></el-option>
+                            <el-select v-model="form.level_2" filterable clearable>
+                                <el-option v-for="option in level_2" :key="option.id" :label="option.name"
+                                    :value="option.id" v-if="option.id != form.id"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -47,89 +42,90 @@
 
 <script>
 
-    export default {
-        props: ['showDialog', 'recordId'],
-        data() {
-            return {
-                loading_submit: false,
-                titleDialog: null,
-                resource: 'cost_centers',
-                errors: {},
-                form: {},
-                level_1:[],
-                level_2:[],
+export default {
+    props: ['showDialog', 'recordId'],
+    data() {
+        return {
+            loading_submit: false,
+            titleDialog: null,
+            resource: 'cost_centers',
+            errors: {},
+            form: {},
+            level_1: [],
+            level_2: [],
+        }
+    },
+    created() {
+        this.initForm()
+    },
+    methods: {
+        initForm() {
+            this.errors = {}
+            this.form = {
+                code: null,
+                id: null,
+                name: null,
+                level_1: null,
+                level_2: null,
             }
         },
-        created() {
-            this.initForm()
-        },
-        methods: {
-            initForm() {
-                this.errors = {}
-                this.form = {
-                    id: null,
-                    name: null,
-                    level_1: null,
-                    level_2: null,
-                }
-            },
-            create() {
+        create() {
 
-                this.titleDialog = (this.recordId)? 'Editar centro de costo':'Nuevo centro de costo'
-                this.changeParentCategorie()
+            this.titleDialog = (this.recordId) ? 'Editar centro de costo' : 'Nuevo centro de costo'
+            this.changeParentCategorie()
 
-                if (this.recordId) {
-                    this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                            this.form = response.data
-                            this.changeParentCategorie()
-                            this.changeParentCategorie2()
+            if (this.recordId) {
+                this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                    this.form = response.data
+                    this.changeParentCategorie()
+                    this.changeParentCategorie2()
 
-                        })
-                }
-            },
-            changeParentCategorie(){
-
-                this.$http.get(`/${this.resource}/level/1/1`).then(response => {
-                    this.level_1 = response.data.levels
                 })
-            },
-            changeParentCategorie2(){
-                if(this.form.level_1){
-
-                    this.$http.get(`/${this.resource}/level/2/${this.form.level_1}`).then(response => {
-                        this.level_2 = response.data.levels
-                    })
-                }
-            },
-            submit() {
-
-                this.loading_submit = true
-                this.$http.post(`${this.resource}`, this.form)
-                    .then(response => {
-                        if (response.data.success) {
-                            this.$message.success(response.data.message)
-                            this.$eventHub.$emit('reloadData')
-                            this.close()
-                        } else {
-                            this.$message.error(response.data.message)
-                        }
-                    })
-                    .catch(error => {
-                        if (error.response.status === 422) {
-                            this.errors = error.response.data
-                        } else {
-                            console.log(error.response)
-                        }
-                    })
-                    .then(() => {
-                        this.loading_submit = false
-                    })
-
-            },
-            close() {
-                this.$emit('update:showDialog', false)
-                this.initForm()
             }
+        },
+        changeParentCategorie() {
+
+            this.$http.get(`/${this.resource}/level/1/1`).then(response => {
+                this.level_1 = response.data.levels
+            })
+        },
+        changeParentCategorie2() {
+            if (this.form.level_1) {
+
+                this.$http.get(`/${this.resource}/level/2/${this.form.level_1}`).then(response => {
+                    this.level_2 = response.data.levels
+                })
+            }
+        },
+        submit() {
+
+            this.loading_submit = true
+            this.$http.post(`${this.resource}`, this.form)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                        this.close()
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data
+                    } else {
+                        console.log(error.response)
+                    }
+                })
+                .then(() => {
+                    this.loading_submit = false
+                })
+
+        },
+        close() {
+            this.$emit('update:showDialog', false)
+            this.initForm()
         }
     }
+}
 </script>

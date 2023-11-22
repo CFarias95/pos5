@@ -42,6 +42,7 @@
                         <el-table :data="records" style="width: 100%; margin-bottom: 20px" row-key="id" border
                             default-expand-all>
                             <el-table-column prop="name" label="Nombre" sortable />
+                            <el-table-column prop="code" label="Código" sortable />
                             <el-table-column prop="id" label="Id" sortable />
                             <el-table-column prop="date" label="Fecha Creado" sortable />
                             <el-table-column label="Acciones">

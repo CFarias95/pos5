@@ -114,6 +114,7 @@ class CostCenterController extends Controller
             $level1 = CostCenter::where('level_1', $row->id)->where('level_2', null)->get();
             return [
                 'id' => $row->id,
+                'code' => $row->code,
                 'name' => $row->name,
                 'date' => $row->created_at->format("Y-m-d"),
                 'isActive' => true,
@@ -121,12 +122,14 @@ class CostCenterController extends Controller
                     $level2 = CostCenter::where('level_2', $level->id)->get();
                     return [
                         'id' => $level->id,
+                        'code' => $level->code,
                         'name' => $level->name,
                         'date' => $level->created_at->format("Y-m-d"),
                         'isActive' => true,
                         'children' => $level2->transform(function ($data) {
                             return [
                                 'id' => $data->id,
+                                'code' => $data->code,
                                 'name' => $data->name,
                                 'date' => $data->created_at->format("Y-m-d"),
                             ];

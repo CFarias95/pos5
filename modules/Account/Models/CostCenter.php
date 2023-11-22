@@ -9,6 +9,7 @@ class CostCenter extends ModelTenant
 {
     protected $fillable = [
         'id',
+        'code',
         'name',
         'level_1',
         'level_2',
