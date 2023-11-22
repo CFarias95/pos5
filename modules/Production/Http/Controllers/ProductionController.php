@@ -178,6 +178,7 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
+            //Log::info("SUPLIES: ".json_encode($items_supplies));
 
             try {
                 foreach ($items_supplies as $item) {
@@ -239,9 +240,8 @@ class ProductionController extends Controller
     /* CREARE ACCOUNTING ENTRIES PRODUCCTION*/
     public function createAccountingEntry($document_id)
     {
-
         $document = Production::find($document_id);
-        Log::info('documento created: ' . json_encode($document));
+        //Log::info('documento created: ' . json_encode($document));
         $entry = (AccountingEntries::get())->last();
         //ASIENTO CONTABLE DE ORDENES DE PRODCUCION
         if ($document && $document->state_type_id == '02') {
@@ -299,8 +299,12 @@ class ProductionController extends Controller
                 $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
                 $cabeceraC->save();
 
+                //Log::info("Producto a FABRICAR: ".$document->item_id);
+
                 $itemP = Item::find($document->item_id);
                 $itemSuppliers = ProductionSupply::where('production_id', $document_id)->get();
+
+                //Log::info("Supplies del producto: ".$itemSuppliers->count());
 
                 $arrayEntrys = [];
                 $n = 1;
@@ -309,20 +313,20 @@ class ProductionController extends Controller
 
                 foreach ($itemSuppliers as $key => $value) {
 
-                    $item = Item::find($value->item_supply_id);
+                    //Log::info("Item Supplie".json_encode($value));
 
+                    $itemSu = ItemSupply::find($value['item_supply_id']);
+                    $item = Item::find($itemSu->individual_item_id);
                     $debeGlobal += ($value->cost_per_unit * $value->quantity);
-
-                    if ($item->purchase_cta) {
+                    if ($item->purchase_cta){
 
                         if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
                             $arrayEntrys[$item->purchase_cta]['haber'] += ($value->cost_per_unit * $value->quantity);
                         }
-                        if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                        if (array_key_exists($item->purchase_cta, $arrayEntrys) == false) {
 
                             $n += 1;
-
                             $arrayEntrys[$item->purchase_cta] = [
                                 'seat_line' => $n,
                                 'haber' => ($value->cost_per_unit * $value->quantity),
@@ -330,14 +334,13 @@ class ProductionController extends Controller
                             ];
                         }
                     }
-
                     if (!($item->purchase_cta) && $configuration->cta_incomes) {
 
                         if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
 
                             $arrayEntrys[$configuration->cta_purchases]['haber'] += ($value->cost_per_unit * $value->quantity);
                         }
-                        if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                        if (array_key_exists($configuration->cta_purchases, $arrayEntrys) == false) {
 
                             $n += 1;
 
@@ -350,6 +353,8 @@ class ProductionController extends Controller
                     }
                 }
 
+                //Log::info('arreglo de items cuentas',$arrayEntrys);
+
                 $detalle = new AccountingEntryItems();
                 $detalle->accounting_entrie_id = $cabeceraC->id;
                 $detalle->account_movement_id = ($itemP->item_process_cta) ? $itemP->item_process_cta : $configuration->cta_item_process;
@@ -360,7 +365,6 @@ class ProductionController extends Controller
 
                 foreach ($arrayEntrys as $key => $value) {
                     if ($value['debe'] > 0 || $value['haber'] > 0) {
-
                         $detalle = new AccountingEntryItems();
                         $detalle->accounting_entrie_id = $cabeceraC->id;
                         $detalle->account_movement_id = $key;
@@ -370,9 +374,6 @@ class ProductionController extends Controller
                         $detalle->save();
                     }
                 }
-
-                //Log::info('arreglo de items cuentas',$arrayEntrys);
-
             } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
@@ -578,8 +579,10 @@ class ProductionController extends Controller
             $items_supplies = $request->supplies;
             $costoT= 0;
 
+            //Log::info("SUPLIES: ".json_encode($items_supplies));
+
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
-                Log::info("Actualiza a elaboracion");
+                //Log::info("Actualiza a elaboracion");
                 try {
                     foreach ($items_supplies as $item) {
                         $sitienelote = false;
@@ -601,7 +604,7 @@ class ProductionController extends Controller
                         foreach ($lots_group as $lots) {
 
                             if (isset($lots["compromise_quantity"])) {
-                                Log::info("Se tiene cantidad en un lote selecionado");
+                                //Log::info("Se tiene cantidad en un lote selecionado");
                                 $sitienelote = true;
                                 $item_lots_groups = new ItemSupplyLot();
                                 $item_lots_groups->item_supply_id = $item['id'];
@@ -662,7 +665,7 @@ class ProductionController extends Controller
                     $costoT = $totalA + $totalN;
                     $costoT = round($costoT/$stockT,4);
 
-                    Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
+                    //Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
                     $item->purchase_mean_cost = $costoT;
                     $item ->save();
 
@@ -750,7 +753,7 @@ class ProductionController extends Controller
     {
         try {
             //esta función creará el inventario del producto terminado
-            Log::info("production: ".json_encode($production));
+            //Log::info("production: ".json_encode($production));
             $inventory_it = new Inventory();
             $inventory_it->type = null;
             $inventory_it->description = $inventory_transaction_item->name;
@@ -941,13 +944,13 @@ class ProductionController extends Controller
             $query->find($itemId);
         }
 
-        Log::info("ITEM: ".json_encode($query->get()));
+        //Log::info("ITEM: ".json_encode($query->get()));
 
         $result = $query->get()
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
-                Log::info("ITEM SUPPLIES: ".json_encode($supplies));
+                //Log::info("ITEM SUPPLIES: ".json_encode($supplies));
                 $transformed_supplies = [];
                 foreach ($supplies as $value) {
                     $lots_group = $value["individual_item"]["lots_group"];
@@ -963,7 +966,7 @@ class ProductionController extends Controller
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
-                        'cost_per_unit' => $value["individual_item"]["purchase_unit_price"],
+                        'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0)?$value["cost_per_unit"]:$value["individual_item"]["purchase_unit_price"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],
@@ -974,7 +977,7 @@ class ProductionController extends Controller
                 $data["supplies"] = $transformed_supplies;
                 return $data;
             });
-        Log::info("ITEM RETURNED: ".json_encode($result));
+        //Log::info("ITEM RETURNED: ".json_encode($result));
         return $result;
     }
 
@@ -1068,7 +1071,7 @@ class ProductionController extends Controller
 
     public function getRecords(Request $request)
     {
-        Log::info($request);
+        //Log::info($request);
         $state_type_id = $request->state_type_id;
         $data_of_period = $this->getDatesOfPeriod($request);
 
@@ -1287,8 +1290,8 @@ class ProductionController extends Controller
         //$usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        Log::info("rtiquetas".json_encode($produccion->warehouse));
-        Log::info("rtiquetas".json_encode($produccion->warehouse->establishment));
+        //Log::info("rtiquetas".json_encode($produccion->warehouse));
+        //Log::info("rtiquetas".json_encode($produccion->warehouse->establishment));
         $recordId = $produccion->item_id;
         $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
 

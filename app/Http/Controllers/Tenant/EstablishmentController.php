@@ -14,6 +14,7 @@ use App\Models\Tenant\Warehouse;
 use App\Models\Tenant\Person;
 use Modules\Finance\Helpers\UploadFileHelper;
 use App\Models\Tenant\Rate;
+use Modules\Account\Models\CostCenter;
 
 class EstablishmentController extends Controller
 {
@@ -34,6 +35,7 @@ class EstablishmentController extends Controller
         $provinces = Province::whereActive()->orderByDescription()->get();
         $districts = District::whereActive()->orderByDescription()->get();
         $rates = Rate::where('rate_offer','=','0')->select('id','rate_name','rate_offer')->orderBy('rate_name')->get();
+        $cost_centers = CostCenter::all();
 
         $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
             return [
