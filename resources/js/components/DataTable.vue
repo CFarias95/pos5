@@ -126,7 +126,6 @@ export default {
             parentsList: [],
             suppliers: [],
             customers: [],
-
         };
     },
     created() {
@@ -148,7 +147,7 @@ export default {
                     this.search.column = _.head(Object.keys(this.columns));
                     this.parentsList = response.data.categories;
                     this.suppliers = response.data.suppliers,
-                    this.customers = response.data.customers
+                        this.customers = response.data.customers
                 } else {
                     this.columns = response.data;
                     this.search.column = _.head(Object.keys(this.columns));
