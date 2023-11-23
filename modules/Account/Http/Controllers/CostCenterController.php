@@ -144,6 +144,35 @@ class CostCenterController extends Controller
         return $cost_centers;
     }
 
+    public function recordsSelect()
+    {
+        $cost_centers = CostCenter::where('level_1', null)->get();
+        $cost_centers->transform(function ($row) {
+            $level1 = CostCenter::where('level_1', $row->id)->where('level_2', null)->get();
+            return [
+                'value' => $row->id,
+                'label' => $row->name,
+                'children' => $level1->transform(function ($level) {
+                    $level2 = CostCenter::where('level_2', $level->id)->get();
+                    return [
+                        'value' => $level->id,
+                        'label' => $level->name,
+                        'children' => $level2->transform(function ($data) {
+                            return [
+                                'value' => $data->id,
+                                'label' => $data->name,
+                            ];
+                        })
+
+                    ];
+                })
+            ];
+        });
+
+        //$cost_centers = CostCenter::select('id','name','created_at','level_1','level_2')->groupBy('id','level_1','level_2')->paginate(config('tenant.items_per_page'));
+        return $cost_centers;
+    }
+
     public function columns()
     {
 

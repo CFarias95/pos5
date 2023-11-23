@@ -19,11 +19,15 @@ class Imports extends ModelTenant
         'cta_comunications',
         'isd',
         'comunications',
-        'incoterm'
+        'incoterm',
+        'flete',
+        'fob',
     ];
     protected $casts = [
         'comunications' => 'double',
         'isd' => 'double',
+        'flete' => 'double',
+        'fob' => 'double',
     ];
 
     public function getCollectionData()
@@ -41,6 +45,8 @@ class Imports extends ModelTenant
             'isd' => $this->isd,
             'comunications' => $this->comunications,
             'incoterm' => $this->incoterm,
+            'flete' => $this->flete,
+            'fob' => $this->fob,
         ];
         return $data;
     }

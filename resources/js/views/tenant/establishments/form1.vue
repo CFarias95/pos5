@@ -175,10 +175,7 @@
                             <label class="control-label">
                                 Centro de costo
                             </label>
-                            <el-select v-model="form.cost_center" clearable filterable>
-                                <el-option v-for="option in cost_centers" :key="option.id" :label="option.name"
-                                    :value="option.id"></el-option>
-                            </el-select>
+                            <el-cascader v-model="form.cost_center" :options="cost_centers" clearable />
                             <small v-if="errors.cost_center" class="form-control-feedback" v-text="errors.cost_center[0]"></small>
                         </div>
                     </div>
@@ -306,7 +303,7 @@ export default {
                 customer_associate_id: null,
                 has_igv_31556: false,
                 rate_id: null,
-                cost_center:null,
+                cost_center:[],
             }
             this.file = null;
             this.preview = null;
@@ -317,7 +314,9 @@ export default {
                 await this.$http.get(`/${this.resource}/record/${this.recordId}`)
                     .then(response => {
                         if (response.data !== '') {
+                            console.log(response.data.data)
                             this.form = response.data.data;
+                            this.form.cost_center = response.data.data.cost_center
                             this.preview = this.form.logo;
                             delete this.form.logo;
                             this.filterProvinces()

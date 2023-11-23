@@ -30,11 +30,13 @@ class Establishment extends ModelTenant
         'logo',
         'template_pdf',
         'template_ticket_pdf',
-        'has_igv_31556'
+        'has_igv_31556',
+        'cost_center',
     ];
 
     protected $casts = [
-        'has_igv_31556' => 'boolean'
+        'has_igv_31556' => 'boolean',
+        'cost_center' => 'json'
     ];
 
     public function country()

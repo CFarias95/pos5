@@ -14,6 +14,7 @@ use App\Models\Tenant\Warehouse;
 use App\Models\Tenant\Person;
 use Modules\Finance\Helpers\UploadFileHelper;
 use App\Models\Tenant\Rate;
+use Modules\Account\Http\Controllers\CostCenterController;
 use Modules\Account\Models\CostCenter;
 
 class EstablishmentController extends Controller
@@ -35,7 +36,8 @@ class EstablishmentController extends Controller
         $provinces = Province::whereActive()->orderByDescription()->get();
         $districts = District::whereActive()->orderByDescription()->get();
         $rates = Rate::where('rate_offer','=','0')->select('id','rate_name','rate_offer')->orderBy('rate_name')->get();
-        $cost_centers = CostCenter::all();
+        $costCenters = new CostCenterController();
+        $cost_centers = $costCenters->recordsSelect();
 
         $customers = Person::whereType('customers')->orderBy('name')->get()->transform(function($row) {
             return [
@@ -47,7 +49,7 @@ class EstablishmentController extends Controller
             ];
         });
 
-        return compact('countries', 'departments', 'provinces', 'districts', 'customers','rates');
+        return compact('countries', 'departments', 'provinces', 'districts', 'customers','rates','cost_centers');
     }
 
     public function record($id)
@@ -76,6 +78,7 @@ class EstablishmentController extends Controller
         }
         $establishment->fill($request->all());
         $establishment->has_igv_31556 = $has_igv_31556;
+        //$establishment->cost_center = json_decode($request->input('cost_center'));
         $establishment->save();
 
         if(!$id) {

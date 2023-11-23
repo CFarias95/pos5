@@ -120,6 +120,17 @@
                                     <el-option v-for="row in incoterms" :key="row.id" :value="row.id" :label="row.code"></el-option>
                                 </el-select>
                             </div>
+                            <div class="col-md-4">
+                                <label class="control-label">Flete</label>
+                                <el-input-number v-model="form.flete" clearable min="0" >
+                                </el-input-number>
+                            </div>
+                            <div class="col-md-4">
+                                <label class="control-label">Gasto hasta FOB</label>
+                                <el-input-number v-model="form.fob" clearable min="0" >
+                                </el-input-number>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -233,6 +244,8 @@ export default {
                 isd:null,
                 comunications:null,
                 incoterm:null,
+                flete:0,
+                fob:0,
             }
             this.resource = 'imports'
 

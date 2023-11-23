@@ -966,7 +966,7 @@ class ProductionController extends Controller
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
-                        'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0)?$value["cost_per_unit"]:$value["individual_item"]["purchase_unit_price"],
+                        'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0)?$value["cost_per_unit"]:$value["individual_item"]["purchase_mean_cost"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],

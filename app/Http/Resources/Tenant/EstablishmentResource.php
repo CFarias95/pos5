@@ -34,6 +34,7 @@ class EstablishmentResource extends JsonResource
             'customer_number' => optional($this->customer)->number,
             'logo' => $this->logo ? asset($this->logo) : null,
             'has_igv_31556' => $this->has_igv_31556,
+            'cost_center' => $this->cost_center,
         ];
     }
 }
