@@ -1211,7 +1211,6 @@ class PurchaseController extends Controller
         $documentoInterno = $document->document_type2;
 
         if ($document && $document->document_type_id == '01' && $documentoInterno->accountant > 0) {
-
             foreach ($document->payments as $payment) {
                 try {
                     $idauth = auth()->user()->id;
@@ -1277,7 +1276,7 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
-                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$document->establishment->cost_center:null;
+                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?array_pop($document->establishment->cost_center):null;
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
@@ -1293,7 +1292,7 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    $detalle->seat_cost = ($accountMIDModel2 && $accountMIDModel2->cost_center > 0)?$document->establishment->cost_center:null;
+                    $detalle->seat_cost = ($accountMIDModel2 && $accountMIDModel2->cost_center > 0)?array_pop($document->establishment->cost_center):null;
                     if ($detalle2->save() == false) {
                         $cabeceraC->delete();
                         return;
