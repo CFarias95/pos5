@@ -13,6 +13,7 @@ use App\Http\Resources\Tenant\PurchaseCollection;
 use App\Http\Resources\Tenant\PurchaseResource;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
 use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Catalogs\ChargeDiscountType;
@@ -64,6 +65,7 @@ use App\Models\Tenant\RetentionsEC;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\TypeDocsPurchase;
 use App\Models\Tenant\UserDefaultDocumentType;
+use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Illuminate\Support\Facades\Log;
 use Modules\Sale\Models\SaleOpportunity;
 
@@ -770,15 +772,8 @@ class PurchaseController extends Controller
 
                 if(isset($importCTA)){
 
-                    /*
-                    $detalle = new AccountingEntryItems();
-                    $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = $importCTA;
-                    $detalle->seat_line = 1;
-                    $detalle->haber = 0;
-                    $detalle->debe = $document->total;
-                    $detalle->save();
-                    */
+                    $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $accountMIDModel = AccountMovement::find($accountMID);
 
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
@@ -786,6 +781,7 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 1;
                     $detalle2->haber = $document->total;
                     $detalle2->debe = 0;
+                    $detalle2->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$document->establishment->cost_center:null;
 
                     if ($detalle2->save() == false) {
                         $cabeceraC->delete();
@@ -802,6 +798,9 @@ class PurchaseController extends Controller
                         $ctaImportItem = Imports::find($importCTAItem);
                         $itemCTA = "";
 
+                        $warehouseItem = TenantWarehouse::find($value->warehouse_id);
+                        $establishmentItem = Establishment::find($warehouseItem->establishment_id);
+
                         if ($ctaImportItem && $ctaImportItem->count() > 0) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
@@ -813,52 +812,66 @@ class PurchaseController extends Controller
 
                             if ($importCTA) {
 
-                                if (array_key_exists($importCTA, $arrayEntrys) == true) {
+                                $accountantItem=AccountMovement::find($importCTA);
+                                $seatCost = ($accountantItem->cost_center > 0)?array_pop($establishmentItem->cost_center):0;
 
-                                    $arrayEntrys[$importCTA]['debe'] += floatval($value->total_value);
+                                if (array_key_exists($importCTA.'-'.$seatCost, $arrayEntrys) == true) {
+
+                                    $arrayEntrys[$importCTA.'-'.$seatCost]['debe'] += floatval($value->total_value);
                                 }
                                 if (array_key_exists($importCTA, $arrayEntrys) == false) {
                                     $n += 1;
-                                    $arrayEntrys[$importCTA] = [
+                                    $arrayEntrys[$importCTA.'-'.$seatCost] = [
+                                        'account_movement_id' => $importCTA,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
+                                        'seat_cost' => ($accountantItem->cost_center > 0)?$establishmentItem->cost_center:null,
                                     ];
                                 }
                             }
 
                             if ($impuesto->account) {
 
-                                if (array_key_exists($impuesto->account, $arrayEntrys)) {
+                                $accountantItem=AccountMovement::find($impuesto->account);
+                                $seatCost = ($accountantItem->cost_center > 0)?array_pop($establishmentItem->cost_center):0;
 
-                                    $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
+                                if (array_key_exists($impuesto->account.'-'.$seatCost, $arrayEntrys)) {
+
+                                    $arrayEntrys[$impuesto->account.'-'.$seatCost]['debe'] += floatval($value->total_taxes);
                                 }
-                                if (!array_key_exists($impuesto->account, $arrayEntrys)) {
+                                if (!array_key_exists($impuesto->account.'-'.$seatCost, $arrayEntrys)) {
 
                                     $n += 1;
-
-                                    $arrayEntrys[$impuesto->account] = [
+                                    $arrayEntrys[$impuesto->account.'-'.$seatCost] = [
+                                        'account_movement_id' => $impuesto->account,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
+                                        'seat_cost' => ($accountantItem->cost_center > 0)?$establishmentItem->cost_center:null,
                                     ];
                                 }
                             }
 
                             if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
 
-                                if (array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+                                $accountantItem=AccountMovement::find($configuration->cta_taxes_purchases);
+                                $seatCost = ($accountantItem->cost_center > 0)?array_pop($establishmentItem->cost_center):0;
 
-                                    $arrayEntrys[$configuration->cta_taxes_purchases]['debe'] += floatval($value->total_taxes);
+                                if (array_key_exists($configuration->cta_taxes_purchases.'-'.$seatCost, $arrayEntrys)) {
+
+                                    $arrayEntrys[$configuration->cta_taxes_purchases.'-'.$seatCost]['debe'] += floatval($value->total_taxes);
                                 }
-                                if (!array_key_exists($configuration->cta_taxes_purchases, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_taxes_purchases.'-'.$seatCost, $arrayEntrys)) {
 
                                     $n += 1;
-
-                                    $arrayEntrys[$configuration->cta_taxes_purchases] = [
+                                    $arrayEntrys[$configuration->cta_taxes_purchases.'-'.$seatCost] = [
+                                        'account_movement_id' => $configuration->cta_taxes_purchases,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
+                                        'seat_cost' => ($accountantItem->cost_center > 0)?$establishmentItem->cost_center:null,
+
                                     ];
                                 }
                             }
@@ -872,10 +885,11 @@ class PurchaseController extends Controller
 
                             $detalle = new AccountingEntryItems();
                             $detalle->accounting_entrie_id = $cabeceraC->id;
-                            $detalle->account_movement_id = $key;
+                            $detalle->account_movement_id = $value['account_movement_id'];;
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
+                            $detalle->seat_cost = $value['seat_cost'];
                             if ($detalle->save() == false) {
                                 $cabeceraC->delete();
                                 break;
@@ -885,6 +899,7 @@ class PurchaseController extends Controller
                     }
 
                     if ($iva > 0 && $configuration->cta_iva_tax) {
+                        $seatCostIVA = AccountMovement::find($configuration->cta_iva_tax);
                         $n += 1;
                         $detalle = new AccountingEntryItems();
                         $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -892,6 +907,7 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
+                        $detalle->seat_cost = ($seatCostIVA && $seatCostIVA->cost_center > 0)?array_pop($document->stablishment->cost_center):null;
                         if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
@@ -901,12 +917,14 @@ class PurchaseController extends Controller
 
                     if ($renta > 0 && $configuration->cta_income_tax) {
                         $n += 1;
+                        $seatCostRENTA = AccountMovement::find($configuration->cta_income_tax);
                         $detalle = new AccountingEntryItems();
                         $detalle->accounting_entrie_id = $cabeceraC->id;
                         $detalle->account_movement_id = $configuration->cta_income_tax;
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
+                        $detalle->seat_cost = ($seatCostRENTA && $seatCostRENTA->cost_center > 0 )?array_pop($document->stablishment->cost_center):null;
                         if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
@@ -941,11 +959,13 @@ class PurchaseController extends Controller
 
                         $item = Item::find($value->item_id);
                         $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
-
+                        //$establismentItemOutput = Establishment::find();
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if ($documentoInterno->sign > 0) {
 
                             if ($itemCTA == "" && $item->purchase_cta) {
+
+                                $seatCostItem = AccountMovement::find($item->purchase_cta);
 
                                 if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
@@ -958,6 +978,7 @@ class PurchaseController extends Controller
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
+                                        'seat_cost' => null,
                                     ];
                                 }
                             }
@@ -1245,27 +1266,34 @@ class PurchaseController extends Controller
                     $cabeceraC->save();
 
                     $customer = Person::find($cabeceraC->person_id);
-
                     $detalle = new AccountingEntryItems();
                     $ceuntaC = PaymentMethodType::find($payment->payment_method_type_id);
 
+                    $accountMId = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $accountMIDModel = AccountMovement::find($accountMId);
+
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $detalle->account_movement_id = $accountMId;
                     $detalle->seat_line = 1;
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
+                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$document->establishment->cost_center:null;
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
                     }
 
+                    $accountMId2 = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
+                    $accountMIDModel2 = AccountMovement::find($accountMId2);
+
                     $detalle2 = new AccountingEntryItems();
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
-                    $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment) ? $ceuntaC->countable_acount_payment : $configuration->cta_paymnets;
+                    $detalle2->account_movement_id = $accountMId2;
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
+                    $detalle->seat_cost = ($accountMIDModel2 && $accountMIDModel2->cost_center > 0)?$document->establishment->cost_center:null;
                     if ($detalle2->save() == false) {
                         $cabeceraC->delete();
                         return;
