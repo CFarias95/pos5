@@ -150,16 +150,16 @@ class CostCenterController extends Controller
         $cost_centers->transform(function ($row) {
             $level1 = CostCenter::where('level_1', $row->id)->where('level_2', null)->get();
             return [
-                'value' => $row->id,
+                'value' => (int)$row->id,
                 'label' => $row->name,
                 'children' => $level1->transform(function ($level) {
                     $level2 = CostCenter::where('level_2', $level->id)->get();
                     return [
-                        'value' => $level->id,
+                        'value' => (int)$level->id,
                         'label' => $level->name,
                         'children' => $level2->transform(function ($data) {
                             return [
-                                'value' => $data->id,
+                                'value' => (int)$data->id,
                                 'label' => $data->name,
                             ];
                         })

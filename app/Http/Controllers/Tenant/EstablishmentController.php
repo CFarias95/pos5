@@ -77,8 +77,15 @@ class EstablishmentController extends Controller
             $request->merge(['logo' => $path]);
         }
         $establishment->fill($request->all());
+        //$arrayList =
         $establishment->has_igv_31556 = $has_igv_31556;
-        //$establishment->cost_center = json_decode($request->input('cost_center'));
+        $coscenters = explode(',',$request->input('cost_center'));
+        $data = [];
+        foreach ($coscenters as $key => $value){
+            $data[] = intval($value);
+        }
+
+        $establishment->cost_center = $data;
         $establishment->save();
 
         if(!$id) {

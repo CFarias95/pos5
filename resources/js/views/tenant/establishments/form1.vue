@@ -213,7 +213,9 @@ export default {
             titleDialog: null,
             resource: 'establishments',
             errors: {},
-            form: {},
+            form: {
+                cost_center:[],
+            },
             countries: [],
             all_departments: [],
             all_provinces: [],
@@ -261,7 +263,7 @@ export default {
         },
         searchRemoteCustomers(input) {
 
-            if (input.length > 0) {
+            if (input && input.length > 0) {
 
                 this.loading_search = true
                 let parameters = `input=${input}`
@@ -316,7 +318,6 @@ export default {
                         if (response.data !== '') {
                             console.log(response.data.data)
                             this.form = response.data.data;
-                            this.form.cost_center = response.data.data.cost_center
                             this.preview = this.form.logo;
                             delete this.form.logo;
                             this.filterProvinces()
