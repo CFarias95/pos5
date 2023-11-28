@@ -190,9 +190,9 @@
                         <td>{{ row.internal_id }}</td>
                         <td>{{ row.unit_type_id }}</td>
                         <td>{{ row.description }}</td>
+                        <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.model.visible">{{ row.model }}</td>
                         <td v-if="columns.brand.visible">{{ row.brand }}</td>
-                        <td v-if="columns.description.visible">{{ row.name }}</td>
                         <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
                         <td v-if="(columns.sanitary!== undefined && columns.sanitary.visible===true )">{{
                                 row.sanitary
