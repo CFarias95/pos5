@@ -1441,6 +1441,7 @@ export default {
                 if (
                     affectation_igv_type_id === "20" ||
                     affectation_igv_type_id === "21" ||
+                    affectation_igv_type_id === "10" ||
                     affectation_igv_type_id === "40"
                 ) {
                     // do nothing
@@ -1449,7 +1450,7 @@ export default {
 
                     //JOINSOFTWARE //
                     if(affectation_igv_type_id === "10" ){
-                        unit_price = this.form.unit_price_value * 1.12;
+                    //unit_price = this.form.unit_price_value * 1.12;
                     }else if(affectation_igv_type_id === "11"){
                         unit_price = this.form.unit_price_value * 1.08;
                     }else if(affectation_igv_type_id === "12"){
@@ -1488,7 +1489,7 @@ export default {
             console.log('ANTES DE ENVIAR: ', this.form)
 
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
-            
+
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi
