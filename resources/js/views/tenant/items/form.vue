@@ -43,11 +43,11 @@
                         </div>
 
                         <div class="col-md-6">
-                            <div :class="{ 'has-danger': errors.description }" class="form-group">
+                            <div :class="{ 'has-danger': errors.name }" class="form-group">
                                 <label class="control-label">Nombre<span class="text-danger">*</span></label>
-                                <el-input v-model="form.description" dusk="description"></el-input>
-                                <small v-if="errors.description" class="form-control-feedback"
-                                    v-text="errors.description[0]"></small>
+                                <el-input v-model="form.name" dusk="name"></el-input>
+                                <small v-if="errors.name" class="form-control-feedback"
+                                    v-text="errors.name[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -59,10 +59,10 @@
                             </div>
                         </div>
                         <div class="col-md-6">
-                            <div :class="{ 'has-danger': errors.name }" class="form-group">
+                            <div :class="{ 'has-danger': errors.description }" class="form-group">
                                 <label class="control-label">Descripción</label>
-                                <el-input v-model="form.name" dusk="name"></el-input>
-                                <small v-if="errors.name" class="form-control-feedback" v-text="errors.name[0]"></small>
+                                <el-input v-model="form.description" dusk="description"></el-input>
+                                <small v-if="errors.description" class="form-control-feedback" v-text="errors.description[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-3">
