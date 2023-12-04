@@ -256,12 +256,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        @if($document->total_unaffected > 0)
+        {{-- @if($document->total_unaffected > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
-        @endif
+        @endif --}}
         @if($document->total_exonerated > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
