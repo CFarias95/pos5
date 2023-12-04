@@ -145,7 +145,7 @@ class DispatchController extends Controller
         } elseif ($type == 'i') {
             $type = 'i';
             $document = Document::find($document_id);
-        } elseif (isset($document_id) && !isset($type)) {
+        } elseif (isset($document_id) && isset($type) == false) {
             $type = 'i';
             $document = Document::find($document_id);
         } else {
@@ -160,7 +160,7 @@ class DispatchController extends Controller
         $configuration = Configuration::query()->first();
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
-        if (isset($document->inventories)) {
+        if (isset($document)) {
             Log::info(json_encode($document));
 
             if ($type != 't') {
@@ -218,6 +218,8 @@ class DispatchController extends Controller
                 ];
             }
         }
+
+        Log::info(json_encode($items));
         return view('tenant.dispatches.form', compact('document', 'items', 'type', 'dispatch'));
     }
 

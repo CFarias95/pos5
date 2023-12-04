@@ -285,7 +285,7 @@
                                     <a :href="`/${resource}/note/${row.id}`" class="dropdown-item" v-if="row.btn_note">
                                         Nota
                                     </a>
-                                    <a :href="`/dispatches/create/${row.id}`" class="dropdown-item" v-if="row.btn_guide">
+                                    <a :href="`/dispatches/create/${row.id}/i`" class="dropdown-item" v-if="row.btn_guide">
                                         Guía
                                     </a>
                                     <button class="dropdown-item" @click.prevent="clickVoided(row.id)"

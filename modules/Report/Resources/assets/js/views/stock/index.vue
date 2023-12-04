@@ -18,7 +18,7 @@
                         </div>
                         <div class="col-6">
                             <label>Almacén</label>
-                            <el-select v-model="form.warehouse_id" @change="getRecords()">
+                            <el-select v-model="form.warehouse_id" @change="getRecords()" filterable>
                                 <el-option value="0" label="Todos los almacenes" />
                                 <el-option v-for="row in warehouses" :key="row.id" :label="row.name"
                                     :value="row.id"></el-option>
@@ -26,7 +26,7 @@
                         </div>
                         <div class="col-6">
                             <label> Producto</label>
-                            <el-select v-model="form.item_id" @change="getRecords()">
+                            <el-select v-model="form.item_id" @change="getRecords()" filterable>
                                 <el-option value="0" label="Todos los Productos" />
                                 <el-option v-for="row in items" :key="row.id" :label="row.name"
                                     :value="row.id"></el-option>
