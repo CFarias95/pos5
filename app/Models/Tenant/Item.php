@@ -780,7 +780,7 @@ class Item extends ModelTenant
         if ($extended == false) {
             $desc = "{$this->name} - {$this->interenal_id}";
         } else {
-            $desc = "{$this->description} - {$this->name} - {$this->model} - {$this->internal_id}";
+            $desc = "{$this->name} - {$this->description} - {$this->model} - {$this->internal_id}";
         }
         return [
             'full_description'      => $desc,
