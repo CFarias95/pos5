@@ -149,6 +149,7 @@ class InventoryKardex extends ModelTenant
             // 'item' => $item->getCollectionData(),
             'item_warehouse_price' => $price,
             'warehouse' => $warehouseName,
+            'cost' => 'N/A',
         ];
         $inventory_kardexable = $this->inventory_kardexable;
         $qty = $this->quantity;
@@ -191,14 +192,31 @@ class InventoryKardex extends ModelTenant
                 $data['sale_note_asoc'] = $this->getSaleNoteAsoc($inventory_kardexable);
                 $data['doc_asoc'] = $cpe_doc_asoc;
                 $data['order_note_asoc'] = isset($inventory_kardexable->order_note_id) ? optional($inventory_kardexable)->order_note->number_full : "-";
+                $data['cost'] = $item->purchase_mean_cost;
                 break;
 
-            case $models[1]:
+            case $models[1]: //COMPRA
+
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Compra" : "Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $cost = 'N/A';
+
+                if(isset($inventory_kardexable) == true){
+                    foreach ($inventory_kardexable->items as $key => $value) {
+                        if($value->item_id == $item->id){
+                            $cost=$value->unit_value;
+                        }
+                    }
+                }else{
+
+                    $cost=$inventory_kardexable;
+
+                }
+                $data['cost'] = $cost;
                 break;
+
             case $models[2]: // Nota de venta
 
                 if(isset($inventory_kardexable->order_note_id))

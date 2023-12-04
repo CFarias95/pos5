@@ -75,6 +75,7 @@ class Quotation extends ModelTenant
         'total_igv_free',
         'subtotal',
         'internal_request',
+        'send_extra_pdf',
     ];
 
     public static function boot()
@@ -87,6 +88,7 @@ class Quotation extends ModelTenant
     }
     protected $casts = [
         'date_of_issue' => 'date',
+        'send_extra_pdf' => 'bool',
         // 'date_of_due' => 'date',
         // 'delivery_date' => 'date',
     ];
@@ -267,6 +269,11 @@ class Quotation extends ModelTenant
     public function sale_opportunity()
     {
         return $this->belongsTo(SaleOpportunity::class);
+    }
+
+    public function internal_request()
+    {
+        return $this->belongsTo(InternalRequest::class,'internal_request');
     }
 
     public function getNumberFullAttribute()

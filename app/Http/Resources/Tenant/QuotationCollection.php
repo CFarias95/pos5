@@ -78,6 +78,7 @@ class QuotationCollection extends ResourceCollection
                 'referential_information' => $row->referential_information,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
+                ''
             ];
         });
     }

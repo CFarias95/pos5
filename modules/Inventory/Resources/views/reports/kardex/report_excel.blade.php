@@ -86,6 +86,7 @@
                     <th>Pedido</th>
                     <th>CPE. Asociado</th>
                     <th>Feha emisión</th>
+                    <th>Costo</th>
                     <th>Entrada</th>
                     <th>Salida</th>
                     @if($item_id)
@@ -121,6 +122,9 @@
 
                         <td class="celda">
                             {{$itemKardex['date_of_issue']}}
+                        </td>
+                        <td class="celda">
+                            {{$itemKardex['cost']}}
                         </td>
                         <td class="celda">
                             {{$itemKardex['input']}}

@@ -32,7 +32,7 @@ class InternalRequestCollection extends ResourceCollection
                 'is_user' => ( $authType == 'admin' || $autID == $row->user_id)?true:false,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
-
+                'upload_filename' => $row->upload_filename,
             ];
         });
     }

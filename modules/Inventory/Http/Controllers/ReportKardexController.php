@@ -258,6 +258,7 @@ class ReportKardexController extends Controller
             'date_end' => $date_end,
             'records' => $records,
             'balance' => 0,
+            'cost' => 0,
         ];
     }
 
@@ -269,6 +270,7 @@ class ReportKardexController extends Controller
     public function pdf(Request $request)
     {
         $data = $this->getData($request);
+
 
         $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', $data);
         $filename = 'Reporte_Kardex' . date('YmdHis');

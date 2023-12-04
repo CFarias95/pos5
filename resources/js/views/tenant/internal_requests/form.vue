@@ -18,7 +18,7 @@
                             <div class="col-md-4">
                                 <div :class="{ 'has-danger': errors.confirmed }" class="form-group">
                                     <label class="control-label">Mandar solicitud de pedido? </label>
-                                    <el-switch  :disabled="isEditForm" v-model="form.confirmed" class="ml-2" inline-prompt
+                                    <el-switch :disabled="isEditForm" v-model="form.confirmed" class="ml-2" inline-prompt
                                         style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
                                         active-text="Si" inactive-text="No" />
                                     <small v-if="errors.confirmed" class="form-control-feedback"
@@ -28,8 +28,9 @@
                             <div class="col-md-4">
                                 <div :class="{ 'has-danger': errors.confirmed }" class="form-group">
                                     <label class="control-label">Se solicita a: </label>
-                                    <el-select :disabled="isEditForm" v-model="form.user_manage" >
-                                        <el-option v-for="user in users" :key="user.id" :value="user.id" :label="user.name" ></el-option>
+                                    <el-select :disabled="isEditForm" v-model="form.user_manage">
+                                        <el-option v-for="user in users" :key="user.id" :value="user.id"
+                                            :label="user.name"></el-option>
                                     </el-select>
                                 </div>
                             </div>
@@ -39,6 +40,21 @@
                                     <el-input v-model="form.description" dusk="name" type="textarea" rows="3"></el-input>
                                     <small v-if="errors.description" class="form-control-feedback"
                                         v-text="errors.description[0]"></small>
+                                </div>
+                            </div>
+                            <div class="col-md-12">
+                                <div class="form-actions text-left mt-4">
+                                    <el-upload :data="{ 'type': 'internal-request-attached' }" :headers="headers"
+                                        :multiple="false" :action="`/${resource}/upload`" :show-file-list="true"
+                                        :file-list="fileList" :on-remove="handleRemove" :on-success="onSuccess" :limit="1">
+                                        <el-button slot="trigger" type="primary">Seleccione un archivo (PDF/JPG)
+                                        </el-button>
+                                    </el-upload>
+                                </div>
+                                <div>
+                                    <label>Archivo cargado: </label>
+                                    <label v-if="this.form.upload_filename != null">{{ this.form.upload_filename }}</label>
+                                    <label v-else>N/A</label>
                                 </div>
                             </div>
 
@@ -68,6 +84,7 @@ export default {
     ],
     data() {
         return {
+            headers: headers_token,
             loading_submit: false,
             titleDialog: null,
             titleTabDialog: null,
@@ -80,6 +97,7 @@ export default {
             users: [],
             activeName: 'first',
             isEditForm: false,
+            fileList: [],
         }
     },
     async created() {
@@ -111,10 +129,11 @@ export default {
                 user_id: null,
                 user_manage: null,
                 title: null,
-                description:null,
+                description: null,
                 status: "Created",
                 phase: null,
                 confirmed: false,
+                upload_filename:null,
             }
             this.resource = 'internal-request'
 
@@ -167,12 +186,31 @@ export default {
                 })
                 .finally(() => {
                     this.loading_submit = false
+                    this.initForm()
+                    this.fileList = []
                 })
         },
         close() {
             this.$eventHub.$emit('initInputPerson')
             this.$emit('update:showDialog', false)
             this.initForm()
+        },
+        handleRemove(file, fileList) {
+            this.form.upload_filename = null
+            this.form.temp_path = null
+            this.fileList = []
+        },
+        onSuccess(response, file, fileList) {
+            // console.log(response, file, fileList)
+            this.fileList = fileList
+            if (response.success) {
+                this.form.upload_filename = response.data.filename
+                this.form.image_url = response.data.temp_image
+                this.form.attached_temp_path = response.data.temp_path
+            } else {
+                this.cleanFileList()
+                this.$message.error(response.message)
+            }
         },
     }
 }

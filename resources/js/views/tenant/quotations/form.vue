@@ -21,8 +21,8 @@
                                     establishment.district.description }}, {{ establishment.province.description }}, {{
         establishment.department.description }} - {{ establishment.country.description }}
                                 <br>
-                                {{ establishment.email }} - <span
-                                    v-if="establishment.telephone != '-'">{{ establishment.telephone }}</span>
+                                {{ establishment.email }} - <span v-if="establishment.telephone != '-'">{{
+                                    establishment.telephone }}</span>
                             </address>
                         </div>
                     </div>
@@ -155,6 +155,11 @@
                                                 :label="'IR-' + option.id"></el-option>
                                         </el-select>
                                     </div>
+                                    <div class="form-group col-6 col-md-2" v-if="form.internal_request != null">
+                                        <label>Adjuntar PDF del pedido interno</label>
+                                        <el-switch v-model="form.send_extra_pdf" class="ml-2"
+                                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -262,7 +267,8 @@
                                             </div>
 
                                             <div class="col-lg-6">
-                                                <div class="form-group" :class="{ 'has-danger': errors.exchange_rate_sale }">
+                                                <div class="form-group"
+                                                    :class="{ 'has-danger': errors.exchange_rate_sale }">
                                                     <label class="control-label">Observación
                                                     </label>
                                                     <el-input type="textarea" :rows="3" v-model="form.description"
@@ -313,7 +319,8 @@
                                                     {{ setDescriptionOfItem(row.item) }}
                                                     {{ row.item.presentation.hasOwnProperty('description') ?
                                                         row.item.presentation.description :
-                                                        '' }}<br /><small>{{ row.affectation_igv_type.description }}</small></td>
+                                                        '' }}<br /><small>{{ row.affectation_igv_type.description }}</small>
+                                                </td>
                                                 <td class="text-center">{{ row.item.unit_type_id }}</td>
                                                 <td class="text-center">{{ row.quantity }}</td>
                                                 <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
@@ -322,7 +329,8 @@
                                                 <td class="text-center">{{ currency_type.symbol }} {{
                                                     getFormatUnitPriceRow(row.unit_price) }}</td>
 
-                                                <td class="text-center">{{ currency_type.symbol }} {{ row.total_value }}</td>
+                                                <td class="text-center">{{ currency_type.symbol }} {{ row.total_value }}
+                                                </td>
                                                 <!--<td class="text-right">{{ currency_type.symbol }} {{ row.total_charge }}</td>-->
                                                 <td class="text-center">{{ currency_type.symbol }} {{ row.total }}</td>
                                                 <td class="text-center">
@@ -711,6 +719,7 @@ export default {
                 contact: null,
                 phone: null,
                 internal_request: null,
+                send_extra_pdf: false,
             }
 
             this.total_discount_no_base = 0
@@ -909,7 +918,7 @@ export default {
 
 
             this.loading_submit = true
-            console.log("SUBMIT QUOTATION: ",this.form)
+            console.log("SUBMIT QUOTATION: ", this.form)
             await this.$http.post(`/${this.resource}`, this.form).then(response => {
                 if (response.data.success) {
 

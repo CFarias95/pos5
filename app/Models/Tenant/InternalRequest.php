@@ -16,6 +16,7 @@ class InternalRequest extends ModelTenant
         'status',
         'phase',
         'confirmed',
+        'upload_filename',
     ];
 
     protected $casts = [

@@ -156,6 +156,11 @@
                                                 :label="'IR-' + option.id"></el-option>
                                         </el-select>
                                     </div>
+                                    <div class="form-group col-6 col-md-2" v-if="form.internal_request != null">
+                                        <label>Adjuntar PDF del pedido interno</label>
+                                        <el-switch v-model="form.send_extra_pdf" class="ml-2"
+                                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -734,6 +739,7 @@ export default {
                 phone: null,
                 seller_id: null,
                 internal_request: null,
+                send_extra_pdf: false,
             }
 
             this.total_discount_no_base = 0

@@ -32,7 +32,7 @@ class ReportKardexCollection extends ResourceCollection
         return $this->collection->transform(function($row, $key) {
             return  $row->getKardexReportCollection(self::$balance);
             /** @var \Modules\Inventory\Models\InventoryKardex  $row */
-            return self::determinateRow($row);
+            //return self::determinateRow($row);
         });
     }
 
