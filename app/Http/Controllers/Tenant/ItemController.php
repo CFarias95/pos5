@@ -96,7 +96,8 @@ class ItemController extends Controller
     public function columns()
     {
         return [
-            'description' => 'Nombre',
+            'name' => 'Nombre',
+            'description' => 'Descripción',
             'internal_id' => 'Código interno',
             'barcode' => 'Código de barras',
             'model' => 'Modelo',
