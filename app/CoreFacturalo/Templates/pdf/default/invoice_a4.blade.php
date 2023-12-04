@@ -451,11 +451,22 @@
                                 </tr>
                             </thead>
                             <tbody>
+                                @if($document->additional_information[0])
                                 <tr style="background: #f7f7f5;">
-                                    @if($document->additional_information[0])
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->additional_information[0]}}</td>
-                                    @endif
                                 </tr>
+                                @endif
+                                <tr style="background: #f7f7f5;">
+                                    <td style="text-align: start; padding-left: 15px; padding-right: 15px;"> <strong>Vendedor:</strong> {{ $document->user->name}}</td>
+                                </tr>
+                                @if($document->purchase_order)
+                                <tr style="background: #eaeaea;">
+                                    <th class="py-2" style="text-align: start; padding-left: 15px; padding-right: 15px;">Orden de compra</th>
+                                </tr>
+                                <tr style="background: #f7f7f5;">
+                                    <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->purchase_order}}</td>
+                                </tr>
+                                @endif
                             </tbody>
                         </table>
                         <table class="full-width">
