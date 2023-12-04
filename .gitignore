@@ -10,6 +10,7 @@ public/cookie.txt
 /storage/logs/*
 /storage/framework/laravel-excel/*
 /vendor
+/bootstrap/cache/*
 /.idea
 /.vscode
 /.vagrant
