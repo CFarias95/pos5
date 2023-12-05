@@ -172,6 +172,7 @@ class QuotationImport implements ToCollection
                     $dataItem['total'] = round($row[7] * $unit_price,2);
                     if(isset($row[8]) && $row[8] != ''){
                         $dataItem['name_product_pdf'] = $row[8];
+                        $dataItem['item']['name_product_pdf'] = $row[8];
                     }
 
 
