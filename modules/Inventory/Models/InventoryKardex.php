@@ -192,7 +192,21 @@ class InventoryKardex extends ModelTenant
                 $data['sale_note_asoc'] = $this->getSaleNoteAsoc($inventory_kardexable);
                 $data['doc_asoc'] = $cpe_doc_asoc;
                 $data['order_note_asoc'] = isset($inventory_kardexable->order_note_id) ? optional($inventory_kardexable)->order_note->number_full : "-";
-                $data['cost'] = $item->purchase_mean_cost;
+                $cost = 'N/A';
+
+                if(isset(optional($inventory_kardexable)->items) == true){
+                    foreach (optional($inventory_kardexable)->items as $key => $value) {
+                        if($value->item_id == $item->id){
+                            $cost=(isset($value->item->purchase_mean_cost))?$value->item->purchase_mean_cost:'N/A';
+                        }
+                    }
+                }else{
+
+                    $cost='N/A';
+
+                }
+                $data['cost'] = $cost;//$item->purchase_mean_cost;
+
                 break;
 
             case $models[1]: //COMPRA
@@ -211,7 +225,7 @@ class InventoryKardex extends ModelTenant
                     }
                 }else{
 
-                    $cost=$inventory_kardexable;
+                    $cost='N/A';
 
                 }
                 $data['cost'] = $cost;
