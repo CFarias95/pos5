@@ -55,13 +55,14 @@ class BalanceComprobacionController extends Controller
 
     public function cuentas()
     {
-        $cuentas = AccountMovement::get();
-        $codigo = array();
-        foreach($cuentas as $cuenta)
-        {
-            array_push($codigo, $cuenta->code);
-        }
-        return $codigo;
+        $cuentas = AccountMovement::get()->transform(function($row){
+            return[
+                'id'=> $row->code,
+                'name' => $row->description,
+            ];
+        });
+
+        return compact("cuentas");
     }
 
     public function pdf(Request $request)

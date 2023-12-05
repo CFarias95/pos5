@@ -201,9 +201,7 @@ class InventoryKardex extends ModelTenant
                         }
                     }
                 }else{
-
                     $cost='N/A';
-
                 }
                 $data['cost'] = $cost;//$item->purchase_mean_cost;
 

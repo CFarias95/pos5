@@ -27,13 +27,13 @@
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Inicio</label>
                             <el-select v-model="form.icuenta" filterable clearable>
-                                <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id+'-'+cuenta.name" :label="cuenta.name"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Fin</label>
                             <el-select v-model="form.fcuenta" filterable clearable>
-                                <el-option v-for="cuenta in cuentas" :key="cuenta" :value="cuenta" :label="cuenta"></el-option>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id+'-'+cuenta.name" :label="cuenta.name"></el-option>
                             </el-select>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
@@ -174,7 +174,7 @@ export default {
         },
         getCuentas(){
             return this.$http.get(`/${this.resource}/cuentas`).then((response) => {
-                this.cuentas = response.data
+                this.cuentas = response.data.cuentas
             });
         },
         getRecords() {
@@ -183,8 +183,8 @@ export default {
                 /*console.log('data', this.records);
                 this.records.forEach((row) => {
                     this.cuentas.push(row[0].Cuenta)
-                })   
-                console.log('rows', this.cuentas)*/         
+                })
+                console.log('rows', this.cuentas)*/
                 this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 this.loading_submit = false
@@ -198,5 +198,5 @@ export default {
             })
         },
     },
-}   
+}
 </script>
