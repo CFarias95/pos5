@@ -218,7 +218,7 @@
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
                 {{ $row->item->name_product_pdf }}
                 @else
-                {{ $row->item->name }}
+                {{ $row->item->description }}
                 @endif
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
