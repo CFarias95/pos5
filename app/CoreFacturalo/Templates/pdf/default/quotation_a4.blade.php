@@ -214,7 +214,8 @@
             </td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != '<p></p>')
+
+                @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
                 {{ $row->item->name_product_pdf }}
                 @else
                 {{ $row->item->name }}

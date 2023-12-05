@@ -49,6 +49,7 @@ use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\DispatchItem;
+use App\Models\Tenant\Item;
 use App\Models\Tenant\Person;
 
 /**
@@ -152,6 +153,11 @@ class Facturalo
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
                 foreach ($inputs['items'] as $row) {
+                    $item = Item::find($row['item_id'] );
+                    $row['item']['name'] = $item->name;
+                    if(isset($row['name_product_pdf']) == false || $row['name_product_pdf'] == '' ){
+                        $row['name_product_pdf'] =$item->name.'/'.$item->description;
+                    }
                     $document->items()->create($row);
                     // $row['document_id']=  $document->id;
                     // $item = new DocumentItem($row);
