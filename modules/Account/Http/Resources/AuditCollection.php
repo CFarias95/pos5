@@ -20,6 +20,7 @@ class AuditCollection extends ResourceCollection
             $account_entry = AccountingEntries::find($row->accounting_entrie_id);
 
             $pago = $account_entry->document_id;
+            $pagoC = null;
 
             if(str_contains($pago,"CF")){
                 $pagoC = DocumentPayment::find(preg_replace("/[a-zA-Z]/", "", $pago));

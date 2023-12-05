@@ -21,6 +21,8 @@ class ReconciliationCollection extends ResourceCollection
 
             $pago = $account_entry->document_id;
 
+            $pagoC = null;
+
             if(str_contains($pago,"CF")){
                 $pagoC = DocumentPayment::find(preg_replace("/[a-zA-Z]/", "", $pago));
             }

@@ -210,7 +210,8 @@ class ReconciliationController extends Controller
         });
         $records3->select('accounting_entry_items.*');
 
-        $data = $records->union($records2);
+
+        $data = $records->union($records2)->union($records3);
         return $data->orderBy('id','desc');
     }
 
