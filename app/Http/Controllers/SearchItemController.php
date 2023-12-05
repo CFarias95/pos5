@@ -1000,7 +1000,8 @@
             return $items->transform(function ($row) use ($warehouse_id, $warehouse) {
                 /** @var Item $row */
                 $temp = array_merge($row->getCollectionData(), $row->getDataToItemModal());
-                $full_description = ($row->internal_id) ? $row->internal_id . ' - ' . $row->description : $row->description;
+                $full_description = $row->name.' / '.$row->description.' / '.$row->model.' / '.$row->internal_id;
+
                 $data = [
                     'id' => $row->id,
                     'item_code' => $row->item_code,
@@ -1161,10 +1162,10 @@
 
 
             if(!empty($input)) {
-                $whereItem[] = ['description', 'like', '%' . $input . '%'];
+                $whereItem[] = ['name', 'like', '%' . $input . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
-                $whereExtra[] = ['name', 'like', '%' . $input . '%'];
+                $whereExtra[] = ['description', 'like', '%' . $input . '%'];
             }
 
             if(!empty($whereItem)) {
