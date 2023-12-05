@@ -27,13 +27,13 @@
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Inicio</label>
                             <el-select v-model="form.icuenta" filterable clearable>
-                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id+'-'+cuenta.name" :label="cuenta.name"></el-option>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id" :label="cuenta.id+'-'+cuenta.name"></el-option>
                             </el-select>
                         </div>
                         <div class="col-md-3">
                             <label class="control-label">Cuenta Fin</label>
                             <el-select v-model="form.fcuenta" filterable clearable>
-                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id+'-'+cuenta.name" :label="cuenta.name"></el-option>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id" :label="cuenta.id+'-'+cuenta.name"></el-option>
                             </el-select>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
