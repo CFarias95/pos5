@@ -214,7 +214,11 @@
             </td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-left">
-                  @if($row->item->name_product_pdf ?? false) {!!$row->item->name_product_pdf ?? ''!!} @else {!!$row->item->description!!} @endif
+                @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != '<p></p>')
+                {{ $row->item->name_product_pdf }}
+                @else
+                {{ $row->item->name }}
+                @endif
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)

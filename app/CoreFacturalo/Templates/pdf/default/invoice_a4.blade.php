@@ -227,7 +227,7 @@
                         @if($row->name_product_pdf)
                             {!!$row->name_product_pdf!!}
                         @else
-                            {!!$row->item->description!!}
+                            {!!$row->item->name!!}
                         @endif
 
                         @if($row->total_isc > 0)
