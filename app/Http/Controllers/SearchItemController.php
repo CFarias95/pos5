@@ -67,17 +67,10 @@
          */
         public static function getNotServiceItem(Request $request = null, $id = 0)
         {
-
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
-
-            // el filtro por almacén no debe depender de la búsqueda por código de barras o coincidencias
-            // if ($search_by_barcode === false && $input != null) {
-            //     self::SetWarehouseToUser($item);
-            // }
-
             self::SetWarehouseToUser($item);
 
             return $item->orderBy('id')->get();
@@ -254,10 +247,10 @@
 
             if (!empty($input)) {
 
-                $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
+                $whereItem[] = ['name', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
-                $whereExtra[] = ['name', 'like', '%' .  str_replace(' ','%',$input) . '%'];
+                $whereExtra[] = ['description', 'like', '%' .  str_replace(' ','%',$input) . '%'];
 
                 if($search_factory_code_items) $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
 

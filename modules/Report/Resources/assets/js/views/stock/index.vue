@@ -16,7 +16,7 @@
                         <div class="col-12">
                             <h2>Filtrar por:</h2>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <label>Almacén</label>
                             <el-select v-model="form.warehouse_id" @change="getRecords()" filterable>
                                 <el-option value="0" label="Todos los almacenes" />
@@ -24,58 +24,75 @@
                                     :value="row.id"></el-option>
                             </el-select>
                         </div>
-                        <div class="col-6">
+                        <div class="col-3">
                             <label> Producto</label>
                             <el-select v-model="form.item_id" @change="getRecords()" filterable>
                                 <el-option value="0" label="Todos los Productos" />
-                                <el-option v-for="row in items" :key="row.id" :label="row.name"
+                                <el-option v-for="row in items" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="col-3">
+                            <label> Marca</label>
+                            <el-select v-model="form.brand_id" @change="getRecords()" filterable>
+                                <el-option value="0" label="Todos las marcas" />
+                                <el-option v-for="row in brands" :key="row.id" :label="row.name"
                                     :value="row.id"></el-option>
                             </el-select>
                         </div>
-                        <br>
-                        <br>
-                        <div class="col-6">
-                            <br>
-                            <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i
-                                    class="fa fa-file-excel"></i>
-                                Exportar Excel
-                            </el-button>
-                            <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"><i
-                                    class="fa fa-file-pdf"></i>
-                                Exportar PDF
-                            </el-button>
+                        <div class="col-3">
+                            <label> Categoría</label>
+                            <!-- <el-select v-model="form.categorie_id" @change="getRecords()" filterable>
+                                <el-option value="0" label="Todas las categorias" />
+                                <el-option v-for="row in categories" :key="row.id" :label="row.name"
+                                    :value="row.id"></el-option>
+                            </el-select> -->
+                            <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
+                                :show-all-levels="false" expandTrigger='hover' @change="getRecords"></el-cascader>
                         </div>
+                    </div>
+
+                    <br>
+                    <br>
+                    <div class="col-6">
+                        <br>
+                        <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"><i
+                                class="fa fa-file-excel"></i>
+                            Exportar Excel
+                        </el-button>
+                        <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"><i
+                                class="fa fa-file-pdf"></i>
+                            Exportar PDF
+                        </el-button>
                     </div>
                 </div>
             </div>
-            <div class="col-md-12">
-                <div class="table-responsive">
-                    <table class="table">
-                        <thead>
-                            <slot v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
-                                <tr slot="heading" :key="value">
-                                    <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class=""
-                                        slot="heading" :key="name">
-                                        <strong>{{ value1 }}</strong>
-                                    </th>
-                                </tr>
-                            </slot>
-                        </thead>
-                        <tbody>
-                            <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
-                                <tr v-for="valor in row" :row="valor" class="" slot="heading">
-                                    <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj"
-                                        :key="nombre">
-                                        {{ obj }}
-                                    </td>
-                                </tr>
-                            </slot>
-                        </tbody>
-                    </table>
-                    <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
-                        :total="pagination.total" layout="total, prev, pager, next" @current-change="getRecords">
-                    </el-pagination>
-                </div>
+        </div>
+        <div class="col-md-12">
+            <div class="table-responsive">
+                <table class="table">
+                    <thead>
+                        <slot v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
+                            <tr slot="heading" :key="value">
+                                <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class=""
+                                    slot="heading" :key="name">
+                                    <strong>{{ value1 }}</strong>
+                                </th>
+                            </tr>
+                        </slot>
+                    </thead>
+                    <tbody>
+                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
+                            <tr v-for="valor in row" :row="valor" class="" slot="heading">
+                                <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre">
+                                    {{ obj }}
+                                </td>
+                            </tr>
+                        </slot>
+                    </tbody>
+                </table>
+                <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
+                    :total="pagination.total" layout="total, prev, pager, next" @current-change="getRecords">
+                </el-pagination>
             </div>
         </div>
     </div>
@@ -91,7 +108,9 @@ export default {
             resource: 'reports/stock',
             form: {
                 warehouse_id: '0',
-                item_id: '0'
+                item_id: '0',
+                brand_id: '0',
+                categorie_id: 0
             },
             //columns: [],
             loading_submit: false,
@@ -101,7 +120,9 @@ export default {
             search: {},
             warehouses: [],
             items: [],
-            almacenList:[],
+            almacenList: [],
+            brands: [],
+            categories: [],
         }
     },
     created() {
@@ -128,11 +149,15 @@ export default {
             this.$http.get(`/${this.resource}/tables`).then((response) => {
                 this.warehouses = response.data.warehouses
                 this.items = response.data.items
+                this.brands = response.data.brands
+                this.categories = response.data.categories
             });
 
             this.form = {
                 warehouse_id: '0',
-                item_id: '0'
+                item_id: '0',
+                categorie_id: 0,
+                brand_id: '0'
             }
             this.search = {
                 //value: null

@@ -3,6 +3,7 @@
 namespace Modules\Report\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Http\Controllers\Tenant\ItemController;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\QuotationExport;
 use Illuminate\Http\Request;
@@ -18,6 +19,8 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Item\Models\Brand;
+use Modules\Item\Models\Category;
 use Modules\Report\Exports\StockAlmacenExport;
 use Modules\Report\Http\Resources\ReportStockAlmacenCollection;
 
@@ -34,7 +37,7 @@ class ReportStockAlmacenController extends Controller
     public function datosSP()
     {
 
-        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[request()->query('warehouse_id'),request()->query('item_id')]);
+        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?);",[request()->query('warehouse_id'),request()->query('item_id'),request()->query('categorie_id'),request()->query('brand_id')]);
         $sp1 = array();
         $sp2 = [];
         foreach($sp as $row)
@@ -128,6 +131,23 @@ class ReportStockAlmacenController extends Controller
             ];
         });
 
-        return compact("warehouses","items");
+        $brands = Brand::get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' =>$row->name,
+            ];
+        });
+        $categories = Category::get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' =>$row->name,
+            ];
+        });
+
+        $categorys =  new ItemController();
+        $categories = $categorys->getCategoriesTree();
+        $categories[] = ['value' => 0,'label' => 'Todas las categorías'];
+
+        return compact("warehouses","items","brands","categories");
     }
 }
