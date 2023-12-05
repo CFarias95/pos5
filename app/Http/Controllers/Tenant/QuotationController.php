@@ -287,6 +287,8 @@ class QuotationController extends Controller
             $this->quotation = Quotation::create($data);
 
             foreach ($data['items'] as $row) {
+                $itemQ = Item::find($row['item_id']);
+                $row['item']['name'] = $itemQ->name;
                 $this->quotation->items()->create($row);
             }
 
