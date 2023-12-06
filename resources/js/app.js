@@ -202,6 +202,11 @@ Vue.component('tenant-reporte-ventas-excel', require('../../modules/Report/Resou
 //Vue.component('tenant-reporte-ventas-pdf', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
 //Vue.component('tenant-reporte-ventas-pdf-simple', require('../../modules/Report/Resources/assets/js/views/reporte_ventas/index.vue'));
 
+//Reporte de Ventas Detalle
+Vue.component('tenant-reporte-ventas-detalle-index', require('../../modules/Report/Resources/assets/js/views/reporte_ventas_detalle/index.vue'));
+Vue.component('tenant-reporte-ventas-detalle-excel', require('../../modules/Report/Resources/assets/js/views/reporte_ventas_detalle/index.vue'));
+
+
 //Plan de Cuentas
 Vue.component('tenant-plan_cuentas-index', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));
 Vue.component('tenant-plan_cuentas-excel', require('../../modules/Report/Resources/assets/js/views/plan_cuentas/index.vue'));

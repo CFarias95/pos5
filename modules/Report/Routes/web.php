@@ -370,6 +370,18 @@ if ($current_hostname) {
                         ->name('tenant.reports.reporte_ventas.recuperarCategorias');
                 });
 
+                Route::prefix('reporte_ventas_detalle')->group(function () {
+                    Route::get('', 'ReporteVentasDetalleController@index')
+                        ->name('tenant.reports.reporte_ventas_detalle.index')
+                        ->middleware('tenant.internal.mode');
+                    Route::get('/pdf', 'ReporteVentasDetalleController@pdf');
+                    Route::get('/excel', 'ReporteVentasDetalleController@excel');
+                    Route::get('/filter', 'ReporteVentasDetalleController@filter');
+                    Route::get('/records', 'ReporteVentasDetalleController@records');
+                    Route::get('/pdf-simple', 'ReporteVentasDetalleController@pdfSimple');
+                    Route::get('/recuperarCategorias', 'ReporteVentasDetalleController@recuperarCategorias');
+                });
+
                 Route::prefix('plan_cuentas')->group(function () {
                     Route::get('', 'PlanCuentasController@index')
                         ->name('tenant.plan_cuentas.index')

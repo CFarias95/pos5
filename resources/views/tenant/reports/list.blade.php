@@ -219,7 +219,7 @@
                             <a href="{{route('tenant.reports.reporte_ventas.index')}}">Reporte bases e impuestos</a>
                         </li>
                         <li>
-                            <a href="{{route('tenant.reports.reporte_ventas.index')}}">Detalle de ventas</a>
+                            <a href="{{route('tenant.reports.reporte_ventas_detalle.index')}}">Detalle de ventas</a>
                         </li>
 
                     </ul>
