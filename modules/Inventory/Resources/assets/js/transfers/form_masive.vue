@@ -138,14 +138,16 @@
                     </div>
                 </div>
             </div>
+
             <div class="form-actions text-right mt-4">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button :loading="loading_submit" @click.prevent="submit" type="primary">Guardar
                 </el-button>
             </div>
+
         </div>
 
-        <output-lots-form :lots="form_add.lots_group" :showDialog.sync="showDialogLotsOutput"
+        <output-lots-form :lots="form_add.lots" :showDialog.sync="showDialogLotsOutput" :total="form_add.quantity"
             @addRowOutputLot="addRowOutputLot"></output-lots-form>
     </div>
 </template>
@@ -217,7 +219,8 @@ export default {
                 });
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
-            this.form_add.lots = row.lots;
+            this.form_add.lots = row.lots_group;
+            this.form_add.lots_group = row.lots_group;
             this.form_add.lots_enabled = row.lots_enabled;
             this.form_add.series_enabled = row.series_enabled;
 
@@ -229,6 +232,7 @@ export default {
                 quantity: 0,
                 barcode: null,
                 lots: [],
+                lots_group:[],
                 lots_enabled: false,
                 series_enabled: false,
                 input_search: null,
@@ -274,6 +278,9 @@ export default {
         selectedItemSearch() {
             this.$refs.selectSearchNormal.$data.selectedLabel = ''
             this.$refs.selectSearchNormal.blur()
+        },
+        addRowLot(lots){
+            this.form_add.lots = lots;
         },
         validateAddItem() {
             if (parseFloat(this.form_add.stock) < 1) {
