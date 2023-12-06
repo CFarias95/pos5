@@ -224,6 +224,7 @@ use Modules\Inventory\Exports\InventoryTransferExport;
                 ]);
 
                 foreach ($request->items as $it) {
+                    
                     $inventory = new Inventory();
                     $inventory->type = 2;
                     $inventory->description = 'Traslado';
@@ -232,7 +233,6 @@ use Modules\Inventory\Exports\InventoryTransferExport;
                     $inventory->warehouse_destination_id = $request->warehouse_destination_id;
                     $inventory->quantity = $it['quantity'];
                     $inventory->inventories_transfer_id = $row->id;
-
                     $inventory->save();
 
                     foreach ($it['lots'] as $lot) {

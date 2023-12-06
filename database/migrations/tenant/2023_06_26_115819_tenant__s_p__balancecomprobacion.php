@@ -21,7 +21,7 @@ class TenantSPBalancecomprobacion extends Migration
         SET @h = date_end ;
         SET @icuenta = icuenta ;
         SET @fcuenta = fcuenta ;
-        
+
         SELECT AA.Cuenta, AA.Descripcion_cuenta, AA.Saldo_inicial,
         AA.Debe, AA.Haber,
         Case when diferencia >0 then abs(diferencia) ELSE 0 END as Saldo_deudor,
@@ -44,10 +44,10 @@ class TenantSPBalancecomprobacion extends Migration
         AND c.seat_date <= @h
         AND b.code >= @icuenta
         AND b.code <= @fcuenta
-        GROUP BY  b.code , b.description 
-        ) AS AA ;
-        
-        
+        GROUP BY  b.code , b.description
+        ) AS AA
+        CALL SP_Balancecomprobacion;
+
         END
         ";
         DB::connection('tenant')->statement($sql_create);

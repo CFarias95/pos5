@@ -93,58 +93,6 @@ class ImportsController extends Controller
 
     public function liquidationsReport($id){
 
-        /*
-        $records = Purchase::where('import_id',$id)->where('tipo_doc_id',1)
-                    ->join('purchase_items',function($join) use($id){
-                        $join->on('purchases.id','=','purchase_items.purchase_id')
-                        ->where('purchase_items.item','NOT LIKE','%ZZ%');
-                    })
-                    ->get();
-
-        $flete = Purchase::where('tipo_doc_id',2)
-                    ->join('purchase_items',function($join) use($id){
-                        $join->on('purchases.id','=','purchase_items.purchase_id')
-                        ->where('purchase_items.import',$id)->where('concepto',4);
-                    })
-                    ->get();
-
-        $totalFlete = $flete->sum('total_value');
-
-        $fleteIncluido = Purchase::where('tipo_doc_id',2)
-                        ->join('purchase_items',function($join) use($id){
-                            $join->on('purchases.id','=','purchase_items.purchase_id')
-                            ->where('purchase_items.import',$id)
-                            ->where('concepto',4)
-                            ->where('purchase_items.item','LIKE','%ZZ%');
-                        })
-                        ->get();
-
-        $totalFleteAdd = ($fleteIncluido && $fleteIncluido->count() > 0)?$fleteIncluido->sum('total_value'):0;
-
-        $totalFlete += $totalFleteAdd;
-
-        //Log::info(json_encode($flete));
-        $seguro = Purchase::where('tipo_doc_id',2)
-                    ->join('purchase_items',function($join) use($id){
-                        $join->on('purchases.id','=','purchase_items.purchase_id')
-                        ->where('purchase_items.import',$id)->where('concepto',5);
-                    })
-                    ->get();
-
-        $totalSeguro = $seguro->sum('total_value');
-        $gasto = Purchase::where('tipo_doc_id',2)
-                    ->join('purchase_items',function($join) use($id){
-                        $join->on('purchases.id','=','purchase_items.purchase_id')
-                        ->where('purchase_items.import',$id)->where('concepto',1);
-                    })
-                    ->get();
-        $totalgasto = $gasto->sum('total_value');
-
-
-
-        $source = $this->transformReportImports($records, $totalFlete, $totalSeguro, $totalgasto);
-        */
-
         $source = DB::connection("tenant")->select("CALL SP_Reporteimportacion(?)",[$id]);
 
         return (new ImportExport)

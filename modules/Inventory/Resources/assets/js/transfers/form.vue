@@ -100,7 +100,7 @@ export default {
         warehouse_description: null,
         stock: 0,
         quantity: 0,
-        // lots:[],
+        lots:[],
         detail: null
       };
     },
@@ -110,16 +110,16 @@ export default {
         .get(`/${this.resource}/record/${this.recordId}`)
         .then(response => {
           this.form = response.data.data;
-          // this.form.lots = Object.values(response.data.data.lots)
+          this.form.lots = Object.values(response.data.data.lots)
         });
     },
     async submit() {
-      // if(this.form.lots_enabled){
-      //     let select_lots = await _.filter(this.form.lots, {'has_sale':true})
-      //     if(select_lots.length != this.form.quantity_move){
-      //         return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
-      //     }
-      // }
+       if(this.form.lots_enabled){
+           let select_lots = await _.filter(this.form.lots, {'has_sale':true})
+           if(select_lots.length != this.form.quantity_move){
+               return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
+           }
+      }
 
       this.loading_submit = true;
       await this.$http

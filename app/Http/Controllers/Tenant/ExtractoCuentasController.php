@@ -51,18 +51,19 @@ class ExtractoCuentasController extends Controller
 
         return new ExtractoCuentasCollection($paginatedCollection);
     }
-    
+
     public function cuentas()
     {
-        $cuentas = AccountMovement::get();
-        $codigo = array();
-        foreach($cuentas as $cuenta)
-        {
-            array_push($codigo, $cuenta->code);
-        }
-        return $codigo;
+        $cuentas = AccountMovement::get()->transform(function($row){
+            return[
+                'id'=> $row->code,
+                'name' => $row->description,
+            ];
+        });
+
+        return compact("cuentas");
     }
-    
+
     public function pdf(Request $request)
     {
 
@@ -70,7 +71,7 @@ class ExtractoCuentasController extends Controller
         $records = DB::connection('tenant')->select("CALL SP_Extractocuenta(?,?,?);", [$request->date_start, $request->date_end,  $request->cuenta]);
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
-        
+
 
         $pdf = PDF::loadView('tenant.extracto_cuentas.extracto_cuentas_pdf', compact("records", "company", "usuario_log", "request"));
         $pdf->setPaper('A4', 'landscape');

@@ -34,6 +34,7 @@
                                 <th rowspan="1" colspan="2">FOB FACTURA</th>
                                 <th rowspan="2">Gasto hasta FOB</th>
                                 <th rowspan="1" colspan="2">FOB FINAL</th>
+                                <th rowspan="2">Empaque</th>
                                 <th rowspan="2">Flete</th>
                                 <th rowspan="2">Seguro</th>
                                 <th rowspan="2">TOTAL CIF</th>
@@ -80,6 +81,7 @@
                                 <td class="celda">{{$value->gastohastafob }}</td>
                                 <td class="celda">{{$value->fob_finalunit }}</td>
                                 <td class="celda">{{$value->fob_finaltotal }}</td>
+                                <td class="celda">{{$value->empaque }}</td>
                                 <td class="celda">{{$value->fletetotal }}</td>
                                 <td class="celda">{{$value->segurototal }}</td>
                                 <td class="celda">{{$value->cif }}</td>

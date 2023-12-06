@@ -60,8 +60,7 @@
                                     </div>
                                 </div>
                             </div>
-                            <br>
-                            <br>
+
                             <div class="col-md-12">
                                 <div class="table-responsive">
                                     <table class="table" v-if="records">
@@ -77,7 +76,9 @@
                                         </tbody>
                                     </table>
                                     <div v-else>
-                                        <el-alert title="Sin datos para mostrar" type="warning" :closable="false" />
+                                        <div>
+                                            <el-alert title="Sin datos para mostrar" type="warning" :closable="false" />
+                                        </div>
                                     </div>
                                     <div>
                                         <el-pagination :current-page.sync="pagination.current_page"
@@ -96,7 +97,6 @@
 </template>
 
 <script>
-import DataTable from '../../components/DataTableReporteVentas.vue'
 import moment from 'moment'
 import queryString from 'query-string'
 
@@ -158,7 +158,6 @@ export default {
                 this.pagination.per_page = parseInt(response.data.paginatedCollection.per_page)
                 this.loading_submit = false
                 this.headers = response.data.header
-
             });
         },
         getQueryParameters() {

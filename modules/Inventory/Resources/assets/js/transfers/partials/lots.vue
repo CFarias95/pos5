@@ -51,7 +51,7 @@
         props: ['showDialog', 'lots'],
         data() {
             return {
-                titleDialog: 'Series',
+                titleDialog: 'Series/Lotes',
                 loading: false,
                 errors: {},
                 form: {},
@@ -67,22 +67,22 @@
             },
             async submit(){
 
-                // let val_lots = await this.validateLots()
-                // if(!val_lots.success)
-                //     return this.$message.error(val_lots.message);
+                let val_lots = await this.validateLots()
+                if(!val_lots.success)
+                     return this.$message.error(val_lots.message);
 
-                // await this.$emit('addRowLot', this.lots);
-                // await this.$emit('update:showDialog', false)
+                await this.$emit('addRowLot', this.lots);
+                await this.$emit('update:showDialogLotsOutput', false)
 
             },
             close() {
-                this.$emit('update:showDialog', false)
+                this.$emit('update:showDialogLotsOutput', false)
                 this.$emit('addRowOutputLot', this.lots);
             },
             async clickCancelSubmit() {
 
-                // this.$emit('addRowLot', []);
-                // await this.$emit('update:showDialog', false)
+                this.$emit('addRowLot', []);
+                await this.$emit('update:showDialogLotsOutput', false)
 
             },
         }

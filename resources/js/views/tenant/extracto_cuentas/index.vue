@@ -26,8 +26,9 @@
                         </div>
                         <div class="col-md-3">
                             <label class="control-label"># Cuenta</label>
+
                             <el-select v-model="form.cuenta" filterable clearable>
-                                <el-option v-for="codigo in cuentas" :key="codigo" :value="codigo" :label="codigo"></el-option>
+                                <el-option v-for="cuenta in cuentas" :key="cuenta.id" :value="cuenta.id" :label="cuenta.id+'-'+cuenta.name"></el-option>
                             </el-select>
                         </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
@@ -178,7 +179,7 @@ export default {
         },
         getCuentas(){
             return this.$http.get(`/${this.resource}/cuentas`).then((response) => {
-                this.cuentas = response.data
+                this.cuentas = response.data.cuentas
             });
         },
         getRecords() {
@@ -198,5 +199,5 @@ export default {
             })
         },
     },
-}   
+}
 </script>
