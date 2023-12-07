@@ -38,7 +38,7 @@
                                     {{row.quantity}}
                                 </td>
                                 <td>
-                                    <el-input-number v-model="row.compromise_quantity" :max="row.quantity" :min="0" @change="changeQuantity(index)"></el-input-number>
+                                    <el-input-number v-model="row.compromise_quantity" :max="parseFloat(row.quantity)" :min="0" @change="changeQuantity(index)"></el-input-number>
                                 </td>
                                 <br>
                             </tr>
@@ -83,15 +83,15 @@
 
                 let totalLotes = 0;
                 this.lots.forEach(element => {
-                    totalLotes += element.compromise_quantity
+                    totalLotes += parseFloat(element.compromise_quantity)
                 });
 
                 if( totalLotes > this.quantity){
-                    this.$message({ message: `La cantidad no puede superar las ${this.quantity} unidades`, type: "error"});
+                    this.$message({ message: `La cantidad no puede superar ${this.quantity}`, type: "error"});
                     return;
                 }
                 if( totalLotes < this.quantity){
-                    this.$message({ message: `La cantidad no puede ser menor a las ${this.quantity} unidades`, type: "error"});
+                    this.$message({ message: `La cantidad no puede ser menor  ${this.quantity}`, type: "error"});
                     return;
                 }
                 console.log('Lotes a enviar: ',this.lots)
