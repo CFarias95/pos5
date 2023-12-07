@@ -73,9 +73,13 @@
                                             :value="option.id"></el-option>
                                     </el-tooltip>
                                 </el-select>
-                                <a v-if="form_add.item_id && (form_add.series_enabled || form_add.lots_enabled)"
+                                <a v-if="form_add.item_id && form_add.lots_enabled"
                                     class="text-center font-weight-bold text-info" href="#"
                                     @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar lotes]</a>
+                                <a v-if="form_add.item_id && form_add.series_enabled "
+                                    class="text-center font-weight-bold text-info" href="#"
+                                    @click.prevent="clickSeriesOutput">[&#10004; Seleccionar series]</a>
+
                             </template>
 
                             <el-checkbox class="mt-2" v-model="search_item_by_barcode"
@@ -148,23 +152,27 @@
 
         <output-lots-form :lots="form_add.lots" :showDialog.sync="showDialogLotsOutput" :quantity="form_add.quantity"
             @addRowOutputLot="addRowOutputLot"></output-lots-form>
+        <output-series-form :lots="form_add.lots" :showDialog.sync="showDialogSeriesOutput" :quantity="form_add.quantity"
+            @addRowOutputLot="addRowOutputLot"></output-series-form>
     </div>
 </template>
 
 <script>
 import OutputLotsForm from "./partials/lots.vue";
+import OutputSeriesForm from "./partials/series.vue";
 import { ItemOptionDescription, ItemSlotTooltip } from "../../../../../../resources/js/helpers/modal_item";
 import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
     props: [],
-    components: { OutputLotsForm },
+    components: { OutputLotsForm, OutputSeriesForm },
     data() {
         return {
             loading_item: false,
             loading_submit: false,
             titleDialog: null,
             showDialogLotsOutput: false,
+            showDialogSeriesOutput: false,
             resource: "transfers",
             errors: {},
             form: {},
@@ -218,8 +226,15 @@ export default {
                 });
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
-            this.form_add.lots = row.lots_group;
-            this.form_add.lots_group = row.lots_group;
+
+            if(row.series_enabled == true){
+                this.form_add.lots = row.lots;
+            }
+            if(row.lots_enabled == true){
+                this.form_add.lots = row.lots_group;
+                this.form_add.lots_group = row.lots_group;
+            }
+
             this.form_add.lots_enabled = row.lots_enabled;
             this.form_add.series_enabled = row.series_enabled;
 
@@ -231,7 +246,7 @@ export default {
                 quantity: 0,
                 barcode: null,
                 lots: [],
-                lots_group:[],
+                lots_group: [],
                 lots_enabled: false,
                 series_enabled: false,
                 input_search: null,
@@ -278,7 +293,7 @@ export default {
             this.$refs.selectSearchNormal.$data.selectedLabel = ''
             this.$refs.selectSearchNormal.blur()
         },
-        addRowLot(lots){
+        addRowLot(lots) {
             this.form_add.lots = lots;
         },
         validateAddItem() {
@@ -376,7 +391,7 @@ export default {
             }
             if (this.form_add.lots_enabled) {
                 let selected_lots = this.form_add.lots.filter(x => x.checked == true);
-                let quantityLots  = 0;
+                let quantityLots = 0;
                 selected_lots.forEach(element => {
                     quantityLots += element.compromise_quantity
                 });
@@ -399,15 +414,17 @@ export default {
                 current_stock: parseFloat(this.form_add.stock),
                 quantity: this.form_add.quantity,
                 lots: this.form_add.lots,
-                lots_enabled:this.form_add.lots_enabled,
-                series_enabled:this.form_add.series_enabled,
+                lots_enabled: this.form_add.lots_enabled,
+                series_enabled: this.form_add.series_enabled,
             });
 
             this.initFormAdd();
         },
-
         clickLotcodeOutput() {
             this.showDialogLotsOutput = true;
+        },
+        clickSeriesOutput() {
+            this.showDialogSeriesOutput = true;
         },
         initForm() {
             this.errors = {};

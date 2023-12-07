@@ -65,7 +65,7 @@
         data() {
             return {
 
-                titleDialog: 'Series/Lotes',
+                titleDialog: 'Mover Lotes',
                 loading: false,
                 errors: {},
                 form: {},

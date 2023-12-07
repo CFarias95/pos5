@@ -271,7 +271,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                         foreach ($it['lots'] as $lot) {
 
-                            if ($lot['checked']) {
+                            if (isset($lot['checked']) && $lot['checked'] == true) {
                                 $item_lot = ItemLot::findOrFail($lot['id']);
                                 $item_lot->warehouse_id = $inventory->warehouse_destination_id;
                                 $item_lot->update();

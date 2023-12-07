@@ -46,8 +46,7 @@
                             <div :class="{ 'has-danger': errors.name }" class="form-group">
                                 <label class="control-label">Nombre<span class="text-danger">*</span></label>
                                 <el-input v-model="form.name" dusk="name"></el-input>
-                                <small v-if="errors.name" class="form-control-feedback"
-                                    v-text="errors.name[0]"></small>
+                                <small v-if="errors.name" class="form-control-feedback" v-text="errors.name[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-6">
@@ -62,7 +61,8 @@
                             <div :class="{ 'has-danger': errors.description }" class="form-group">
                                 <label class="control-label">Descripción</label>
                                 <el-input v-model="form.description" dusk="description"></el-input>
-                                <small v-if="errors.description" class="form-control-feedback" v-text="errors.description[0]"></small>
+                                <small v-if="errors.description" class="form-control-feedback"
+                                    v-text="errors.description[0]"></small>
                             </div>
                         </div>
                         <div class="col-md-3">
@@ -152,7 +152,8 @@
                         <div v-show="form.unit_type_id != 'ZZ'" class="col-md-3">
                             <div :class="{ 'has-danger': errors.validity }" class="form-group">
                                 <label class="control-label">Días de vencimiento</label>
-                                <el-input-number  step="1" max="9999999999" min="0" v-model="form.validity"></el-input-number>
+                                <el-input-number step="1" max="9999999999" min="0"
+                                    v-model="form.validity"></el-input-number>
                                 <small v-if="errors.validity" class="form-control-feedback"
                                     v-text="errors.validity[0]"></small>
                             </div>
@@ -354,7 +355,7 @@
                                             <th width="25%">
                                                 <div v-show="form.unit_type_id != 'ZZ'">
                                                     <el-checkbox v-model="form.series_enabled"
-                                                        @change="changeLotsEnabled">¿Maneja series?
+                                                        @change="changeSeriesEnabled">¿Maneja series?
                                                     </el-checkbox>
                                                 </div>
                                             </th>
@@ -684,7 +685,8 @@
                                                 :value="option.id"></el-option>
                                         </el-select> -->
 
-                                        <el-cascader v-model="form.category_id_array" :options="categories" @change="handleChange"/>
+                                        <el-cascader v-model="form.category_id_array" :options="categories"
+                                            @change="handleChange" />
 
                                         <small v-if="errors.category_id" class="form-control-feedback"
                                             v-text="errors.category_id[0]"></small>
@@ -814,8 +816,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.purchase_mean_cost }" class="form-group">
                                 <label class="control-label">Costo promedio</label>
-                                <el-input v-model="form.purchase_mean_cost" dusk="purchase_unit_price"
-                                    readonly ></el-input>
+                                <el-input v-model="form.purchase_mean_cost" dusk="purchase_unit_price" readonly></el-input>
                                 <small v-if="errors.purchase_mean_cost" class="form-control-feedback"
                                     v-text="errors.purchase_mean_cost[0]"></small>
                             </div>
@@ -1016,7 +1017,8 @@
                                         <tr v-for="(row, index) in form.supplies" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <!--                                        <td>{{ row.item_id }}</td>-->
-                                            <td>{{ (row.individual_item)?row.individual_item.description:row.description }}</td>
+                                            <td>{{ (row.individual_item) ? row.individual_item.description : row.description }}
+                                            </td>
                                             <!-- <td>{{ row.description }}</td> -->
                                             <td>
                                                 <el-input-number v-model="row.percentage_decimal"
@@ -1043,11 +1045,13 @@
 
                                             </td>
                                             <td>
-                                                <el-input-number v-model="row.cost_per_unit" min="0" step="0.01"></el-input-number>
+                                                <el-input-number v-model="row.cost_per_unit" min="0"
+                                                    step="0.01"></el-input-number>
 
                                             </td>
                                             <td>
-                                                <el-input-number v-model="row.cost_total" min="0" step="0.01"></el-input-number>
+                                                <el-input-number v-model="row.cost_total" min="0"
+                                                    step="0.01"></el-input-number>
 
                                             </td>
                                             <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
@@ -1316,7 +1320,7 @@ export default {
             form: {
                 item_supplies: [],
                 is_for_production: false,
-                category_id_array:[]
+                category_id_array: []
             },
             // configuration: {},
             unit_types: [],
@@ -1417,11 +1421,11 @@ export default {
         ...mapActions([
             'loadConfiguration',
         ]),
-        handleChange(){
+        handleChange() {
 
-            if(this.form.category_id_array){
+            if (this.form.category_id_array) {
                 let number = this.form.category_id_array.length;
-                this.form.category_id = this.form.category_id_array[number-1]
+                this.form.category_id = this.form.category_id_array[number - 1]
             }
         },
         setDefaultConfiguration() {
@@ -1539,10 +1543,21 @@ export default {
         },
         changeLotsEnabled() {
 
-            // if(!this.form.lots_enabled){
-            //     this.form.lot_code = null
-            //     this.form.lots = []
-            // }
+            if (this.form.lots_enabled) {
+                this.form.series_enabled = false
+            }else{
+                this.form.lot_code = null
+                this.form.lots = []
+            }
+
+        },
+        changeSeriesEnabled() {
+
+            if (this.form.series_enabled) {
+                this.form.lots_enabled = false
+                this.form.lot_code = null
+                this.form.lots = []
+            }
 
         },
         changeProductioTab() {
@@ -1673,9 +1688,9 @@ export default {
                 lugar_produccion: null,
                 percentage_decimal: 0,
                 quantity: 0,
-                category_id_array:[],
-                purchase_mean_cost:null,
-                validity:0
+                category_id_array: [],
+                purchase_mean_cost: null,
+                validity: 0
 
             }
 
@@ -1896,7 +1911,7 @@ export default {
             this.loading_submit = true
 
             console.log(this.form)
-            if(this.form.category_id_array){
+            if (this.form.category_id_array) {
                 //this.form.category_id_array = JSON.stringify(this.form.category_id_array);
             }
             await this.$http.post(`/${this.resource}`, this.form)
