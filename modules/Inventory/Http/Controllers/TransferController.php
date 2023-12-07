@@ -257,7 +257,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             }
                         }
                     }
-                    if($it['series_enabled'] == true){
+                    elseif($it['series_enabled'] == true){
                         //si tienes series
                         $inventory = new Inventory();
                         $inventory->type = 2;
@@ -278,6 +278,16 @@ use Modules\Item\Models\ItemLotsGroup;
                             }
 
                         }
+                    }else{
+                        $inventory = new Inventory();
+                        $inventory->type = 2;
+                        $inventory->description = 'Traslado';
+                        $inventory->item_id = $it['id'];
+                        $inventory->warehouse_id = $request->warehouse_id;
+                        $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                        $inventory->quantity = $it['quantity'];
+                        $inventory->inventories_transfer_id = $row->id;
+                        $inventory->save();
                     }
 
                 }
