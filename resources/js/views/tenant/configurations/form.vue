@@ -1221,7 +1221,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_charge"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1247,7 +1248,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_paymnets"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1273,7 +1275,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_suppliers_advances"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1299,7 +1302,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_client_advances"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1325,7 +1329,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_clients"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1351,7 +1356,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_suppliers"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1377,7 +1383,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_purchases"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1403,7 +1410,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_sale_costs"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1429,7 +1437,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_incomes"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1455,7 +1464,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_transit_imports"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1481,7 +1491,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_taxes"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1507,7 +1518,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_taxes_purchases"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1533,7 +1545,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_service_taxes"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1559,7 +1572,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_item_process"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1585,7 +1599,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_item_finish"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1611,7 +1626,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_iva_tax"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"
@@ -1637,7 +1653,8 @@
                                         class="form-group">
                                     <el-select v-model="form.cta_income_tax"
                                                 @change="submit"
-                                                filterable>
+                                                filterable
+                                                clearable>
                                         <el-option v-for="option in ctas"
                                                     :key="option.id"
                                                     :label="option.code+' - '+option.description"

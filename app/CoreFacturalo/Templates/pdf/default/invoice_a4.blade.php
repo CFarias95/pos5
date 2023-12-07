@@ -457,7 +457,7 @@
                                 </tr>
                                 @endif
                                 <tr style="background: #f7f7f5;">
-                                    <td style="text-align: start; padding-left: 15px; padding-right: 15px;"> <strong>Vendedor:</strong> {{ $document->user->name}}</td>
+                                    <td style="text-align: start; padding-left: 15px; padding-right: 15px;"> <strong>Vendedor:</strong> {{ $document->seller->name}}</td>
                                 </tr>
                                 @if($document->purchase_order)
                                 <tr style="background: #eaeaea;">
