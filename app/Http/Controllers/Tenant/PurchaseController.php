@@ -765,12 +765,11 @@ class PurchaseController extends Controller
                 $importP = Imports::find($document->import_id);
                 $importCTA = null;
 
-                if ($importP && $importP->count() > 0) {
+                if ($importP && $importP->count() > 0 && $document->tipo_doc_id == 1) {
                     $importCTA = $importP->cuenta_contable;
                 }
 
-
-                if(isset($importCTA)){
+                if(isset($importCTA) ){
 
                     $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $accountMIDModel = AccountMovement::find($accountMID);
@@ -953,7 +952,7 @@ class PurchaseController extends Controller
                         $importCTAItem = $value->import;
                         $ctaImportItem = Imports::find($importCTAItem);
                         $itemCTA = "";
-                        if ($ctaImportItem && $ctaImportItem->count() > 0) {
+                        if ($ctaImportItem && $ctaImportItem->count() > 0 && $document->tipo_doc_id == 2) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
 

@@ -869,7 +869,7 @@
                                 <label class="control-label">Cuenta de compra</label>
                                 <el-select v-model="form.purchase_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable></el-option>
                                 </el-select>
                                 <small v-if="errors.purchase_cta" class="form-control-feedback"
                                     v-text="errors.purchase_cta[0]"></small>
@@ -880,7 +880,7 @@
                                 <label class="control-label">Cuenta de costo de ventas</label>
                                 <el-select v-model="form.sale_cost_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
                                 <small v-if="errors.sale_cost_cta" class="form-control-feedback"
                                     v-text="errors.sale_cost_cta[0]"></small>
@@ -891,7 +891,7 @@
                                 <label class="control-label">Cuenta de ingreso</label>
                                 <el-select v-model="form.income_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
                                 <small v-if="errors.income_cta" class="form-control-feedback"
                                     v-text="errors.income_cta[0]"></small>
@@ -902,7 +902,7 @@
                                 <label class="control-label">Cuenta de producto en proceso</label>
                                 <el-select v-model="form.item_process_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
                                 <small v-if="errors.item_process_cta" class="form-control-feedback"
                                     v-text="errors.item_process_cta[0]"></small>
@@ -913,7 +913,7 @@
                                 <label class="control-label">Cuenta de producto terminado</label>
                                 <el-select v-model="form.item_finish_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" clearable filterable></el-option>
                                 </el-select>
                                 <small v-if="errors.item_finish_cta" class="form-control-feedback"
                                     v-text="errors.item_finish_cta[0]"></small>
@@ -924,7 +924,7 @@
                                 <label class="control-label">Cuenta importacion en transito</label>
                                 <el-select v-model="form.item_import_cta">
                                     <el-option v-for="option in accounts" :key="option.id"
-                                        :label="option.code + ' - ' + option.description" :value="option.id"></el-option>
+                                        :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable></el-option>
                                 </el-select>
                                 <small v-if="errors.item_import_cta" class="form-control-feedback"
                                     v-text="errors.item_import_cta[0]"></small>
