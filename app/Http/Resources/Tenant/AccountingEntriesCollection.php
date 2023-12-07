@@ -3,6 +3,7 @@
 namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Modules\Account\Models\CostCenter;
 
 class AccountingEntriesCollection extends ResourceCollection
 {
@@ -41,7 +42,15 @@ class AccountingEntriesCollection extends ResourceCollection
                 'person_id' => $row->person_id,
                 'created_at' => $row->created_at->format('d/m/Y H:i:s'),
                 'updated_at' => $row->updated_at->format('d/m/Y H:i:s'),
-                'detalles'=>$row->items,
+                'detalles'=>$row->items->transform(function($row){
+                    $data = $row;
+                    if($data['seat_cost']){
+                        $seat = CostCenter::find($data['seat_cost']);
+                        $data['seat_cost'] = $seat->name;
+                    }
+                    return $row;
+
+                }),
             ];
         });
     }
