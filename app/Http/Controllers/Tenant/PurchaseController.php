@@ -818,7 +818,7 @@ class PurchaseController extends Controller
 
                                     $arrayEntrys[$importCTA.'-'.$seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (array_key_exists($importCTA, $arrayEntrys) == false) {
+                                if (array_key_exists($importCTA.'-'.$seatCost, $arrayEntrys) == false) {
                                     $n += 1;
                                     $arrayEntrys[$importCTA.'-'.$seatCost] = [
                                         'account_movement_id' => $importCTA,
