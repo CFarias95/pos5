@@ -21,6 +21,7 @@ use Modules\Inventory\Exports\InventoryTransferExport;
     use Modules\Inventory\Http\Requests\TransferRequest;
 
     use Modules\Item\Models\ItemLot;
+use Modules\Item\Models\ItemLotsGroup;
 
     class TransferController extends Controller
     {
@@ -224,26 +225,61 @@ use Modules\Inventory\Exports\InventoryTransferExport;
                 ]);
 
                 foreach ($request->items as $it) {
-                    
-                    $inventory = new Inventory();
-                    $inventory->type = 2;
-                    $inventory->description = 'Traslado';
-                    $inventory->item_id = $it['id'];
-                    $inventory->warehouse_id = $request->warehouse_id;
-                    $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                    $inventory->quantity = $it['quantity'];
-                    $inventory->inventories_transfer_id = $row->id;
-                    $inventory->save();
 
-                    foreach ($it['lots'] as $lot) {
+                    Log::info(json_encode($it));
 
-                        if ($lot['has_sale']) {
-                            $item_lot = ItemLot::findOrFail($lot['id']);
-                            $item_lot->warehouse_id = $inventory->warehouse_destination_id;
-                            $item_lot->update();
+                    if($it['lots_enabled'] == true){
+                        // si tiene Lotes se crea el kardex por lotes
+                        foreach ($it['lots'] as $key => $value) {
+                            # code...
+                            if ($value['checked'] == true) {
+
+                                $inventory = new Inventory();
+                                $inventory->type = 2;
+                                $inventory->description = 'Traslado';
+                                $inventory->item_id = $it['id'];
+                                $inventory->warehouse_id = $request->warehouse_id;
+                                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                                $inventory->quantity = $value['compromise_quantity'];
+                                $inventory->inventories_transfer_id = $row->id;
+                                $inventory->lot_code = $value['code'];
+                                $inventory->save();
+
+                                /*
+                                $item_lot = ItemLotsGroup::findOrFail($value['id']);
+                                $item_lot->code = $value->code;
+                                $item_lot->quantity = $value->compromise_quantity;
+                                $item_lot->date_of_due =
+                                $item_lot->item_id = $it['id'];
+                                $item_lot->old_quantity = 0;
+                                $item_lot->update();
+                                */
+                            }
                         }
-
                     }
+                    if($it['series_enabled'] == true){
+                        //si tienes series
+                        $inventory = new Inventory();
+                        $inventory->type = 2;
+                        $inventory->description = 'Traslado';
+                        $inventory->item_id = $it['id'];
+                        $inventory->warehouse_id = $request->warehouse_id;
+                        $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                        $inventory->quantity = $it['quantity'];
+                        $inventory->inventories_transfer_id = $row->id;
+                        $inventory->save();
+
+                        foreach ($it['lots'] as $lot) {
+
+                            if ($lot['checked']) {
+                                $item_lot = ItemLot::findOrFail($lot['id']);
+                                $item_lot->warehouse_id = $inventory->warehouse_destination_id;
+                                $item_lot->update();
+                            }
+
+                        }
+                    }
+
                 }
 
                 return [

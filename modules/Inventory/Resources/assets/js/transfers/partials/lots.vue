@@ -3,7 +3,7 @@
 
         <div class="form-body">
             <div>
-                <el-alert :title="title" type="info" effect="dark" :closable="false"/>
+                <el-alert :title="'Cantidad a mover '+quantity" type="info" effect="dark" :closable="false"/>
             </div>
             <div class="row" >
                 <div class="col-lg-12 col-md-12 table-responsive">
@@ -20,7 +20,7 @@
                             </tr>
                         </thead>
                         <tbody>
-                            <tr v-for="(row, index) in lots" :key="index" width="100%">
+                            <tr v-for="(row, index) in lots" :key="index" width="100%" :disabled="quantityNow >= quantity">
                                 <!-- <td>{{index}}</td> -->
                                 <td class="text-center">
                                     <el-checkbox v-model="row.checked"></el-checkbox>
@@ -38,7 +38,7 @@
                                     {{row.quantity}}
                                 </td>
                                 <td>
-                                    <el-input-number v-model="row.compromise_quantity" :max="row.quantity" :min="0"></el-input-number>
+                                    <el-input-number v-model="row.compromise_quantity" :max="row.quantity" :min="0" @change="changeQuantity(index)"></el-input-number>
                                 </td>
                                 <br>
                             </tr>
@@ -61,14 +61,15 @@
 
 <script>
     export default {
-        props: ['showDialog', 'lots', 'total'],
+        props: ['showDialog', 'lots', 'quantity'],
         data() {
             return {
+
                 titleDialog: 'Series/Lotes',
-                title: 'Cantidad a mover: '+this.total,
                 loading: false,
                 errors: {},
                 form: {},
+                quantityNow: 0,
             }
         },
         async created() {
@@ -81,24 +82,40 @@
             async submit(){
 
                 let totalLotes = 0;
+                this.lots.forEach(element => {
+                    totalLotes += element.compromise_quantity
+                });
+
+                if( totalLotes > this.quantity){
+                    this.$message({ message: `La cantidad no puede superar las ${this.quantity} unidades`, type: "error"});
+                    return;
+                }
+                if( totalLotes < this.quantity){
+                    this.$message({ message: `La cantidad no puede ser menor a las ${this.quantity} unidades`, type: "error"});
+                    return;
+                }
+                console.log('Lotes a enviar: ',this.lots)
+                await this.$emit('addRowLot', this.lots);
+                await this.$emit('update:showDialog', false)
+
+            },
+            changeQuantity(index){
+
+                let totalLotes = 0;
 
                 this.lots.forEach(element => {
                     totalLotes += element.compromise_quantity
                 });
 
-                if( totalLotes > total){
+                this.quantityNow = totalLotes;
+                this.lots[index].checked = true;
+                if(this.quantityNow > this.quantity){
 
-                    this.$message({ message: `La cantidad no puede superar las ${this.total} unidades`, type: "error"});
-                    return;
+                    this.lots[index].compromise_quantity = 0;
+                    this.lots[index].checked = false;
+                    return this.$message.error('La cantidad a mover supera la cantidad solicitada');
+
                 }
-
-                let val_lots = await this.validateLots()
-                if(!val_lots.success)
-                     return this.$message.error(val_lots.message);
-
-                await this.$emit('addRowLot', this.lots);
-                await this.$emit('update:showDialogLotsOutput', false)
-
             },
             close() {
                 this.$emit('update:showDialog', false)
@@ -106,7 +123,7 @@
             async clickCancelSubmit() {
 
                 this.$emit('addRowLot', []);
-                await this.$emit('update:showDialogLotsOutput', false)
+                await this.$emit('update:showDialog', false)
 
             },
         }

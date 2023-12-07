@@ -75,7 +75,7 @@
                                 </el-select>
                                 <a v-if="form_add.item_id && (form_add.series_enabled || form_add.lots_enabled)"
                                     class="text-center font-weight-bold text-info" href="#"
-                                    @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series/lotes]</a>
+                                    @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar lotes]</a>
                             </template>
 
                             <el-checkbox class="mt-2" v-model="search_item_by_barcode"
@@ -120,10 +120,9 @@
                                     <td>{{ row.barcode }}</td>
                                     <td>{{ row.description }}</td>
                                     <td>
-                                        <!-- {{ row.quantity }} -->
-
-                                        <el-input-number v-model="row.quantity" :min="0.01" :step="1"
-                                            @change="changeQuantity(row, index)"></el-input-number>
+                                        {{ row.quantity }}
+                                        <!-- <el-input-number v-model="row.quantity" :min="0.01" :step="1"
+                                            @change="changeQuantity(row, index)"></el-input-number> -->
                                     </td>
 
                                     <td class="series-table-actions text-center">
@@ -147,7 +146,7 @@
 
         </div>
 
-        <output-lots-form :lots="form_add.lots" :showDialog.sync="showDialogLotsOutput" :total="form_add.quantity"
+        <output-lots-form :lots="form_add.lots" :showDialog.sync="showDialogLotsOutput" :quantity="form_add.quantity"
             @addRowOutputLot="addRowOutputLot"></output-lots-form>
     </div>
 </template>
@@ -370,14 +369,18 @@ export default {
             }
 
             if (this.form_add.series_enabled) {
-                let selected_lots = this.form_add.lots.filter(x => x.has_sale == true).length;
+                let selected_lots = this.form_add.lots.filter(x => x.checked == true).length;
                 if (this.form_add.quantity != selected_lots) {
                     return this.$message.error("La cantidad de series seleccionadas es diferente a la cantidad de traslado");
                 }
             }
             if (this.form_add.lots_enabled) {
-                let selected_lots = this.form_add.lots.filter(x => x.has_sale == true).length;
-                if (this.form_add.quantity != selected_lots) {
+                let selected_lots = this.form_add.lots.filter(x => x.checked == true);
+                let quantityLots  = 0;
+                selected_lots.forEach(element => {
+                    quantityLots += element.compromise_quantity
+                });
+                if (this.form_add.quantity != quantityLots) {
                     return this.$message.error("La cantidad de lotes seleccionados es diferente a la cantidad de traslado");
                 }
             }
@@ -388,13 +391,16 @@ export default {
             }
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
+
             this.form.items.push({
                 id: row.id,
                 description: row.description,
                 barcode: row.barcode,
                 current_stock: parseFloat(this.form_add.stock),
                 quantity: this.form_add.quantity,
-                lots: this.form_add.lots
+                lots: this.form_add.lots,
+                lots_enabled:this.form_add.lots_enabled,
+                series_enabled:this.form_add.series_enabled,
             });
 
             this.initFormAdd();
