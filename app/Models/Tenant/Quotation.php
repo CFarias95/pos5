@@ -76,6 +76,8 @@ class Quotation extends ModelTenant
         'subtotal',
         'internal_request',
         'send_extra_pdf',
+        'upload_filename',
+        'send_upload_pdf',
     ];
 
     public static function boot()
@@ -89,6 +91,7 @@ class Quotation extends ModelTenant
     protected $casts = [
         'date_of_issue' => 'date',
         'send_extra_pdf' => 'bool',
+        'send_upload_pdf' => 'bool',
         // 'date_of_due' => 'date',
         // 'delivery_date' => 'date',
     ];
@@ -411,6 +414,8 @@ class Quotation extends ModelTenant
             'print_ticket' => $row->getUrlPrintPdf('ticket'),
             'filename' => $row->filename,
             'internal_request' => $row->internal_request,
+            'send_upload_pdf' =>$row->send_upload_pdf,
+            'upload_filename' => $row->upload_filename,
         ];
     }
 

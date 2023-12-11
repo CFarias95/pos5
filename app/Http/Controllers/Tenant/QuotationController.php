@@ -47,7 +47,9 @@ use Mpdf\Mpdf;
 use Modules\Inventory\Models\Warehouse as ModuleWarehouse;
 use Swift_SmtpTransport;
 use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
+use Modules\Finance\Helpers\UploadFileHelper;
 use Swift_Mailer;
 
 
@@ -931,6 +933,49 @@ class QuotationController extends Controller
         return [
             'success' => false,
             'message' => __('app.actions.upload.error'),
+        ];
+    }
+
+    public function uploadAttached(Request $request)
+    {
+
+        $validate_upload = UploadFileHelper::validateUploadFile($request, 'file', 'jpg,jpeg,png,gif,svg,pdf', false);
+
+        if (!$validate_upload['success']) {
+            return $validate_upload;
+        }
+        if ($request->hasFile('file')) {
+            //if(TechnicalService::where('upload_filename','!=',null)){}
+            $new_request = [
+                'file' => $request->file('file'),
+                'type' => $request->input('type'),
+            ];
+
+            return $this->upload_attached($new_request);
+        }
+        return [
+            'success' => false,
+            'message' =>  __('app.actions.upload.error'),
+        ];
+    }
+
+    function upload_attached($request)
+    {
+        $file = $request['file'];
+        $type = $request['type'];
+        $temp = tempnam(sys_get_temp_dir(), $type);
+        file_put_contents($temp, file_get_contents($file));
+        $mime = mime_content_type($temp);
+        $data = file_get_contents($temp);
+
+        Storage::disk('tenant')->put('quotation/'.$file->getClientOriginalName(),$data);
+        return [
+            'success' => true,
+            'data' => [
+                'filename' => $file->getClientOriginalName(),
+                'temp_path' => $temp,
+                'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
+            ]
         ];
     }
 }

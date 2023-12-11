@@ -724,6 +724,7 @@ if ($hostname) {
             Route::get('quotations/search/item/{item}', 'Tenant\QuotationController@searchItemById');
             Route::get('quotations/item-warehouses/{item}', 'Tenant\QuotationController@itemWarehouses');
             Route::post('quotation/import', 'Tenant\QuotationController@import');
+            Route::post('quotations/upload', 'Tenant\QuotationController@uploadAttached');
 
             //sale-notes
             Route::get('sale-notes', 'Tenant\SaleNoteController@index')->name('tenant.sale_notes.index')->middleware('redirect.level');

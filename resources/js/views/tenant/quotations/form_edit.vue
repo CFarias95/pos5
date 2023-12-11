@@ -161,6 +161,28 @@
                                         <el-switch v-model="form.send_extra_pdf" class="ml-2"
                                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                                     </div>
+                                    <div class="form-group col-6 col-md-4">
+                                        <div class="form-actions text-left mt-4">
+                                            <el-upload :data="{ 'type': 'quotation-attached' }" :headers="headers"
+                                                :multiple="false" :action="`/${resource}/upload`" :show-file-list="true"
+                                                :file-list="fileList" :on-remove="handleRemove" :on-success="onSuccess"
+                                                :limit="1">
+                                                <el-button slot="trigger" type="primary">Seleccione un archivo (PDF)
+                                                </el-button>
+                                            </el-upload>
+                                        </div>
+                                        <div>
+                                            <label>Archivo cargado: </label>
+                                            <label v-if="this.form.upload_filename != null">{{ this.form.upload_filename
+                                            }}</label>
+                                            <label v-else>N/A</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-6 col-md-2" v-if="form.upload_filename != null">
+                                        <label>Remplazar PDF en el correo</label>
+                                        <el-switch v-model="form.send_upload_pdf" class="ml-2"
+                                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -457,6 +479,8 @@ export default {
             sellers: [],
             total_discount_no_base: 0,
             options: [],
+            headers: headers_token,
+            fileList: [],
         }
     },
     async created() {
@@ -652,6 +676,9 @@ export default {
                     this.form.referential_information = dato.referential_information
                     this.changeCustomer()
                     this.form.customer_address_id = dato.customer.address_id
+                    this.form.send_upload_pdf = dato.send_upload_pdf
+                    this.form.upload_filename = dato.upload_filename
+                    this.changeCurrencyType()
                     this.calculateTotal()
                     //console.log(response.data)
                 })
@@ -987,6 +1014,23 @@ export default {
             this.input_person = {
                 number: null,
                 identity_document_type_id: null
+            }
+        },
+        handleRemove(file, fileList) {
+            this.form.upload_filename = null
+            this.form.temp_path = null
+            this.fileList = []
+        },
+        onSuccess(response, file, fileList) {
+            // console.log(response, file, fileList)
+            this.fileList = fileList
+            if (response.success) {
+                this.form.upload_filename = response.data.filename
+                this.form.image_url = response.data.temp_image
+                this.form.attached_temp_path = response.data.temp_path
+            } else {
+                this.cleanFileList()
+                this.$message.error(response.message)
             }
         },
     }

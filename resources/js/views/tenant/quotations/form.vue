@@ -160,6 +160,29 @@
                                         <el-switch v-model="form.send_extra_pdf" class="ml-2"
                                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                                     </div>
+                                    <div class="form-group col-6 col-md-4">
+                                        <div class="form-actions text-left mt-4">
+                                            <el-upload :data="{ 'type': 'quotation-attached' }" :headers="headers"
+                                                :multiple="false" :action="`/${resource}/upload`" :show-file-list="true"
+                                                :file-list="fileList" :on-remove="handleRemove" :on-success="onSuccess"
+                                                :limit="1"
+                                                :accept="'.pdf'">
+                                                <el-button slot="trigger" type="primary">Cargar un archivo (PDF)
+                                                </el-button>
+                                            </el-upload>
+                                        </div>
+                                        <div>
+                                            <label>Archivo cargado: </label>
+                                            <label v-if="this.form.upload_filename != null">{{ this.form.upload_filename
+                                            }}</label>
+                                            <label v-else>N/A</label>
+                                        </div>
+                                    </div>
+                                    <div class="form-group col-6 col-md-2" v-if="form.upload_filename != null">
+                                        <label>Remplazar PDF en el correo</label>
+                                        <el-switch v-model="form.send_upload_pdf" class="ml-2"
+                                            style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                                    </div>
                                 </div>
                             </div>
 
@@ -427,6 +450,8 @@ export default {
     mixins: [functions, exchangeRate],
     data() {
         return {
+            headers: headers_token,
+            fileList: [],
             sellers: [],
             input_person: {},
             resource: 'quotations',
@@ -720,6 +745,8 @@ export default {
                 phone: null,
                 internal_request: null,
                 send_extra_pdf: false,
+                upload_filename:null,
+                send_upload_pdf:false,
             }
 
             this.total_discount_no_base = 0
@@ -1042,6 +1069,23 @@ export default {
                 this.total_cuenta = 0
             }
 
+        },
+        handleRemove(file, fileList) {
+            this.form.upload_filename = null
+            this.form.temp_path = null
+            this.fileList = []
+        },
+        onSuccess(response, file, fileList) {
+            // console.log(response, file, fileList)
+            this.fileList = fileList
+            if (response.success) {
+                this.form.upload_filename = response.data.filename
+                this.form.image_url = response.data.temp_image
+                this.form.attached_temp_path = response.data.temp_path
+            } else {
+                this.cleanFileList()
+                this.$message.error(response.message)
+            }
         },
     }
 }
