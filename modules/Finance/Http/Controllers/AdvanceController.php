@@ -85,13 +85,19 @@ class AdvanceController extends Controller
 
     public function tables()
     {
-        $establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
-        $currency_types = CurrencyType::whereActive()->get();
-        $income_types = IncomeType::get();
-        $payment_method_types = PaymentMethodType::all();
-        $income_reasons = IncomeReason::all();
-        $payment_destinations = $this->getPaymentDestinations();
-        $clients = Person::get();
+        //$establishment = Establishment::where('id', auth()->user()->establishment_id)->first();
+        //$currency_types = CurrencyType::whereActive()->get();
+        //$income_types = IncomeType::get();
+        //$payment_method_types = PaymentMethodType::all();
+        //$income_reasons = IncomeReason::all();
+        //$payment_destinations = $this->getPaymentDestinations();
+        $clients = Person::get()->transform(function($row){
+            return[
+                'id' =>$row->id,
+                'name' => $row->name,
+                'type' =>$row->type,
+            ];
+        });
         $methodTypes = PaymentMethodType::where('is_advance',1)->get();
         $methodTypes2 = PaymentMethodType::where('is_cash',1)->get();
 
