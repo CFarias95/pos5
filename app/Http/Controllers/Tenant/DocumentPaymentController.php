@@ -391,7 +391,7 @@ class DocumentPaymentController extends Controller
                     $reference = $request->reference;
                     $retention = Retention::find($reference);
                     $detRet = $retention->optional;
-                    //Log::alert($detRet);
+                    Log::error($detRet);
                     $seat = 2;
 
                     foreach ($detRet as $ret) {
