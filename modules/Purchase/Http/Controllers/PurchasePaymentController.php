@@ -337,7 +337,7 @@ class PurchasePaymentController extends Controller
 
                     foreach ($detRet as $ret) {
 
-                        $valor = floatval($ret['valorRetenido']);
+                        $valor = (is_array($ret) == true)?floatval($ret['valorRetenido']):floatval($ret->valorRetenido);
                         $haberInterno = 0;
                         if($valor >=  $haber){
                             $haberInterno = $haber;

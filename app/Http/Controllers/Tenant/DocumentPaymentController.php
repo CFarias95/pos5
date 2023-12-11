@@ -398,8 +398,9 @@ class DocumentPaymentController extends Controller
                     $seat = 2;
 
                     foreach ($detRet as $ret) {
+
                         if($debe > 0){
-                            $valor = floatval($ret['valorRetenido']);
+                            $valor = (is_array($ret) == true)?floatval($ret['valorRetenido']):floatval($ret->valorRetenido);
                             $debeInterno = 0;
                             $cuentaId = null;
                             if($valor >=  $debe){
@@ -410,10 +411,10 @@ class DocumentPaymentController extends Controller
                                 $debeInterno = $valor;
                                 $debe -=  $valor;
                             }
-                            if($ret['codigo'] == '2'){
+                            if(is_array($ret) &&  $ret['codigo']== '2' || isset($ret->codigo) && $ret->codigo == '2'){
                                 $cuentaId=$ceuntaC->countable_acount;
                             }
-                            if($ret['codigo'] == '1'){
+                            if(is_array($ret) &&  $ret['codigo']== '1' || isset($ret->codigo) && $ret->codigo == '1'){
                                 $cuentaId=$ceuntaC->countable_acount_payment;
                             }
                             if($cuentaId == null){
