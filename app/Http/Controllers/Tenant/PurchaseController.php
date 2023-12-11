@@ -941,12 +941,18 @@ class PurchaseController extends Controller
                     }
                 } else {
 
+                    $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
+                    $accountMIDModel = AccountMovement::find($accountMID);
+                    $costC = $document->establishment->cost_center[count($document->establishment->cost_center)-1];
+
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
                     $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
+                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$costC:null;
+
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
@@ -967,7 +973,15 @@ class PurchaseController extends Controller
 
                         $item = Item::find($value->item_id);
                         $impuesto = AffectationIgvType::find($item->purchase_affectation_igv_type_id);
-                        //$establismentItemOutput = Establishment::find();
+
+                        $warehouseItem = TenantWarehouse::find($value->warehouse_id);
+                        $establishmentItem = Establishment::find($warehouseItem->establishment_id);
+
+                        $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
+
+                        $accountantItem=AccountMovement::find($item->purchase_cta);
+                        $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if ($documentoInterno->sign > 0) {
 
@@ -975,52 +989,57 @@ class PurchaseController extends Controller
 
                                 $seatCostItem = AccountMovement::find($item->purchase_cta);
 
-                                if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                if (array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$item->purchase_cta]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                if (!array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$item->purchase_cta] = [
+                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost] = [
+                                        'account_movement_id' => $item->purchase_cta,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => null,
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
                                     ];
                                 }
                             }
 
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
-                                if (array_key_exists($itemCTA, $arrayEntrys)) {
+                                if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$itemCTA]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$itemCTA.'-'.$seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($itemCTA, $arrayEntrys)) {
+                                if (!array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$itemCTA] = [
+                                    $arrayEntrys[$itemCTA.'-'.$seatCost] = [
+                                        'account_movement_id' => $itemCTA,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
                                     ];
                                 }
                             }
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
-                                if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                if (array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$configuration->cta_purchases]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$configuration->cta_purchases] = [
+                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost] = [
+                                        'account_movement_id' => $configuration->cta_purchases,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
                                     ];
                                 }
                             }
@@ -1036,9 +1055,11 @@ class PurchaseController extends Controller
                                     $n += 1;
 
                                     $arrayEntrys[$impuesto->account] = [
+                                        'account_movement_id' => $impuesto->account,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
+                                        'seat_cost' => null
                                     ];
                                 }
                             }
@@ -1054,9 +1075,11 @@ class PurchaseController extends Controller
                                     $n += 1;
 
                                     $arrayEntrys[$configuration->cta_taxes_purchases] = [
+                                        'account_movement_id' => $configuration->cta_taxes_purchases,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
+                                        'seat_cost' => null
                                     ];
                                 }
                             }
@@ -1066,51 +1089,57 @@ class PurchaseController extends Controller
 
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
-                                if (array_key_exists($itemCTA, $arrayEntrys)) {
+                                if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$itemCTA]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$itemCTA.'-'.$seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($itemCTA, $arrayEntrys)) {
+                                if (!array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$itemCTA] = [
+                                    $arrayEntrys[$itemCTA.'-'.$seatCost] = [
+                                        'account_movement_id' => $itemCTA,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
                                     ];
                                 }
                             }
 
                             if ($itemCTA == "" && $item->purchase_cta) {
 
-                                if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                if (array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$item->purchase_cta]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($item->purchase_cta, $arrayEntrys)) {
+                                if (!array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$item->purchase_cta] = [
+                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost] = [
+                                        'account_movement_id' => $item->purchase_cta,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
                                     ];
                                 }
                             }
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
-                                if (array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                if (array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$configuration->cta_purchases]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($configuration->cta_purchases, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$configuration->cta_purchases] = [
+                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost] = [
+                                        'account_movement_id' => $configuration->cta_purchases,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
+                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
                                     ];
                                 }
                             }
@@ -1126,9 +1155,11 @@ class PurchaseController extends Controller
                                     $n += 1;
 
                                     $arrayEntrys[$impuesto->account] = [
+                                        'account_movement_id' => $impuesto->account,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_taxes),
+                                        'seat_cost' => null,
                                     ];
                                 }
                             }
@@ -1144,9 +1175,11 @@ class PurchaseController extends Controller
                                     $n += 1;
 
                                     $arrayEntrys[$configuration->cta_taxes_purchases] = [
+                                        'account_movement_id' => $configuration->cta_taxes_purchases,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_taxes),
+                                        'seat_cost' => null,
                                     ];
                                 }
                             }
@@ -1157,11 +1190,12 @@ class PurchaseController extends Controller
                         if ($value['debe'] > 0 || $value['haber'] > 0) {
 
                             $detalle = new AccountingEntryItems();
-                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->accounting_entrie_id = $value['accounting_entrie_id'];
                             $detalle->account_movement_id = $key;
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
+                            $detalle->seat_cost = $value['seat_cost'];
                             if ($detalle->save() == false) {
                                 $cabeceraC->delete();
                                 break;
