@@ -392,6 +392,9 @@ class DocumentPaymentController extends Controller
                     $retention = Retention::find($reference);
                     $detRet = $retention->optional;
                     Log::error($detRet);
+                    if(is_array($detRet) == false ){
+                        $detRet = json_decode($detRet);
+                    }
                     $seat = 2;
 
                     foreach ($detRet as $ret) {
@@ -415,7 +418,7 @@ class DocumentPaymentController extends Controller
                             }
                             if($cuentaId == null){
                                 $cabeceraC->delete();
-                                throw new Exception("Centas contables para Caanje Retenciones sin asignar", 1);
+                                throw new Exception("Cuentas contables para Canje Retenciones sin asignar", 1);
                             }
 
                             $detalle2 = new AccountingEntryItems();
