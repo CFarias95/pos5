@@ -345,7 +345,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->user_id = $document->user_id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = $document->date_of_issue;
+                $cabeceraC->seat_date = date('y-m-d');
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = null;
@@ -396,7 +396,7 @@ class DocumentPaymentController extends Controller
 
                     foreach ($detRet as $ret) {
                         if($debe > 0){
-                            $valor = floatval($ret->valorRetenido);
+                            $valor = floatval($ret['valorRetenido']);
                             $debeInterno = 0;
                             $cuentaId = null;
                             if($valor >=  $debe){
@@ -407,10 +407,10 @@ class DocumentPaymentController extends Controller
                                 $debeInterno = $valor;
                                 $debe -=  $valor;
                             }
-                            if($ret->codigo == '2'){
+                            if($ret['codigo'] == '2'){
                                 $cuentaId=$ceuntaC->countable_acount;
                             }
-                            if($ret->codigo == '1'){
+                            if($ret['codigo'] == '1'){
                                 $cuentaId=$ceuntaC->countable_acount_payment;
                             }
                             if($cuentaId == null){

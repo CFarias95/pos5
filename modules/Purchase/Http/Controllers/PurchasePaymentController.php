@@ -287,7 +287,7 @@ class PurchasePaymentController extends Controller
                 $cabeceraC->user_id = $document->user_id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = $document->date_of_issue;
+                $cabeceraC->seat_date = date('y-m-d');
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = null;
@@ -336,6 +336,7 @@ class PurchasePaymentController extends Controller
                     $seat = 2;
 
                     foreach ($detRet as $ret) {
+
                         $valor = floatval($ret['valorRetenido']);
                         $haberInterno = 0;
                         if($valor >=  $haber){
