@@ -187,6 +187,7 @@ export default {
                 id: null,
                 is_supplier:false,
             }
+            this.in_use=false,
             this.resource = 'finances/advances'
 
         },
@@ -205,6 +206,8 @@ export default {
         create() {
 
             console.log('config',this.config)
+
+            this.initForm();
 
             this.titleDialog = (this.recordId) ? 'Editar anticipo' : 'Nuevo anticipo';
             this.titleTabDialog = 'Datos para crear anticipo';
@@ -261,9 +264,9 @@ export default {
                 })
         },
         close() {
+            this.initForm()
             this.$eventHub.$emit('initInputPerson')
             this.$emit('update:showDialog', false)
-            this.initForm()
         },
     }
 }
