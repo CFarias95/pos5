@@ -703,9 +703,11 @@ class PurchaseController extends Controller
             }
         }
 
-        if ($document->document_type_id != '01' && $document->document_type_id != '376') {
+        /*
+        if ($document->document_type_id != '01' && $document->document_type_id != '376' && ) {
             return;
         }
+        */
 
         if ($document && $documentoInterno->accountant > 0) {
             try {
@@ -939,6 +941,7 @@ class PurchaseController extends Controller
                             //abort(500,'No se pudo generar el asiento contable del documento');
                         }
                     }
+
                 } else {
 
                     $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
