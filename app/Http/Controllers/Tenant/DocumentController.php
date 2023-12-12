@@ -797,7 +797,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_sale_costs);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->sale_cost_cta) && $configuration->cta_sale_costs){
 
@@ -820,7 +820,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($item->purchase_cta);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->purchase_cta){
 
@@ -843,7 +843,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_purchases);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->purchase_cta) && $configuration->cta_purchases){
 
@@ -865,7 +865,7 @@ class DocumentController extends Controller
                         }
                     }
                     $accountantItem=AccountMovement::find($item->income_cta);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->income_cta){
 
@@ -888,7 +888,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_incomes);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->income_cta) && $configuration->cta_incomes){
 
@@ -958,8 +958,8 @@ class DocumentController extends Controller
                     if($value['debe'] > 0 || $value['haber'] > 0){
 
                         $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $value['accounting_entrie_id'];
-                        $detalle->account_movement_id = $key;
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $value['account_movement_id'];
                         $detalle->seat_line = $value['seat_line'];
                         $detalle->debe = $value['debe'];
                         $detalle->haber = $value['haber'];
@@ -1059,7 +1059,7 @@ class DocumentController extends Controller
                     $establishmentItem = Establishment::find($warehouseItem->establishment_id);
                     $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
                     $accountantItem=AccountMovement::find($item->sale_cost_cta);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->sale_cost_cta){
                         if(array_key_exists($item->sale_cost_cta.'-'.$seatCost,$arrayEntrys)){
@@ -1080,7 +1080,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_sale_costs);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->sale_cost_cta) && $configuration->cta_sale_costs){
 
@@ -1103,7 +1103,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_sale_costs);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->purchase_cta){
 
@@ -1126,7 +1126,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_purchases);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->purchase_cta) && $configuration->cta_purchases){
 
@@ -1150,7 +1150,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($item->income_cta);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->income_cta){
 
@@ -1173,7 +1173,7 @@ class DocumentController extends Controller
                     }
 
                     $accountantItem=AccountMovement::find($configuration->cta_incomes);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if(!($item->income_cta) && $configuration->cta_incomes){
 
@@ -1245,8 +1245,8 @@ class DocumentController extends Controller
                     if($value['debe'] > 0 || $value['haber'] > 0){
 
                         $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $value['accounting_entrie_id'];
-                        $detalle->account_movement_id = $key;
+                        $detalle->accounting_entrie_id = $cabeceraC->id;
+                        $detalle->account_movement_id = $value['account_movement_id'];
                         $detalle->seat_line = $value['seat_line'];
                         $detalle->debe = $value['debe'];
                         $detalle->haber = $value['haber'];

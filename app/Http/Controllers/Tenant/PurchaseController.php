@@ -979,11 +979,9 @@ class PurchaseController extends Controller
 
                         $warehouseItem = TenantWarehouse::find($value->warehouse_id);
                         $establishmentItem = Establishment::find($warehouseItem->establishment_id);
-
                         $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-
                         $accountantItem=AccountMovement::find($item->purchase_cta);
-                        $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                        $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if ($documentoInterno->sign > 0) {
@@ -1009,6 +1007,9 @@ class PurchaseController extends Controller
                                 }
                             }
 
+                            $accountantItem=AccountMovement::find($item->purchase_cta);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
                                 if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
@@ -1027,6 +1028,9 @@ class PurchaseController extends Controller
                                     ];
                                 }
                             }
+
+                            $accountantItem=AccountMovement::find($configuration->cta_purchases);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
@@ -1090,6 +1094,9 @@ class PurchaseController extends Controller
                         //CONTABILIDAD PARA VALORES NEGATIVOS
                         if ($documentoInterno->sign < 1) {
 
+                            $accountantItem=AccountMovement::find($itemCTA);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
                                 if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
@@ -1109,6 +1116,9 @@ class PurchaseController extends Controller
                                 }
                             }
 
+                            $accountantItem=AccountMovement::find($item->purchase_cta);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+
                             if ($itemCTA == "" && $item->purchase_cta) {
 
                                 if (array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
@@ -1127,6 +1137,9 @@ class PurchaseController extends Controller
                                     ];
                                 }
                             }
+
+                            $accountantItem=AccountMovement::find($configuration->cta_purchases);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
@@ -1193,8 +1206,8 @@ class PurchaseController extends Controller
                         if ($value['debe'] > 0 || $value['haber'] > 0) {
 
                             $detalle = new AccountingEntryItems();
-                            $detalle->accounting_entrie_id = $value['accounting_entrie_id'];
-                            $detalle->account_movement_id = $key;
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = $value['account_movement_id'];
                             $detalle->seat_line = $value['seat_line'];
                             $detalle->debe = $value['debe'];
                             $detalle->haber = $value['haber'];
