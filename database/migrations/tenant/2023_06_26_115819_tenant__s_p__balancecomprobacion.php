@@ -45,7 +45,7 @@ class TenantSPBalancecomprobacion extends Migration
         AND b.code >= @icuenta
         AND b.code <= @fcuenta
         GROUP BY  b.code , b.description
-        ) AS AA
+        ) AS AA;
 
         END
         ";
