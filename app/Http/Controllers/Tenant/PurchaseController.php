@@ -816,7 +816,7 @@ class PurchaseController extends Controller
 
                                 $accountantItem=AccountMovement::find($importCTA);
                                 $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                                 if (array_key_exists($importCTA.'-'.$seatCost, $arrayEntrys) == true) {
 
@@ -833,7 +833,7 @@ class PurchaseController extends Controller
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
                                     ];
                                 }
                             }
@@ -842,7 +842,7 @@ class PurchaseController extends Controller
 
                                 $accountantItem=AccountMovement::find($impuesto->account);
                                 $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                                 if (array_key_exists($impuesto->account.'-'.$seatCost, $arrayEntrys)) {
 
@@ -856,7 +856,7 @@ class PurchaseController extends Controller
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
                                     ];
                                 }
                             }
@@ -865,7 +865,7 @@ class PurchaseController extends Controller
 
                                 $accountantItem=AccountMovement::find($configuration->cta_taxes_purchases);
                                 $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                                 if (array_key_exists($configuration->cta_taxes_purchases.'-'.$seatCost, $arrayEntrys)) {
 
@@ -879,7 +879,7 @@ class PurchaseController extends Controller
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
 
                                     ];
                                 }

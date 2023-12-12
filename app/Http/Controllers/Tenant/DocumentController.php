@@ -775,7 +775,7 @@ class DocumentController extends Controller
                     $establishmentItem = Establishment::find($warehouseItem->establishment_id);
                     $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
                     $accountantItem=AccountMovement::find($item->sale_cost_cta);
-                    $seatCost = ($accountantItem->cost_center > 0)?$valor:0;
+                    $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
                     if($item->sale_cost_cta){
                         if(array_key_exists($item->sale_cost_cta.'-'.$seatCost,$arrayEntrys)){
