@@ -38,6 +38,7 @@ class DashboardView
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
         $customer_id = $request['customer_id'];
+        $liquidadas = $request['include_liquidated'];
 
 
         $d_start = null;
@@ -279,7 +280,7 @@ class DashboardView
         $purchase_order = $request['purchase_order'] ?? null;
         $payment_method_type_id = $request['payment_method_type_id'] ?? null;
         $importe = $request['importe'] ?? null;
-        $include_liquidated = $request['include_liquidated'] ?? null;
+        $include_liquidated = $request['include_liquidated'] ?? false;
         // Obtendrá todos los establecimientos
         $stablishmentUnpaidAll = $request['stablishmentUnpaidAll'] ?? 0;
         $user = auth()->user();
@@ -494,7 +495,12 @@ class DashboardView
             $sale_notes->wherein('sale_notes.id', $sale_note_items_id);
         }
 
-        return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
-
+        if(isset($include_liquidated) && ($include_liquidated === true || $include_liquidated === 'true')  ){
+            Log::info("include_liquidated ".$include_liquidated);
+            return $documents->union($sale_notes)->orderBy('date');
+        }else{
+            Log::info("include_liquidated ".$include_liquidated);
+            return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
+        }
     }
 }
