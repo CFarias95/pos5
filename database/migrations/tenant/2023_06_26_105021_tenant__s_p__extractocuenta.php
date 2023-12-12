@@ -50,7 +50,7 @@ class TenantSPExtractocuenta extends Migration
             AND c.seat_date <= @h
             AND b.code = @cuenta
             ) AS AA
-            OSER BY AA.Cuenta ASC;
+            ORDER BY AA.Cuenta ASC;
 
 
             END
@@ -66,7 +66,7 @@ class TenantSPExtractocuenta extends Migration
     public function down()
     {
         $sql_delete = "
-            DROP PROCEDURE SP_Extractocuenta;
+            DROP PROCEDURE IF EXISTS SP_Extractocuenta;
         ";
         DB::connection('tenant')->statement($sql_delete);
     }
