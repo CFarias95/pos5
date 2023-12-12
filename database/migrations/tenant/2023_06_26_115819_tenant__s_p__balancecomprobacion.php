@@ -46,7 +46,6 @@ class TenantSPBalancecomprobacion extends Migration
         AND b.code <= @fcuenta
         GROUP BY  b.code , b.description
         ) AS AA
-        CALL SP_Balancecomprobacion;
 
         END
         ";
@@ -61,7 +60,7 @@ class TenantSPBalancecomprobacion extends Migration
     public function down()
     {
         $sql_delete = "
-            DROP PROCEDURE SP_Balancecomprobacion;
+            DROP PROCEDURE IF EXISTS SP_Balancecomprobacion;
         ";
         DB::connection('tenant')->statement($sql_delete);
     }

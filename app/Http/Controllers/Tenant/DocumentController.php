@@ -864,6 +864,7 @@ class DocumentController extends Controller
                             ];
                         }
                     }
+                    
                     $accountantItem=AccountMovement::find($item->income_cta);
                     $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
 
