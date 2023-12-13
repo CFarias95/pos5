@@ -188,9 +188,10 @@
 
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getTotalRowsUnpaid" class="item">
-                                            <span size="small">Total comprobantes</span>
+                                            <span size="small">Total Vencimientos</span>
                                         </el-badge>
                                     </div>
+                                    <!--
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getTotalAmountUnpaid" class="item">
                                             <span size="small">Monto general (PEN)</span>
@@ -201,6 +202,7 @@
                                             <span size="small">Saldo corriente (PEN)</span>
                                         </el-badge>
                                     </div>
+                                    -->
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getTotalAmountUnpaidUsd" class="item">
                                             <span size="small">Monto general (USD)</span>
@@ -208,7 +210,7 @@
                                     </div>
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getCurrentBalanceUsd" class="item">
-                                            <span size="small">Saldo corriente (USD)</span>
+                                            <span size="small">Saldo pendiente</span>
                                         </el-badge>
                                     </div>
 
@@ -231,7 +233,7 @@
                                                     </th>
                                                     <th v-if="columns.purchase_order.visible">Orden de compra</th>
 
-                                                    <th>Ver Cartera</th>
+                                                    <!--<th>Ver Cartera</th>-->
                                                     <th>Moneda</th>
                                                     <th class="text-right">Por cobrar</th>
                                                     <th class="text-right">T. Nota Crédito</th>
@@ -302,7 +304,7 @@
                                                         </td>
                                                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}
                                                         </td>
-                                                        <td>
+                                                        <!--<td>
                                                             <el-popover placement="right" width="300" trigger="click">
                                                                 <p>
                                                                     Saldo actual:
@@ -317,7 +319,7 @@
 
                                                                 <el-button icon="el-icon-view" slot="reference"></el-button>
                                                             </el-popover>
-                                                        </td>
+                                                        </td>-->
                                                         <td>{{ row.currency_type_id }}</td>
                                                         <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                                                         <td class="text-center">

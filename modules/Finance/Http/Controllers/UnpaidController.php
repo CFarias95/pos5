@@ -40,6 +40,8 @@ use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 use App\Http\Requests\Tenant\PosDatedRequest;
 use App\Models\Tenant\DocumentFee;
 use Illuminate\Support\Facades\Log;
+use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\DocumentPayment;
 
 class UnpaidController extends Controller
 {
@@ -149,19 +151,19 @@ class UnpaidController extends Controller
 
     }
 
-    public function toPrint($external_id,$type,$format, $id) {
-
+    public function toPrint($external_id,$type,$format, $id, $index) {
+        //Log::info('index'.$index);
         if ($type=='sale') {
             $sale_note = SaleNote::where('external_id', $external_id)->first();
         } else {
             $sale_note = Document::where('external_id', $external_id)->first();
         }
 
-        Log::info(json_encode($sale_note));
+        //Log::info(json_encode($sale_note));
 
         if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
 
-        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id);
+        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index);
 
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
@@ -178,11 +180,11 @@ class UnpaidController extends Controller
         return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
     }
 
-    private function reloadPDF1($sale_note, $format, $filename, $id) {
-        $this->createPdf1($sale_note, $format, $filename, $id);
+    private function reloadPDF1($sale_note, $format, $filename, $id, $index) {
+        $this->createPdf1($sale_note, $format, $filename, $id, $index);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id) {
+    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index = null) {
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
@@ -195,7 +197,20 @@ class UnpaidController extends Controller
         // $configuration = $this->configuration->formats;
         $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
 
-        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id);
+
+        //$docs = Document::where('customer_id', $this->document->customer_id)->where('external_id', $this->document->external_id)->first();
+
+        $docs = $this->document;
+
+        $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
+
+        $i = $conect[$index];
+        
+        $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->get();
+
+        //Log::info('johan'.json_encode($account_entry));
+
+        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry);
 
         /* cuentas por cobrar formato a4 */
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {
@@ -211,7 +226,7 @@ class UnpaidController extends Controller
             $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
             $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
-
+            $account_entry     = $this->account_entry;
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
             $total_free        = $this->document->total_free != '' ? '10' : '0';
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
@@ -303,7 +318,7 @@ class UnpaidController extends Controller
         $this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
     }
 
-    public function uploadFile1($filename, $file_content, $file_type)
+    public function uploadFile1($filename, $file_content, $file_type, $account_entry)
     {
         $this->uploadStorage($filename, $file_content, $file_type);
     }

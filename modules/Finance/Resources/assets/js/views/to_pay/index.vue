@@ -155,9 +155,10 @@
 
                                 <div class="col-md-2 text-right">
                                     <el-badge :value="getTotalRowsUnpaid" class="item">
-                                    <span size="small">Total comprobantes</span>
+                                    <span size="small">Total Vencimientos</span>
                                     </el-badge>
                                 </div>
+                                <!--
                                 <div class="col-md-2 text-right">
                                     <el-badge :value="getTotalAmountUnpaid" class="item">
                                     <span size="small">Monto general (PEN)</span>
@@ -168,6 +169,7 @@
                                     <span size="small">Saldo corriente (PEN)</span>
                                     </el-badge>
                                 </div>
+                                -->
                                 <div class="col-md-2 text-right">
                                     <el-badge :value="getTotalAmountUnpaidUsd" class="item">
                                     <span size="small">Monto general (USD)</span>
@@ -175,7 +177,7 @@
                                 </div>
                                 <div class="col-md-2 text-right">
                                     <el-badge :value="getCurrentBalanceUsd" class="item">
-                                    <span size="small">Saldo corriente (USD)</span>
+                                    <span size="small">Saldo pendiente</span>
                                     </el-badge>
                                 </div>
                             </div>
@@ -192,7 +194,7 @@
                                     <th>Número</th>
                                     <th>Proveedor</th>
                                     <th>Días de retraso</th>
-                                    <th>Ver Cartera</th>
+                                    <!--<th>Ver Cartera</th>-->
                                     <th>Moneda</th>
                                     <th class="text-right">Por pagar</th>
                                     <th class="text-right">Total</th>
@@ -211,7 +213,7 @@
                                             <td>{{ row.supplier_name }}</td>
                                             <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
 
-                                            <td>
+                                            <!--<td>
                                                 <el-popover placement="right" width="300" trigger="click">
                                                 <p>
                                                     Saldo actual:
@@ -224,23 +226,23 @@
                                                     >{{ row.date_payment_last ? row.date_payment_last : 'No registra pagos.' }}</span>
                                                 </p>
 
-                                                <!-- <p>
+                                                <p>
                                                     Dia de retraso en el pago:
                                                     <span
                                                     class="custom-badge"
                                                     >{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.'}}</span>
-                                                </p> -->
+                                                </p>
 
-                                                <!-- <p>
+                                                <p>
                                                     Fecha de vencimiento:
                                                     <span
                                                     class="custom-badge"
                                                     >{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</span>
-                                                </p> -->
+                                                </p>
                                                 <el-button icon="el-icon-view" slot="reference"></el-button>
                                                 </el-popover>
-                                            </td>
-                                                <td>{{row.currency_type_id}}</td>
+                                            </td>-->
+                                            <td>{{row.currency_type_id}}</td>
                                             <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                                             <td class="text-right">{{ row.total }}</td>
                                             <td class="text-right">

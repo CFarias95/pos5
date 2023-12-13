@@ -49,6 +49,11 @@
                             <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
                                 :show-all-levels="false" expandTrigger='hover' @change="getRecords"></el-cascader>
                         </div>
+                        <div class="col-3">
+                            <label>Linea</label>
+                            <el-input v-model="form.linea" expandTrigger='hover' @change="getRecords" placeholder="Linea">
+                            </el-input>
+                        </div>
                     </div>
 
                     <br>
@@ -110,7 +115,8 @@ export default {
                 warehouse_id: '0',
                 item_id: '0',
                 brand_id: '0',
-                categorie_id: 0
+                categorie_id: 0,
+                linea: 'NA',
             },
             //columns: [],
             loading_submit: false,
@@ -157,7 +163,8 @@ export default {
                 warehouse_id: '0',
                 item_id: '0',
                 categorie_id: 0,
-                brand_id: '0'
+                brand_id: '0',
+                linea: 'NA',
             }
             this.search = {
                 //value: null

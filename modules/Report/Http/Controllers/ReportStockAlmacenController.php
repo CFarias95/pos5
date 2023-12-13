@@ -23,6 +23,7 @@ use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Report\Exports\StockAlmacenExport;
 use Modules\Report\Http\Resources\ReportStockAlmacenCollection;
+use SebastianBergmann\Environment\Console;
 
 class ReportStockAlmacenController extends Controller
 {
@@ -36,8 +37,12 @@ class ReportStockAlmacenController extends Controller
 
     public function datosSP()
     {
-
-        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?);",[request()->query('warehouse_id'),request()->query('item_id'),request()->query('categorie_id'),request()->query('brand_id')]);
+        $linea = request()->query('linea');
+        if(request()->query('linea') === 'NA' || (request()->query('linea')) === null)
+        {
+            $linea = '';
+        }
+        $sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?,?);",[request()->query('warehouse_id'),request()->query('item_id'),request()->query('categorie_id'),request()->query('brand_id'), $linea]);
         $sp1 = array();
         $sp2 = [];
         foreach($sp as $row)

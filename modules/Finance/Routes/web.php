@@ -54,7 +54,7 @@ if($hostname) {
                     Route::get('/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                     Route::get('/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
                     Route::get('/pdf', 'UnpaidController@pdf');
-                    Route::get('/print/{document_id}/{type}/{format}/{id}', 'UnpaidController@toPrint');
+                    Route::get('/print/{document_id}/{type}/{format}/{id}/{index}', 'UnpaidController@toPrint');
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'UnpaidController@PosDatedShow');
                     Route::post('/posdated', 'UnpaidController@PosDatedUpdate');

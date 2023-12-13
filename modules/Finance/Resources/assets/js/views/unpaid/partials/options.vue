@@ -74,7 +74,7 @@
 import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type', 'id'],
+    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type', 'id', 'index'],
     components: {
     },
     data() {
@@ -184,7 +184,7 @@ export default {
             });
         },
         clickPrint(format) {
-            window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}/${this.id}`, '_blank');
+            window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}/${this.index}/${this.id}`, '_blank');
         },
         clickCloseUnpaid() {
             this.$emit('update:showDialogOptions', false)

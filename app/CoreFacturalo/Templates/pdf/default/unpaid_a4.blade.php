@@ -22,6 +22,7 @@
     }
 
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
+    //Log::info('datos'.json_encode($account_entry))
 @endphp
 <html>
 <head>
@@ -171,9 +172,7 @@
             <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
             <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format( $row->total - $valores, 2) }}</td>
         </tr>
-        <tr>
-            <td colspan="9" class="border-bottom"></td>
-        </tr>
+
     @endforeach
 
 
@@ -234,8 +233,107 @@
         @endphp
     @endforeach
     </tr>
+     
 </table>
 @endif
+
+
+
+<table class="full-width mt-4">
+    <tr class="mt-4">
+        <td width="50%" class="font-bold">
+            <h4 >
+                <u>
+                    Detalle del Asiento:
+                </u>
+            </h4>
+        </td>
+        <br>
+        <td width="50%" class="font-bold">ASIENTO NRO - {{$account_entry[0]->filename}}</td>
+    </tr>
+</table>
+<table width="100%">
+    <thead>
+        <tr >
+            <th width="60%" class="border-box text-center p-2">
+                Cuenta
+            </th>
+            <th width="20%" class="border-box text-center p-1">
+                Debe
+            </th>
+            <th width="20%" class="border-box text-center p-1">
+                Haber
+            </th>
+        </tr>
+    </thead>
+    <tbody class="font-sm">
+        @foreach($account_entry[0]->items as $value)
+        <tr >
+            @if($value->debe>0)
+            <td class="border-box text-center p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+            @else
+            <td class="border-box text-center p-1 pl-5 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+            @endif
+
+            <td class="border-box text-center p-1">${{number_format($value->debe, 2, '.', ',')}} </td>
+            <td class="border-box text-center p-1">${{number_format($value->haber, 2, '.', ',')}} </td>
+
+        </tr>
+        @endforeach
+        <tr class="font-sm">
+            <td class="text-right p-1 font-sm font-bold">Totales: </td>
+            <td class="text-right p-1 font-bold">${{number_format($account_entry[0]->total_debe, 2, '.', ',')}}</td>
+            <td class="text-right p-1 font-bold">${{number_format($account_entry[0]->total_haber, 2, '.', ',')}}</td>
+        </tr>
+    </tbody>
+</table>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<table class="full-width mt-6">
+    <tbody class="font-sm">
+        <tr class="font-sm">
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Elaborado por: 
+                </b>
+                {{$document->user->name}}
+                <br>
+                <b>
+                    Cédula por: 
+                </b>
+                {{$document->user->number}}
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Aprobado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula por: 
+                </b>
+                
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Revisado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula por: 
+                </b>
+                
+            </td>
+         </tr>
+    </tbody>
+</table>
 
 
 </body>

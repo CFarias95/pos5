@@ -77,7 +77,7 @@
                                             <td class="series-table-actions text-center">
                                                 <button type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-primary"
-                                                    @click.prevent="clickOptionsPrint(index)"><i
+                                                    @click.prevent="clickOptionsPrint(index, row.id)"><i
                                                         class="fas fa-file-upload"></i></button>
                                             </td>
                                         </template>
@@ -311,7 +311,7 @@
 
         <document-options :recordId="this.documentId" :showDialogOptions.sync="showDialogOptions"
             :showClose="showDialogClose" :type="this.type" :configuration="this.configuration" :id="this.index"
-            :monto="this.monto"></document-options>
+            :monto="this.monto" :index="this.documentFeeId"></document-options>
     </el-dialog>
 </template>
 
@@ -351,6 +351,7 @@ export default {
             advances: [],
             retentions: [],
             index: null,
+            index_id: null,
             monto: 0,
             credits : [],
         }
@@ -668,9 +669,10 @@ export default {
         clickPrint(external_id) {
             window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
         },
-        clickOptionsPrint(key) {
+        clickOptionsPrint(key, row_id) {
             //this.monto = this.records[key].payment
             this.index = key
+            this.index_id = row_id
             this.showDialogOptions = true
             this.showDialogClose = true
         },
