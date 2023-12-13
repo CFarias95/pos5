@@ -330,6 +330,10 @@ class DashboardView
 
         $document_fee = DB::table('document_fee');
 
+        $document_payments_fee = DB::table('document_payments')
+            ->select('fee_id', DB::raw('SUM(payment) as total_payment_fee'))
+            ->groupBy('fee_id');
+
         $document_Invoices = DB::table('invoices');
 
         $document_select = "documents.id as id, " .
@@ -341,12 +345,13 @@ class DashboardView
             "documents.total as total, " .
             "IFNULL(payments.total_payment, 0) as total_payment, " .
             "IFNULL(credit_notes.total_credit_notes, 0) as total_credit_notes, " .
-            "documents.total - IFNULL(payments.total_payment, 0) - IFNULL(total_credit_notes, 0)  as total_subtraction, " .
+            "documents.total - IFNULL(payments.total_payment, 0) - IFNULL(credit_notes.total_credit_notes, 0)  as total_subtraction, " .
             "'document' AS 'type', " .
             "documents.currency_type_id, " .
             "documents.exchange_rate_sale, " .
             " documents.user_id, " .
             " fee.amount as amount, " .
+            " paymentsFee.total_payment_fee as fee_payment, ".
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
             " DATE_FORMAT(fee.f_posdated, '%Y/%m/%d') f_posdated, " .
@@ -370,6 +375,7 @@ class DashboardView
             " 0 as amount, " .
             " null as date, " .
             " null as fee_id, " .
+            " 0 fee_payment, ".
             " null as f_posdated, " .
             " null as posdated, " .
             "users.name as username";
@@ -389,6 +395,9 @@ class DashboardView
             })
             ->leftJoinSub(Document::getQueryCreditNotes(), 'credit_notes', function ($join) {
                 $join->on('documents.id', '=', 'credit_notes.affected_document_id');
+            })
+            ->leftJoinSub($document_payments_fee, 'paymentsFee', function ($join) {
+                $join->on('fee.id', '=', 'paymentsFee.fee_id');
             })
             ->whereIn('state_type_id', ['01', '03', '05', '07', '13'])
             ->whereIn('document_type_id', ['01', '03', '08'])
@@ -500,7 +509,7 @@ class DashboardView
             return $documents->union($sale_notes)->orderBy('date');
         }else{
             Log::info("include_liquidated ".$include_liquidated);
-            return $documents->union($sale_notes)->havingRaw('total_subtraction > 0')->orderBy('date');
+            return $documents->union($sale_notes)->havingRaw('IFNULL(fee_payment,0) < amount ')->orHavingRaw('total > 0')->orderBy('date');
         }
     }
 }

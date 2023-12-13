@@ -69,7 +69,7 @@
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha del</label>
                                             <el-date-picker v-model="form.date_start" type="date"
-                                                @change="changeDisabledDates" value-format="yyyy-MM-dd" format="dd/MM/yyyy"
+                                                @change="changeDisabledDates" value-format="yyyy/MM/dd" format="dd/MM/yyyy"
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
@@ -79,7 +79,7 @@
                                             <label class="control-label">Fecha al</label>
                                             <el-date-picker v-model="form.date_end" type="date"
                                                 :picker-options="pickerOptionsDates" @change="loadUnpaid"
-                                                value-format="yyyy-MM-dd" format="dd/MM/yyyy"
+                                                value-format="yyyy/MM/dd" format="dd/MM/yyyy"
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
@@ -253,7 +253,7 @@
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
 
-                                                        <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+                                                        <td>{{ (row.delay_payment < 0 ) ? (row.delay_payment * -1) : 'No tiene días atrasados.' }}</td>
                                                         <td>
                                                             <el-popover placement="right" width="200" trigger="click">
                                                                 <strong>Penalidad: {{ row.arrears }}</strong>
@@ -364,7 +364,7 @@
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
 
-                                                        <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+                                                        <td>{{ 'Liquidado' }}</td>
                                                         <td>
                                                             <el-popover placement="right" width="200" trigger="click">
                                                                 <strong>Penalidad: {{ row.arrears }}</strong>
@@ -515,7 +515,7 @@ export default {
             web_platforms: [],
             pickerOptionsDates: {
                 disabledDate: (time) => {
-                    time = moment(time).format('YYYY-MM-DD')
+                    time = moment(time).format('YYYY/MM/DD')
                     return this.form.date_start > time
                 }
             },
@@ -525,7 +525,7 @@ export default {
                     return this.form.month_start > time
                 }
             },
-            
+
             showDialogDocumentPayments: false,
             showDialogPosFechado: false,
             showDialogSaleNotePayments: false,
@@ -661,8 +661,8 @@ export default {
             this.form = {
                 establishment_id: null,
                 period: 'between_dates',
-                date_start: moment().format('YYYY-MM-DD'),
-                date_end: moment().format('YYYY-MM-DD'),
+                date_start: moment().format('YYYY/MM/DD'),
+                date_end: moment().format('YYYY/MM/DD'),
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
                 customer_id: null,
@@ -690,8 +690,8 @@ export default {
 
             await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                this.pagination = response.data.meta
-                this.pagination.per_page = parseInt(response.data.meta.per_page)
+                this.pagination = response.data
+                this.pagination.per_page = parseInt(response.data.per_page)
                 const setting = response.data.configuration;
                 this.records.sort(function (a, b) {
                     return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
@@ -813,12 +813,12 @@ export default {
                 this.form.month_end = moment().endOf('year').format('YYYY-MM');;
             }
             if (this.form.period === 'date') {
-                this.form.date_start = moment().format('YYYY-MM-DD');
-                this.form.date_end = moment().format('YYYY-MM-DD');
+                this.form.date_start = moment().format('YYYY/MM/DD');
+                this.form.date_end = moment().format('YYYY/MM/DD');
             }
             if (this.form.period === 'between_dates') {
-                this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
-                this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
+                this.form.date_start = moment().startOf('month').format('YYYY/MM/DD');
+                this.form.date_end = moment().endOf('month').format('YYYY/MM/DD');
             }
             this.loadUnpaid();
         },

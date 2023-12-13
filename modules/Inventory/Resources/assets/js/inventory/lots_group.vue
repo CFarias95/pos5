@@ -20,7 +20,7 @@
                         </tr>
                         </thead>
                         <tbody>
-                        <tr v-for="(row, index) in lots_group" :key="index" v-show="row.quantity > 0">
+                        <tr v-for="(row, index) in lots_group" :key="row.id" v-show="row.quantity > 0">
                             <th align="center">
                                 <el-checkbox
                                     :disabled="row.quantity  < 1"

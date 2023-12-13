@@ -39,7 +39,11 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\CoreFacturalo\Helpers\Functions\GeneralPdfHelper;
 use App\Http\Requests\Tenant\PosDatedRequest;
 use App\Models\Tenant\DocumentFee;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+
+use function PHPSTORM_META\type;
 
 class UnpaidController extends Controller
 {
@@ -104,9 +108,81 @@ class UnpaidController extends Controller
         $records = (new DashboardView())->getUnpaidFilterUser($request->all());
         $config = Configuration::first();
 
+        $data = $this->getRecordsBySP($request);
+
+        $collection = collect($data);
+        $per_page = (config('tenant.items_per_page'));
+        $page = $request['page'] ?? 1;
+        $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
+        $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
+        return $paginatedCollection;
+
         return (new UnpaidCollection($records->paginate(config('tenant.items_per_page'))))->additional([
             'configuration' => $config->finances
         ]);
+    }
+
+    public function getRecordsBySP(Request $request){
+
+        $establishment_id = $request['establishment_id'] ?? 0;
+        $period = $request['period'] ?? 0;
+        $date_start = $request['date_start'] ?? 0;
+        $date_end = $request['date_end'] ?? 0;
+        $month_start = $request['month_start'] ?? 0;
+        $month_end = $request['month_end'] ?? 0;
+        $customer_id = $request['customer_id'] ?? 0;
+        $user_id = $request['user_id'] ?? 0;
+        $purchase_order = $request['purchase_order'] ?? 0;
+        $importe = $request['importe'] ?? 0;
+        $include_liquidated = $request['include_liquidated'] ?? 0;
+        $tipo = 0;
+        $d_start = null;
+        $d_end = null;
+
+
+        switch ($period) {
+            case 'month':
+                $tipo = 1;
+                $d_start = Carbon::parse($month_start . '-01')->format('Y/m/d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y/m/d');
+                break;
+            case 'between_months':
+                $tipo = 1;
+                $d_start = Carbon::parse($month_start . '-01')->format('Y/m/d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y/m/d');
+                break;
+            case 'date':
+                $tipo = 1;
+                $d_start = $date_start;
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $tipo = 1;
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'expired':
+                $tipo = 2;
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'posdated':
+                $tipo = 3;
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        if($include_liquidated === 'true'){
+
+            $include_liquidated = 1;
+
+        }else{
+            $include_liquidated = 0;
+        }
+        $data = DB::connection('tenant')->select('CALL SP_CuentarPorCobrar(?,?,?,?,?,?,?,?,?)',[$establishment_id, $customer_id,$user_id,$purchase_order,$importe,$include_liquidated,$d_start,$d_end,$tipo]);
+        return $data;
+
     }
 
     public function unpaidall()

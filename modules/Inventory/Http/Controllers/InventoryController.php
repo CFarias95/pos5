@@ -308,7 +308,7 @@ class InventoryController extends Controller
             $cabeceraC->user_id = $idauth;
             $cabeceraC->seat = $seat;
             $cabeceraC->seat_general = $seat_general;
-            $cabeceraC->seat_date = $inventory->date_of_issue;
+            $cabeceraC->seat_date = date('Y-m-d');
             $cabeceraC->types_accounting_entrie_id = 1;
             $cabeceraC->comment = $comment;
             $cabeceraC->serie = null;
@@ -340,8 +340,11 @@ class InventoryController extends Controller
 
             $cuentaPerson = null;
             $cuentaAnticipo = null;
+            Log::info($inventory->item);
             $cuentaItem = ($inventory->item->purchase_cta)?$inventory->item->purchase_cta:$configuration->cta_purchases;
             $cuentaMotivo = $transaction->cta_account;
+
+            Log::info($cuentaItem.' - '.$cuentaMotivo);
 
             $detalle = new AccountingEntryItems();
             $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -361,7 +364,7 @@ class InventoryController extends Controller
 
         } catch (Exception $ex) {
 
-            Log::error('Error al intentar generar el asiento contable');
+            Log::error('Error al intentar generar el asiento contable de transaccion');
             Log::error($ex->getMessage());
         }
 
