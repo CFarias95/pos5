@@ -83,7 +83,7 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
      */
     public function down()
     {
-        $sqlDelete = "DROP PROCEDURE IF EXIST SP_CuentarPorCobrar";
+        $sqlDelete = "DROP PROCEDURE IF EXISTS SP_CuentarPorCobrar";
         DB::connection('tenant')->statement($sqlDelete);
     }
 }
