@@ -49,10 +49,10 @@
                         <td>{{ row.warehouse_description }}</td>
                         <td class="text-right">{{ row.stock }}</td>
                         <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                            <!-- <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickMove(row.id)">Trasladar</button>
                             <button v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
-                                    @click.prevent="clickRemove(row.id)">Remover</button>
+                                    @click.prevent="clickRemove(row.id)">Remover</button> -->
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                     @click.prevent="clickStock(row.id)">
                                     Ajuste
@@ -89,7 +89,7 @@
 
             <inventories-stock :showDialog.sync="showDialogStock"
                               :recordId="recordId"></inventories-stock>
-                            
+
             <StockGlobal :products="selectedItems" :show.sync="showHideStockMoveGlobal"></StockGlobal>
 
             <stock-import :showDialog.sync="showImportDialog"></stock-import>
