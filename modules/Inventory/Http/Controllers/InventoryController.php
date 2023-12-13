@@ -284,7 +284,7 @@ class InventoryController extends Controller
             $ultimo = AccountingEntries::latest('id')->first();
             $configuration = Configuration::first();
 
-            $valor = ($inventory->item->purchase_unit_price * $inventory->quantity);
+            $valor = ($inventory->item->purchase_mean_cost * $inventory->quantity);
             if($valor < 0){
                 $valor = ($valor * -1);
             }
