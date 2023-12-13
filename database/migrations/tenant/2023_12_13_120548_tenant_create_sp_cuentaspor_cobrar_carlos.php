@@ -14,7 +14,7 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
      */
     public function up()
     {
-        $sqlDelete = "DROP PROCEDURE IF EXIST SP_CuentarPorCobrar";
+        $sqlDelete = "DROP PROCEDURE IF EXISTS SP_CuentarPorCobrar";
         $sqlCreate = "CREATE DEFINER=`root`@`localhost` PROCEDURE `SP_CuentarPorCobrar`(
             IN `establecimiento` INT,
             IN `customer` INT,
