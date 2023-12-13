@@ -45,8 +45,7 @@
                                                 label="Entre fechas"></el-option>
                                             <el-option key="expired" value="expired"
                                                 label="Fecha de vencimiento"></el-option>
-                                            <el-option key="posdated" value="posdated"
-                                                label="POSfechado"></el-option>
+                                            <el-option key="posdated" value="posdated" label="POSfechado"></el-option>
                                         </el-select>
                                     </div>
                                     <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -66,20 +65,21 @@
                                         </div>
                                     </template>
                                     <template
-                                        v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'" >
+                                        v-if="form.period === 'date' || form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'">
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha del</label>
                                             <el-date-picker v-model="form.date_start" type="date"
-                                                @change="changeDisabledDates" value-format="yyyy-MM-dd" format="dd/MM/yyyy"
+                                                @change="changeDisabledDates" value-format="yyyy/MM/dd" format="dd/MM/yyyy"
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
-                                    <template v-if="form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'">
+                                    <template
+                                        v-if="form.period === 'between_dates' || form.period == 'expired' || form.period == 'posdated'">
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha al</label>
                                             <el-date-picker v-model="form.date_end" type="date"
                                                 :picker-options="pickerOptionsDates" @change="loadUnpaid"
-                                                value-format="yyyy-MM-dd" format="dd/MM/yyyy"
+                                                value-format="yyyy/MM/dd" format="dd/MM/yyyy"
                                                 :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
@@ -105,7 +105,8 @@
                                     <div class="col-lg-3 col-md-3">
                                         <div class="form-group">
                                             <label class="control-label">Plataforma</label>
-                                            <el-select v-model="form.web_platform_id" clearable @change="changeWebPlatform">
+                                            <el-select v-model="form.web_platform_id" clearable filterable
+                                                @change="changeWebPlatform">
                                                 <el-option v-for="option in web_platforms" :key="option.id"
                                                     :value="option.id" :label="option.name"></el-option>
                                             </el-select>
@@ -123,7 +124,8 @@
                                     <div class="col-lg-3 col-md-3">
                                         <div class="form-group">
                                             <label>Total documento
-                                                <el-tooltip class="item" effect="dark" content="Por defecto la condicion sera >=(mayor igual), si se desea otra condición especificar condicion,valor ejemplo =,100"
+                                                <el-tooltip class="item" effect="dark"
+                                                    content="Por defecto la condicion sera >=(mayor igual), si se desea otra condición especificar condicion,valor ejemplo =,100"
                                                     placement="top-start">
                                                     <i class="fa fa-info-circle"></i>
                                                 </el-tooltip>
@@ -134,9 +136,9 @@
 
                                     <div class="col-lg-3 col-md-3">
                                         <div class="form-group">
-                                            <br>
-                                            <el-checkbox v-model="include_liquidated" @change="changeLiquidated">Incluir
-                                                Liquidadas</el-checkbox>
+                                            <label>Incluir Liquidadas</label>
+                                            <el-switch v-model="form.include_liquidated" class="ml-2" @change="changeLiquidated"
+                                                style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                                         </div>
                                     </div>
 
@@ -243,18 +245,17 @@
                                             </thead>
                                             <tbody>
                                                 <template v-for="(row, index) in records">
-                                                    <tr v-if="include_liquidated == false && row.total_to_pay > 0"
-                                                        :key="index">
+                                                    <tr v-if="row.total_to_pay > 0" :key="index">
                                                         <td>{{ customIndex(index) }}</td>
                                                         <td>{{ row.date_of_issue }}</td>
                                                         <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                                                        <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                                        <td>{{ row.f_posdated ? row.f_posdated : '' }}</td>
                                                         <td>{{ row.posdated }}</td>
                                                         <td>{{ row.number_full }}</td>
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
 
-                                                        <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+                                                        <td>{{ (row.delay_payment < 0 ) ? (row.delay_payment * -1) : 'No tiene días atrasados.' }}</td>
                                                         <td>
                                                             <el-popover placement="right" width="200" trigger="click">
                                                                 <strong>Penalidad: {{ row.arrears }}</strong>
@@ -299,7 +300,7 @@
                                                         <td v-if="columns.web_platforms.visible">
                                                             <template v-for="(platform, i) in row.web_platforms"
                                                                 v-if="row.web_platforms !== undefined">
-                                                                <label class="d-block" :key="i">{{ platform.name }}</label>
+                                                                <label class="d-block" >{{ platform.name }}</label>
                                                             </template>
                                                         </td>
                                                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}
@@ -353,18 +354,19 @@
 
                                                         </td>
                                                     </tr>
-                                                    <tr v-if="include_liquidated == true" :key="index"
-                                                        :class="{ 'bg-success text-white': (row.total_to_pay == 0) }">
+                                                    <tr v-if="row.total_to_pay <= 0"
+                                                        :class="{ 'bg-success text-white': (row.total_to_pay == 0) }"
+                                                        :key="index">
                                                         <td>{{ customIndex(index) }}</td>
                                                         <td>{{ row.date_of_issue }}</td>
                                                         <td>{{ row.date_of_due ? row.date_of_due : 'No tiene fecha de vencimiento.'}}</td>
-                                                        <td>{{ row.f_posdated ? row.f_posdated : ''}}</td>
+                                                        <td>{{ row.f_posdated ? row.f_posdated : '' }}</td>
                                                         <td>{{ row.posdated }}</td>
                                                         <td>{{ row.number_full }}</td>
                                                         <td>{{ row.customer_name }}</td>
                                                         <td>{{ row.username }}</td>
 
-                                                        <td>{{ row.delay_payment ? row.delay_payment : 'No tiene días atrasados.' }}</td>
+                                                        <td>{{ 'Liquidado' }}</td>
                                                         <td>
                                                             <el-popover placement="right" width="200" trigger="click">
                                                                 <strong>Penalidad: {{ row.arrears }}</strong>
@@ -409,7 +411,7 @@
                                                         <td v-if="columns.web_platforms.visible">
                                                             <template v-for="(platform, i) in row.web_platforms"
                                                                 v-if="row.web_platforms !== undefined">
-                                                                <label class="d-block" :key="i">{{ platform.name }}</label>
+                                                                <label class="d-block" >{{ platform.name }}</label>
                                                             </template>
                                                         </td>
                                                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}
@@ -454,7 +456,8 @@
                                                                     @click.prevent="clickSaleNotePayment(row.id)">Pagos</button>
                                                             </template>
                                                             <template>
-                                                                <button type="button" style="min-width: 41px" v-if="row.total_to_pay > 0"
+                                                                <button type="button" style="min-width: 41px"
+                                                                    v-if="row.total_to_pay > 0"
                                                                     class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
                                                                     @click.prevent="clickPosFechado(row.fee_id, row.id, row.customer_id)">POSfechar
                                                                 </button>
@@ -500,7 +503,7 @@ import queryString from "query-string";
 
 export default {
     props: ['typeUser', 'configuration'],
-    components: { DocumentPayments, SaleNotePayments,PosFechado },
+    components: { DocumentPayments, SaleNotePayments, PosFechado },
     data() {
         return {
             resource: 'finances/unpaid',
@@ -514,7 +517,7 @@ export default {
             web_platforms: [],
             pickerOptionsDates: {
                 disabledDate: (time) => {
-                    time = moment(time).format('YYYY-MM-DD')
+                    time = moment(time).format('YYYY/MM/DD')
                     return this.form.date_start > time
                 }
             },
@@ -524,6 +527,7 @@ export default {
                     return this.form.month_start > time
                 }
             },
+
             showDialogDocumentPayments: false,
             showDialogPosFechado: false,
             showDialogSaleNotePayments: false,
@@ -541,8 +545,6 @@ export default {
                     visible: false
                 },
             },
-            include_liquidated: false,
-
         }
     },
     async created() {
@@ -661,13 +663,14 @@ export default {
             this.form = {
                 establishment_id: null,
                 period: 'between_dates',
-                date_start: moment().format('YYYY-MM-DD'),
-                date_end: moment().format('YYYY-MM-DD'),
+                date_start: moment().format('YYYY/MM/DD'),
+                date_end: moment().format('YYYY/MM/DD'),
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
                 customer_id: null,
                 user_id: null,
-                payment_method_type_id: null
+                payment_method_type_id: null,
+                include_liquidated: false
             };
         },
         async filter() {
@@ -689,8 +692,8 @@ export default {
 
             await this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                this.pagination = response.data.meta
-                this.pagination.per_page = parseInt(response.data.meta.per_page)
+                this.pagination = response.data
+                this.pagination.per_page = parseInt(response.data.per_page)
                 const setting = response.data.configuration;
                 this.records.sort(function (a, b) {
                     return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
@@ -812,12 +815,12 @@ export default {
                 this.form.month_end = moment().endOf('year').format('YYYY-MM');;
             }
             if (this.form.period === 'date') {
-                this.form.date_start = moment().format('YYYY-MM-DD');
-                this.form.date_end = moment().format('YYYY-MM-DD');
+                this.form.date_start = moment().format('YYYY/MM/DD');
+                this.form.date_end = moment().format('YYYY/MM/DD');
             }
             if (this.form.period === 'between_dates') {
-                this.form.date_start = moment().startOf('month').format('YYYY-MM-DD');
-                this.form.date_end = moment().endOf('month').format('YYYY-MM-DD');
+                this.form.date_start = moment().startOf('month').format('YYYY/MM/DD');
+                this.form.date_end = moment().endOf('month').format('YYYY/MM/DD');
             }
             this.loadUnpaid();
         },

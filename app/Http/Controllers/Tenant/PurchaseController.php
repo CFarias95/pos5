@@ -463,22 +463,23 @@ class PurchaseController extends Controller
                     //Log::info(json_encode($row));
                     //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
-                    $costoA = $item->purchase_mean_cost;
-                    $stockA = $item->stock;
-                    $totalA = $costoA*$stockA;
+                    if ($item->unit_type_id != 'ZZ') {
+                        $costoA = $item->purchase_mean_cost;
+                        $stockA = $item->stock;
+                        $totalA = $costoA * $stockA;
 
-                    $costoN = floatval($row['unit_value']);
-                    $stockN = floatval($row['quantity']);
-                    $totalN = $costoN*$stockN;
+                        $costoN = floatval($row['unit_value']);
+                        $stockN = floatval($row['quantity']);
+                        $totalN = $costoN * $stockN;
 
-                    $stockT = $stockN+$stockA;
-                    $costoT = $totalA + $totalN;
-                    $costoT = round($costoT/$stockT,4);
-                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$costoN."-".$totalN);
+                        $stockT = $stockN + $stockA;
+                        $costoT = $totalA + $totalN;
+                        $costoT = round($costoT / $stockT, 4);
+                        Log::info("ACTUAL " . $costoA . '-' . $totalA . ' NUEVO: ' . $costoN . "-" . $totalN);
 
-                    $item->purchase_mean_cost = $costoT;
-                    $item->save();
-
+                        $item->purchase_mean_cost = $costoT;
+                        $item->save();
+                    }
                     $p_item = new PurchaseItem();
                     $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
@@ -503,10 +504,10 @@ class PurchaseController extends Controller
 
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
 
-                        Log::info("update_purchase_price".json_encode($row));
+                        Log::info("update_purchase_price" . json_encode($row));
 
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']),2), 'purchase_has_igv' => false]);
+                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']), 2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                         $item = $row['item'];
                         if (isset($item['item_unit_types'])) {
@@ -610,7 +611,7 @@ class PurchaseController extends Controller
                     $this->createAccountingEntryPayment($doc->id);
                 }
 
-                if($data['document_type_id'] == '04'){
+                if ($data['document_type_id'] == '04') {
                     $this->createCreditNotePayment($doc);
                 }
 
@@ -645,17 +646,17 @@ class PurchaseController extends Controller
     }
 
     //ACTUALIZAR FORMA DE PAGO TIPO NOTA DE CREDITO
-    private function updateCreditNotePayment($note){
-        try{
+    private function updateCreditNotePayment($note)
+    {
+        try {
 
             //Log::info("Creando nota de credito como forma de pago ".$note->id);
-            $creditPayment = CreditNotesPayment::where('purchase_id',$note->id)->first();
+            $creditPayment = CreditNotesPayment::where('purchase_id', $note->id)->first();
             //Log::info(json_encode($creditPayment));
             $creditPayment->amount = $note->total;
             $creditPayment->user_id = $note->supplier_id;
             $creditPayment->save();
-
-        }catch(Exception $ex){
+        } catch (Exception $ex) {
 
             Log::error("Error al actualizar la forma de pago de Nota de Crédito");
             Log::error($ex->getMessage());
@@ -664,8 +665,9 @@ class PurchaseController extends Controller
     }
 
     //CREAMOS LA FORMA DE PAGO DE NOTAS DE CREDITO
-    private function createCreditNotePayment($note){
-        try{
+    private function createCreditNotePayment($note)
+    {
+        try {
 
             //Log::info("Creando nota de credito como forma de pago");
             $creditPayment = new CreditNotesPayment();
@@ -673,8 +675,7 @@ class PurchaseController extends Controller
             $creditPayment->amount = $note->total;
             $creditPayment->user_id = $note->supplier_id;
             $creditPayment->save();
-
-        }catch(Exception $ex){
+        } catch (Exception $ex) {
 
             Log::error("Error al generar la forma de pago de Nota de Crédito");
             Log::error($ex->getMessage());
@@ -771,7 +772,7 @@ class PurchaseController extends Controller
                     $importCTA = $importP->cuenta_contable;
                 }
 
-                if(isset($importCTA) ){
+                if (isset($importCTA)) {
 
                     $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $accountMIDModel = AccountMovement::find($accountMID);
@@ -782,8 +783,8 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 1;
                     $detalle2->haber = $document->total;
                     $detalle2->debe = 0;
-                    $costC = $document->establishment->cost_center[count($document->establishment->cost_center)-1];
-                    $detalle2->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$costC:null;
+                    $costC = $document->establishment->cost_center[count($document->establishment->cost_center) - 1];
+                    $detalle2->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0) ? $costC : null;
 
                     if ($detalle2->save() == false) {
                         $cabeceraC->delete();
@@ -814,82 +815,81 @@ class PurchaseController extends Controller
 
                             if ($importCTA) {
 
-                                $accountantItem=AccountMovement::find($importCTA);
-                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                                $accountantItem = AccountMovement::find($importCTA);
+                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) - 1];
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
-                                if (array_key_exists($importCTA.'-'.$seatCost, $arrayEntrys) == true) {
+                                if (array_key_exists($importCTA . '-' . $seatCost, $arrayEntrys) == true) {
 
-                                    $arrayEntrys[$importCTA.'-'.$seatCost]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$importCTA . '-' . $seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (array_key_exists($importCTA.'-'.$seatCost, $arrayEntrys) == false) {
+                                if (array_key_exists($importCTA . '-' . $seatCost, $arrayEntrys) == false) {
                                     $n += 1;
 
-                                    Log::info('Tiene centro de costo: '.$accountantItem->cost_center);
-                                    Log::info('Centro de costo del establecimiento '.$valor);
+                                    Log::info('Tiene centro de costo: ' . $accountantItem->cost_center);
+                                    Log::info('Centro de costo del establecimiento ' . $valor);
 
-                                    $arrayEntrys[$importCTA.'-'.$seatCost] = [
+                                    $arrayEntrys[$importCTA . '-' . $seatCost] = [
                                         'account_movement_id' => $importCTA,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0) ? $valor : null,
                                     ];
                                 }
                             }
 
                             if ($impuesto->account) {
 
-                                $accountantItem=AccountMovement::find($impuesto->account);
-                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                                $accountantItem = AccountMovement::find($impuesto->account);
+                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) - 1];
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
-                                if (array_key_exists($impuesto->account.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($impuesto->account . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$impuesto->account.'-'.$seatCost]['debe'] += floatval($value->total_taxes);
+                                    $arrayEntrys[$impuesto->account . '-' . $seatCost]['debe'] += floatval($value->total_taxes);
                                 }
-                                if (!array_key_exists($impuesto->account.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($impuesto->account . '-' . $seatCost, $arrayEntrys)) {
 
                                     $n += 1;
-                                    $arrayEntrys[$impuesto->account.'-'.$seatCost] = [
+                                    $arrayEntrys[$impuesto->account . '-' . $seatCost] = [
                                         'account_movement_id' => $impuesto->account,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0) ? $valor : null,
                                     ];
                                 }
                             }
 
                             if (!($impuesto->account) && $configuration->cta_taxes_purchases) {
 
-                                $accountantItem=AccountMovement::find($configuration->cta_taxes_purchases);
-                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                                $accountantItem = AccountMovement::find($configuration->cta_taxes_purchases);
+                                $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) - 1];
+                                $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
-                                if (array_key_exists($configuration->cta_taxes_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($configuration->cta_taxes_purchases . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$configuration->cta_taxes_purchases.'-'.$seatCost]['debe'] += floatval($value->total_taxes);
+                                    $arrayEntrys[$configuration->cta_taxes_purchases . '-' . $seatCost]['debe'] += floatval($value->total_taxes);
                                 }
-                                if (!array_key_exists($configuration->cta_taxes_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_taxes_purchases . '-' . $seatCost, $arrayEntrys)) {
 
                                     $n += 1;
-                                    $arrayEntrys[$configuration->cta_taxes_purchases.'-'.$seatCost] = [
+                                    $arrayEntrys[$configuration->cta_taxes_purchases . '-' . $seatCost] = [
                                         'account_movement_id' => $configuration->cta_taxes_purchases,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_taxes),
                                         'haber' => 0,
-                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0)?$valor:null,
+                                        'seat_cost' => ($accountantItem && $accountantItem->cost_center > 0) ? $valor : null,
 
                                     ];
                                 }
                             }
-
                         }
                     }
 
                     foreach ($arrayEntrys as $key => $value) {
-                        Log::info('Asientos a crear: '.json_encode($value));
+                        Log::info('Asientos a crear: ' . json_encode($value));
 
                         if ($value['debe'] > 0 || $value['haber'] > 0) {
 
@@ -917,7 +917,7 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        $detalle->seat_cost = ($seatCostIVA && $seatCostIVA->cost_center > 0)?$document->establishment->cost_center[count($document->establishment->cost_center)-1]:null;
+                        $detalle->seat_cost = ($seatCostIVA && $seatCostIVA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
                         if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
@@ -934,19 +934,18 @@ class PurchaseController extends Controller
                         $detalle->seat_line = $n;
                         $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
                         $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        $detalle->seat_cost = ($seatCostRENTA && $seatCostRENTA->cost_center > 0 )?$document->establishment->cost_center[count($document->establishment->cost_center)-1]:null;
+                        $detalle->seat_cost = ($seatCostRENTA && $seatCostRENTA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
                         if ($detalle->save() == false) {
                             $cabeceraC->delete();
                             return;
                             //abort(500,'No se pudo generar el asiento contable del documento');
                         }
                     }
-
                 } else {
 
                     $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                     $accountMIDModel = AccountMovement::find($accountMID);
-                    $costC = $document->establishment->cost_center[count($document->establishment->cost_center)-1];
+                    $costC = $document->establishment->cost_center[count($document->establishment->cost_center) - 1];
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
@@ -954,7 +953,7 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = ($documentoInterno->sign > 0) ? $document->total : 0;
                     $detalle->debe = ($documentoInterno->sign > 0) ? 0 : $document->total;
-                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?$costC:null;
+                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0) ? $costC : null;
 
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
@@ -979,9 +978,9 @@ class PurchaseController extends Controller
 
                         $warehouseItem = TenantWarehouse::find($value->warehouse_id);
                         $establishmentItem = Establishment::find($warehouseItem->establishment_id);
-                        $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) -1];
-                        $accountantItem=AccountMovement::find($item->purchase_cta);
-                        $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                        $valor = $establishmentItem->cost_center[count($establishmentItem->cost_center) - 1];
+                        $accountantItem = AccountMovement::find($item->purchase_cta);
+                        $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                         //CONTABILIDAD PARA VALORES POSITIVOS
                         if ($documentoInterno->sign > 0) {
@@ -990,63 +989,63 @@ class PurchaseController extends Controller
 
                                 $seatCostItem = AccountMovement::find($item->purchase_cta);
 
-                                if (array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($item->purchase_cta . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$item->purchase_cta . '-' . $seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($item->purchase_cta . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost] = [
+                                    $arrayEntrys[$item->purchase_cta . '-' . $seatCost] = [
                                         'account_movement_id' => $item->purchase_cta,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
 
-                            $accountantItem=AccountMovement::find($item->purchase_cta);
-                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                            $accountantItem = AccountMovement::find($item->purchase_cta);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
-                                if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($itemCTA . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$itemCTA.'-'.$seatCost]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$itemCTA . '-' . $seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($itemCTA . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$itemCTA.'-'.$seatCost] = [
+                                    $arrayEntrys[$itemCTA . '-' . $seatCost] = [
                                         'account_movement_id' => $itemCTA,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
 
-                            $accountantItem=AccountMovement::find($configuration->cta_purchases);
-                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                            $accountantItem = AccountMovement::find($configuration->cta_purchases);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
-                                if (array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($configuration->cta_purchases . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost]['debe'] += floatval($value->total_value);
+                                    $arrayEntrys[$configuration->cta_purchases . '-' . $seatCost]['debe'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_purchases . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost] = [
+                                    $arrayEntrys[$configuration->cta_purchases . '-' . $seatCost] = [
                                         'account_movement_id' => $configuration->cta_purchases,
                                         'seat_line' => $n,
                                         'debe' => floatval($value->total_value),
                                         'haber' => 0,
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null ,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
@@ -1094,68 +1093,68 @@ class PurchaseController extends Controller
                         //CONTABILIDAD PARA VALORES NEGATIVOS
                         if ($documentoInterno->sign < 1) {
 
-                            $accountantItem=AccountMovement::find($itemCTA);
-                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                            $accountantItem = AccountMovement::find($itemCTA);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                             if ($itemCTA != "" && !$item->purchase_cta) {
 
-                                if (array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($itemCTA . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$itemCTA.'-'.$seatCost]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$itemCTA . '-' . $seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($itemCTA.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($itemCTA . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$itemCTA.'-'.$seatCost] = [
+                                    $arrayEntrys[$itemCTA . '-' . $seatCost] = [
                                         'account_movement_id' => $itemCTA,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
 
-                            $accountantItem=AccountMovement::find($item->purchase_cta);
-                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                            $accountantItem = AccountMovement::find($item->purchase_cta);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                             if ($itemCTA == "" && $item->purchase_cta) {
 
-                                if (array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($item->purchase_cta . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$item->purchase_cta . '-' . $seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($item->purchase_cta.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($item->purchase_cta . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$item->purchase_cta.'-'.$seatCost] = [
+                                    $arrayEntrys[$item->purchase_cta . '-' . $seatCost] = [
                                         'account_movement_id' => $item->purchase_cta,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
 
-                            $accountantItem=AccountMovement::find($configuration->cta_purchases);
-                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0)?$valor:0;
+                            $accountantItem = AccountMovement::find($configuration->cta_purchases);
+                            $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
                             if ($itemCTA == "" && !($item->purchase_cta) && $configuration->cta_purchases) {
 
-                                if (array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (array_key_exists($configuration->cta_purchases . '-' . $seatCost, $arrayEntrys)) {
 
-                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost]['haber'] += floatval($value->total_value);
+                                    $arrayEntrys[$configuration->cta_purchases . '-' . $seatCost]['haber'] += floatval($value->total_value);
                                 }
-                                if (!array_key_exists($configuration->cta_purchases.'-'.$seatCost, $arrayEntrys)) {
+                                if (!array_key_exists($configuration->cta_purchases . '-' . $seatCost, $arrayEntrys)) {
                                     $n += 1;
 
-                                    $arrayEntrys[$configuration->cta_purchases.'-'.$seatCost] = [
+                                    $arrayEntrys[$configuration->cta_purchases . '-' . $seatCost] = [
                                         'account_movement_id' => $configuration->cta_purchases,
                                         'seat_line' => $n,
                                         'debe' => 0,
                                         'haber' => floatval($value->total_value),
-                                        'seat_cost' => ($seatCost > 0 )? $seatCost:null,
+                                        'seat_cost' => ($seatCost > 0) ? $seatCost : null,
                                     ];
                                 }
                             }
@@ -1250,12 +1249,10 @@ class PurchaseController extends Controller
                         }
                     }
                 }
-
             } catch (Exception $ex) {
 
-                Log::error('Error al intentar generar el asiento contable: '.$ex->getMessage());
+                Log::error('Error al intentar generar el asiento contable: ' . $ex->getMessage());
             }
-
         } else {
             Log::info('tipo de documento no genera asiento contable de momento');
         }
@@ -1334,7 +1331,7 @@ class PurchaseController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
-                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0)?array_pop($document->establishment->cost_center):null;
+                    $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0) ? array_pop($document->establishment->cost_center) : null;
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
@@ -1350,7 +1347,7 @@ class PurchaseController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    $detalle->seat_cost = ($accountMIDModel2 && $accountMIDModel2->cost_center > 0)?array_pop($document->establishment->cost_center):null;
+                    $detalle->seat_cost = ($accountMIDModel2 && $accountMIDModel2->cost_center > 0) ? array_pop($document->establishment->cost_center) : null;
                     if ($detalle2->save() == false) {
                         $cabeceraC->delete();
                         return;
@@ -1506,8 +1503,8 @@ class PurchaseController extends Controller
                 if (count($request['ret']) > 0) {
 
                     $retenciones = RetentionsEC::where('idDocumento', $doc->id)->first();
-                    $IdRetencionHistorico = ($retenciones && $retenciones->count() > 0)?$retenciones->idRetencion:null;
-                    if($retenciones && $retenciones->count() > 0 ){
+                    $IdRetencionHistorico = ($retenciones && $retenciones->count() > 0) ? $retenciones->idRetencion : null;
+                    if ($retenciones && $retenciones->count() > 0) {
                         $retenciones->delete();
                     }
                     /*
@@ -1530,7 +1527,7 @@ class PurchaseController extends Controller
                     $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
 
                     $ret = new RetentionsEC();
-                    $ret->idRetencion = ($IdRetencionHistorico)?$IdRetencionHistorico:'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
+                    $ret->idRetencion = ($IdRetencionHistorico) ? $IdRetencionHistorico : 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
                     $ret->idDocumento = $doc->id;
                     $ret->fechaFizcal = $doc->date_of_issue->format('m/Y');
                     $ret->idProveedor = $doc->supplier_id;
@@ -1563,20 +1560,25 @@ class PurchaseController extends Controller
 
                 foreach ($request['items'] as $row) {
 
+
                     $item = Item::where('id', $row['item_id'])->first();
-                    $costoA = $item->purchase_mean_cost;
-                    $stockA = $item->stock;
-                    $totalA = $costoA*$stockA;
+                    if ($item->unit_type_id != 'ZZ') {
+                        $costoA = $item->purchase_mean_cost;
+                        $stockA = $item->stock;
+                        $totalA = $costoA * $stockA;
 
-                    $costoN = floatval($row['unit_value']);
-                    $stockN = floatval($row['quantity']);
-                    $totalN = $costoN*$stockN;
+                        $costoN = floatval($row['unit_value']);
+                        $stockN = floatval($row['quantity']);
+                        $totalN = $costoN * $stockN;
 
-                    $stockT = $stockN+$stockA;
-                    $costoT = $totalA + $totalN;
-                    $costoT = round($costoT/$stockT,4);
-                    Log::info("ACTUAL ".$costoA.'-'.$totalA.' NUEVO: '.$costoN."-".$totalN);
+                        $stockT = $stockN + $stockA;
+                        $costoT = $totalA + $totalN;
+                        $costoT = round($costoT / $stockT, 4);
+                        Log::info("ACTUAL " . $costoA . '-' . $totalA . ' NUEVO: ' . $costoN . "-" . $totalN);
 
+                        $item->purchase_mean_cost = $costoT;
+                        $item->save();
+                    }
                     $p_item = new PurchaseItem();
                     $row['quantity'] = $row['quantity'] * $signo;
                     $p_item->fill($row);
@@ -1586,9 +1588,9 @@ class PurchaseController extends Controller
 
                     if (isset($row['update_purchase_price']) && $row['update_purchase_price']) {
 
-                        Log::info("update_purchase_price_update".json_encode($row));
+                        Log::info("update_purchase_price_update" . json_encode($row));
                         Item::query()->where('id', $row['item_id'])
-                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']),2), 'purchase_has_igv' => false]);
+                            ->update(['purchase_unit_price' => round(floatval($row['unit_value']), 2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                     }
                     if (array_key_exists('lots', $row)) {
@@ -1679,7 +1681,7 @@ class PurchaseController extends Controller
                     $this->createAccountingEntryPayment($doc->id);
                 }
 
-                if($doc->document_type_id == '04'){
+                if ($doc->document_type_id == '04') {
                     $this->updateCreditNotePayment($doc);
                 }
 
@@ -2237,15 +2239,14 @@ class PurchaseController extends Controller
             foreach ($data['payments'] as $payment) {
                 if ($formaPagoDefecto) {
 
-                    $date=date_create($data['date_of_issue']);
-                    $numberDays = ($formaPagoDefecto && $formaPagoDefecto->number_days >= 0)?$formaPagoDefecto->number_days:0;
+                    $date = date_create($data['date_of_issue']);
+                    $numberDays = ($formaPagoDefecto && $formaPagoDefecto->number_days >= 0) ? $formaPagoDefecto->number_days : 0;
 
-                    $fecha = date_add($date,date_interval_create_from_date_string($numberDays." days"));
+                    $fecha = date_add($date, date_interval_create_from_date_string($numberDays . " days"));
                     $data['payments'][$indice]['payment_method_type_id'] = $supplier->default_payment;
                     $data['payment_method_type_id'] = $supplier->default_payment;
-                    $data['payments'][$indice]['date_of_payment'] = date_format($fecha,"Y-m-d");
+                    $data['payments'][$indice]['date_of_payment'] = date_format($fecha, "Y-m-d");
                     $data['payment_condition_id'] = ($formaPagoDefecto->is_cash) ? '01' : '02';
-
                 }
                 $indice += 1;
             }

@@ -38,8 +38,6 @@ trait UnpaidTrait
 
                             $delay_payment = $now->diffInDays($due);
                         }
-
-
                     }
                 }
             }
@@ -104,7 +102,7 @@ trait UnpaidTrait
         });
 
     }
-    
+
 
     /**
      * Obtener total por cobrar

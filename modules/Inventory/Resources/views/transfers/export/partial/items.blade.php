@@ -66,7 +66,7 @@
                     <td class="celda text-left">{{$itemCollection['description']}}</td>
                     <td class="celda">{{$itemCollection['unit_type_text']}}</td>
                     <td class="celda">{{$qty}}</td>
-                    <td class="celda">{{$lot_code}}</td>
+                    <td class="celda">{{$item->lot_code}}</td>
                     <!--            <td>SERIE</td>-->
                 </tr>
             @endforeach

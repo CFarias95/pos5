@@ -181,13 +181,14 @@ trait InventoryTrait
             $query->take($take);
         }
         return $query->get()->transform(function ($row) {
-            $description = $row->description;
+
+            $description = '';
+
             if($row->internal_id) {
-                $description .= " | {$row->internal_id}";
+                $description .= "{$row->internal_id} | ";
             }
-            if($row->barcode) {
-                $description .= " | {$row->barcode}";
-            }
+
+            $description .= "{$row->name} | {$row->description}";
             return [
                 'id' => $row->id,
                 'description' => $description,
