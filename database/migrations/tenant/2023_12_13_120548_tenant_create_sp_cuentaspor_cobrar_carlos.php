@@ -73,7 +73,7 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
         END";
 
         DB::connection('tenant')->statement($sqlDelete);
-        DB::connection('tennat')->statement($sqlCreate);
+        DB::connection('tenant')->statement($sqlCreate);
     }
 
     /**
