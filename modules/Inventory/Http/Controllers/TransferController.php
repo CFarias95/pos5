@@ -341,6 +341,7 @@ use Modules\Item\Models\ItemLotsGroup;
             return null;
             // return $this->excel(($inventoryTransfer));
             $data = $inventoryTransfer->getPdfData();
+            Log::info(json_encode($data));
             $pdf = PDF::loadView('inventory::transfers.export.pdf', compact('data'));
             $pdf->setPaper('A4', 'landscape');
             $filename = 'Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis');

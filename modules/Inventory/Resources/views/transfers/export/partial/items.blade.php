@@ -56,6 +56,7 @@
                 $itemCollection['unit_type_text'] = substr($itemCollection['unit_type_text'], 0, 10);
                 $qty = $inventory->quantity;
                 $lot_code = $lote[$index]->lot_code;
+
                 /*
                 @todo BUSCAR DONDE SE GUARDA LA SERIE en modules/Inventory/Http/Controllers/TransferController.php 237
                 */
@@ -66,11 +67,10 @@
                     <td class="celda text-left">{{$itemCollection['description']}}</td>
                     <td class="celda">{{$itemCollection['unit_type_text']}}</td>
                     <td class="celda">{{$qty}}</td>
-                    <td class="celda">{{$item->lot_code}}</td>
+                    <td class="celda text-left">{{$inventory->lot_code}}</td>
                     <!--            <td>SERIE</td>-->
                 </tr>
             @endforeach
-
             </tbody>
         </table>
     </div>
