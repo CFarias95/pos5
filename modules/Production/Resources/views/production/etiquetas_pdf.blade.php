@@ -16,7 +16,7 @@ $atributos = $records['supplies'][0]['item']['attributes'];
 $bpm = null;
 $psn = null;
 $em = null;
-$codigoBPM = null;p
+$codigoBPM = null;
 $array1 = [];
 $array2 = [];
 foreach ($atributos as $key => $value) {
@@ -24,6 +24,10 @@ foreach ($atributos as $key => $value) {
     if($value->attribute_type_id == 'BPM')
     {
         $bpm = $value->value;
+    }
+    if($value->attribute_type_id == 'CBPM')
+    {
+        $codigoBPM = $value->value;
     }
     if($value->attribute_type_id == 'PSN')
     {
@@ -185,6 +189,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Lote: {{$produccion->lot_code}} <br/>
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/><br/>
+                    Código único BPM: {{$codigoBPM}} <br/><br/>
                     </th>
                 </tr>
                 <tr>
