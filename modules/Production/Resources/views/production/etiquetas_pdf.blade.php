@@ -16,6 +16,7 @@ $atributos = $records['supplies'][0]['item']['attributes'];
 $bpm = null;
 $psn = null;
 $em = null;
+$codigoBPM = null;p
 $array1 = [];
 $array2 = [];
 foreach ($atributos as $key => $value) {
