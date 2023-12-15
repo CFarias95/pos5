@@ -128,7 +128,8 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Peso: {{$psn}} <br/>
                     Lote: {{$produccion->lot_code}} <br/>
                     Fecha de Producción: {{$produccion->date_start}} <br/>
-                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/><br/>
+                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
+                    Código único BPM: {{ $codigoBPM }} <br/><br/>
                     </th>
                 </tr>
                 <tr>
@@ -188,7 +189,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Peso: {{$psn}} <br/>
                     Lote: {{$produccion->lot_code}} <br/>
                     Fecha de Producción: {{$produccion->date_start}} <br/>
-                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/><br/>
+                    Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     Código único BPM: {{$codigoBPM}} <br/><br/>
                     </th>
                 </tr>

@@ -37,7 +37,8 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
             SELECT d.id , df.id as fee_id,
             CASE WHEN df.id IS NOT NULL THEN DATE_FORMAT(d.date_of_issue, '%Y/%m/%d') ELSE DATE_FORMAT(d.date_of_issue, '%Y/%m/%d') END as date_of_issue,
             persons.name as customer_name, persons.id as customer_id
-            ,d.document_type_id, CONCAT(d.series,'-',d.number) AS number_full,
+            ,d.document_type_id,
+            CASE WHEN df.id IS NOT NULL THEN CONCAT(d.series,'-',d.number,'/',( SELECT NP FROM (SELECT row_number() OVER (ORDER BY id) AS NP,id FROM document_fee as dp WHERE dp.document_id =  d.id) AS FD WHERE FD.id = df.id)) ELSE CONCAT(d.series,'-',d.number) END AS number_full,
             CASE WHEN df.id IS NOT NULL THEN df.amount ELSE d.total END as total,
             CASE WHEN df.id IS NOT NULL THEN IFNULL(SUM(dpf.payment),0) ELSE IFNULL(SUM(dp.payment), 0) END as total_payment,
             IFNULL(SUM(dcn.total), 0) as total_credit_notes,
