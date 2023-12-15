@@ -56,6 +56,42 @@
                         </el-select>
                     </div>
 
+                    <div class="col-md-3" v-if="show_fini">
+                        <label class="control-label">Fecha Inicio</label>
+                        <el-date-picker v-model="form.fini" format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_ffin">
+                        <label class="control-label">Fecha Fin</label>
+                        <el-date-picker v-model="form.ffin" format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_codvendedor">
+                        <label class="control-label">Código Vendedor</label>
+                        <el-select v-model="form.codvendedor" filterable clearable>
+                            <el-option v-for="row in vendedores" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_codcliente">
+                        <label class="control-label">Código Cliente</label>
+                        <el-select v-model="form.codcliente" filterable clearable>
+                            <el-option v-for="row in clientes" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_codproveedor">
+                        <label class="control-label">Código Proveedor</label>
+                        <el-select v-model="form.codproveedor" filterable clearable>
+                            <el-option v-for="row in suppliers" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_agrupado">
+                        <label class="control-label">Agrupado</label>
+                        <el-checkbox v-model="form.agrupado"></el-checkbox>
+                    </div>
+
                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
@@ -147,6 +183,12 @@ export default {
             users: [],
             form: {
                 period: null,
+                codcliente: 0,
+                codproveedor: 0,
+                codvendedor: 0,
+                agrupado: 0,
+                ffin: null,
+                fini: null,
             },
             pickerOptionsDates: {
                 disabledDate: (time) => {
@@ -166,8 +208,17 @@ export default {
             loading_search_items: false,
             imports : [],
             suppliers : [],
+            vendedores: [],
+            clientes: [],
+            //proveedores: [],
             show_suppliers : true,
             show_imports : true,
+            show_agrupado: true,
+            show_fini: true,
+            show_ffin: true,
+            show_codvendedor: true,
+            show_codcliente: true,
+            show_codproveedor: true,
             dates_array : [
                 {
                     'key':'between_months',
@@ -207,9 +258,66 @@ export default {
     },
     async mounted() {
 
-        if(this.resource == 'reports/payable' || this.resource == 'reports/receivable' || this.resource == 'reports/topay' || this.resource == 'reports/tocollect'){
+        if(this.resource == 'reports/tocollect'){
             this.show_imports = false
             this.show_suppliers = false
+            this.show_agrupado = true
+            this.show_ffin = true
+            this.show_fini = true
+            this.show_codvendedor = true
+            this.show_codcliente = true
+            this.show_codproveedor = false
+            this.dates_array = [
+                {
+                    'key':'date',
+                    'name': 'Por fecha',
+                    'value': 'date'
+                }
+            ]
+            this.form.period = 'date'
+        }else if(this.resource == 'reports/payable'){
+            this.show_imports = false
+            this.show_suppliers = false
+            this.show_agrupado = false
+            this.show_ffin = false
+            this.show_fini = false
+            this.show_codvendedor = false
+            this.show_codcliente = false
+            this.show_codproveedor = true
+            this.dates_array = [
+                {
+                    'key':'date',
+                    'name': 'Por fecha',
+                    'value': 'date'
+                }
+            ]
+            this.form.period = 'date'
+        }else if( this.resource == 'reports/receivable' ){
+            this.show_imports = false
+            this.show_suppliers = false
+            this.show_agrupado = false
+            this.show_ffin = false
+            this.show_fini = false
+            this.show_codvendedor = true
+            this.show_codcliente = true
+            this.show_codproveedor = false
+            this.dates_array = [
+                {
+                    'key':'date',
+                    'name': 'Por fecha',
+                    'value': 'date'
+                }
+            ]
+            this.form.period = 'date'
+        }else if(this.resource == 'reports/topay'){
+            this.show_imports = false
+            this.show_suppliers = false
+            this.show_agrupado = true
+            this.show_ffin = false
+            this.show_fini = false
+            this.show_codvendedor = false
+            this.show_codcliente = false
+            this.show_codproveedor = true
             this.dates_array = [
                 {
                     'key':'date',
@@ -258,6 +366,12 @@ export default {
                 month_end: moment().format('YYYY-MM'),
                 import : 0,
                 supplier : 0,
+                ffin: '2050-01-01',
+                fini: '2000-01-01',
+                agrupado: 0,
+                codvendedor: 0,
+                codproveedor: 0,
+                codcliente: 0,
             }
         },
         customIndex(index) {
@@ -276,7 +390,9 @@ export default {
             await this.$http.get(`/${this.resource}/tables`).then((response) => {
                 this.suppliers = response.data.suppliers
                 this.imports = response.data.imports
-
+                this.vendedores = response.data.vendedores
+                this.clientes = response.data.clientes
+                this.proveedores = response.data.proveedores
             });
         },
         getRecords() {

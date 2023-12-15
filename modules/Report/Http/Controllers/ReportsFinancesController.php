@@ -26,6 +26,7 @@ use Modules\Report\Exports\PurchaseOrderExport;
 use Modules\Report\Exports\PurchaseStatementExport;
 use Modules\Report\Http\Resources\PurchaseCollection;
 use Modules\Report\Http\Resources\PurchaseOrderCollection;
+use App\Models\Tenant\User;
 
 class ReportsFinancesController extends Controller
 {
@@ -79,6 +80,15 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        $ffin = FunctionController::InArray($request, 'ffin');
+        $fini = FunctionController::InArray($request, 'fini');
+        //$codcliente = FunctionController::InArray($request, 'codcliente');
+        $codproveedor = FunctionController::InArray($request, 'codproveedor');
+        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
 
         $d_start = null;
         $d_end = null;
@@ -102,7 +112,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?)', [$d_start, $codproveedor]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -119,6 +129,14 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        //$agrupado = FunctionController::InArray($request, 'agrupado');
+        //$ffin = FunctionController::InArray($request, 'ffin');
+        //$fini = FunctionController::InArray($request, 'fini');
+        $codcliente = FunctionController::InArray($request, 'codcliente');
+        //$codproveedor = FunctionController::InArray($request, 'codproveedor');
+        $codvendedor = FunctionController::InArray($request, 'codvendedor');
+        //Log::info('codcliente'.$codcliente);
+        //Log::info('codvendedor'.$codvendedor);
 
         $d_start = null;
         $d_end = null;
@@ -142,7 +160,8 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?)', [$d_start, $codcliente, $codvendedor]);
+        //Log::info('recie'.json_encode($records));
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -151,6 +170,7 @@ class ReportsFinancesController extends Controller
     //RECORDS DE CUENTAS POR PAGAR
     public function reportToPayRecords(Request $request)
     {
+        //Log::info('datos'.json_encode($request));
         $period = FunctionController::InArray($request, 'period');
         $date_start = FunctionController::InArray($request, 'date_start');
         $date_end = FunctionController::InArray($request, 'date_end');
@@ -159,6 +179,16 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        //$ffin = FunctionController::InArray($request, 'ffin');
+        //$fini = FunctionController::InArray($request, 'fini');
+        //$codcliente = FunctionController::InArray($request, 'codcliente');
+        $codproveedor = FunctionController::InArray($request, 'codproveedor');
+        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        //Log::info('prueba'.$agrupado);
 
         $d_start = null;
         $d_end = null;
@@ -182,7 +212,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?)', [$d_start, $agrupado, $codproveedor]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -199,6 +229,15 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        $ffin = FunctionController::InArray($request, 'ffin');
+        $fini = FunctionController::InArray($request, 'fini');
+        $codcliente = FunctionController::InArray($request, 'codcliente');
+        //$codproveedor = FunctionController::InArray($request, 'codproveedor');
+        $codvendedor = FunctionController::InArray($request, 'codvendedor');
 
         $d_start = null;
         $d_end = null;
@@ -222,7 +261,8 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?, ?, ?, ?, ?, ?)', [$d_start, $agrupado, $codcliente, $fini, $ffin, $codvendedor]);
+        //Log::info('sppp'.json_encode($records));
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -428,7 +468,23 @@ class ReportsFinancesController extends Controller
         ];
         $imports = array_merge($importsT, $importsB->toArray());
 
-        return compact("suppliers", "imports");
+        $vendedoresT[] = [
+            'id' => 0,
+            'name' => 'todos'
+        ];
+        $vendedoresA = User::get();
+        $vendedores = array_merge($vendedoresT, $vendedoresA->toArray());
+
+        $clientesT[] = [
+            'id' => 0,
+            'name' => 'todos'
+        ];
+        $clientesA = Person::where('type', 'customers')->get();
+        $clientes = array_merge($clientesT, $clientesA->toArray());
+
+        //$proveedores = Person::where('type', 'supplier')->get();
+
+        return compact("suppliers", "imports", "vendedores", "clientes");
     }
 
     public function excelRetentions(Request $request)
@@ -513,7 +569,7 @@ class ReportsFinancesController extends Controller
                 $d_end = $date_end;
                 break;
         }
-        Log::info("fecha de consulta ".$d_start);
+        //Log::info("fecha de consulta ".$d_start);
         $records = DB::connection('tenant')->select('CALL SP_payable_statement(?)', [$d_start]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
