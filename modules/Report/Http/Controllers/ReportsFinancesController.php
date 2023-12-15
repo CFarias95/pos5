@@ -321,7 +321,7 @@ class ReportsFinancesController extends Controller
         return $paginator;
     }
 
-    public function getRecordsRetentions($request)
+    public function getRecordsRetentions(Request $request)
     {
 
         $period = FunctionController::InArray($request, 'period');
@@ -547,6 +547,15 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        $ffin = FunctionController::InArray($request, 'ffin');
+        $fini = FunctionController::InArray($request, 'fini');
+        //$codcliente = FunctionController::InArray($request, 'codcliente');
+        $codproveedor = FunctionController::InArray($request, 'codproveedor');
+        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
 
         $d_start = null;
         $d_end = null;
@@ -569,8 +578,8 @@ class ReportsFinancesController extends Controller
                 $d_end = $date_end;
                 break;
         }
-        //Log::info("fecha de consulta ".$d_start);
-        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?)', [$d_start]);
+
+        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?)', [$d_start, $codproveedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
@@ -594,6 +603,14 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        //$agrupado = FunctionController::InArray($request, 'agrupado');
+        //$ffin = FunctionController::InArray($request, 'ffin');
+        //$fini = FunctionController::InArray($request, 'fini');
+        $codcliente = FunctionController::InArray($request, 'codcliente');
+        //$codproveedor = FunctionController::InArray($request, 'codproveedor');
+        $codvendedor = FunctionController::InArray($request, 'codvendedor');
+        //Log::info('codcliente'.$codcliente);
+        //Log::info('codvendedor'.$codvendedor);
 
         $d_start = null;
         $d_end = null;
@@ -617,7 +634,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?)', [$d_start, $codcliente, $codvendedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
@@ -641,6 +658,16 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        //$ffin = FunctionController::InArray($request, 'ffin');
+        //$fini = FunctionController::InArray($request, 'fini');
+        //$codcliente = FunctionController::InArray($request, 'codcliente');
+        $codproveedor = FunctionController::InArray($request, 'codproveedor');
+        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        //Log::info('prueba'.$agrupado);
 
         $d_start = null;
         $d_end = null;
@@ -664,7 +691,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?)', [$d_start, $agrupado, $codproveedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
@@ -688,6 +715,15 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+        $agrupado = FunctionController::InArray($request, 'agrupado');
+        if($agrupado == true){
+            $agrupado = 1;
+        }
+        $ffin = FunctionController::InArray($request, 'ffin');
+        $fini = FunctionController::InArray($request, 'fini');
+        $codcliente = FunctionController::InArray($request, 'codcliente');
+        //$codproveedor = FunctionController::InArray($request, 'codproveedor');
+        $codvendedor = FunctionController::InArray($request, 'codvendedor');
 
         $d_start = null;
         $d_end = null;
@@ -711,7 +747,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?)', [$d_start]);
+        $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?, ?, ?, ?, ?, ?)', [$d_start, $agrupado, $codcliente, $fini, $ffin, $codvendedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();

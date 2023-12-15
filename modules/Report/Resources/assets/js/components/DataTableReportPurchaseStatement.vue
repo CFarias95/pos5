@@ -6,21 +6,21 @@
 
                 <div class="row mt-2">
 
-                    <div class="col-md-3">
+                    <div class="col-md-3" v-if="show_periodo">
                         <label class="control-label">Periodo</label>
                         <el-select v-model="form.period" @change="changePeriod">
                             <el-option v-for=" row in dates_array" :key="row.key" :label="row.name" :value="row.value"/>
                         </el-select>
                     </div>
                     <template v-if="form.period === 'month' || form.period === 'between_months'">
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="show_periodo">
                             <label class="control-label">Mes de</label>
                             <el-date-picker v-model="form.month_start" :clearable="false" format="MM/yyyy" type="month"
                                 value-format="yyyy-MM" @change="changeDisabledMonths"></el-date-picker>
                         </div>
                     </template>
                     <template v-if="form.period === 'between_months'">
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="show_periodo">
                             <label class="control-label">Mes al</label>
                             <el-date-picker v-model="form.month_end" :clearable="false"
                                 :picker-options="pickerOptionsMonths" format="MM/yyyy" type="month"
@@ -28,14 +28,14 @@
                         </div>
                     </template>
                     <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="show_periodo">
                             <label class="control-label">Fecha del</label>
                             <el-date-picker v-model="form.date_start" :clearable="false" format="dd/MM/yyyy" type="date"
                                 value-format="yyyy-MM-dd" @change="changeDisabledDates"></el-date-picker>
                         </div>
                     </template>
                     <template v-if="form.period === 'between_dates'">
-                        <div class="col-md-3">
+                        <div class="col-md-3" v-if="show_periodo">
                             <label class="control-label">Fecha al</label>
                             <el-date-picker v-model="form.date_end" :clearable="false" :picker-options="pickerOptionsDates"
                                 format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
@@ -219,6 +219,7 @@ export default {
             show_codvendedor: true,
             show_codcliente: true,
             show_codproveedor: true,
+            show_periodo: true,
             dates_array : [
                 {
                     'key':'between_months',
@@ -326,6 +327,16 @@ export default {
                 }
             ]
             this.form.period = 'date'
+        }else if(this.resource == 'reports/retentions'){
+            this.show_imports = true
+            this.show_suppliers = true
+            this.show_agrupado = false
+            this.show_ffin = true
+            this.show_fini = true
+            this.show_codvendedor = false
+            this.show_codcliente = false
+            this.show_codproveedor = false
+            this.show_periodo = false
         }
 
         await this.getFilters()

@@ -8,6 +8,10 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
     //dd($tittle_unpaid);
     $data = $payments;
+    Log::info('document'.$document);
+    Log::info('payments'.$payments);
+    Log::info('index'.$index);
+    Log::info('id'.$id);
     $valores = null;
     for($i = 0 ; $i <= $index ; $i++)
     {
@@ -22,9 +26,9 @@
     }
 
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
-    //Log::info('datos'.json_encode($account_entry))
-    Log::info('index'.$index);
-    Log::info('id'.$id);
+    Log::info('datos'.json_encode($account_entry))
+    //Log::info('index'.$index);
+    //Log::info('id'.$id);
 @endphp
 <html>
 <head>
@@ -251,7 +255,7 @@
             </h4>
         </td>
         <br>
-        <td width="50%" class="font-bold">ASIENTO NRO - {{$account_entry->filename}}</td>
+        <td width="50%" class="font-bold">ASIENTO NRO - {{$account_entry['filename']}}</td>
     </tr>
 </table>
 <table width="100%">
@@ -269,7 +273,7 @@
         </tr>
     </thead>
     <tbody class="font-sm">
-        @foreach($account_entry->items as $value)
+        @foreach($account_entry['items'] as $value)
         <tr >
             @if($value->debe>0)
             <td class="border-box text-center p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
@@ -284,8 +288,8 @@
         @endforeach
         <tr class="font-sm">
             <td class="text-right p-1 font-sm font-bold">Totales: </td>
-            <td class="text-right p-1 font-bold">${{number_format($account_entry->total_debe, 2, '.', ',')}}</td>
-            <td class="text-right p-1 font-bold">${{number_format($account_entry->total_haber, 2, '.', ',')}}</td>
+            <td class="text-right p-1 font-bold">${{number_format($account_entry['total_debe'], 2, '.', ',')}}</td>
+            <td class="text-right p-1 font-bold">${{number_format($account_entry['total_haber'], 2, '.', ',')}}</td>
         </tr>
     </tbody>
 </table>

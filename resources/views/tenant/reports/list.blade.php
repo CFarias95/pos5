@@ -106,7 +106,7 @@
                 <div class="card-body">
                     <h6 class="card-title">Compras</h6>
                     <ul class="card-report-links">
-                        <li>
+                        {{-- <li> 
                             <a href="{{route('tenant.reports.purchases.index')}}">
                                 Compras totales
                             </a>
@@ -138,18 +138,28 @@
                             </a>
                         </li>
                         <li>
-                            <a href="{{route('tenant.reports.purchases.quotations')}}">
+                            <a href="{{route('tenant.reports.retentions.statement.index')}}">
                                 Reporte compras retenciones
                             </a>
                         </li>
-                        <li>
+                        <li> 
                             <a href="{{route('tenant.reports.purchases.quotations')}}">
                                 Detalle de compras
                             </a>
-                        </li>
+                        </li>--}}
                         <li>
                             <a href="{{route('tenant.reports.purchases.base_impuestos.index')}}">
                                 Compras bases e impuestos
+                            </a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.purchases.statement.index')}}">
+                                Extracto Compras
+                            </a>
+                        </li> 
+                        <li>
+                            <a href="{{route('tenant.reports.retentions.statement.index')}}">
+                                Extracto Retenciones
                             </a>
                         </li>
                     </ul>
@@ -299,13 +309,8 @@
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
                     <h6 class="card-title">Finanzas</h6>
-                    <ul class="card-report-links">
-                        <li>
-                            <a href="{{route('tenant.reports.purchases.statement.index')}}">Extracto Compras</a>
-                        </li>
-                        <li>
-                            <a href="{{route('tenant.reports.retentions.statement.index')}}">Extracto Retenciones</a>
-                        </li>
+                    <ul class="card-report-links">                   
+
                         <li>
                             <a href="{{route('tenant.reports.payable.statement.index')}}">Extracto Cuentas por Pagar</a>
                         </li>
