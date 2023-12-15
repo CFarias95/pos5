@@ -996,7 +996,7 @@ class ProductionController extends Controller
             ->ProductEnded()
             ->with('item_lots', 'item_lots.item_loteable', 'lots_group');
         if ($search) {
-            $query->where('description', 'like', "%{$search}%")
+            $query->where('name', 'like', "%{$search}%")
                 ->orWhere('barcode', 'like', "%{$search}%")
                 ->orWhere('internal_id', 'like', "%{$search}%");
         }
