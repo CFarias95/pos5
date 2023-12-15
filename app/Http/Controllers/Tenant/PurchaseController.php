@@ -635,11 +635,12 @@ class PurchaseController extends Controller
 
     private function savePurchaseFee($purchase, $fee)
     {
-        foreach ($fee as $row) {
+        foreach ($fee as  $key => $row) {
 
             if (key_exists('currency_type_id', $row) == false) {
                 $row['currency_type_id'] = $purchase->currency_type_id;
             }
+            $row['number'] = $key+1;
             $purchase->fee()->create($row);
             $purchase->date_of_due = $row['date'];
         }

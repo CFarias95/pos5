@@ -351,6 +351,12 @@
                                                                     @click.prevent="clickPosFechado(row.fee_id, row.id, row.customer_id)">POSfechar
                                                                 </button>
                                                             </template>
+                                                            <template v-if="row.total_to_pay > 0 && row.fee_id">
+                                                                <button type="button" style="min-width: 41px"
+                                                                    class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
+                                                                    @click.prevent="clickSplit(row.fee_id,row.total_to_pay)">Dividir
+                                                                </button>
+                                                            </template>
 
                                                         </td>
                                                     </tr>
@@ -486,7 +492,7 @@
             :external="true" :configuration="this.configuration" :documentFeeId="feeID"></document-payments>
 
         <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId" :documentFeeId="feeID"></pos-fechado>
-
+        <split-form :showDialog.sync="showDialogSplit" :documentId="recordId" :amountFee="amountFeeRow" ></split-form>
         <sale-note-payments :showDialog.sync="showDialogSaleNotePayments" :documentId="recordId" :external="true"
             :configuration="this.configuration"></sale-note-payments>
 
@@ -498,18 +504,20 @@
 import DocumentPayments from "@views/documents/partials/payments.vue";
 import SaleNotePayments from "@views/sale_notes/partials/payments.vue";
 import PosFechado from "@views/documents/partials/posFechado.vue";
+import SplitForm from './partials/split.vue';
 // import DataTable from '../../components/DataTableWithoutPaging.vue'
 import queryString from "query-string";
 
 export default {
     props: ['typeUser', 'configuration'],
-    components: { DocumentPayments, SaleNotePayments, PosFechado },
+    components: { DocumentPayments, SaleNotePayments, PosFechado, SplitForm },
     data() {
         return {
             resource: 'finances/unpaid',
             form: {},
             customers: [],
             recordId: null,
+            amountFeeRow: 0,
             customerId: null,
             feeID: null,
             records: [],
@@ -530,6 +538,7 @@ export default {
 
             showDialogDocumentPayments: false,
             showDialogPosFechado: false,
+            showDialogSplit: false,
             showDialogSaleNotePayments: false,
             users: [],
             payment_method_types: [],
@@ -732,6 +741,12 @@ export default {
             this.customerId = customer
             this.feeID = feeID;
             this.showDialogPosFechado = true;
+        },
+        clickSplit(recordId, amount) {
+            console.log(recordId,amount)
+            this.recordId = recordId;
+            this.amountFeeRow = parseFloat(amount);
+            this.showDialogSplit = true;
         },
         clickSaleNotePayment(recordId) {
             this.recordId = recordId;

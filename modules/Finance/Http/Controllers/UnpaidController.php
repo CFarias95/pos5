@@ -187,6 +187,38 @@ class UnpaidController extends Controller
 
     }
 
+    public function generateNewFee(Request $request){
+        try{
+            $idFee = $request->fee_id;
+            $fechaVencimiento = $request->date_of_due;
+            $valorFee = $request->amount;
+
+            $fee = DocumentFee::find($idFee);
+            $difAmount = $fee->amount - floatval($valorFee);
+            $fee->amount = $difAmount;
+
+            $number = (DocumentFee::where('document_id', $fee->document_id)->get())->count();
+
+            $feeNew = new DocumentFee();
+            $feeNew->document_id = $fee->document_id;
+            $feeNew->date = $fechaVencimiento;
+            $feeNew->currency_type_id = $fee->currency_type_id;
+            $feeNew->amount = floatval($valorFee);
+            $feeNew->number = $number + 1;
+            $feeNew->save();
+
+            return[
+                'success' => true,
+                'message' => 'Se creo una nueva cuota: '.$feeNew->id
+            ];
+        }catch(Exception $ex){
+            return[
+                'success' => false,
+                'message' => $ex->getMessage()
+            ];
+        }
+    }
+
     public function unpaidall()
     {
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
@@ -281,7 +313,7 @@ class UnpaidController extends Controller
         $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
 
         $i = $conect[$index];
-        
+
         $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
 
         //Log::info('info'.json_encode($account_entry));

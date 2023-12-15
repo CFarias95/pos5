@@ -1680,7 +1680,8 @@ class Facturalo
 
     private function saveFee($document, $fee)
     {
-        foreach ($fee as $row) {
+        foreach ($fee as $key=>$row) {
+            $row['number'] = $key+1;
             $document->fee()->create($row);
         }
     }

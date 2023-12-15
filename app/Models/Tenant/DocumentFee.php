@@ -23,6 +23,7 @@ class DocumentFee extends ModelTenant
         'amount',
         'f_posdated',
         'posdated',
+        'number',
     ];
 
     protected $casts = [

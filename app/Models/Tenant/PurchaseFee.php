@@ -22,6 +22,7 @@ class PurchaseFee extends ModelTenant
         'amount',
         'f_posdated',
         'posdated',
+        'number',
     ];
 
     protected $casts = [

@@ -47,9 +47,8 @@ if($hostname) {
                  */
                 Route::prefix('unpaid')->group(function () {
                     Route::get('', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
-                    // Route::post('', 'UnpaidController@unpaid');
+                    Route::post('/split', 'UnpaidController@generateNewFee');
                     Route::get('/filter', 'UnpaidController@filter');
-                    // Route::post('/records', 'UnpaidController@records');
                     Route::get('/records', 'UnpaidController@records');
                     Route::get('/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                     Route::get('/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
@@ -58,6 +57,7 @@ if($hostname) {
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'UnpaidController@PosDatedShow');
                     Route::post('/posdated', 'UnpaidController@PosDatedUpdate');
+
                 });
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');
                 Route::get('payment-file/download-file/{filename}/{type}', 'PaymentFileController@download');
