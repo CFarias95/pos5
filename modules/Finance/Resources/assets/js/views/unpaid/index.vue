@@ -422,7 +422,7 @@
                                                         </td>
                                                         <td v-if="columns.purchase_order.visible">{{ row.purchase_order }}
                                                         </td>
-                                                        <td>
+                                                        <!--<td>
                                                             <el-popover placement="right" width="300" trigger="click">
                                                                 <p>
                                                                     Saldo actual:
@@ -437,7 +437,7 @@
 
                                                                 <el-button icon="el-icon-view" slot="reference"></el-button>
                                                             </el-popover>
-                                                        </td>
+                                                        </td>-->
                                                         <td>{{ row.currency_type_id }}</td>
                                                         <td class="text-right text-danger">{{ row.total_to_pay }}</td>
                                                         <td class="text-center">
@@ -707,6 +707,7 @@ export default {
                 this.records.sort(function (a, b) {
                     return parseFloat(a.delay_payment) - parseFloat(b.delay_payment);
                 });
+                //console.log('registros', this.records);
                 this.records = this.records.map(r => {
                     if (setting.apply_arrears) {
                         r.arrears = parseFloat(r.delay_payment * setting.arrears_amount).toFixed(2);
