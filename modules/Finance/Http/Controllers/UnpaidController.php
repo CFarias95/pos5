@@ -282,11 +282,12 @@ class UnpaidController extends Controller
 
         $i = $conect[$index];
         
-        $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->get();
+        $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
 
-        //Log::info('johan'.json_encode($account_entry));
+        //Log::info('info'.json_encode($account_entry));
+        Log::info('index'.$id);
 
-        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry);
+        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index);
 
         /* cuentas por cobrar formato a4 */
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {
@@ -302,7 +303,7 @@ class UnpaidController extends Controller
             $customer_name     = strlen($this->document->customer->name) > '25' ? '10' : '0';
             $customer_address  = (strlen($this->document->customer->address) / 200) * 10;
             $p_order           = $this->document->purchase_order != '' ? '10' : '0';
-            $account_entry     = $this->account_entry;
+            //$account_entry     = $this->account_entry;
             $total_exportation = $this->document->total_exportation != '' ? '10' : '0';
             $total_free        = $this->document->total_free != '' ? '10' : '0';
             $total_unaffected  = $this->document->total_unaffected != '' ? '10' : '0';
