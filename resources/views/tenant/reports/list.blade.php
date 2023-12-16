@@ -162,6 +162,11 @@
                                 Extracto Retenciones
                             </a>
                         </li>
+                        {{-- <li>
+                            <a href="{{route('tenant.reports.retentions.received.index')}}">
+                                Retenciones recibidas
+                            </a>
+                        </li> --}}
                     </ul>
                 </div>
             </div>
@@ -231,7 +236,6 @@
                         <li>
                             <a href="{{route('tenant.reports.reporte_ventas_detalle.index')}}">Detalle de ventas</a>
                         </li>
-
                     </ul>
                 </div>
             </div>

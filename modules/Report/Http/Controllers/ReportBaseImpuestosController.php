@@ -18,6 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Modules\Report\Exports\ReportBaseImpuestosExport;
 use Modules\Report\Http\Resources\QuotationCollection;
 use Modules\Report\Http\Resources\ReportBaseImpuestosCollection;
+use Illuminate\Support\Facades\Log;
 
 class ReportBaseImpuestosController extends Controller
 {
@@ -32,6 +33,7 @@ class ReportBaseImpuestosController extends Controller
     public function datosSP(Request $request)
     {
         $sp = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?);", [$request->date_start, $request->date_end]);
+        //Log::info("SP".json_encode($sp));
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;

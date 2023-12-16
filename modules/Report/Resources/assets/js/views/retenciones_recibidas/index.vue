@@ -3,11 +3,11 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Compras Bases e Impuestos</span></li>
+                <li class="active"><span>Retenciones Recibidas</span></li>
             </ol>
         </div>
         <div class="card-header bg-info">
-            <h3 class="my-0">Reporte Compras Base e Impuestos</h3>
+            <h3 class="my-0">Reporte Retenciones Recibidas</h3>
         </div>
         <div class="card mb-0">
             <div class="card-body">
@@ -83,7 +83,7 @@ import queryString from 'query-string'
 export default {
     data() {
         return {
-            resource: 'reports/purchases/base_impuestos',
+            resource: 'reports/retentions/received',
             form: {
                 date_start: null,
                 date_end: null,

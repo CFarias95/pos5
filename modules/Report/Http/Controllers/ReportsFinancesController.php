@@ -81,8 +81,11 @@ class ReportsFinancesController extends Controller
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
         $agrupado = FunctionController::InArray($request, 'agrupado');
-        if($agrupado == true){
+        if($agrupado == 'true'){
             $agrupado = 1;
+        }
+        if($agrupado == 'false'){
+            $agrupado = 0;
         }
         $ffin = FunctionController::InArray($request, 'ffin');
         $fini = FunctionController::InArray($request, 'fini');
@@ -180,9 +183,14 @@ class ReportsFinancesController extends Controller
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
         $agrupado = FunctionController::InArray($request, 'agrupado');
-        if($agrupado == true){
+        //Log::info('check'.$agrupado);
+        if($agrupado == 'true'){
             $agrupado = 1;
         }
+        if($agrupado == 'false'){
+            $agrupado = 0;
+        }
+        //Log::info('check'.$agrupado);
         //$ffin = FunctionController::InArray($request, 'ffin');
         //$fini = FunctionController::InArray($request, 'fini');
         //$codcliente = FunctionController::InArray($request, 'codcliente');
@@ -232,6 +240,8 @@ class ReportsFinancesController extends Controller
         $agrupado = FunctionController::InArray($request, 'agrupado');
         if($agrupado == true){
             $agrupado = 1;
+        }else{
+            $agrupado = 0;
         }
         $ffin = FunctionController::InArray($request, 'ffin');
         $fini = FunctionController::InArray($request, 'fini');
