@@ -95,7 +95,7 @@
                                     <div class="form-group">
                                         <label>Importe</label>
                                         <el-input
-                                            @change="changeImporte"
+                                            @change="changeLiquidated"
                                             v-model="form.importe" clearable></el-input>
                                     </div>
                                 </div>

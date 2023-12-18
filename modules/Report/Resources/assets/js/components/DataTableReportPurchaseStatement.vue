@@ -432,10 +432,12 @@ export default {
             let parameters = queryString.stringify({
                 page: this.pagination.current_page,
                 limit: this.limit,
-                ...this.form
+                ...this.form,
+                
             })
             delete (parameters.user_id)
             delete (parameters.document_type_id)
+            console.log('Checkbox', this.form.agrupado)
 
             return `${parameters}&user_id=${JSON.stringify(this.form.user_id)}&document_type_id=${JSON.stringify(this.form.document_type_id)}`
 
