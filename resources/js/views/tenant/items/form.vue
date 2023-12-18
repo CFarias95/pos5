@@ -867,7 +867,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.purchase_cta }" class="form-group">
                                 <label class="control-label">Cuenta de compra</label>
-                                <el-select v-model="form.purchase_cta">
+                                <el-select v-model="form.purchase_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable></el-option>
                                 </el-select>
@@ -878,7 +878,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.sale_cost_cta }" class="form-group">
                                 <label class="control-label">Cuenta de costo de ventas</label>
-                                <el-select v-model="form.sale_cost_cta">
+                                <el-select v-model="form.sale_cost_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
@@ -889,7 +889,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.income_cta }" class="form-group">
                                 <label class="control-label">Cuenta de ingreso</label>
-                                <el-select v-model="form.income_cta">
+                                <el-select v-model="form.income_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
@@ -900,7 +900,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.item_process_cta }" class="form-group">
                                 <label class="control-label">Cuenta de producto en proceso</label>
-                                <el-select v-model="form.item_process_cta">
+                                <el-select v-model="form.item_process_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable ></el-option>
                                 </el-select>
@@ -911,7 +911,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.item_finish_cta }" class="form-group">
                                 <label class="control-label">Cuenta de producto terminado</label>
-                                <el-select v-model="form.item_finish_cta">
+                                <el-select v-model="form.item_finish_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" clearable filterable></el-option>
                                 </el-select>
@@ -922,7 +922,7 @@
                         <div class="col-md-4">
                             <div :class="{ 'has-danger': errors.item_import_cta }" class="form-group">
                                 <label class="control-label">Cuenta importacion en transito</label>
-                                <el-select v-model="form.item_import_cta">
+                                <el-select v-model="form.item_import_cta" clearable filterable>
                                     <el-option v-for="option in accounts" :key="option.id"
                                         :label="option.code + ' - ' + option.description" :value="option.id" filterable clearable></el-option>
                                 </el-select>

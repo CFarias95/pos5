@@ -66,7 +66,7 @@
                     <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
                         <label v-if ="form.id && form.id == '99'" class="control-label">Cuenta contable para IVA</label>
                         <label v-else class="control-label">Cuenta contable para cobros</label>
-                                <el-select v-model="form.countable_acount">
+                                <el-select v-model="form.countable_acount" filterable clearable>
                                     <el-option v-for="option in accounts"
                                                :key="option.id"
                                                :label="option.code + ' - ' + option.description "
@@ -79,7 +79,7 @@
                     <div class="col-md-4" v-show="form.is_credit != 1 && isCompanieCountable">
                         <label v-if ="form.id && form.id == '99'" class="control-label">Cuenta contable para RENTA</label>
                         <label v-else class="control-label">Cuenta contable para pagos</label>
-                                <el-select v-model="form.countable_acount_payment">
+                                <el-select v-model="form.countable_acount_payment" clearable filterable>
                                     <el-option v-for="option in accounts"
                                                :key="option.id"
                                                :label="option.code + ' - ' + option.description "

@@ -8,10 +8,10 @@
     $balance = ($document->total - $total_payment) - $document->payments->sum('change');
     //dd($tittle_unpaid);
     $data = $payments;
-    Log::info('document'.$document);
-    Log::info('payments'.$payments);
-    Log::info('index'.$index);
-    Log::info('id'.$id);
+    //Log::info('document'.$document);
+    //Log::info('payments'.$payments);
+    //Log::info('index'.$index);
+    //Log::info('id'.$id);
     $valores = null;
     for($i = 0 ; $i <= $index ; $i++)
     {
@@ -26,7 +26,7 @@
     }
 
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
-    Log::info('datos'.json_encode($account_entry))
+    //Log::info('datos'.json_encode($account_entry))
     //Log::info('index'.$index);
     //Log::info('id'.$id);
 @endphp

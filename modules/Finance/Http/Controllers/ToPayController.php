@@ -33,6 +33,7 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Requests\Tenant\PosDatedRequest;
+use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\PurchasePayment;
 use Illuminate\Support\Facades\Log;
@@ -184,9 +185,16 @@ class ToPayController extends Controller
 
         $sale_note = Purchase::find($id);
 
+        //Log::info('datos'.$sale_note);
+
+        $purchase_payment = PurchasePayment::where('purchase_id', $sale_note->id)->first();
+
+        $account_entry = AccountingEntries::where('document_id', 'PC'.$purchase_payment->id)->get();
+
+        //Log::info('datos'.$account_entry);
 
         //if (!$sale_note) throw new Exception("El código {$id} es inválido, no se encontro la nota de venta relacionada");
-        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index);
+        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index, $account_entry);
         $temp = tempnam(sys_get_temp_dir(), 'to-pay');
 
 
@@ -202,12 +210,12 @@ class ToPayController extends Controller
         return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
     }
 
-    private function reloadPDF1($sale_note, $format, $filename, $id, $index)
+    private function reloadPDF1($sale_note, $format, $filename, $id, $index, $account_entry)
     {
-        $this->createPdf1($sale_note, $format, $filename, $id, $index);
+        $this->createPdf1($sale_note, $format, $filename, $id, $index, $account_entry);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index)
+    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index, $account_entry = null)
     {
 
         ini_set("pcre.backtrack_limit", "5000000");
@@ -222,7 +230,7 @@ class ToPayController extends Controller
         $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
         $payments = PurchasePayment::where('purchase_id', $id)->get();
         $this->document->payments = $payments;
-        $html = $template->pdf2($base_template, "to-pay", $this->company, $this->document, $format_pdf, $id, $index);
+        $html = $template->pdf2($base_template, "to-pay", $this->company, $this->document, $format_pdf, $id, $index, $account_entry);
 
         /* cuentas por pagar formato a4 */
         $pdf_font_regular = config('tenant.pdf_name_regular');

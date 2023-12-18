@@ -161,12 +161,16 @@ class QuotationController extends Controller
         $customers = Person::whereType('customers')
             ->orderBy('name')
             ->whereIsEnabled();
+
         if ($request->has('customer_id')) {
             $customers->where('id', $request->customer_id);
         } else {
-            $customers->where('number', 'like', "%{$request->input}%")
-                ->orWhere('name', 'like', "%{$request->input}%");
+            $customers->where(function ($query) use ($request) {
+            $query->where('number', 'like', "%{$request->input}%")
+                  ->orWhere('name', 'like', "%{$request->input}%");
+        });
         }
+
         $customers = $customers->get()->transform(function ($row) {
             /** @var Person $row */
             return $row->getCollectionData();

@@ -315,8 +315,8 @@ class UnpaidController extends Controller
         $i = $conect[$index];
         $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
 
-        Log::info('info1'.json_encode($account_entry));
-        Log::info('index1'.$id);
+        //Log::info('info1'.json_encode($account_entry));
+        //Log::info('index1'.$id);
 
         $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index);
 
