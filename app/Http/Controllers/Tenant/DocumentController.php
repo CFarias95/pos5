@@ -2390,6 +2390,7 @@ class DocumentController extends Controller
         //$secuencialP = $purchase->sequential_number;
 
         $secuential = substr($secuencial,24,15);
+
         Log::info('Secunecial documento para retenciones '.$secuential);
         Log::info('Secunecial documento para retenciones '.$secuencial);
 

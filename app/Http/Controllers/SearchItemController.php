@@ -139,10 +139,10 @@
                 $item->WhereNotService();
                 $ItemToSearchBySeries->WhereNotService();
             } else {
-                $item->WhereService()
-                    ->whereNotIsSet();
-                $ItemToSearchBySeries->WhereService()
-                    ->whereNotIsSet();
+                //$item->WhereService()
+                //    ->whereNotIsSet();
+                //$ItemToSearchBySeries->WhereService()
+                //    ->whereNotIsSet();
             }
 
 
@@ -481,7 +481,7 @@
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
-            $item = self::getAllItemBase($request, false, $id);
+            $item = self::getAllItemBase($request, true, $id);
 
             /*
             if ($search_by_barcode === false && $input != null) {

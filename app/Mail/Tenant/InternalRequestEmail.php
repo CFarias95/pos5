@@ -16,12 +16,14 @@ class InternalRequestEmail extends Mailable
     public $estado;
     public $id;
     public $name;
+    public $body;
 
-    public function __construct($estado,$id, $name)
+    public function __construct($estado,$id, $name, $body)
     {
         $this->estado = $estado;
         $this->id = $id;
         $this->name = $name;
+        $this->body = $body;
     }
 
     /**

@@ -16,12 +16,17 @@
 <body>
     @if($estado != 'Created')
     <p>Estimad@: {{ $name }}<br>
-
         Le informamos que el pedido interno IR- {{ $id }} a sido {{ $estado }}</p>
+        @if($body)
+        <div style="border: 1px solid black;">{{$body}}</div><br>
+        @endif
     @else
     <p>Estimad@: {{ $name }}<br>
 
         Le informamos que se a generado el pedido interno IR- {{ $id }}</p>
+        @if($body)
+        <div style="border: 1px solid black;">{{$body}}</div><br>
+        @endif
     @endif
 </body>
 </html>

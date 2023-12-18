@@ -2177,12 +2177,14 @@ class Item extends ModelTenant
 
     public function scopeForProductionSupply($query)
     {
-        return $query->where([
-            ['item_type_id', '01'],
-            ['unit_type_id', '!=', 'ZZ'],
-            ['is_for_production', 0],
-            ['is_set', 0]
-        ]);
+        return $query;
+        //->where([
+            //['item_type_id', '01'],
+            //['concept_id','10'],
+            //['unit_type_id', '!=', 'ZZ'],
+            //['is_for_production', 0],
+            //['is_set', 0]
+        //]);
     }
 
     /**

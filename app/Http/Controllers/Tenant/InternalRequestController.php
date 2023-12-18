@@ -260,6 +260,7 @@ class InternalRequestController extends Controller
             $estado = $internalRequest->status;
             $email = $manage_email;
             $name = $internalRequest->manage->name;
+            $content = $internalRequest->description;
             // $this->reloadPDF($quotation, "a4", $quotation->filename);
             if($estado != 'Created'){
 
@@ -268,7 +269,7 @@ class InternalRequestController extends Controller
 
             }
 
-            $mailable = new InternalRequestEmail($estado,$id,$name);
+            $mailable = new InternalRequestEmail($estado,$id,$name,$content);
 
             Configuration::setConfigSmtpMail();
             $backup = Mail::getSwiftMailer();
