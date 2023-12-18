@@ -471,7 +471,7 @@ if ($hostname) {
             Route::post('documents/retention', 'Tenant\DocumentController@retentionStore');
             Route::post('documents/retention/upload', 'Tenant\DocumentController@retentionUpload');
 
-            Route::get('documents/advance/{id}', 'Tenant\DocumentController@searchAdvancesByIdCustomer');
+            Route::get('documents/advance/{id}/{documentId}', 'Tenant\DocumentController@searchAdvancesByIdCustomer');
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');

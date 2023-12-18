@@ -377,7 +377,7 @@ export default {
         },
         addAdvancesCustomer() {
 
-            this.$http.get(`/documents/advance/${this.customerId}`).then(
+            this.$http.get(`/documents/advance/${this.customerId}/${this.documentId}`).then(
                 response => {
                     this.advances = response.data.advances;
                     this.retentions = response.data.retentions;

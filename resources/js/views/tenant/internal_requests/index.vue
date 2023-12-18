@@ -46,6 +46,7 @@
                                 <el-option value="Created" label="Creada"></el-option>
                                 <el-option value="Acepted" label="Aceptada"></el-option>
                                 <el-option value="Rejected" label="Rechazada"></el-option>
+                                <el-option value="Partially" label="Parcial"></el-option>
                             </el-select>
                         </td>
                         <td class="text-center"> {{ row.phase }}</td>

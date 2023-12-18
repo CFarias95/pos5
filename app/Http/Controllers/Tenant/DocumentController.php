@@ -51,6 +51,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\PaymentCondition;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\Person;
+use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchasePayment;
 use App\Models\Tenant\Retention;
 use App\Models\Tenant\SaleNote;
@@ -2362,7 +2363,7 @@ class DocumentController extends Controller
         ];
     }
 
-    public function searchAdvancesByIdCustomer($client_id){
+    public function searchAdvancesByIdCustomer($client_id,$document_id){
 
         $records = Advance::where('idCliente',$client_id)->get();
 
@@ -2382,7 +2383,17 @@ class DocumentController extends Controller
             return $row;
         });
 
-        $retentions = Retention::where('supplier_id',$client_id)->whereColumn('total_used','<','total_retention')->get()->transform(function($row){
+        $document = Document::find($document_id);
+        $secuencial = $document->clave_SRI;
+
+        //$purchase = Purchase::find($document_id);
+        //$secuencialP = $purchase->sequential_number;
+
+        $secuential = substr($secuencial,24,15);
+        Log::info('Secunecial documento para retenciones '.$secuential);
+        Log::info('Secunecial documento para retenciones '.$secuencial);
+
+        $retentions = Retention::where('supplier_id',$client_id)->whereColumn('total_used','<','total_retention')->where('optional','like','%numDocSustento": "'.$secuential.'"%')->get()->transform(function($row){
             $data['id'] = $row->id;
             $data['name'] = $row->series.$row->number.'-'.$row->total_retention.'/'.($row->total_retention - $row->total_used);
             $data['valor'] = (float)($row->total_retention - $row->total_used);

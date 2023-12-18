@@ -4,17 +4,7 @@
         <form autocomplete="off">
             <div class="form-body">
                 <div class="row">
-                    <div class="col-md-8" hidden>
-                        <div class="form-group" :class="{ 'has-danger': errors.amount }">
-                            <label class="control-label">
-                                ID
-                            </label>
-                            <el-input-number v-model="form.fee_id" :value="recordId"></el-input-number>
-                            <small class="form-control-feedback" v-if="errors.amount"
-                                v-text="errors.description[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-8">
+                    <div class="col-md-5">
                         <div class="form-group" :class="{ 'has-danger': errors.amount }">
                             <label class="control-label">
                                 Valor
@@ -24,7 +14,7 @@
                                 v-text="errors.description[0]"></small>
                         </div>
                     </div>
-                    <div class="col-md-4">
+                    <div class="col-md-7">
                         <div class="form-group" :class="{ 'has-danger': errors.date_of_due }">
                             <label class="control-label">
                                 Fecha vencimiento
@@ -49,14 +39,14 @@
 import { mapState, mapActions } from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialog', 'recordId', 'amountFee'],
+    props: ['showDialog', 'documentId', 'amountFee'],
     components: {
     },
     data() {
         return {
             titleDialog: 'Dividir la cuota actual',
             loading: false,
-            resource: 'unpaid',
+            resource: 'finances/unpaid',
             errors: {},
             form: {},
             company: {},
@@ -79,31 +69,40 @@ export default {
             this.form = {
                 date_of_due: moment().format('YYYY-MM-DD'),
                 amount: 0,
-                fee_id: this.recordId
+                fee_id: null
             };
         },
         async create() {
 
         },
         clickCloseSplit() {
-            this.$emit('update:showDialog', false)
+
             this.initForm()
+            this.$emit('update:showDialog', false)
+
         },
         closeSplit() {
+            this.initForm()
             this.$emit('update:showDialog', false);
         },
         async clicksaveSplit() {
-            //this.form.fee_id = this.recordId
-            await this.$http.post(`/${this.resource}/split`, this.form)
+            this.form.fee_id = this.documentId
+            console.log(`/${this.resource}/create-new`, this.form)
+            await this.$http.post(`/${this.resource}/create-new`, this.form)
             .then(response => {
+                console.log(response)
                 if (response.data.success) {
                     this.$message.success(response.data.message);
-                    this.close()
+                    this.initForm()
+                    this.$emit('update:showDialog', false)
+                    this.$emit('reloadDataUnpaid')
+
                 } else {
                     this.$message.error(response.data.message);
                 }
             })
             .catch(error => {
+                console.log(error)
                 this.$message.error(error.response.data.message)
             })
         }

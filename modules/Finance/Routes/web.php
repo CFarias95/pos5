@@ -47,7 +47,8 @@ if($hostname) {
                  */
                 Route::prefix('unpaid')->group(function () {
                     Route::get('', 'UnpaidController@index')->name('tenant.finances.unpaid.index');
-                    Route::post('/split', 'UnpaidController@generateNewFee');
+                    Route::post('/create-new', 'UnpaidController@generateNewFee');
+                    Route::post('/update-date', 'UnpaidController@updateDateFee');
                     Route::get('/filter', 'UnpaidController@filter');
                     Route::get('/records', 'UnpaidController@records');
                     Route::get('/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');

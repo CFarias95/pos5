@@ -353,9 +353,16 @@
                                                             </template>
                                                             <template v-if="row.total_to_pay > 0 && row.fee_id">
                                                                 <button type="button" style="min-width: 41px"
-                                                                    class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
-                                                                    @click.prevent="clickSplit(row.fee_id,row.total_to_pay)">Dividir
+                                                                    class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                                                                    @click.prevent="clickSplit(row.fee_id,row.total_to_pay)">Dividir cuota
                                                                 </button>
+                                                            </template>
+                                                            <template v-if="row.total_to_pay > 0 && row.fee_id">
+                                                                <button type="button" style="min-width: 41px"
+                                                                    class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                                                    @click.prevent="clickDate(row.fee_id)">Cambiar F. Vencimiento
+                                                                </button>
+
                                                             </template>
 
                                                         </td>
@@ -493,6 +500,7 @@
 
         <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId" :documentFeeId="feeID"></pos-fechado>
         <split-form :showDialog.sync="showDialogSplit" :documentId="recordId" :amountFee="amountFeeRow" ></split-form>
+        <date-form :showDialog.sync="showDialogDate" :documentId="recordId"></date-form>
         <sale-note-payments :showDialog.sync="showDialogSaleNotePayments" :documentId="recordId" :external="true"
             :configuration="this.configuration"></sale-note-payments>
 
@@ -505,12 +513,13 @@ import DocumentPayments from "@views/documents/partials/payments.vue";
 import SaleNotePayments from "@views/sale_notes/partials/payments.vue";
 import PosFechado from "@views/documents/partials/posFechado.vue";
 import SplitForm from './partials/split.vue';
+import DateForm from './partials/date.vue';
 // import DataTable from '../../components/DataTableWithoutPaging.vue'
 import queryString from "query-string";
 
 export default {
     props: ['typeUser', 'configuration'],
-    components: { DocumentPayments, SaleNotePayments, PosFechado, SplitForm },
+    components: { DocumentPayments, SaleNotePayments, PosFechado, SplitForm, DateForm },
     data() {
         return {
             resource: 'finances/unpaid',
@@ -539,6 +548,7 @@ export default {
             showDialogDocumentPayments: false,
             showDialogPosFechado: false,
             showDialogSplit: false,
+            showDialogDate: false,
             showDialogSaleNotePayments: false,
             users: [],
             payment_method_types: [],
@@ -748,6 +758,10 @@ export default {
             this.recordId = recordId;
             this.amountFeeRow = parseFloat(amount);
             this.showDialogSplit = true;
+        },
+        clickDate(recordId) {
+            this.recordId = recordId;
+            this.showDialogDate = true;
         },
         clickSaleNotePayment(recordId) {
             this.recordId = recordId;

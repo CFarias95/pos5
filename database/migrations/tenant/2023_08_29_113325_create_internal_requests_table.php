@@ -19,7 +19,7 @@ class CreateInternalRequestsTable extends Migration
             $table->integer('user_manage')->unsigned();
             $table->string('title', 266);
             $table->text('description');
-            $table->enum('status', ['Created', 'Acepted','Rejected'])->nullable()->default('Created');
+            $table->enum('status', ['Created', 'Acepted','Rejected','Partially'])->nullable()->default('Created');
             $table->string('phase', 266)->nullable();
             $table->boolean('confirmed')->nullable()->default(false);
             $table->timestamps();

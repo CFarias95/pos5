@@ -187,6 +187,27 @@ class UnpaidController extends Controller
 
     }
 
+    public function updateDateFee(Request $request){
+        try{
+            $idFee = $request->fee_id;
+            $fechaVencimiento = $request->date_of_due;
+
+            $fee = DocumentFee::find($idFee);
+            $fee->date = $fechaVencimiento;
+            $fee->save();
+
+            return[
+                'success' => true,
+                'message' => 'Se actualizo la fecha de vencimiento'
+            ];
+        }catch(Exception $ex){
+            return[
+                'success' => false,
+                'message' => $ex->getMessage()
+            ];
+        }
+    }
+
     public function generateNewFee(Request $request){
         try{
             $idFee = $request->fee_id;
@@ -196,6 +217,7 @@ class UnpaidController extends Controller
             $fee = DocumentFee::find($idFee);
             $difAmount = $fee->amount - floatval($valorFee);
             $fee->amount = $difAmount;
+            $fee->save();
 
             $number = (DocumentFee::where('document_id', $fee->document_id)->get())->count();
 
