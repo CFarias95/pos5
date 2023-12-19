@@ -18,10 +18,12 @@
                 <data-table :resource="resource">
                     <tr slot="heading">
                         <th class="text-center">Fecha Emisión</th>
+                        <th class="text-center">Fecha Real</th>
                         <th>Cliente</th>
                         <th>Número</th>
                         <th>Secuencial</th>
                         <th>Clave Acceso</th>
+                        <th>Doc Sustento</th>
                         <th>Estado</th>
                         <th class="text-right">T.Retención</th>
                         <th class="text-right">Total</th>
@@ -30,10 +32,12 @@
                     </tr>
                     <tr slot-scope="{ index, row }">
                         <td class="text-center">{{ row.date_of_issue }}</td>
+                        <td class="text-center">{{ row.date_real }}</td>
                         <td>{{ row.supplier_name }}<br /><small v-text="row.supplier_number"></small></td>
                         <td>{{ row.number }}</td>
                         <td>{{ row.secuencial }}</td>
                         <td>{{ row.clave_acceso }}</td>
+                        <td>{{ row.doc_sustento }}</td>
                         <td>
                             <span class="badge bg-secondary text-white"
                                 :class="{ 'bg-secondary': (row.state_type_id === '01'), 'bg-info': (row.state_type_id === '03'), 'bg-success': (row.state_type_id === '05'), 'bg-secondary': (row.state_type_id === '07'), 'bg-dark': (row.state_type_id === '09') }">{{

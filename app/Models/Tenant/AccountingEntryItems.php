@@ -29,7 +29,9 @@ class AccountingEntryItems extends ModelTenant
         'user_id_audited',
         'user_id_reconciliation',
         'audited',
-        'reconciliation'
+        'reconciliation',
+        'reconciliation_date',
+        'audit_date',
     ];
 
     protected $casts = [

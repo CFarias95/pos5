@@ -234,6 +234,7 @@ class AuditController extends Controller
         if ($record) {
             $record->audited = true;
             $record->user_id_audited = Auth()->user()->id;
+            $record->audit_date = date('Y-m-d H:i:s');
             $record->save();
             return [
                 'success' => true,

@@ -24,13 +24,18 @@ class RetentionCollection extends ResourceCollection
                 $has_cdr = false;
             }
             $person = Person::find($row->supplier_id);
+            $dateReal = $row->observations;
+            $dateReal = substr($dateReal,11,8);
+            $dateReal = substr($dateReal,-4).'-'.substr($dateReal,2,2).'-'.substr($dateReal,0,2);
 
             return [
                 'id' => $row->id,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
+                'date_real'=> $dateReal,
                 'number' => $row->number_full,
                 'secuencial' => $row->ubl_version,
-                'clave_acceso' => $row->observations,
+                'clave_acceso' => substr($row->observations,11),
+                'doc_sustento' =>(isset($row->optional[0]['numDocSustento']))?$row->optional[0]['numDocSustento']:'N/A',
                 'supplier_name' => $person->name,
                 'supplier_number' => $person->identity_document_type->description.' '.$person->number,
                 'state_type_id' => $row->state_type_id,

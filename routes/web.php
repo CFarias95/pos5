@@ -916,6 +916,7 @@ if ($hostname) {
                 Route::post('/update/status','Tenant\InternalRequestController@updateStatus');
                 Route::delete('delete/{id}', 'Tenant\InternalRequestController@destroy');
                 Route::post('upload', 'Tenant\InternalRequestController@uploadAttached');
+                Route::get('dowload/{id}', 'Tenant\InternalRequestController@pdf');
             });
 
 

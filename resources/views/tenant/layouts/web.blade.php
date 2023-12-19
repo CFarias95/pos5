@@ -7,8 +7,8 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-{{--    <title>{{ config('app.name', 'Facturación Electrónica') }}</title>--}}
-    <title>Facturación Electrónica</title>
+{{--    <title>{{ config('app.name', 'My ERP Cloud') }}</title>--}}
+    <title>My ERP Cloud</title>
     <!-- Scripts -->
 
     <!-- Fonts -->
@@ -84,9 +84,9 @@
 </div>
 
     {{--@stack('scripts')--}}
-    
+
     @yield('content-mercadopago')
-    
+
     <script src="{{ asset('js/manifest.js') }}"></script>
     <script src="{{ asset('js/vendor.js') }}"></script>
     <script src="{{ mix('js/app.js') }}"></script>

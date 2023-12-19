@@ -38,13 +38,13 @@ class QuotationEmail extends Mailable
 
         if($this->quotation->send_extra_pdf == true){
 
-            $pdf2 = $this->getStorage($this->quotation->internal_request->upload_filename, 'internal_request_attached');
+            $pdf2 = $this->getStorage(str_replace('.pdf','',$this->quotation->internal_request->upload_filename), 'internal_request_attached/pdf');
             $pdf = $this->getStorage($pdfNombre, 'quotation');
 
             return $this->subject('Envio de Cotización')
                         ->from(config('mail.username'), 'Cotización')
                         ->view('tenant.templates.email.quotation')
-                        ->attachData($pdf2, $this->quotation->internal_request->upload_filename.'.pdf')
+                        ->attachData($pdf2, $this->quotation->internal_request->upload_filename)
                         ->attachData($pdf, $this->quotation->filename.'.pdf');
         }else{
             $pdf = $this->getStorage($pdfNombre, 'quotation');

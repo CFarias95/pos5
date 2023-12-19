@@ -25,6 +25,11 @@
                                 value-format="yyyy-MM-dd" @change="getRecords">
                             </el-date-picker>
                         </template>
+                        <template v-if="search.column === 'date_real'">
+                            <el-date-picker v-model="search.value" type="date" style="width: 100%;" placeholder="Buscar"
+                                value-format="ddMMyyyy" @change="getRecords">
+                            </el-date-picker>
+                        </template>
                         <template v-else-if="search.column === 'parent_id'">
                             <el-select v-model="search.value" style="width: 100%;" placeholder="Departamento"
                                 @change="getRecords">
@@ -65,6 +70,21 @@
                                 <label>Incluir Liquidadas</label>
                                 <el-switch v-model="search.included" class="ml-2" @change="getRecords"
                                     style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
+                            </div>
+                        </template>
+                    </div>
+                    <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
+                        <template v-if="resource == 'retentions'">
+                            <div class="d-flex">
+                                <div style="width:100px">
+                                    Persona
+                                </div>
+
+                                <el-select v-model="search.person_id" placeholder="Select" @change="changeClearInput"
+                                    filterable clearable >
+                                    <el-option v-for="(label, key) in persons" :key="label.id" :value="label.id"
+                                        :label="label.name"></el-option>
+                                </el-select>
                             </div>
                         </template>
                     </div>
@@ -147,7 +167,8 @@ export default {
                     this.search.column = _.head(Object.keys(this.columns));
                     this.parentsList = response.data.categories;
                     this.suppliers = response.data.suppliers,
-                        this.customers = response.data.customers
+                        this.customers = response.data.customers,
+                        this.persons = response.data.persons
                 } else {
                     this.columns = response.data;
                     this.search.column = _.head(Object.keys(this.columns));

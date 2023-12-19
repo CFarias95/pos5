@@ -52,12 +52,21 @@ class RetentionController extends Controller
 
     public function columns()
     {
-        return [
+        $columns = [
             'number' => 'Número',
             'ubl_version' => 'Secuencial',
             'observations' => 'Clave de acceso',
             'date_of_issue' => 'Fecha de emisión',
+            'date_real' => 'Fecha Real',
         ];
+        $persons = Person::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->name
+            ];
+        });
+        return compact('columns','persons');
+
     }
 
     public function excel(Request $request)
@@ -68,9 +77,21 @@ class RetentionController extends Controller
 
     public function records(Request $request)
     {
-        $records = Retention::where($request->column, 'like', "%{$request->value}%")
-            ->latest();
+        $records = Retention::query();
+        $person = $request->person_id;
 
+        if($request->column == 'date_real'){
+            $records->where('observations', 'like', "%{$request->value}%");
+
+        }else{
+            $records->where($request->column, 'like', "%{$request->value}%");
+        }
+
+        if(isset($person)){
+            $records->where('supplier_id',$person);
+        }
+
+        $records->latest();
         return new RetentionCollection($records->paginate(config('tenant.items_per_page')));
     }
 
@@ -121,7 +142,6 @@ class RetentionController extends Controller
     public function record($id)
     {
         $record = new RetentionResource(Retention::findOrFail($id));
-
         return $record;
     }
 
@@ -283,7 +303,7 @@ class RetentionController extends Controller
                                         $retIN->total_retention = $totalRet;
                                         $retIN->total = $xmlRet->docsSustento->docSustento->importeTotal;
                                         $retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
-                                        $retIN->optional = json_encode($detalles);
+                                        $retIN->optional = $detalles;
                                         $retIN->save();
                                     } else {
 
@@ -318,7 +338,7 @@ class RetentionController extends Controller
                                         $retIN->total_retention = $totalRet;
                                         $retIN->total = $xmlRet->docsSustento->docSustento->importeTotal;
                                         $retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
-                                        $retIN->optional = json_encode($detalles);
+                                        $retIN->optional = $detalles;
                                         $retIN->save();
                                     }
                                     $totalProcesados += 1;
@@ -372,7 +392,7 @@ class RetentionController extends Controller
                                         $retIN->total_retention = $totalRet;
                                         $retIN->total = $total;
                                         //$retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
-                                        $retIN->optional = json_encode($detalles);
+                                        $retIN->optional = $detalles;
                                         $retIN->save();
                                     } else {
 
@@ -410,7 +430,7 @@ class RetentionController extends Controller
                                         $retIN->total_retention = $totalRet;
                                         $retIN->total = $total;
                                         //$retIN->document_type_id = $xmlRet->docsSustento->docSustento->codDocSustento;
-                                        $retIN->optional = json_encode($detalles);
+                                        $retIN->optional = $detalles;
                                         $retIN->save();
                                     }
 

@@ -302,6 +302,11 @@
                                 </tr>
                             </thead>
                             <tbody>
+                            @if($document->reference_transfer_id)
+                            <tr style="background: #f7f7f5;">
+                                <td width="40%" style="text-align: start; padding-left: 15px; padding-right: 15px;">Traslado No {{$document->reference_transfer_id}}</td>
+                            </tr>
+                            @endif
                             @if($document->adicionales != null)
                                 @if(count($arrayMails) > 0)
                                     @foreach($arrayMails as $mails)

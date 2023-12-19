@@ -60,6 +60,10 @@
                                 @click.prevent="clickDelete(row.id)">Eliminar
                             </button>
 
+                            <button v-if="row.upload_filename" class="btn btn-success btn-sm  mt-2 mr-2" type="button"
+                                @click.prevent="clickDownload(row.id)">PDF
+                            </button>
+
                         </td>
                     </tr>
                 </data-table>
@@ -91,6 +95,11 @@ export default {
         clickCreate(recordId = null) {
             this.recordId = recordId
             this.showDialog = true
+        },
+        clickDownload(id){
+
+            window.open(`/${this.resource}/dowload/${id}/`, "_blank");
+
         },
         async clickDelete(id_d) {
 

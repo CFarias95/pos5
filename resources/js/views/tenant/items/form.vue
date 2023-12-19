@@ -1,6 +1,6 @@
 <template>
     <el-dialog :close-on-click-modal="false" :title="titleDialog" :visible="showDialog" append-to-body class="pt-0"
-        top="7vh" width="65%" @close="close" @open="create">
+        top="7vh" width="70%" @close="close" @open="create">
         <form autocomplete="off" @submit.prevent="submit">
 
 
@@ -1025,7 +1025,7 @@
                                                     @change="calcularCantidad()"></el-input-number>
                                             </td>
                                             <td>
-                                                <el-input-number v-model="row.quantity" real-number></el-input-number>
+                                                <el-input type="number" v-model="row.quantity" real-number></el-input>
                                             </td>
 
                                             <td v-if="row.tipoDato != null || row.tipoDato != undefined">
@@ -1045,13 +1045,13 @@
 
                                             </td>
                                             <td>
-                                                <el-input-number v-model="row.cost_per_unit" min="0"
-                                                    step="0.01"></el-input-number>
+                                                <el-input type="number" v-model="row.cost_per_unit" min="0"
+                                                    step="0.01"></el-input>
 
                                             </td>
                                             <td>
-                                                <el-input-number v-model="row.cost_total" min="0"
-                                                    step="0.01"></el-input-number>
+                                                <el-input type="number" v-model="row.cost_total" min="0"
+                                                    step="0.01"></el-input>
 
                                             </td>
                                             <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"

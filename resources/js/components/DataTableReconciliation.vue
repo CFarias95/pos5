@@ -3,15 +3,16 @@
         <div class="row ">
             <div class="col-md-12 col-lg-12 col-xl-12 ">
 
-                    <h1>Filtrar Por</h1>
-
+                <h1>Filtrar Por</h1>
                 <div class="row" v-if="applyFilter">
                     <div class="col-lg-3 col-md-3">
                         <label>
                             Cuenta Contable:
                         </label>
-                        <el-select v-model="search.cta" placeholder="Select" @change="changeClearInput" clearable filterable>
-                            <el-option v-for="option in ctas" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                        <el-select v-model="search.cta" placeholder="Select" @change="changeClearInput" clearable
+                            filterable>
+                            <el-option v-for="option in ctas" :key="option.id" :value="option.id"
+                                :label="option.name"></el-option>
                         </el-select>
                     </div>
                     <div class="col-lg-3 col-md-3">
@@ -29,18 +30,25 @@
                             Fecha del asiento:
                         </label>
                         <el-date-picker v-model="search.date" type="date" placeholder="Buscar" clearable
-                                value-format="yyyy-MM-dd" @change="getRecords">
+                            value-format="yyyy-MM-dd" @change="getRecords">
                         </el-date-picker>
                     </div>
                     <div class="col-lg-3 col-md-3">
                         <label>
                             Referencia
                         </label>
-                        <el-tooltip class="box-item" effect="dark" content="Si la referencia pertenece a un acticipo o retencion coloar (A o R segun corresponda) seguido de una ',' y la referencia" placement="top-end">
+                        <el-tooltip class="box-item" effect="dark"
+                            content="Si la referencia pertenece a un acticipo o retencion coloar (A o R segun corresponda) seguido de una ',' y la referencia"
+                            placement="top-end">
                             <i class="fa fa-question-circle" aria-hidden="true"></i>
                         </el-tooltip>
                         <el-input v-model="search.reference" @change="getRecords" clearable></el-input>
                     </div>
+                </div>
+                <div>
+                    <button @click.prevent="clickDownload('excel')" type="button" class="btn btn-success btn-sm  mt-2 mr-2"><i
+                        class="fa fa-download"></i>Exportar Excel</button>
+
                 </div>
             </div>
             <div class="col-md-12">
@@ -54,12 +62,9 @@
                         </tbody>
                     </table>
                     <div>
-                        <el-pagination
-                                @current-change="getRecords"
-                                layout="total, prev, pager, next"
-                                :total="pagination.total"
-                                :current-page.sync="pagination.current_page"
-                                :page-size="pagination.per_page">
+                        <el-pagination @current-change="getRecords" layout="total, prev, pager, next"
+                            :total="pagination.total" :current-page.sync="pagination.current_page"
+                            :page-size="pagination.per_page">
                         </el-pagination>
                     </div>
                 </div>
@@ -83,8 +88,8 @@ export default {
     data() {
         return {
             search: {
-                cta:null,
-                date:null,
+                cta: null,
+                date: null,
             },
             columns: [],
             records: [],
@@ -107,7 +112,7 @@ export default {
         let column_resource = _.split(this.resource, "/");
         await this.$http
             .get(`/${_.head(column_resource)}/columns`)
-            .then(response =>{
+            .then(response => {
                 if (response) {
                     this.ctas = response.data.ctas;
 
@@ -156,6 +161,15 @@ export default {
         },
         getSearch() {
             return this.search;
+        },
+        clickDownload(type) {
+
+            let query = queryString.stringify({
+                ...this.search
+            });
+
+            window.open(`/${this.resource}/${type}/?${query}`, "_blank");
+
         },
     }
 };

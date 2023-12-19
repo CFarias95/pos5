@@ -1,7 +1,7 @@
 <?php return array (
   'app' => 
   array (
-    'name' => 'Laravel',
+    'name' => 'MyERPCloud',
     'env' => 'local',
     'debug' => false,
     'url' => 'http://pro51.ec',
@@ -239,7 +239,7 @@
         'connection' => 'default',
       ),
     ),
-    'prefix' => 'laravel_cache',
+    'prefix' => 'myerpcloud_cache',
   ),
   'configuration' => 
   array (
@@ -1138,7 +1138,7 @@
       0 => 2,
       1 => 100,
     ),
-    'cookie' => 'laravel_session',
+    'cookie' => 'myerpcloud_session',
     'path' => '/',
     'domain' => NULL,
     'secure' => false,

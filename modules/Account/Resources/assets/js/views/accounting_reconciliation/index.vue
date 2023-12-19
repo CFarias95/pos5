@@ -17,7 +17,7 @@
                         <th>Acciones</th>
                     </tr>
                     <tr slot-scope="{ index, row }" :key="index"
-                        :class="{'text-success border-left border-success': (row.reconciliated > 0),  }">
+                        :class="{ 'text-success border-left border-success': (row.reconciliated > 0), }">
                         <td>{{ index }}</td>
                         <td>{{ row.reference }}</td>
                         <td>{{ row.value }}</td>
@@ -26,7 +26,8 @@
                         <td>{{ row.ctaHaber }}</td>
                         <td>{{ row.comment }}</td>
                         <td>
-                            <button v-if="row.reconciliated < 1" type="button" class="btn waves-effect waves-light btn-xs btn-primary"
+                            <button v-if="row.reconciliated < 1" type="button"
+                                class="btn waves-effect waves-light btn-xs btn-primary"
                                 @click.prevent="clickConciliate(row.id)">Puntear</button>
                         </td>
                     </tr>
@@ -80,7 +81,16 @@ export default {
                         this.$message.error(response.data.message);
                     }
                 })
-        }
+        },
+        clickDownload(type) {
+
+            let query = queryString.stringify({
+                ...this.form
+            });
+
+            window.open(`/reports/retention/${type}/?${query}`, "_blank");
+
+        },
     }
 }
 </script>

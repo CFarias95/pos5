@@ -19,8 +19,11 @@ use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use Illuminate\Support\Facades\Storage;
 use Modules\Finance\Helpers\UploadFileHelper;
 
+
 class InternalRequestController extends Controller
 {
+
+    use StorageDocument;
 
     public function __construct()
     {
@@ -325,7 +328,7 @@ class InternalRequestController extends Controller
         $mime = mime_content_type($temp);
         $data = file_get_contents($temp);
 
-        Storage::disk('tenant')->put('internal_request_attached/'.$file->getClientOriginalName(),$data);
+        Storage::disk('tenant')->put('internal_request_attached/pdf/'.$file->getClientOriginalName(),$data);
         return [
             'success' => true,
             'data' => [
@@ -334,5 +337,16 @@ class InternalRequestController extends Controller
                 'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
             ]
         ];
+    }
+
+    function pdf($id){
+
+        $document = InternalRequest::find($id);
+
+        if (!$document) {
+            throw new Exception("El código {$id} es inválido, no se encontro documento relacionado");
+        }
+
+        return $this->downloadStorage(str_replace('.pdf','',$document->upload_filename),'pdf', 'internal_request_attached');
     }
 }

@@ -7,7 +7,7 @@
     <!-- CSRF Token -->
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
-    <title>Facturación Electrónica</title>
+    <title>My ERP Cloud</title>
 
     <!-- Scripts -->
 

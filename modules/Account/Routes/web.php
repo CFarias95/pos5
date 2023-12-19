@@ -47,6 +47,7 @@ if($hostname) {
                 Route::get('records', 'ReconciliationController@records');
                 Route::get('columns', 'ReconciliationController@columns');
                 Route::get('reconciliate/{id}', 'ReconciliationController@reconciliate');
+                Route::get('excel', 'ReconciliationController@excel');
             });
 
             Route::prefix('accounting_audit')->group(function () {

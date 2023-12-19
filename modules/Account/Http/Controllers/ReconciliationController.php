@@ -2,6 +2,7 @@
 
 namespace Modules\Account\Http\Controllers;
 
+
 use Carbon\Carbon;
 use App\Models\Tenant\Item;
 use Illuminate\Http\Request;
@@ -11,6 +12,7 @@ use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Advance;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
@@ -18,6 +20,8 @@ use App\Models\Tenant\Retention;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Maatwebsite\Excel\Facades\Excel;
+use Modules\Account\Exports\ReconciliationExport;
 use Modules\Account\Models\CompanyAccount;
 use Modules\Account\Exports\ReportAccountingAdsoftExport;
 use Modules\Account\Exports\ReportAccountingConcarExport;
@@ -238,6 +242,7 @@ class ReconciliationController extends Controller
         if ($record) {
             $record->reconciliation = true;
             $record->user_id_reconciliation = Auth()->user()->id;
+            $record->reconciliation_date = date('Y-m-d H:i:s');
             $record->save();
             return [
                 'success' => true,
@@ -250,4 +255,19 @@ class ReconciliationController extends Controller
             ];
         }
     }
+
+    public function excel(Request $request)
+    {
+        $records = $this->getRecords($request);
+        //$records->get();
+
+        $company = Company::get();
+
+        return (new ReconciliationExport)
+        ->company($company)
+        ->records($records->get())
+        ->download('Punteo_Contable' . '.xlsx');
+
+    }
+
 }
