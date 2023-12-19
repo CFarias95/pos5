@@ -52,7 +52,6 @@
                         <tbody>
                             @foreach($records as $key => $value)
                                 <tr>
-                                    <td class="celda">{{$loop->iteration}}</td>
                                     @foreach( $value as $data => $title)
                                     <td class="text-center">{{ $title }}</td>
                                     @endforeach

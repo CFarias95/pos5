@@ -55,7 +55,6 @@ class ReconciliationCollection extends ResourceCollection
             $data['date'] = $account_entry->seat_date;
             $data['value'] = round($row->debe + $row->haber,2);
             $data['id'] = $row->id;
-
             $data['ctaDebe'] = (isset($ctaDebe))?$ctaDebe:'';
             $data['ctaHaber'] = (isset($ctaHaber))?$ctaHaber:'';
             $data['reconciliated'] = $row->reconciliation;

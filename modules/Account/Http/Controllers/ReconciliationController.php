@@ -259,13 +259,16 @@ class ReconciliationController extends Controller
     public function excel(Request $request)
     {
         $records = $this->getRecords($request);
-        //$records->get();
+        $records= new ReconciliationCollection($records->get());
 
         $company = Company::get();
 
+        Log::info("Datos enviado");
+        Log::info(json_encode($records));
+
         return (new ReconciliationExport)
         ->company($company)
-        ->records($records->get())
+        ->records($records)
         ->download('Punteo_Contable' . '.xlsx');
 
     }
