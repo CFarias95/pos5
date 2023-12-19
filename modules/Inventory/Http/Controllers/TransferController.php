@@ -74,7 +74,8 @@ use Modules\Item\Models\ItemLotsGroup;
         {
             return [
                 //'items' => $this->optionsItemWareHouse(),
-                'warehouses' => $this->optionsWarehouse()
+                'warehouses' => $this->optionsWarehouse(),
+                'customers' => $this->optionsCustomers(),
             ];
         }
 
@@ -215,6 +216,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
         public function store(TransferRequest $request)
         {
+            //Log::info('data'.$request->client_id);
             $result = DB::connection('tenant')->transaction(function () use ($request) {
 
                 $row = InventoryTransfer::create([
@@ -222,6 +224,7 @@ use Modules\Item\Models\ItemLotsGroup;
                     'warehouse_id' => $request->warehouse_id,
                     'warehouse_destination_id' => $request->warehouse_destination_id,
                     'quantity' => count($request->items),
+                    'client_id' => $request->client_id,
                 ]);
 
                 foreach ($request->items as $it) {

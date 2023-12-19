@@ -33,6 +33,7 @@
                         <th>Detalle Productos</th>
                         <th>Cantidad Total Productos</th>
                         <th>Guias Generadas</th>
+                        <th>Estado</th>
                         <th class="text-right">Acciones</th>
                     </tr>
                     <tr></tr>
@@ -73,6 +74,12 @@
                                 <el-button slot="reference"><i class="fa fa-list"></i></el-button>
                             </el-popover>
                         </td>
+                        <td> 
+                            <el-select v-model="row.estado_id">
+                                <el-option v-for="estado in estados" :key="estado" :label="estado"
+                                    :value="estado"></el-option>
+                            </el-select>
+                        </td>
                         <td class="text-right">
                             <button class="btn waves-effect waves-light btn-xs btn-info" type="button"
                                 @click.prevent="clickDownload('pdf', row.id)">
@@ -104,6 +111,9 @@
 import DataTable from "../../../../../../resources/js/components/DataTableTransfers.vue";
 import { deletable } from "../../../../../../resources/js/mixins/deletable";
 import InventoriesForm from "./form.vue";
+import moment from "moment";
+import queryString from "query-string";
+
 
 export default {
     components: { DataTable, InventoriesForm },
@@ -114,11 +124,14 @@ export default {
             showDialog: false,
             resource: "transfers",
             recordId: null,
-            typeTransaction: null
+            typeTransaction: null,
+            estados:[],
+            estado_id: null,
         };
     },
     created() {
         this.title = "Traslados";
+        this.estados = ['Creada', 'Aceptada', 'Rechazada', 'Parcial'];
     },
     methods: {
         clickCreate(recordId = null) {
@@ -136,7 +149,23 @@ export default {
         },
         clickGuide(id){
             location.href =`/dispatches/create/${id}/t`;
-        }
+        },
+        changeEstado(){
+            return this.$http
+                .get(`/${this.resource}/estado?${this.getQueryParameters()}`)
+                .then(response => {
+                    this.records = response.data.data;
+                    this.pagination = response.data.meta;
+                    this.pagination.per_page = parseInt(response.data.meta.per_page);
+            });
+        },
+        getQueryParameters() {
+            return queryString.stringify({
+                page: this.pagination.current_page,
+                limit: this.limit,
+                ...this.search
+            });
+        },
     }
 };
 </script>

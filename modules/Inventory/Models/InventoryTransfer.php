@@ -52,13 +52,15 @@ use App\Models\Tenant\ModelTenant;
             'warehouse_destination_id',
             'user_id',
             'quantity',
+            'client_id',
 
         ];
         protected $casts = [
             'warehouse_id' => 'int',
             'warehouse_destination_id' => 'int',
             'user_id' => 'int',
-            'quantity' => 'float'
+            'quantity' => 'float',
+            'client_id' => 'int'
         ];
 
         /**

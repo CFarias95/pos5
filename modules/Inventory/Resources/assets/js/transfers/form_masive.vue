@@ -39,6 +39,15 @@
                                 v-text="errors.description[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group">
+                            <label class="control-label">Cliente</label>
+                            <el-select v-model="form.client_id">
+                                <el-option v-for="cliente in clientes" :key="cliente.id" :label="cliente.name"
+                                    :value="cliente.id"></el-option>
+                            </el-select>
+                        </div>
+                    </div>
                 </div>
                 <br />
                 <div class="row">
@@ -177,6 +186,7 @@ export default {
             errors: {},
             form: {},
             warehouses: [],
+            clientes: [],
             items: [],
             form_add: {},
             loading_search: false,
@@ -188,7 +198,9 @@ export default {
         await this.$http.get(`/${this.resource}/tables`).then(response => {
             this.warehouses = response.data.warehouses;
             this.items = response.data.items;
-            this.all_items = this.items
+            this.all_items = this.items;
+            this.clientes = response.data.customers;
+            //console.log('datos', response.data);
         });
 
         await this.initForm();
@@ -432,7 +444,8 @@ export default {
                 warehouse_id: null,
                 warehouse_destination_id: null,
                 description: null,
-                items: []
+                items: [],
+                client_id: null,
             };
         },
         async submit() {

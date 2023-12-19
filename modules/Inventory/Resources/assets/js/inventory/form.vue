@@ -47,6 +47,18 @@
                                    v-text="errors.warehouse_id[0]"></small>
                         </div>
                     </div>
+                    <div class="col-md-4">
+                        <div class="form-group" :class="{'has-danger': errors.quantity}">
+                            <label class="control-label">Costo Promedio</label>
+                            <el-input-number
+                                v-model="form.purchase_mean_price"
+                                :min="0"
+                                :controls="false"
+                                :precision="precision"
+
+                            ></el-input-number>
+                        </div>
+                    </div>
                     <div class="col-md-4" v-if="type == 'input' && form.lots_enabled">
                         <div class="form-group" :class="{'has-danger': errors.lot_code}">
                             <label class="control-label">
@@ -166,10 +178,17 @@ export default {
                     this.form.lots = lots
                     this.form.lots_enabled = item.lots_enabled
                     this.form.series_enabled = item.series_enabled
+                    //this.form.mean_price = item.purchase_mean_cost
                 } else {
                     let item = await _.find(this.items, {'id': this.form.item_id})
                     this.form.lots_enabled = item.lots_enabled
                     this.form.series_enabled = item.series_enabled
+                    //this.purchase_mean_price = item.purchase_mean_price
+                    this.form.purchase_mean_price = item.purchase_mean_price
+                    //console.log('precio1',item.purchase_mean_price)
+                    //console.log('precio2',this.purchase_mean_price)
+                    //console.log('precio',this.form.purchase_mean_price)
+                    //console.log('items',item)
                 }
                 this.ChangePrecision();
             }
@@ -193,6 +212,7 @@ export default {
                 id: null,
                 item_id: null,
                 warehouse_id: null,
+                purchase_mean_price: 0,
                 inventory_transaction_id: null,
                 quantity: 0,
                 type: this.type,
@@ -203,7 +223,6 @@ export default {
                 date_of_due: null,
                 created_at: null,
                 comments: null
-
             }
         },
         ChangePrecision(){
@@ -236,6 +255,7 @@ export default {
             await this.$http.post(`/${this.resource}/search_items`, {'search': search})
                 .then(response => {
                     let items = response.data.items;
+                    //console.log('logs', items)
                     if(items.length > 0) {
                         this.items = items; //filterWords(search, items);
                     }
