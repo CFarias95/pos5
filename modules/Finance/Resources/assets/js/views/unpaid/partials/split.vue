@@ -95,7 +95,7 @@ export default {
                     this.$message.success(response.data.message);
                     this.initForm()
                     this.$emit('update:showDialog', false)
-                    this.$emit('reloadDataUnpaid')
+                    this.$eventHub.$emit('reloadDataUnpaid')
 
                 } else {
                     this.$message.error(response.data.message);

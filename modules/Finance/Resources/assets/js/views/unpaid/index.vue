@@ -94,9 +94,9 @@
                                     </div>
 
                                     <div v-if="typeUser == 'admin'" class="col-md-4">
-                                        <label class="control-label">Usuario</label>
+                                        <label class="control-label">Vendedor</label>
                                         <el-select @change="changeUser" filterable clearable v-model="form.user_id"
-                                            placeholder="Seleccionar usuario">
+                                            placeholder="Seleccionar vendedor">
                                             <el-option v-for="item in users" :key="item.id" :label="item.name"
                                                 :value="item.id"></el-option>
                                         </el-select>

@@ -178,10 +178,11 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
-            //Log::info("SUPLIES: ".json_encode($items_supplies));
+            Log::info("SUPLIES: " . json_encode($items_supplies));
 
             try {
                 foreach ($items_supplies as $item) {
+
                     $sitienelote = false;
                     $production_supply = new ProductionSupply();
                     $production_id = $production->id;
@@ -193,7 +194,7 @@ class ProductionController extends Controller
                     $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                     $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                     $production_supply->quantity = (float) $qty;
-                    $production_supply->cost_per_unit = (isset($item['cost_per_unit']))?$item['cost_per_unit']:null ;
+                    $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
                     $production_supply->save();
 
                     $lots_group = $item["lots_group"];
@@ -203,16 +204,16 @@ class ProductionController extends Controller
 
                         //if (isset($lots["compromise_quantity"])){
 
-                            $item_lots_groups = new ItemSupplyLot();
-                            $item_lots_groups->item_supply_id = $item['id'];
-                            $item_lots_groups->item_supply_name = $item['description'];
-                            $item_lots_groups->lot_code = $lots["code"];
-                            $item_lots_groups->lot_id = $lots["id"];
-                            $item_lots_groups->production_name = $production->name;
-                            $item_lots_groups->production_id = $production_id;
-                            $item_lots_groups->quantity = 0;
-                            $item_lots_groups->expiration_date = $lots["date_of_due"];
-                            $item_lots_groups->save();
+                        $item_lots_groups = new ItemSupplyLot();
+                        $item_lots_groups->item_supply_id = $item['id'];
+                        $item_lots_groups->item_supply_name = $item['description'];
+                        $item_lots_groups->lot_code = $lots["code"];
+                        $item_lots_groups->lot_id = $lots["id"];
+                        $item_lots_groups->production_name = $production->name;
+                        $item_lots_groups->production_id = $production_id;
+                        $item_lots_groups->quantity = 0;
+                        $item_lots_groups->expiration_date = $lots["date_of_due"];
+                        $item_lots_groups->save();
                         //}
                     }
                 }
@@ -318,7 +319,7 @@ class ProductionController extends Controller
                     $itemSu = ItemSupply::find($value['item_supply_id']);
                     $item = Item::find($itemSu->individual_item_id);
                     $debeGlobal += ($value->cost_per_unit * $value->quantity);
-                    if ($item->purchase_cta){
+                    if ($item->purchase_cta) {
 
                         if (array_key_exists($item->purchase_cta, $arrayEntrys)) {
 
@@ -459,7 +460,7 @@ class ProductionController extends Controller
                 $detalle->save();
 
 
-                if(isset($document->imperfect) && $document->imperfect > 0){
+                if (isset($document->imperfect) && $document->imperfect > 0) {
 
                     $contoUnitarioProd = ($debeGlobal / $document->quantity) * $document->imperfect;
 
@@ -470,13 +471,13 @@ class ProductionController extends Controller
 
                     $cabeceraC = new AccountingEntries();
                     $cabeceraC->user_id = $document->user_id;
-                    $cabeceraC->seat = ($seat+1);
-                    $cabeceraC->seat_general = ($seat_general+1);
+                    $cabeceraC->seat = ($seat + 1);
+                    $cabeceraC->seat_general = ($seat_general + 1);
                     $cabeceraC->seat_date = $document->date_end;
                     $cabeceraC->types_accounting_entrie_id = 1;
                     $cabeceraC->comment = $comment;
                     $cabeceraC->serie = null;
-                    $cabeceraC->number = ($seat+1);
+                    $cabeceraC->number = ($seat + 1);
                     $cabeceraC->total_debe = $contoUnitarioProd;
                     $cabeceraC->total_haber = $contoUnitarioProd;
                     $cabeceraC->revised1 = 0;
@@ -509,14 +510,12 @@ class ProductionController extends Controller
 
                     $detalle = new AccountingEntryItems();
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = ($motivoSalida)?$motivoSalida->cta_account:null;
+                    $detalle->account_movement_id = ($motivoSalida) ? $motivoSalida->cta_account : null;
                     $detalle->seat_line = 2;
                     $detalle->haber = 0;
                     $detalle->debe = $contoUnitarioProd;
                     $detalle->save();
-
                 }
-
             } catch (Exception $ex) {
 
                 Log::error('Error al intentar generar el asiento contable');
@@ -577,7 +576,7 @@ class ProductionController extends Controller
 
 
             $items_supplies = $request->supplies;
-            $costoT= 0;
+            $costoT = 0;
 
             //Log::info("SUPLIES: ".json_encode($items_supplies));
 
@@ -596,7 +595,7 @@ class ProductionController extends Controller
                         $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
-                        $production_supply->cost_per_unit = (isset($item['cost_per_unit']))?$item['cost_per_unit']:null ;
+                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
 
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
@@ -632,7 +631,6 @@ class ProductionController extends Controller
                     }
                     $production->cost_supplies = $costoT;
                     $production->save();
-
                 } catch (Exception $ex2) {
                     $production->delete();
                     return [
@@ -640,13 +638,12 @@ class ProductionController extends Controller
                         'message' => 'Error al registrar el ingreso: ' . $ex2->getMessage()
                     ];
                 }
-            }
-            elseif($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative){
+            } elseif ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
 
                 try {
 
                     $totalSupply = ProductionSupply::where('production_id', $production->id)->get();
-                    foreach($totalSupply as $supp){
+                    foreach ($totalSupply as $supp) {
                         $costoT += ($supp->quantity * $supp->cost_per_unit);
                     }
                     $production->cost_supplies = $costoT;
@@ -661,14 +658,13 @@ class ProductionController extends Controller
                     $stockN = $production->quantity;
                     $totalN = $production->cost_supplies;
 
-                    $stockT = $stockN+$stockA;
+                    $stockT = $stockN + $stockA;
                     $costoT = $totalA + $totalN;
-                    $costoT = round($costoT/$stockT,4);
+                    $costoT = round($costoT / $stockT, 4);
 
                     //Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
                     $item->purchase_mean_cost = $costoT;
-                    $item ->save();
-
+                    $item->save();
                 } catch (Exception $ex2) {
                     //$production->delete();
                     return [
@@ -680,13 +676,12 @@ class ProductionController extends Controller
 
             $production->save();
 
-            try{
+            try {
                 if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                     //cuando pasa a elaboración se decuenta el inventario la lista de materiales que se está utilizando en la fabricación del producto.
                     $inventory_transaction_item = InventoryTransaction::findOrFail(101);
                     $this->inventorySupplies($production, $items_supplies, $inventory_transaction_item);
                     $this->createAccountingEntry($production->id);
-
                 }
                 if ($old_state_type_id == '02' && $new_state_type_id == '03' && !$informative) {
                     //cuando pasa a terminado se aumenta el inventario del producto terminado
@@ -696,7 +691,6 @@ class ProductionController extends Controller
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item);
                     $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
                     $this->createAccountingEntry($production->id);
-
                 }
                 if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
                     //cuando pasa a anulado se aumenta el inventario de los materiales que se utilizó en la fabricación del producto terminado
@@ -705,8 +699,8 @@ class ProductionController extends Controller
                     $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
                 }
-            }catch (Exception $ex) {
-                Log::error("Error UPDATE PRODUCTION: ".$ex->getMessage());
+            } catch (Exception $ex) {
+                Log::error("Error UPDATE PRODUCTION: " . $ex->getMessage());
                 $production->state_type_id = '01';
                 $production->save();
                 return [
@@ -725,10 +719,11 @@ class ProductionController extends Controller
         return $result;
     }
 
-    public function inventoryImperfectProduct($production,$inventory_transaction_item){
+    public function inventoryImperfectProduct($production, $inventory_transaction_item)
+    {
         // esta funcion genera salida de inventario por porductos defectuosos
-        if(isset($production->imperfect) && $production->imperfect > 0){
-            try{
+        if (isset($production->imperfect) && $production->imperfect > 0) {
+            try {
 
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
@@ -737,16 +732,13 @@ class ProductionController extends Controller
                 $inventory_it->warehouse_id = $production->warehouse_id;
                 $inventory_it->quantity = (float) $production->imperfect;
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-                $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
+                $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
                 $inventory_it->save();
-
-            }catch(Exception $ex){
+            } catch (Exception $ex) {
 
                 throw $ex;
             }
         }
-
-
     }
 
     public function inventoryFinishedProduct($production, $inventory_transaction_item)
@@ -761,10 +753,10 @@ class ProductionController extends Controller
             $inventory_it->warehouse_id = $production->warehouse_id;
             $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-            $inventory_it->lot_code = ($production->lot_code)?$production->lot_code:null;
+            $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
             $inventory_it->save();
 
-            if(isset($production->lot_code) && $production->lot_code != ""){
+            if (isset($production->lot_code) && $production->lot_code != "") {
 
                 $item_lots_group = new ItemLotsGroup();
                 $item_lots_group->code = $production->lot_code;
@@ -773,9 +765,6 @@ class ProductionController extends Controller
                 $item_lots_group->date_of_due = $production->date_end;
                 $item_lots_group->save();
             }
-
-
-
         } catch (\Throwable $th) {
             throw $th;
         }
@@ -788,28 +777,31 @@ class ProductionController extends Controller
             // Salida insumos por molino
 
             foreach ($items_supplies as $item) {
-                $qty = $item['quantity'] ?? 0;
-                $inventory_it = new Inventory();
-                $inventory_it->type = null;
-                $inventory_it->description = $inventory_transaction_item->name;
-                $inventory_it->item_id = (isset($item['item_id']))?$item['item_id']:$item['individual_item_id'];
-                $inventory_it->warehouse_id = (isset($item['warehouse_id']))?$item['warehouse_id']:$production->warehouse_id;
-                $inventory_it->quantity = (float) ($qty * $production->quantity);
-                $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-                $inventory_it->save();
+                Log::info($item);
+                //if ($item['unit_type'] != 'Servicio') {
+                    $qty = $item['quantity'] ?? 0;
+                    $inventory_it = new Inventory();
+                    $inventory_it->type = null;
+                    $inventory_it->description = $inventory_transaction_item->name;
+                    $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
+                    $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
+                    $inventory_it->quantity = (float) ($qty * $production->quantity);
+                    $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                    $inventory_it->save();
 
-                if ($item["lots_group"]) {
-                    $lots_group = $item["lots_group"];
-                    foreach ($lots_group as $lots) {
-                        $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
-                        if ($production->state_type_id == '04') {
-                            $item_lots_group->quantity += isset($lots["compromise_quantity"])?$lots["compromise_quantity"]:0;
-                        } else {
-                            $item_lots_group->quantity -= isset($lots["compromise_quantity"])?$lots["compromise_quantity"]:0;
+                    if ($item["lots_group"]) {
+                        $lots_group = $item["lots_group"];
+                        foreach ($lots_group as $lots) {
+                            $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
+                            if ($production->state_type_id == '04') {
+                                $item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                            } else {
+                                $item_lots_group->quantity -= isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                            }
+                            $item_lots_group->save();
                         }
-                        $item_lots_group->save();
                     }
-                }
+                //}
             }
         } catch (\Throwable $th) {
             throw $th;
@@ -966,7 +958,7 @@ class ProductionController extends Controller
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value["quantity"],
-                        'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0)?$value["cost_per_unit"]:$value["individual_item"]["purchase_mean_cost"],
+                        'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0) ? $value["cost_per_unit"] : $value["individual_item"]["purchase_mean_cost"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],
@@ -1105,11 +1097,11 @@ class ProductionController extends Controller
             });
         }
 
-        if(isset($order) && $order!=''){
-            $data->where('production_order','like','%'.$order.'%');
+        if (isset($order) && $order != '') {
+            $data->where('production_order', 'like', '%' . $order . '%');
         }
-        if(isset($status) && $status != ''){
-            $data->where('state_type_id',$status);
+        if (isset($status) && $status != '') {
+            $data->where('state_type_id', $status);
         }
 
 
@@ -1244,21 +1236,23 @@ class ProductionController extends Controller
         return $pdf->stream($filename . '.pdf');
     }
 
-    public function plantillaMezcla($recordId){
+    public function plantillaMezcla($recordId)
+    {
 
         $records = Production::find($recordId);
         $company = Company::first();
 
-        $pdf = PDF::loadView('production::production.plantilla_mezcla',compact("records","company"));
+        $pdf = PDF::loadView('production::production.plantilla_mezcla', compact("records", "company"));
         return $pdf->stream('Plantilla Mezcla.pdf');
     }
 
-    public function plantillaNoConforme($recordId){
+    public function plantillaNoConforme($recordId)
+    {
 
         $order = Production::find($recordId);
         $company = Company::first();
 
-        $pdf = PDF::loadView('production::production.plantilla_no_conforme',compact("records","company"));
+        $pdf = PDF::loadView('production::production.plantilla_no_conforme', compact("records", "company"));
         return $pdf->stream('Plantilla No Conforme.pdf');
     }
 
@@ -1295,7 +1289,7 @@ class ProductionController extends Controller
         $recordId = $produccion->item_id;
         $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
 
-        $filename = 'Etiquetas_'.$produccion->production_order . date('YmdHis');
+        $filename = 'Etiquetas_' . $produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }

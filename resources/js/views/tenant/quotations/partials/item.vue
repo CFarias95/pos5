@@ -1199,45 +1199,12 @@ export default {
         async clickAddItem() {
 
             this.validateQuantity()
-            /*
-
-                     if (this.form.item.lots_enabled) {
-                         if (!this.form.IdLoteSelected)
-                             return this.$message.error('Debe seleccionar un lote.');
-                     }
-                     */
 
             if (this.validateTotalItem().total_item) return;
 
             let affectation_igv_type_id = this.form.affectation_igv_type_id
-            // let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price_value * 1.18;
-            let unit_price = this.form.unit_price;
-            /*
-            if (this.form.has_igv === false) {
-                if (
-                    affectation_igv_type_id === "20" ||
-                    affectation_igv_type_id === "21" ||
-                    affectation_igv_type_id === "40"
-                ) {
-                    // do nothing
-                    // exonerado de igv
-                } else {
-                    //JOINSOFTWARE //
-                    if (affectation_igv_type_id === "10") {
-                        unit_price = this.form.unit_price_value * 1.12;
-                    } else if (affectation_igv_type_id === "11") {
-                        unit_price = this.form.unit_price_value * 1.08;
-                    } else if (affectation_igv_type_id === "12") {
-                        unit_price = this.form.unit_price_value * 1.14;
-                    } else if (affectation_igv_type_id === "30") {
-                        unit_price = this.form.unit_price_value;
-                    } else {
-                        unit_price = this.form.unit_price_value * (1 + this.percentageIgv);
-                    }
 
-                }
-            }
-            */
+            let unit_price = this.form.unit_price;
             //validar precio compra y venta
             if (this.configuration) {
                 if (this.configuration.validate_purchase_sale_unit_price) {
@@ -1260,25 +1227,7 @@ export default {
             let document_item_id = this.form.document_item_id
 
             console.log('ANTES DE ENVIAR: ', this.form)
-            /*
-            this.form.input_unit_price_value = this.form.unit_price;
-            // this.form.input_unit_price_value = this.form.unit_price_value;
-            // let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * 1.18;
 
-            // this.form.item.unit_price = this.form.unit_price
-            this.form.unit_price = unit_price;
-            this.form.item.unit_price = unit_price;
-            this.form.unit_price_value = unit_price;
-
-            this.form.item.extra_attr_name = this.form.extra_attr_name;
-            this.form.item.extra_attr_value = this.form.extra_attr_value;
-            this.form.unit_price_value = this.form.unit_price;
-            this.form.item.presentation = this.item_unit_type;
-            this.form.affectation_igv_type = _.find(this.affectation_igv_types, {'id': affectation_igv_type_id});
-
-            // let IdLoteSelected = this.form.IdLoteSelected
-            // let document_item_id = this.form.document_item_id
-            */
             this.row = calculateRowItem(this.form, this.currencyTypeIdActive, this.exchangeRateSale, this.percentageIgv);
 
             this.row.item.name_product_pdf = this.row.name_product_pdf || '';
