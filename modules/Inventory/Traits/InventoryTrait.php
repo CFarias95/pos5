@@ -23,6 +23,7 @@ use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Order\Models\OrderNote;
 use App\Models\Tenant\ItemSupply;
+use App\Models\Tenant\Person;
 use App\Http\Controllers\Tenant\PurchaseController;
 use Illuminate\Support\Facades\Log;
 
@@ -181,7 +182,7 @@ trait InventoryTrait
             $query->take($take);
         }
         return $query->get()->transform(function ($row) {
-
+            //Log::info('row'.$row);
             $description = '';
 
             if($row->internal_id) {
@@ -195,6 +196,7 @@ trait InventoryTrait
                 'text_filter' => $row->text_filter,
                 'lots_enabled' => (bool)$row->lots_enabled,
                 'series_enabled' => (bool)$row->series_enabled,
+                'purchase_mean_price' => $row->purchase_mean_cost,
                 'lots' => $row->item_lots->where('has_sale', false)->transform(function ($row1) {
                     return [
                         'id' => $row1->id,
@@ -283,6 +285,18 @@ trait InventoryTrait
             return [
                 'id' => $row->id,
                 'description' => $row->description
+            ];
+        });
+    }
+
+    public function optionsCustomers()
+    {
+        $records = Person::where('type', 'customers')->get();
+        //Log::info('Personcliente'.json_encode($records));
+        return collect($records)->transform(function ($row) {
+            return [
+                'id' => $row->id,
+                'name' => $row->name
             ];
         });
     }

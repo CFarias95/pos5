@@ -25,6 +25,7 @@ use App\Models\Tenant\Configuration;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Str;
+use App\Models\Tenant\Item;
 
 class InventoryController extends Controller
 {
@@ -131,7 +132,10 @@ class InventoryController extends Controller
 
 	public function searchItems(Request $request)
 	{
+		//Log::info('search'.json_encode($request));
 		$search = $request->input('search');
+		$print = $this->optionsItemFull($search, 20);
+		//Log::info('print'.$print);
 
 		return [
 			'items' => $this->optionsItemFull($search, 20),
@@ -191,7 +195,8 @@ class InventoryController extends Controller
 			$lot_code = $request->input('lot_code');
 			$comments = $request->input('comments');
 			$created_at = $request->input('created_at');
-
+			$precio_perso = $request->input('purchase_mean_price');
+			//Log::info('precio_perso'.$precio_perso);
 
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
 
@@ -207,6 +212,12 @@ class InventoryController extends Controller
 				];
 			}
 
+			$item = Item::where('id', $item_id)->first();
+
+			$costoA = $item->purchase_mean_cost;
+			$stockA = $item->stock;
+			$totalA = $costoA * $stockA;
+
 			$inventory = new Inventory();
 			$inventory->type = null;
 			$inventory->description = $inventory_transaction->name;
@@ -216,10 +227,13 @@ class InventoryController extends Controller
 			$inventory->inventory_transaction_id = $inventory_transaction_id;
 			$inventory->lot_code = $lot_code;
 			$inventory->comments = $comments;
+			$inventory->precio_perso = $precio_perso;
 
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
 			}
+
+            //Log::info("ACTUAL " . $costoA . '-' . $totalA . ' NUEVO: ' . $costoN . "-" . $totalN);
 
 			$inventory->save();
 
@@ -264,7 +278,7 @@ class InventoryController extends Controller
 				}
 			}
 
-            $this->createAccountingEntryTransactions($inventory,$inventory_transaction);
+            $this->createAccountingEntryTransactions($inventory,$inventory_transaction, $totalA, $stockA, $item);
 
 			return  [
 				'success' => true,
@@ -275,7 +289,7 @@ class InventoryController extends Controller
 		return $result;
 	}
     //CREAMOS EL ASIENTO CONTABLE DE UN INGRESO O SALIDA POR AJUSTE
-    public function createAccountingEntryTransactions($inventory,$transaction){
+    public function createAccountingEntryTransactions($inventory,$transaction, $totalA = null, $stockA = null, $item = null){
 
         try {
 
@@ -283,8 +297,33 @@ class InventoryController extends Controller
             $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
             $ultimo = AccountingEntries::latest('id')->first();
             $configuration = Configuration::first();
+			//Log::info('inventory'.$inventory);
+			//Log::info('transaction'.$transaction);
+			if($inventory->precio_perso == null)
+			{
+				//Log::info('Purchase mean cost');
+				$valor = ($inventory->item->purchase_mean_cost * $inventory->quantity);
+			}else{
+				//Log::info('Precio Perso');
+				
+				//$item = Item::where('id', $item_id)->first();
 
-            $valor = ($inventory->item->purchase_mean_cost * $inventory->quantity);
+				$costoN = floatval($inventory->precio_perso);
+            	$stockN = floatval($inventory->quantity);
+            	$totalN = $costoN * $stockN;
+
+            	$stockT = $stockN + $stockA;
+            	$costoT = $totalA + $totalN;
+            	$costoT = round($costoT / $stockT, 4);
+
+				$item->purchase_mean_cost = $costoT;
+
+            	$item->save();
+
+				$valor = ($inventory->precio_perso * $inventory->quantity);
+
+			}
+            //$valor = ($inventory->item->purchase_mean_cost * $inventory->quantity);
             if($valor < 0){
                 $valor = ($valor * -1);
             }
@@ -340,11 +379,11 @@ class InventoryController extends Controller
 
             $cuentaPerson = null;
             $cuentaAnticipo = null;
-            Log::info($inventory->item);
+            //Log::info($inventory->item);
             $cuentaItem = ($inventory->item->purchase_cta)?$inventory->item->purchase_cta:$configuration->cta_purchases;
             $cuentaMotivo = $transaction->cta_account;
 
-            Log::info($cuentaItem.' - '.$cuentaMotivo);
+            //Log::info($cuentaItem.' - '.$cuentaMotivo);
 
             $detalle = new AccountingEntryItems();
             $detalle->accounting_entrie_id = $cabeceraC->id;

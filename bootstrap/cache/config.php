@@ -1,16 +1,16 @@
 <?php return array (
-  'app' => 
+  'app' =>
   array (
     'name' => 'MyERPCloud',
     'env' => 'local',
-    'debug' => false,
-    'url' => 'http://pro51.ec',
+    'debug' => true,
+    'url' => 'http://pos5.test',
     'timezone' => 'America/Lima',
     'locale' => 'es',
     'fallback_locale' => 'en',
-    'key' => 'base64:WD3lqKIzN4gEEKC6WflFvG3XdqycUDvmW3Mn2HKKabE=',
+    'key' => 'base64:5DSfpP/S+4aoBaqM3M/aK5Rd1rCOH/pX6FPotLt8dXM=',
     'cipher' => 'AES-256-CBC',
-    'providers' => 
+    'providers' =>
     array (
       0 => 'Illuminate\\Auth\\AuthServiceProvider',
       1 => 'Illuminate\\Broadcasting\\BroadcastServiceProvider',
@@ -58,7 +58,7 @@
       43 => 'ZanySoft\\Zip\\ZipServiceProvider',
       44 => 'Barryvdh\\Debugbar\\ServiceProvider',
     ),
-    'aliases' => 
+    'aliases' =>
     array (
       'App' => 'Illuminate\\Support\\Facades\\App',
       'Artisan' => 'Illuminate\\Support\\Facades\\Artisan',
@@ -101,52 +101,52 @@
       'Markdown' => 'GrahamCampbell\\Markdown\\Facades\\Markdown',
     ),
   ),
-  'auth' => 
+  'auth' =>
   array (
-    'defaults' => 
+    'defaults' =>
     array (
       'guard' => 'web',
       'passwords' => 'users',
     ),
-    'guards' => 
+    'guards' =>
     array (
-      'web' => 
+      'web' =>
       array (
         'driver' => 'session',
         'provider' => 'users',
       ),
-      'api' => 
+      'api' =>
       array (
         'driver' => 'token',
         'provider' => 'users',
       ),
-      'admin' => 
+      'admin' =>
       array (
         'driver' => 'session',
         'provider' => 'admins',
       ),
-      'system_api' => 
+      'system_api' =>
       array (
         'driver' => 'token',
         'provider' => 'admins',
       ),
     ),
-    'providers' => 
+    'providers' =>
     array (
-      'users' => 
+      'users' =>
       array (
         'driver' => 'eloquent',
         'model' => 'App\\Models\\Tenant\\User',
       ),
-      'admins' => 
+      'admins' =>
       array (
         'driver' => 'eloquent',
         'model' => 'App\\Models\\System\\User',
       ),
     ),
-    'passwords' => 
+    'passwords' =>
     array (
-      'users' => 
+      'users' =>
       array (
         'provider' => 'users',
         'table' => 'password_resets',
@@ -155,77 +155,77 @@
       ),
     ),
   ),
-  'broadcasting' => 
+  'broadcasting' =>
   array (
     'default' => 'log',
-    'connections' => 
+    'connections' =>
     array (
-      'pusher' => 
+      'pusher' =>
       array (
         'driver' => 'pusher',
         'key' => '',
         'secret' => '',
         'app_id' => '',
-        'options' => 
+        'options' =>
         array (
           'cluster' => 'mt1',
           'encrypted' => true,
         ),
       ),
-      'redis' => 
+      'redis' =>
       array (
         'driver' => 'redis',
         'connection' => 'default',
       ),
-      'log' => 
+      'log' =>
       array (
         'driver' => 'log',
       ),
-      'null' => 
+      'null' =>
       array (
         'driver' => 'null',
       ),
     ),
   ),
-  'cache' => 
+  'cache' =>
   array (
     'default' => 'file',
-    'stores' => 
+    'stores' =>
     array (
-      'apc' => 
+      'apc' =>
       array (
         'driver' => 'apc',
       ),
-      'array' => 
+      'array' =>
       array (
         'driver' => 'array',
       ),
-      'database' => 
+      'database' =>
       array (
         'driver' => 'database',
         'table' => 'cache',
         'connection' => NULL,
       ),
-      'file' => 
+      'file' =>
       array (
         'driver' => 'file',
-        'path' => 'C:\\laragon\\www\\pro51\\storage\\framework/cache/data',
+        'path' => 'C:\\laragon\\www\\pos5\\storage\\framework/cache/data',
       ),
-      'memcached' => 
+      'memcached' =>
       array (
         'driver' => 'memcached',
         'persistent_id' => NULL,
-        'sasl' => 
+        'sasl' =>
         array (
           0 => NULL,
           1 => NULL,
         ),
-        'options' => 
+        'options' =>
         array (
         ),
-        'servers' => 
+        'servers' =>
         array (
-          0 => 
+          0 =>
           array (
             'host' => '127.0.0.1',
             'port' => 11211,
@@ -233,63 +233,63 @@
           ),
         ),
       ),
-      'redis' => 
+      'redis' =>
       array (
         'driver' => 'redis_tenancy',
         'connection' => 'default',
       ),
     ),
-    'prefix' => 'myerpcloud_cache',
+    'prefix' => 'laravel_cache',
   ),
-  'configuration' => 
+  'configuration' =>
   array (
     'signature_note' => 'FACTURALO',
     'signature_uri' => 'signatureFACTURALOPERU',
     'api_service_url' => 'https://apiperu.dev',
     'api_service_token' => false,
     'sunat_alternate_server' => false,
-    'app_url_base' => 'pro51.ec',
+    'app_url_base' => 'pos5.test',
   ),
-  'cors' => 
+  'cors' =>
   array (
     'supportsCredentials' => false,
-    'allowedOrigins' => 
+    'allowedOrigins' =>
     array (
       0 => '*',
     ),
-    'allowedOriginsPatterns' => 
+    'allowedOriginsPatterns' =>
     array (
     ),
-    'allowedHeaders' => 
-    array (
-      0 => '*',
-    ),
-    'allowedMethods' => 
+    'allowedHeaders' =>
     array (
       0 => '*',
     ),
-    'exposedHeaders' => 
+    'allowedMethods' =>
+    array (
+      0 => '*',
+    ),
+    'exposedHeaders' =>
     array (
     ),
     'maxAge' => 0,
   ),
-  'database' => 
+  'database' =>
   array (
     'default' => 'system',
-    'connections' => 
+    'connections' =>
     array (
-      'sqlite' => 
+      'sqlite' =>
       array (
         'driver' => 'sqlite',
-        'database' => 'poscloud',
+        'database' => 'johan',
         'prefix' => '',
       ),
-      'mysql' => 
+      'mysql' =>
       array (
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'poscloud',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -299,12 +299,12 @@
         'strict' => true,
         'engine' => NULL,
       ),
-      'pgsql' => 
+      'pgsql' =>
       array (
         'driver' => 'pgsql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'poscloud',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -312,23 +312,23 @@
         'schema' => 'public',
         'sslmode' => 'prefer',
       ),
-      'sqlsrv' => 
+      'sqlsrv' =>
       array (
         'driver' => 'sqlsrv',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'poscloud',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
         'prefix' => '',
       ),
-      'system' => 
+      'system' =>
       array (
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'poscloud',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -337,24 +337,24 @@
         'prefix' => '',
         'strict' => true,
         'engine' => NULL,
-        'options' => 
+        'options' =>
         array (
           1001 => true,
         ),
       ),
     ),
     'migrations' => 'migrations',
-    'redis' => 
+    'redis' =>
     array (
       'client' => 'predis',
-      'default' => 
+      'default' =>
       array (
         'host' => '127.0.0.1',
         'password' => NULL,
         'port' => '6379',
         'database' => 0,
       ),
-      'cache' => 
+      'cache' =>
       array (
         'host' => '127.0.0.1',
         'password' => NULL,
@@ -363,16 +363,16 @@
       ),
     ),
   ),
-  'dompdf' => 
+  'dompdf' =>
   array (
     'show_warnings' => false,
     'orientation' => 'portrait',
-    'defines' => 
+    'defines' =>
     array (
-      'font_dir' => 'C:\\laragon\\www\\pro51\\storage\\fonts/',
-      'font_cache' => 'C:\\laragon\\www\\pro51\\storage\\fonts/',
-      'temp_dir' => 'C:\\Users\\DELL\\AppData\\Local\\Temp',
-      'chroot' => 'C:\\laragon\\www\\pro51',
+      'font_dir' => 'C:\\laragon\\www\\pos5\\storage\\fonts/',
+      'font_cache' => 'C:\\laragon\\www\\pos5\\storage\\fonts/',
+      'temp_dir' => 'C:\\Users\\GREENC~1\\AppData\\Local\\Temp',
+      'chroot' => 'C:\\laragon\\www\\pos5',
       'enable_font_subsetting' => false,
       'pdf_backend' => 'CPDF',
       'default_media_type' => 'screen',
@@ -386,13 +386,13 @@
       'enable_html5_parser' => false,
     ),
   ),
-  'excel' => 
+  'excel' =>
   array (
-    'exports' => 
+    'exports' =>
     array (
       'chunk_size' => 1000,
-      'temp_path' => 'C:\\Users\\DELL\\AppData\\Local\\Temp',
-      'csv' => 
+      'temp_path' => 'C:\\Users\\GREENC~1\\AppData\\Local\\Temp',
+      'csv' =>
       array (
         'delimiter' => ';',
         'enclosure' => '',
@@ -403,13 +403,13 @@
         'excel_compatibility' => false,
       ),
     ),
-    'imports' => 
+    'imports' =>
     array (
-      'heading_row' => 
+      'heading_row' =>
       array (
         'formatter' => 'slug',
       ),
-      'csv' => 
+      'csv' =>
       array (
         'delimiter' => ',',
         'enclosure' => '"',
@@ -420,7 +420,7 @@
         'excel_compatibility' => false,
       ),
     ),
-    'extension_detector' => 
+    'extension_detector' =>
     array (
       'xlsx' => 'Xlsx',
       'xlsm' => 'Xlsx',
@@ -439,69 +439,69 @@
       'tsv' => 'Csv',
       'pdf' => 'Dompdf',
     ),
-    'value_binder' => 
+    'value_binder' =>
     array (
       'default' => 'Maatwebsite\\Excel\\DefaultValueBinder',
     ),
-    'cache' => 
+    'cache' =>
     array (
       'driver' => 'memory',
-      'batch' => 
+      'batch' =>
       array (
         'memory_limit' => 60000,
       ),
-      'illuminate' => 
+      'illuminate' =>
       array (
         'store' => NULL,
       ),
     ),
-    'transactions' => 
+    'transactions' =>
     array (
       'handler' => 'db',
     ),
-    'temporary_files' => 
+    'temporary_files' =>
     array (
-      'local_path' => 'C:\\laragon\\www\\pro51\\storage\\framework/laravel-excel',
+      'local_path' => 'C:\\laragon\\www\\pos5\\storage\\framework/laravel-excel',
       'remote_disk' => NULL,
       'remote_prefix' => NULL,
       'force_resync_remote' => NULL,
     ),
   ),
-  'extra' => 
+  'extra' =>
   array (
     'number_items_in_search' => 250,
     'number_items_at_start' => 20,
     'extra_log' => false,
     'suscription_facturalo' => false,
     'apk_url' => 'https://facturaloperu.com/apk/app-debug.apk',
-    'wiki_pharmacy' => 'http://pro51.ec/docs/4.X/modulo-farmacia',
+    'wiki_pharmacy' => 'http://pos5.test/docs/4.X/modulo-farmacia',
     'wiki_production' => 'https://gitlab.com/carlomagno83/facturadorpro4/-/wikis/App-Produccion',
     'AllowClientUseOwnApiperuToken' => false,
   ),
-  'filesystems' => 
+  'filesystems' =>
   array (
     'default' => 'local',
     'cloud' => 's3',
-    'disks' => 
+    'disks' =>
     array (
-      'local' => 
+      'local' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\storage\\app',
+        'root' => 'C:\\laragon\\www\\pos5\\storage\\app',
       ),
-      'public' => 
+      'public' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\storage\\app/public',
-        'url' => 'http://pro51.ec/storage',
+        'root' => 'C:\\laragon\\www\\pos5\\storage\\app/public',
+        'url' => 'http://pos5.test/storage',
         'visibility' => 'public',
       ),
-      'core' => 
+      'core' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\app\\CoreFacturalo',
+        'root' => 'C:\\laragon\\www\\pos5\\app\\CoreFacturalo',
       ),
-      's3' => 
+      's3' =>
       array (
         'driver' => 's3',
         'key' => NULL,
@@ -510,7 +510,7 @@
         'bucket' => NULL,
         'url' => NULL,
       ),
-      'ftp' => 
+      'ftp' =>
       array (
         'driver' => 'ftp',
         'host' => '',
@@ -519,115 +519,115 @@
         'password' => '',
         'passive' => false,
       ),
-      'tenancy-default' => 
+      'tenancy-default' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\storage\\app/tenancy/tenants',
+        'root' => 'C:\\laragon\\www\\pos5\\storage\\app/tenancy/tenants',
       ),
-      'tenancy-webserver-apache2' => 
+      'tenancy-webserver-apache2' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\storage\\app/tenancy/webserver/apache2',
+        'root' => 'C:\\laragon\\www\\pos5\\storage\\app/tenancy/webserver/apache2',
       ),
-      'tenancy-webserver-nginx' => 
+      'tenancy-webserver-nginx' =>
       array (
         'driver' => 'local',
-        'root' => 'C:\\laragon\\www\\pro51\\storage\\app/tenancy/webserver/nginx',
+        'root' => 'C:\\laragon\\www\\pos5\\storage\\app/tenancy/webserver/nginx',
       ),
     ),
   ),
-  'hashing' => 
+  'hashing' =>
   array (
     'driver' => 'bcrypt',
-    'bcrypt' => 
+    'bcrypt' =>
     array (
       'rounds' => 10,
     ),
-    'argon' => 
+    'argon' =>
     array (
       'memory' => 1024,
       'threads' => 2,
       'time' => 2,
     ),
   ),
-  'image' => 
+  'image' =>
   array (
     'driver' => 'gd',
   ),
-  'larecipe' => 
+  'larecipe' =>
   array (
-    'docs' => 
+    'docs' =>
     array (
       'route' => '/docs',
       'path' => '/resources/docs',
       'landing' => 'modulo-farmacia',
-      'middleware' => 
+      'middleware' =>
       array (
         0 => 'web',
       ),
     ),
-    'versions' => 
+    'versions' =>
     array (
       'default' => '4.X',
-      'published' => 
+      'published' =>
       array (
         0 => '4.X',
       ),
     ),
-    'settings' => 
+    'settings' =>
     array (
       'auth' => false,
       'ga_id' => '',
-      'middleware' => 
+      'middleware' =>
       array (
         0 => 'web',
       ),
     ),
-    'cache' => 
+    'cache' =>
     array (
       'enabled' => false,
       'period' => 5,
     ),
-    'search' => 
+    'search' =>
     array (
       'enabled' => true,
       'default' => 'internal',
-      'engines' => 
+      'engines' =>
       array (
-        'internal' => 
+        'internal' =>
         array (
-          'index' => 
+          'index' =>
           array (
             0 => 'h2',
             1 => 'h3',
           ),
         ),
-        'algolia' => 
+        'algolia' =>
         array (
           'key' => '',
           'index' => '',
         ),
       ),
     ),
-    'ui' => 
+    'ui' =>
     array (
       'code_theme' => 'dark',
       'fav' => '',
       'fa_v4_shims' => true,
       'show_side_bar' => true,
-      'colors' => 
+      'colors' =>
       array (
         'primary' => '#787AF6',
         'secondary' => '#2b9cf2',
       ),
       'theme_order' => NULL,
     ),
-    'seo' => 
+    'seo' =>
     array (
       'author' => '',
       'description' => '',
       'keywords' => '',
-      'og' => 
+      'og' =>
       array (
         'title' => '',
         'type' => 'article',
@@ -636,27 +636,27 @@
         'description' => '',
       ),
     ),
-    'forum' => 
+    'forum' =>
     array (
       'enabled' => false,
       'default' => 'disqus',
-      'services' => 
+      'services' =>
       array (
-        'disqus' => 
+        'disqus' =>
         array (
           'site_name' => '',
         ),
       ),
     ),
-    'packages' => 
+    'packages' =>
     array (
       'path' => 'larecipe-components',
     ),
-    'blade-parser' => 
+    'blade-parser' =>
     array (
-      'regex' => 
+      'regex' =>
       array (
-        'code-blocks' => 
+        'code-blocks' =>
         array (
           'match' => '/\\<pre\\>(.|\\n)*?<\\/pre\\>/',
           'replacement' => '<code-block>',
@@ -664,97 +664,97 @@
       ),
     ),
   ),
-  'location' => 
+  'location' =>
   array (
     'driver' => 'Stevebauman\\Location\\Drivers\\IpApi',
-    'fallbacks' => 
+    'fallbacks' =>
     array (
       0 => 'Stevebauman\\Location\\Drivers\\IpInfo',
       1 => 'Stevebauman\\Location\\Drivers\\GeoPlugin',
       2 => 'Stevebauman\\Location\\Drivers\\MaxMind',
     ),
     'position' => 'Stevebauman\\Location\\Position',
-    'maxmind' => 
+    'maxmind' =>
     array (
-      'web' => 
+      'web' =>
       array (
         'enabled' => false,
         'user_id' => '',
         'license_key' => '',
-        'options' => 
+        'options' =>
         array (
           'host' => 'geoip.maxmind.com',
         ),
       ),
-      'local' => 
+      'local' =>
       array (
         'type' => 'city',
-        'path' => 'C:\\laragon\\www\\pro51\\database\\maxmind/GeoLite2-City.mmdb',
+        'path' => 'C:\\laragon\\www\\pos5\\database\\maxmind/GeoLite2-City.mmdb',
       ),
     ),
-    'ip_api' => 
+    'ip_api' =>
     array (
       'token' => NULL,
     ),
-    'ipinfo' => 
+    'ipinfo' =>
     array (
       'token' => NULL,
     ),
-    'ipdata' => 
+    'ipdata' =>
     array (
       'token' => NULL,
     ),
-    'testing' => 
+    'kloudend' =>
+    array (
+      'token' => NULL,
+    ),
+    'testing' =>
     array (
       'enabled' => true,
       'ip' => '66.102.0.0',
     ),
-    'kloudend' => 
-    array (
-      'token' => NULL,
-    ),
   ),
-  'logging' => 
+  'logging' =>
   array (
     'default' => 'daily',
-    'channels' => 
+    'channels' =>
     array (
-      'stack' => 
+      'stack' =>
       array (
         'driver' => 'stack',
-        'channels' => 
+        'channels' =>
         array (
           0 => 'single',
         ),
       ),
-      'single' => 
+      'single' =>
       array (
         'driver' => 'single',
-        'path' => 'C:\\laragon\\www\\pro51\\storage\\logs/laravel.log',
+        'path' => 'C:\\laragon\\www\\pos5\\storage\\logs/laravel.log',
         'level' => 'debug',
       ),
-      'daily' => 
+      'daily' =>
       array (
         'driver' => 'daily',
-        'path' => 'C:\\laragon\\www\\pro51\\storage\\logs/laravel.log',
+        'path' => 'C:\\laragon\\www\\pos5\\storage\\logs/laravel.log',
         'level' => 'debug',
         'days' => 7,
       ),
-      'facturalo' => 
+      'facturalo' =>
       array (
         'driver' => 'daily',
-        'path' => 'C:\\laragon\\www\\pro51\\storage\\logs/facturalo.log',
+        'path' => 'C:\\laragon\\www\\pos5\\storage\\logs/facturalo.log',
         'level' => 'debug',
         'days' => 7,
       ),
-      'emails' => 
+      'emails' =>
       array (
         'driver' => 'daily',
-        'path' => 'C:\\laragon\\www\\pro51\\storage\\logs/emails.log',
+        'path' => 'C:\\laragon\\www\\pos5\\storage\\logs/emails.log',
         'level' => 'debug',
         'days' => 7,
       ),
-      'slack' => 
+      'slack' =>
       array (
         'driver' => 'slack',
         'url' => NULL,
@@ -762,57 +762,57 @@
         'emoji' => ':boom:',
         'level' => 'critical',
       ),
-      'stderr' => 
+      'stderr' =>
       array (
         'driver' => 'monolog',
         'handler' => 'Monolog\\Handler\\StreamHandler',
-        'with' => 
+        'with' =>
         array (
           'stream' => 'php://stderr',
         ),
       ),
-      'syslog' => 
+      'syslog' =>
       array (
         'driver' => 'syslog',
         'level' => 'debug',
       ),
-      'errorlog' => 
+      'errorlog' =>
       array (
         'driver' => 'errorlog',
         'level' => 'debug',
       ),
     ),
   ),
-  'mail' => 
+  'mail' =>
   array (
     'driver' => 'smtp',
     'host' => 'smtp.gmail.com',
     'port' => '465',
-    'from' => 
+    'from' =>
     array (
       'address' => 'hello@example.com',
       'name' => 'Example',
     ),
     'encryption' => 'ssl',
-    'username' => '',
-    'password' => '',
+    'username' => 'soporte@joinec.net',
+    'password' => 'oguictbcqghpsyha',
     'sendmail' => '/usr/sbin/sendmail -bs',
-    'markdown' => 
+    'markdown' =>
     array (
       'theme' => 'default',
-      'paths' => 
+      'paths' =>
       array (
-        0 => 'C:\\laragon\\www\\pro51\\resources\\views/vendor/mail',
+        0 => 'C:\\laragon\\www\\pos5\\resources\\views/vendor/mail',
       ),
     ),
   ),
-  'markdown' => 
+  'markdown' =>
   array (
     'views' => true,
-    'extensions' => 
+    'extensions' =>
     array (
     ),
-    'renderer' => 
+    'renderer' =>
     array (
       'block_separator' => '
 ',
@@ -828,14 +828,14 @@
     'allow_unsafe_links' => true,
     'max_nesting_level' => INF,
   ),
-  'modules' => 
+  'modules' =>
   array (
     'namespace' => 'Modules',
-    'stubs' => 
+    'stubs' =>
     array (
       'enabled' => false,
-      'path' => 'C:\\laragon\\www\\pro51/vendor/nwidart/laravel-modules/src/Commands/stubs',
-      'files' => 
+      'path' => 'C:\\laragon\\www\\pos5/vendor/nwidart/laravel-modules/src/Commands/stubs',
+      'files' =>
       array (
         'routes/web' => 'Routes/web.php',
         'routes/api' => 'Routes/api.php',
@@ -848,41 +848,41 @@
         'webpack' => 'webpack.mix.js',
         'package' => 'package.json',
       ),
-      'replacements' => 
+      'replacements' =>
       array (
-        'routes/web' => 
+        'routes/web' =>
         array (
           0 => 'LOWER_NAME',
           1 => 'STUDLY_NAME',
         ),
-        'routes/api' => 
+        'routes/api' =>
         array (
           0 => 'LOWER_NAME',
         ),
-        'webpack' => 
+        'webpack' =>
         array (
           0 => 'LOWER_NAME',
         ),
-        'json' => 
+        'json' =>
         array (
           0 => 'LOWER_NAME',
           1 => 'STUDLY_NAME',
           2 => 'MODULE_NAMESPACE',
         ),
-        'views/index' => 
+        'views/index' =>
         array (
           0 => 'LOWER_NAME',
         ),
-        'views/master' => 
+        'views/master' =>
         array (
           0 => 'LOWER_NAME',
           1 => 'STUDLY_NAME',
         ),
-        'scaffold/config' => 
+        'scaffold/config' =>
         array (
           0 => 'STUDLY_NAME',
         ),
-        'composer' => 
+        'composer' =>
         array (
           0 => 'LOWER_NAME',
           1 => 'STUDLY_NAME',
@@ -894,188 +894,188 @@
       ),
       'gitkeep' => false,
     ),
-    'paths' => 
+    'paths' =>
     array (
-      'modules' => 'C:\\laragon\\www\\pro51\\modules',
-      'assets' => 'C:\\laragon\\www\\pro51\\public\\modules',
-      'migration' => 'C:\\laragon\\www\\pro51\\database/migrations',
-      'generator' => 
+      'modules' => 'C:\\laragon\\www\\pos5\\modules',
+      'assets' => 'C:\\laragon\\www\\pos5\\public\\modules',
+      'migration' => 'C:\\laragon\\www\\pos5\\database/migrations',
+      'generator' =>
       array (
-        'config' => 
+        'config' =>
         array (
           'path' => 'Config',
           'generate' => true,
         ),
-        'command' => 
+        'command' =>
         array (
           'path' => 'Console',
           'generate' => false,
         ),
-        'migration' => 
+        'migration' =>
         array (
           'path' => 'Database/Migrations',
           'generate' => false,
         ),
-        'seeder' => 
+        'seeder' =>
         array (
           'path' => 'Database/Seeders',
           'generate' => false,
         ),
-        'factory' => 
+        'factory' =>
         array (
           'path' => 'Database/factories',
           'generate' => false,
         ),
-        'model' => 
+        'model' =>
         array (
           'path' => 'Models',
           'generate' => true,
         ),
-        'controller' => 
+        'controller' =>
         array (
           'path' => 'Http/Controllers',
           'generate' => true,
         ),
-        'filter' => 
+        'filter' =>
         array (
           'path' => 'Http/Middleware',
           'generate' => false,
         ),
-        'request' => 
+        'request' =>
         array (
           'path' => 'Http/Requests',
           'generate' => true,
         ),
-        'resources' => 
+        'resources' =>
         array (
           'path' => 'Http/Resources',
           'generate' => true,
         ),
-        'provider' => 
+        'provider' =>
         array (
           'path' => 'Providers',
           'generate' => true,
         ),
-        'assets' => 
+        'assets' =>
         array (
           'path' => 'Resources/assets',
           'generate' => true,
         ),
-        'lang' => 
+        'lang' =>
         array (
           'path' => 'Resources/lang',
           'generate' => true,
         ),
-        'views' => 
+        'views' =>
         array (
           'path' => 'Resources/views',
           'generate' => true,
         ),
-        'test' => 
+        'test' =>
         array (
           'path' => 'Tests',
           'generate' => false,
         ),
-        'repository' => 
+        'repository' =>
         array (
           'path' => 'Repositories',
           'generate' => false,
         ),
-        'event' => 
+        'event' =>
         array (
           'path' => 'Events',
           'generate' => false,
         ),
-        'listener' => 
+        'listener' =>
         array (
           'path' => 'Listeners',
           'generate' => false,
         ),
-        'policies' => 
+        'policies' =>
         array (
           'path' => 'Policies',
           'generate' => false,
         ),
-        'rules' => 
+        'rules' =>
         array (
           'path' => 'Rules',
           'generate' => false,
         ),
-        'jobs' => 
+        'jobs' =>
         array (
           'path' => 'Jobs',
           'generate' => false,
         ),
-        'emails' => 
+        'emails' =>
         array (
           'path' => 'Emails',
           'generate' => false,
         ),
-        'notifications' => 
+        'notifications' =>
         array (
           'path' => 'Notifications',
           'generate' => false,
         ),
-        'resource' => 
+        'resource' =>
         array (
           'path' => 'Transformers',
           'generate' => false,
         ),
       ),
     ),
-    'scan' => 
+    'scan' =>
     array (
       'enabled' => false,
-      'paths' => 
+      'paths' =>
       array (
-        0 => 'C:\\laragon\\www\\pro51\\vendor/*/*',
+        0 => 'C:\\laragon\\www\\pos5\\vendor/*/*',
       ),
     ),
-    'composer' => 
+    'composer' =>
     array (
       'vendor' => 'nwidart',
-      'author' => 
+      'author' =>
       array (
         'name' => 'Nicolas Widart',
         'email' => 'n.widart@gmail.com',
       ),
     ),
-    'cache' => 
+    'cache' =>
     array (
       'enabled' => false,
       'key' => 'laravel-modules',
       'lifetime' => 60,
     ),
-    'register' => 
+    'register' =>
     array (
       'translations' => true,
       'files' => 'register',
     ),
   ),
-  'queue' => 
+  'queue' =>
   array (
     'default' => 'database',
-    'connections' => 
+    'connections' =>
     array (
-      'sync' => 
+      'sync' =>
       array (
         'driver' => 'sync',
       ),
-      'database' => 
+      'database' =>
       array (
         'driver' => 'database',
         'table' => 'jobs',
         'queue' => 'default',
         'retry_after' => 90,
       ),
-      'beanstalkd' => 
+      'beanstalkd' =>
       array (
         'driver' => 'beanstalkd',
         'host' => 'localhost',
         'queue' => 'default',
         'retry_after' => 90,
       ),
-      'sqs' => 
+      'sqs' =>
       array (
         'driver' => 'sqs',
         'key' => 'your-public-key',
@@ -1084,7 +1084,7 @@
         'queue' => 'your-queue-name',
         'region' => 'us-east-1',
       ),
-      'redis' => 
+      'redis' =>
       array (
         'driver' => 'redis',
         'connection' => 'default',
@@ -1093,63 +1093,63 @@
         'block_for' => NULL,
       ),
     ),
-    'failed' => 
+    'failed' =>
     array (
       'database' => 'system',
       'table' => 'failed_jobs',
     ),
   ),
-  'services' => 
+  'services' =>
   array (
-    'mailgun' => 
+    'mailgun' =>
     array (
       'domain' => NULL,
       'secret' => NULL,
     ),
-    'ses' => 
+    'ses' =>
     array (
       'key' => NULL,
       'secret' => NULL,
       'region' => 'us-east-1',
     ),
-    'sparkpost' => 
+    'sparkpost' =>
     array (
       'secret' => NULL,
     ),
-    'stripe' => 
+    'stripe' =>
     array (
       'model' => 'App\\User',
       'key' => NULL,
       'secret' => NULL,
     ),
   ),
-  'session' => 
+  'session' =>
   array (
     'driver' => 'file',
     'lifetime' => '120',
     'expire_on_close' => false,
     'encrypt' => false,
-    'files' => 'C:\\laragon\\www\\pro51\\storage\\framework/sessions',
+    'files' => 'C:\\laragon\\www\\pos5\\storage\\framework/sessions',
     'connection' => NULL,
     'table' => 'sessions',
     'store' => NULL,
-    'lottery' => 
+    'lottery' =>
     array (
       0 => 2,
       1 => 100,
     ),
-    'cookie' => 'myerpcloud_session',
+    'cookie' => 'laravel_session',
     'path' => '/',
     'domain' => NULL,
     'secure' => false,
     'http_only' => true,
     'same_site' => NULL,
   ),
-  'tables' => 
+  'tables' =>
   array (
-    'system' => 
+    'system' =>
     array (
-      'state_types' => 
+      'state_types' =>
       array (
         '01' => 'Registrado',
         '03' => 'Enviado',
@@ -1162,31 +1162,31 @@
         30 => 'Devuelta',
         31 => 'Rechazado',
       ),
-      'soap_sends' => 
+      'soap_sends' =>
       array (
         '01' => 'Sunat',
         '02' => 'Ose',
         '03' => 'Sri',
       ),
-      'soap_types' => 
+      'soap_types' =>
       array (
         '01' => 'Demo',
         '02' => 'Producción',
       ),
-      'groups' => 
+      'groups' =>
       array (
         '01' => 'F',
         '02' => 'B',
       ),
-      'printing_formats' => 
+      'printing_formats' =>
       array (
         'a4' => 'A4',
         'ticket' => 'Ticket',
       ),
     ),
-    'tenant' => 
+    'tenant' =>
     array (
-      'document_types' => 
+      'document_types' =>
       array (
         '01' => 'Factura electrónica',
         '03' => 'Boleta electrónica',
@@ -1195,19 +1195,19 @@
       ),
     ),
   ),
-  'tenancy' => 
+  'tenancy' =>
   array (
-    'models' => 
+    'models' =>
     array (
       'hostname' => 'Hyn\\Tenancy\\Models\\Hostname',
       'website' => 'Hyn\\Tenancy\\Models\\Website',
     ),
-    'middleware' => 
+    'middleware' =>
     array (
       0 => 'Hyn\\Tenancy\\Middleware\\EagerIdentification',
       1 => 'Hyn\\Tenancy\\Middleware\\HostnameActions',
     ),
-    'website' => 
+    'website' =>
     array (
       'disable-random-id' => false,
       'random-id-generator' => 'Hyn\\Tenancy\\Generators\\Uuid\\ShaGenerator',
@@ -1218,7 +1218,7 @@
       'auto-delete-tenant-directory' => false,
       'cache' => 10,
     ),
-    'hostname' => 
+    'hostname' =>
     array (
       'default' => NULL,
       'auto-identification' => true,
@@ -1227,64 +1227,64 @@
       'cache' => 10,
       'update-app-url' => false,
     ),
-    'db' => 
+    'db' =>
     array (
       'default' => NULL,
       'system-connection-name' => 'system',
       'tenant-connection-name' => 'tenant',
       'tenant-division-mode' => 'database',
       'password-generator' => 'Hyn\\Tenancy\\Generators\\Database\\DefaultPasswordGenerator',
-      'tenant-migrations-path' => 'C:\\laragon\\www\\pro51\\database\\migrations/tenant',
+      'tenant-migrations-path' => 'C:\\laragon\\www\\pos5\\database\\migrations/tenant',
       'tenant-seed-class' => 'TenancyDatabaseSeeder',
       'auto-create-tenant-database' => true,
       'auto-create-tenant-database-user' => true,
       'auto-rename-tenant-database' => true,
       'auto-delete-tenant-database' => true,
       'auto-delete-tenant-database-user' => true,
-      'force-tenant-connection-of-modelsforce-tenant-connection-of-models' => 
+      'force-tenant-connection-of-modelsforce-tenant-connection-of-models' =>
       array (
       ),
-      'force-system-connection-of-models' => 
+      'force-system-connection-of-models' =>
       array (
       ),
     ),
-    'routes' => 
+    'routes' =>
     array (
-      'path' => 'C:\\laragon\\www\\pro51\\routes/tenants.php',
+      'path' => 'C:\\laragon\\www\\pos5\\routes/tenants.php',
       'replace-global' => false,
     ),
-    'folders' => 
+    'folders' =>
     array (
-      'config' => 
+      'config' =>
       array (
         'enabled' => true,
-        'blacklist' => 
+        'blacklist' =>
         array (
           0 => 'database',
           1 => 'tenancy',
           2 => 'webserver',
         ),
       ),
-      'routes' => 
+      'routes' =>
       array (
         'enabled' => true,
         'prefix' => NULL,
       ),
-      'trans' => 
+      'trans' =>
       array (
         'enabled' => true,
         'override-global' => true,
         'namespace' => 'tenant',
       ),
-      'vendor' => 
+      'vendor' =>
       array (
         'enabled' => true,
       ),
-      'media' => 
+      'media' =>
       array (
         'enabled' => true,
       ),
-      'views' => 
+      'views' =>
       array (
         'enabled' => true,
         'namespace' => NULL,
@@ -1292,9 +1292,9 @@
       ),
     ),
   ),
-  'tenant' => 
+  'tenant' =>
   array (
-    'app_url_base' => 'pro51.ec',
+    'app_url_base' => 'pos5.test',
     'items_per_page' => '20',
     'items_per_page_simple_d_table' => '5',
     'items_per_page_simple_d_table_params' => 10,
@@ -1336,20 +1336,20 @@
     'igv_31556_percentage' => 0.1,
     'save_qrcode' => true,
   ),
-  'view' => 
+  'view' =>
   array (
-    'paths' => 
+    'paths' =>
     array (
-      0 => 'C:\\laragon\\www\\pro51\\resources\\views',
+      0 => 'C:\\laragon\\www\\pos5\\resources\\views',
     ),
-    'compiled' => 'C:\\laragon\\www\\pro51\\storage\\framework\\views',
+    'compiled' => 'C:\\laragon\\www\\pos5\\storage\\framework\\views',
   ),
-  'webserver' => 
+  'webserver' =>
   array (
-    'apache2' => 
+    'apache2' =>
     array (
       'enabled' => false,
-      'ports' => 
+      'ports' =>
       array (
         'http' => 80,
         'https' => 443,
@@ -1357,13 +1357,13 @@
       'generator' => 'Hyn\\Tenancy\\Generators\\Webserver\\Vhost\\ApacheGenerator',
       'view' => 'tenancy.generators::webserver.apache.vhost',
       'disk' => NULL,
-      'paths' => 
+      'paths' =>
       array (
-        'vhost-files' => 
+        'vhost-files' =>
         array (
           0 => '/etc/apache2/sites-enabled/',
         ),
-        'actions' => 
+        'actions' =>
         array (
           'exists' => '/etc/init.d/apache2',
           'test-config' => 'apache2ctl -t',
@@ -1371,11 +1371,11 @@
         ),
       ),
     ),
-    'nginx' => 
+    'nginx' =>
     array (
       'enabled' => false,
       'php-sock' => 'unix:/var/run/php/php7.1-fpm.sock',
-      'ports' => 
+      'ports' =>
       array (
         'http' => 80,
         'https' => 443,
@@ -1383,13 +1383,13 @@
       'generator' => 'Hyn\\Tenancy\\Generators\\Webserver\\Vhost\\NginxGenerator',
       'view' => 'tenancy.generators::webserver.nginx.vhost',
       'disk' => NULL,
-      'paths' => 
+      'paths' =>
       array (
-        'vhost-files' => 
+        'vhost-files' =>
         array (
           0 => '/etc/nginx/sites-enabled/',
         ),
-        'actions' => 
+        'actions' =>
         array (
           'exists' => '/etc/init.d/nginx',
           'test-config' => '/etc/init.d/nginx configtest',
@@ -1398,18 +1398,18 @@
       ),
     ),
   ),
-  'debugbar' => 
+  'debugbar' =>
   array (
     'enabled' => NULL,
-    'except' => 
+    'except' =>
     array (
       0 => 'telescope*',
     ),
-    'storage' => 
+    'storage' =>
     array (
       'enabled' => true,
       'driver' => 'file',
-      'path' => 'C:\\laragon\\www\\pro51\\storage\\debugbar',
+      'path' => 'C:\\laragon\\www\\pos5\\storage\\debugbar',
       'connection' => NULL,
       'provider' => '',
     ),
@@ -1418,7 +1418,7 @@
     'add_ajax_timing' => false,
     'error_handler' => false,
     'clockwork' => false,
-    'collectors' => 
+    'collectors' =>
     array (
       'phpinfo' => true,
       'messages' => true,
@@ -1443,44 +1443,44 @@
       'cache' => false,
       'models' => false,
     ),
-    'options' => 
+    'options' =>
     array (
-      'auth' => 
+      'auth' =>
       array (
         'show_name' => true,
       ),
-      'db' => 
+      'db' =>
       array (
         'with_params' => true,
         'backtrace' => true,
         'timeline' => false,
-        'explain' => 
+        'explain' =>
         array (
           'enabled' => false,
-          'types' => 
+          'types' =>
           array (
             0 => 'SELECT',
           ),
         ),
         'hints' => true,
       ),
-      'mail' => 
+      'mail' =>
       array (
         'full_log' => false,
       ),
-      'views' => 
+      'views' =>
       array (
         'data' => false,
       ),
-      'route' => 
+      'route' =>
       array (
         'label' => true,
       ),
-      'logs' => 
+      'logs' =>
       array (
         'file' => NULL,
       ),
-      'cache' => 
+      'cache' =>
       array (
         'values' => true,
       ),
@@ -1489,134 +1489,134 @@
     'route_prefix' => '_debugbar',
     'route_domain' => NULL,
   ),
-  'debug-server' => 
+  'debug-server' =>
   array (
     'host' => 'tcp://127.0.0.1:9912',
   ),
-  'trustedproxy' => 
+  'trustedproxy' =>
   array (
     'proxies' => NULL,
     'headers' => 30,
   ),
-  'account' => 
+  'account' =>
   array (
     'name' => 'Account',
   ),
-  'mobileapp' => 
+  'mobileapp' =>
   array (
     'name' => 'MobileApp',
   ),
-  'suscription' => 
+  'suscription' =>
   array (
     'name' => 'Suscription',
   ),
-  'sale' => 
+  'sale' =>
   array (
     'name' => 'Sale',
   ),
-  'restaurant' => 
+  'restaurant' =>
   array (
     'name' => 'Restaurant',
   ),
-  'report' => 
+  'report' =>
   array (
     'name' => 'Report',
   ),
-  'purchase' => 
+  'purchase' =>
   array (
     'name' => 'Purchase',
   ),
-  'production' => 
+  'production' =>
   array (
     'name' => 'Production',
   ),
-  'pos' => 
+  'pos' =>
   array (
     'name' => 'Pos',
   ),
-  'payment' => 
+  'payment' =>
   array (
     'name' => 'Payment',
   ),
-  'padron' => 
+  'padron' =>
   array (
     'name' => 'Padron',
   ),
-  'order' => 
+  'order' =>
   array (
     'name' => 'Order',
   ),
-  'offline' => 
+  'offline' =>
   array (
     'name' => 'Offline',
   ),
-  'mercadopago' => 
+  'mercadopago' =>
   array (
     'name' => 'MercadoPago',
   ),
-  'levelaccess' => 
+  'levelaccess' =>
   array (
     'name' => 'LevelAccess',
   ),
-  'item' => 
+  'item' =>
   array (
     'name' => 'Item',
   ),
-  'inventory' => 
+  'inventory' =>
   array (
     'name' => 'Inventory',
   ),
-  'hotel' => 
+  'hotel' =>
   array (
     'name' => 'Hotel',
   ),
-  'full_suscription' => 
+  'full_suscription' =>
   array (
     'name' => 'Full Suscription',
   ),
-  'finance' => 
+  'finance' =>
   array (
     'name' => 'Finance',
   ),
-  'expense' => 
+  'expense' =>
   array (
     'name' => 'Expense',
   ),
-  'ecommerce' => 
+  'ecommerce' =>
   array (
     'name' => 'Ecommerce',
   ),
-  'documentaryprocedure' => 
+  'documentaryprocedure' =>
   array (
     'name' => 'DocumentaryProcedure',
   ),
-  'document' => 
+  'document' =>
   array (
     'name' => 'Document',
   ),
-  'digemid' => 
+  'digemid' =>
   array (
     'name' => 'Digemid',
   ),
-  'dashboard' => 
+  'dashboard' =>
   array (
     'name' => 'Dashboard',
   ),
-  'businessturn' => 
+  'businessturn' =>
   array (
     'name' => 'BusinessTurn',
   ),
-  'whatsappapi' => 
+  'whatsappapi' =>
   array (
     'name' => 'WhatsAppApi',
     'whatsapp_cloud_api_version' => 'v14.0',
   ),
-  'tinker' => 
+  'tinker' =>
   array (
-    'commands' => 
+    'commands' =>
     array (
     ),
-    'dont_alias' => 
+    'dont_alias' =>
     array (
       0 => 'App\\Nova',
     ),
