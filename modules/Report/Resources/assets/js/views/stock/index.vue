@@ -47,7 +47,7 @@
                                     :value="row.id"></el-option>
                             </el-select> -->
                             <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
-                                :show-all-levels="false" expandTrigger='hover' @change="getRecords"></el-cascader>
+                                :show-all-levels="false" expandTrigger='hover' @change="getRecords" change-on-select></el-cascader>
                         </div>
                         <div class="col-3">
                             <label>Linea</label>

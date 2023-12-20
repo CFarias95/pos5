@@ -138,6 +138,7 @@ if($hostname) {
                     Route::post('', 'AdvanceController@store');
                     Route::get('record/{record}', 'AdvanceController@record');
                     Route::get('voided/{record}', 'AdvanceController@voided');
+                    Route::get('pdf/{id}', 'AdvanceController@pdf');
 
                     Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
 

@@ -34,6 +34,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Http\Resources\AdvanceCollection;
 use Modules\Finance\Http\Resources\AdvanceResource;
+use Barryvdh\DomPDF\Facade as PDF;
 
 class AdvanceController extends Controller
 {
@@ -104,7 +105,21 @@ class AdvanceController extends Controller
         return compact('clients','methodTypes','methodTypes2');
     }
 
+    public function pdf($id) {
 
+        $records = Advance::where('id',$id)->get();
+        $company = Company::first();
+        //$establishment = Establishment::get();
+
+        $collection = new AdvanceCollection($records);
+        
+        $filename = 'Reporte_Avances_'.date('YmdHis');
+
+        $pdf = PDF::loadView('finance::advances.avance_pdf_a4', compact("collection", "company"));
+
+        return $pdf->download($filename.'.pdf');
+
+    }
 
     public function record($id)
     {
