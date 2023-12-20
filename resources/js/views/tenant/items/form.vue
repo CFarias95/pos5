@@ -1025,7 +1025,7 @@
                                                     @change="calcularCantidad()"></el-input-number>
                                             </td>
                                             <td>
-                                                <el-input type="number" v-model="row.quantity" real-number></el-input>
+                                                <el-input type="number" v-model="row.quantity" step="0.000001"></el-input>
                                             </td>
 
                                             <td v-if="row.tipoDato != null || row.tipoDato != undefined">

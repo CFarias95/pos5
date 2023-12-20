@@ -362,6 +362,7 @@
                             :operation-type-id="form.operation_type_id"
                             :currency-type-id-active="form.currency_type_id"
                             :typeUser="user"
+                            :authUser="authUser"
                             :exchange-rate-sale="form.exchange_rate_sale"
                             :configuration="configuration"
                             :editNameProduct="configuration.edit_name_product"
