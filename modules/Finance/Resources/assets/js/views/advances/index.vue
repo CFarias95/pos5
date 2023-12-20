@@ -24,6 +24,7 @@
                         <th class="text-center">Notas</th>
                         <th class="text-center">Documento</th>
                         <th class="text-center">Editar</th>
+                        <th class="text-center">PDF</th>
 
                     </tr>
                     <tr slot-scope="{ index, row }">
@@ -52,7 +53,13 @@
                                 <i class="fas fa-edit"></i>
                             </button>
                         </td>
-
+                        <td class="text-center">
+                            <button type="button" style="min-width: 41px"
+                                class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                                @click.prevent="printPdf(row.id)">
+                                <i class="fas fa-file-pdf"></i>
+                            </button>
+                        </td>
                     </tr>
                 </data-table>
             </div>
@@ -92,6 +99,11 @@ export default {
         clickPrint(external_id) {
 
             window.open(`/${this.resource}/print/${external_id}`, '_blank');
+
+        },
+        printPdf(id) {
+
+            window.open(`/${this.resource}/pdf/${id}`, '_blank');
 
         },
         clickExpensePayment(recordId) {

@@ -132,7 +132,7 @@ export default {
     },
     created() {
         this.title = "Traslados";
-        this.estados = ['Creada', 'Aceptada', 'Rechazada', 'Parcial'];
+        this.estados = ['Registrada', 'Procesando'];
         //this.getEstados();
     },
     methods: {
