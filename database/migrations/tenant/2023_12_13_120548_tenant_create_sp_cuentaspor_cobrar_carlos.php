@@ -61,7 +61,7 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
             JOIN invoices AS inv ON inv.document_id = d.id
             WHERE (d.establishment_id = establecimiento OR 0=establecimiento)
             AND (d.customer_id = customer OR 0 = customer)
-            AND (d.user_id = usuario OR 0=usuario)
+            AND (d.seller_id = usuario OR 0=usuario)
             AND (d.purchase_order LIKE CONCAT('%',purchaseorder,'%') OR 0= purchaseorder)
             GROUP BY id, fee_id, inv.id
         ) AS AA
