@@ -24,6 +24,7 @@ class TransferCollection extends ResourceCollection
                 'warehouse' => $row->warehouse->description,
                 'warehouse_destination' => $row->warehouse_destination->description,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
+                'estado_id' => $row->estado_id,
                 'inventory' => $row->inventory->transform(function($o) use ($row) {
                     return [
                         'id' => $o->item->id,

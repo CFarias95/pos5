@@ -65,7 +65,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 })
                                 ->latest();*/
 
-
+            //Log::info('records'.json_encode($records));
             return new TransferCollection($records->paginate(config('tenant.items_per_page')));
         }
 
@@ -86,6 +86,22 @@ use Modules\Item\Models\ItemLotsGroup;
             return $record;
         }
 
+        public function updateEstado($id, $estado_id)
+        {
+            //Log::info('id'.$id);
+            //Log::info('estado'.$estado_id);
+            $traslado = InventoryTransfer::find($id);
+
+            //Log::info('trasladoantes'.$traslado);
+            $traslado->estado_id = $estado_id;
+            //Log::info('trasladodespues'.$traslado);
+            $traslado->save();
+        
+            return [
+                'success' => true,
+                'message' => 'Se actualizo el estado de la transferencia'
+            ];
+        }
 
         /* public function store(Request $request)
          {

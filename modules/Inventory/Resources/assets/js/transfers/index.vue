@@ -75,7 +75,7 @@
                             </el-popover>
                         </td>
                         <td> 
-                            <el-select v-model="row.estado_id">
+                            <el-select v-model="row.estado_id" @change="updateEstado(row.id, row.estado_id)">
                                 <el-option v-for="estado in estados" :key="estado" :label="estado"
                                     :value="estado"></el-option>
                             </el-select>
@@ -127,11 +127,13 @@ export default {
             typeTransaction: null,
             estados:[],
             estado_id: null,
+            temp: null,
         };
     },
     created() {
         this.title = "Traslados";
         this.estados = ['Creada', 'Aceptada', 'Rechazada', 'Parcial'];
+        //this.getEstados();
     },
     methods: {
         clickCreate(recordId = null) {
@@ -150,21 +152,11 @@ export default {
         clickGuide(id){
             location.href =`/dispatches/create/${id}/t`;
         },
-        changeEstado(){
-            return this.$http
-                .get(`/${this.resource}/estado?${this.getQueryParameters()}`)
+        updateEstado(id, estado_id){
+            this.$http.get(`/${this.resource}/updateEstado/${id}/${estado_id}`)
                 .then(response => {
-                    this.records = response.data.data;
-                    this.pagination = response.data.meta;
-                    this.pagination.per_page = parseInt(response.data.meta.per_page);
-            });
-        },
-        getQueryParameters() {
-            return queryString.stringify({
-                page: this.pagination.current_page,
-                limit: this.limit,
-                ...this.search
-            });
+                    console.log('Guardado exitosamente')
+                });
         },
     }
 };
