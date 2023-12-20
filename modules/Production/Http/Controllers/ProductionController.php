@@ -778,7 +778,7 @@ class ProductionController extends Controller
 
             foreach ($items_supplies as $item) {
                 Log::info($item);
-                //if ($item['unit_type'] != 'Servicio') {
+                if ($item['unit_type'] != 'Servicio') {
                     $qty = $item['quantity'] ?? 0;
                     $inventory_it = new Inventory();
                     $inventory_it->type = null;
@@ -801,7 +801,7 @@ class ProductionController extends Controller
                             $item_lots_group->save();
                         }
                     }
-                //}
+                }
             }
         } catch (\Throwable $th) {
             throw $th;

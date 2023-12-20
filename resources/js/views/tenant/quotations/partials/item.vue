@@ -992,11 +992,14 @@ export default {
             }
 
             if (this.recordItem) {
+                console.log('Record Item: ',this.recordItem)
+
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
+
                 this.form.quantity = this.recordItem.quantity
-                this.form.unit_price = this.recordItem.unit_price
+                this.form.unit_price = this.recordItem.unit_value
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 // this.form.unit_price_value = this.recordItem.input_unit_price_value
                 // if (this.recordItem.item.has_igv == false) {
@@ -1006,6 +1009,7 @@ export default {
                 this.setHasIgvUpdate()
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
+
                 if (this.recordItem.item.name_product_pdf) {
                     this.form.name_product_pdf = this.recordItem.item.name_product_pdf
                 }
@@ -1234,25 +1238,12 @@ export default {
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi
             }
-            /*
 
-            let select_lots = await _.filter(this.row.item.lots, {'has_sale': true})
-            let un_select_lots = await _.filter(this.row.item.lots, {'has_sale': false})
-
-            if (this.form.item.series_enabled) {
-                if (select_lots.length != this.form.quantity)
-                    return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
-            }
-
-             */
             this.initForm();
 
             if (this.recordItem) {
                 this.row.indexi = this.recordItem.indexi
             }
-
-            // this.row.IdLoteSelected = IdLoteSelected
-            // this.row.document_item_id = document_item_id
 
             this.$emit('add', this.row);
 
