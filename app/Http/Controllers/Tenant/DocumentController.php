@@ -1187,7 +1187,7 @@ class DocumentController extends Controller
 
                             $n += 1;
                             $arrayEntrys[$configuration->cta_incomes.'-'.$seatCost] = [
-                                'account_movement_id' => $item->income_cta,
+                                'account_movement_id' => $configuration->cta_incomes,
                                 'seat_line' => $n,
                                 'haber' => 0,
                                 'debe' => floatval($value->total_value),
