@@ -99,7 +99,7 @@ class QuotationController extends Controller
 
     public function filter()
     {
-        $state_types = StateType::whereIn('id', ['01', '05', '09'])->get();
+        $state_types = StateType::whereIn('id', ['01', '12', '15', '14'])->get();
 
         return compact('state_types');
     }

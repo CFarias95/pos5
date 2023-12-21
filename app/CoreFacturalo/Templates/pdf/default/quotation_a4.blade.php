@@ -9,7 +9,7 @@
     if($establishment->logo) {
         $logo = "{$establishment->logo}";
     }
-
+//Log::info('Document'.$document);
 @endphp
 <html>
 <head>
@@ -352,21 +352,82 @@
 </table>
 <br>
 <table class="full-width">
-<tr>
-    <td>
-    <strong>PAGOS:</strong> </td></tr>
-        @php
-            $payment = 0;
-        @endphp
-        @foreach($document->payments as $row)
-            <tr><td>- {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+    <tr>
+        <td>
+        <strong>PAGOS:</strong> </td></tr>
             @php
-                $payment += (float) $row->payment;
+                $payment = 0;
             @endphp
-        @endforeach
-        <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
+            @foreach($document->payments as $row)
+                <tr><td>- {{ $row->payment_method_type->description }} - {{ $row->reference ? $row->reference.' - ':'' }} {{ $document->currency_type->symbol }} {{ $row->payment }}</td></tr>
+                @php
+                    $payment += (float) $row->payment;
+                @endphp
+            @endforeach
+            <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
     </tr>
 
+</table>
+
+<b>Si desea realizar alguna consulta con respecto a la cotización, pongase en contacto con 
+    @if ($document->seller->name)
+        {{ $document->seller->name }}
+    @else
+        {{ $document->user->name }}
+    @endif
+    , 
+    @if ($document->phone)
+        {{ $document->phone }}
+    @else
+        {{ $document->user->email }}
+    @endif
+</b>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<br>
+<table class="full-width mt-6">
+    <tbody class="font-sm">
+        <tr class="font-sm">
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Elaborado por: 
+                </b>
+                {{$document->user->name}}
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                {{$document->user->number}}
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Aprobado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Revisado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                
+            </td>
+         </tr>
+    </tbody>
 </table>
 </body>
 </html>

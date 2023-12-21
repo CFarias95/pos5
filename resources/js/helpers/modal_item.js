@@ -16,6 +16,7 @@ function ItemOptionDescription(item) {
  * Devuelve una estructura unica para el tooltip de agregar/editar el item
  *
  */function ItemSlotTooltip(item) {
+    //console.log('item', item);
     let data = '';
 
     if (item !== undefined
