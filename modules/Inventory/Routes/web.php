@@ -148,6 +148,8 @@
                     Route::post('stock', 'InventoryController@stock');
                     Route::post('stock-multilple', 'InventoryController@stockMultiples');
                     Route::post('import', 'InventoryController@import');
+                    Route::get('print/{id}/{type}','InventoryController@print');
+                    Route::post('email','InventoryController@email');
                     /**
                      * inventory/moves
                      * inventory/remove

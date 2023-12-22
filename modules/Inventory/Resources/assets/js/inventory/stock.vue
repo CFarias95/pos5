@@ -55,15 +55,24 @@
             :lots="form.lots"
             @addRowOutputLot="addRowOutputLot">
         </output-lots-form>
+
+        <options
+            :showDialog.sync="showDialogOptions"
+            :recordId="this.inventoryId"
+            :showClose="this.showClose"
+            :type="this.type">
+        </options>
+
     </el-dialog>
 
 </template>
 
 <script>
     import OutputLotsForm from './partials/lots.vue'
+    import Options from './partials/options.vue'
 
     export default {
-        components: {OutputLotsForm},
+        components: {OutputLotsForm, Options},
         props: ['showDialog', 'recordId'],
         data() {
             return {
@@ -75,6 +84,9 @@
                 form: {},
                 warehouses: [],
                 inventory_transactions:[],
+                showDialogOptions:false,
+                type:'fix',
+                inventoryId:null,
             }
         },
         created() {
@@ -131,7 +143,12 @@
                         if (response.data.success) {
                             this.$message.success(response.data.message)
                             this.$eventHub.$emit('reloadData')
-                            this.close()
+                            this.inventoryId = response.data.id
+                            this.type = 'fix'
+                            this.showClose = false
+                            this.showDialogOptions = true
+
+                            //this.close()
                         } else {
                             this.$message.error(response.data.message)
                         }

@@ -19,13 +19,23 @@ use Modules\Inventory\Http\Requests\InventoryRequest;
 use Modules\Inventory\Http\Resources\InventoryResource;
 use Modules\Inventory\Http\Resources\InventoryCollection;
 use App\Imports\StockImport;
+use App\Mail\Tenant\InventoryEmail;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Inventory as TenantInventory;
 use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Item;
+use Barryvdh\DomPDF\Facade as PDF;
+use Illuminate\Mail\Mailable;
+use Illuminate\Support\Facades\Config;
+use Illuminate\Support\Facades\Mail;
+use Illuminate\Support\Facades\Storage;
+use Swift_Mailer;
+use Swift_SmtpTransport;
 
 class InventoryController extends Controller
 {
@@ -279,11 +289,14 @@ class InventoryController extends Controller
 			}
 
             $this->createAccountingEntryTransactions($inventory,$inventory_transaction, $totalA, $stockA, $item);
+            $this->generatePDF($inventory->id,$type);
 
 			return  [
 				'success' => true,
-				'message' => ($type == 'input') ? 'Ingreso registrado correctamente' : 'Salida registrada correctamente'
-			];
+				'message' => ($type == 'input') ? 'Ingreso registrado correctamente' : 'Salida registrada correctamente',
+                'id' => $inventory->id,
+                'email' => 'carlos.farias@joinec.net'
+            ];
 		});
 
 		return $result;
@@ -305,7 +318,7 @@ class InventoryController extends Controller
 				$valor = ($inventory->item->purchase_mean_cost * $inventory->quantity);
 			}else{
 				//Log::info('Precio Perso');
-				
+
 				//$item = Item::where('id', $item_id)->first();
 
 				$costoN = floatval($inventory->precio_perso);
@@ -645,14 +658,14 @@ class InventoryController extends Controller
 			return  [
 				'success' => true,
 				'message' => 'Cantidad de stock actualizado con éxito',
-                'id'=>$inventory->id
+                'id' => $inventory->id
 			];
 		});
 
         $inventory = Inventory::find($result['id']);
         $transaction = InventoryTransaction::find($inventory->inventory_transaction_id);
         $this->createAccountingEntryTransactions($inventory,$transaction);
-
+        $this->generatePDF($inventory->id,'fix');
 		return $result;
 
 	}
@@ -741,5 +754,79 @@ class InventoryController extends Controller
             'success' => false,
             'message' =>  __('app.actions.upload.error'),
         ];
+    }
+
+    public function generatePDF($id,$type){
+
+        $records = Inventory::find($id);
+        $company = Company::first();
+        $tipo = 'Ingreso';
+        if($type == 'output'){
+            $tipo = 'Salida';
+        }
+        if($type == 'fix'){
+            $tipo = 'Ajuste';
+        }
+        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo'))
+            ->setPaper('a4');
+
+        $filename = 'INV-'.$id.'.pdf';
+
+        Storage::disk('tenant')->put('inventory/pdf'.DIRECTORY_SEPARATOR.$filename, $pdf->stream());
+    }
+
+    public function print($id,$type){
+
+        $records = Inventory::find($id);
+        $company = Company::first();
+        $tipo = 'Ingreso';
+        if($type == 'output'){
+            $tipo = 'Salida';
+        }
+        if($type == 'fix'){
+            $tipo = 'Ajuste';
+        }
+
+        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo'))
+            ->setPaper('a4');
+
+        $filename = $tipo.'_mercaderia_' . date('YmdHis');
+
+        return $pdf->stream($filename . '.pdf');
+    }
+
+    public function email(Request $request){
+
+        $email = $request->email;
+        $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
+        $mails = [];
+        if (!empty($mail) && count($mail) > 0) {
+            foreach ($mail as $email) {
+                $email = trim($email);
+                if (!empty($email)) {
+                    $mails[] = $email;
+                }
+            }
+            $email= implode(';',$mails);
+        }
+        $email = explode(';',$email);
+        $company = Company::first();
+        $document = Inventory::find($request->id);
+        $mailable = new InventoryEmail($document, $request->type, $company);
+        Configuration::setConfigSmtpMail();
+
+        // Backup your default mailer
+        $backup = Mail::getSwiftMailer();
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
+
+        return [
+            'success' => true
+        ];
+
     }
 }

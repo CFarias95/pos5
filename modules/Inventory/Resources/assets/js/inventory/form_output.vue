@@ -114,21 +114,27 @@
             :lots="form.lots"
             @addRowSelectLot="addRowSelectLot">
         </select-lots-form>
+        <options
+            :showDialog.sync="showDialogOptions"
+            :recordId="this.inventory_id"
+            :showClose="this.showClose"
+            :type="this.type">
+        </options>
 
     </el-dialog>
 
 </template>
 
 <script>
-//  import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
-// import OutputLotsForm from './partials/lots.vue'
+
 import LotsGroup from './lots_group.vue'
 import SelectLotsForm from './lots.vue'
+import Options from './partials/options.vue'
 import {filterWords} from "../../../../../../resources/js/helpers/functions";
 
 
 export default {
-    components: {LotsGroup, SelectLotsForm},
+    components: {LotsGroup, SelectLotsForm, Options},
     props: ['showDialog', 'recordId'],
     data() {
         return {
@@ -138,6 +144,7 @@ export default {
             loading_submit: false,
             showDialogLots: false,
             showDialogSelectLots: false,
+            showDialogOptions:false,
             titleDialog: null,
             resource: 'inventory',
             errors: {},
@@ -145,18 +152,17 @@ export default {
             items: [],
             warehouses: [],
             inventory_transactions: [],
+            inventory_id:null,
+            email:null,
+            showClose:false,
         }
     },
-    // created() {
-    //     this.initForm()
-    // },
     methods: {
         async changeItem() {
             this.form.lots = []
             let item = await _.find(this.items, {'id': this.form.item_id})
             this.form.lots_enabled = item.lots_enabled
             let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
-            // console.log(item)
             this.form.lots = lots
             this.form.lots_enabled = item.lots_enabled
             this.form.series_enabled = item.series_enabled
@@ -251,7 +257,13 @@ export default {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
                         this.$eventHub.$emit('reloadData')
-                        this.close()
+                        //this.$emit('update:showDialog', false)
+
+                        this.showClose = false
+                        this.inventory_id = response.data.id
+                        this.showDialogOptions = true
+
+                        this.initForm()
                     } else {
                         this.$message.error(response.data.message)
                     }
