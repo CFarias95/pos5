@@ -116,8 +116,6 @@
                 <h3>Inventario {{ $type_l }} de mercadería</h3>
                 <h4>Se a generado la transacción INV-{{ $document->id }}</h4>
 
-
-
             </div>
             <div class="sdiv">
                 @if($type == 'fix')

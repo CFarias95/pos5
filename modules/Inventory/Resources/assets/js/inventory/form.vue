@@ -196,9 +196,7 @@
             :showClose="this.showClose"
             :type="this.type">
         </options>
-
     </el-dialog>
-
 </template>
 
 <script>
