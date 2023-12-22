@@ -38,7 +38,7 @@ class ItemUpdateRequest extends FormRequest
             'sale_unit_price' => [
                 'required',
                 'numeric',
-                'gt:0'
+                'gte:0'
             ],
             'stock_min' => [
                 'required',
@@ -50,7 +50,7 @@ class ItemUpdateRequest extends FormRequest
     {
         return [
             'description.required' => 'El campo nombre es obligatorio.',
-            'sale_unit_price.gt' => 'El precio unitario de venta debe ser mayor que 0.',
+            'sale_unit_price.gte' => 'El precio unitario de venta debe ser mayor que 0.',
         ];
     }
 }

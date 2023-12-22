@@ -39,7 +39,7 @@ class ItemRequest extends FormRequest
             'sale_unit_price' => [
                 'required',
                 'numeric',
-                'gt:0'
+                'gte:0'
             ],
             'purchase_unit_price' => [
                 'required', 'numeric'
@@ -64,7 +64,7 @@ class ItemRequest extends FormRequest
     {
         return [
             'description.required' => 'El campo nombre es obligatorio.',
-            'sale_unit_price.gt' => 'El precio unitario de venta debe ser mayor que 0.',
+            'sale_unit_price.gte' => 'El precio unitario de venta debe ser mayor o igual que 0.',
         ];
     }
 }
