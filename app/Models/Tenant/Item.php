@@ -759,9 +759,29 @@ class Item extends ModelTenant
      */
     public function getFullDescription($warehouse, $extended = false)
     {
-
+        //Log::info('cat'.$this->category);
         //$desc = ($this->internal_id) ? $this->internal_id.' - '.$this->description : $this->description;
-        $category = ($this->category) ? "{$this->category->name}" : '';
+        if($this->category->parent_id == null && $this->category->parent_2_id == null && $this->category->parent_3_id == null)
+        {
+            $descripcion = ($this->category) ? "{$this->category->name}" : '';
+        }else{
+            $descripcion = $this->category->name;
+            if($this->category->parent_3_id)
+            {
+                $descripcion.= '/'.(Category::find($this->category->parent_3_id))->name;
+            }
+            if($this->category->parent_2_id)
+            {
+                $descripcion.= '/'.(Category::find($this->category->parent_2_id))->name;
+            }
+            if($this->category->parent_1_id)
+            {
+                $descripcion.= '/'.(Category::find($this->category->parent_1_id))->name;
+            }
+            //$cat = Category::get();
+            //$category = ($this->category) ? "{$this->category->name}" : '';
+        }
+        //$category = ($this->category) ? "{$this->category->name}" : '';
         $brand = ($this->brand) ? "{$this->brand->name}" : '';
         if ($this->unit_type_id != 'ZZ') {
             if (isset($this['stock'])) {
@@ -785,7 +805,7 @@ class Item extends ModelTenant
         return [
             'full_description'      => $desc,
             'brand'                 => $brand,
-            'category'              => $category,
+            'category'              => $descripcion,
             'stock'                 => $stock,
             'warehouse_description' => $warehouse->description,
         ];
@@ -862,6 +882,7 @@ class Item extends ModelTenant
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
         }
         $detail = $this->getFullDescription($warehouse, $extended_description);
+        //Log::info('detail'.json_encode($extended_description));
         $realtion_item_unit_types = $this->item_unit_types;
         $lots_grp = $this->lots_group;
 

@@ -340,6 +340,7 @@ class DocumentController extends Controller
     {
         // $items = $this->table('items');
         $items = SearchItemController::getItemsToDocuments();
+        //Log::info('items'.$items);
         $categories = [];
         $affectation_igv_types = AffectationIgvType::whereActive()->get();
         $system_isc_types = SystemIscType::whereActive()->get();

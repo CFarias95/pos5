@@ -13,6 +13,7 @@
     use Illuminate\Http\Request;
     use Illuminate\Support\Collection;
     use Modules\Inventory\Traits\InventoryTrait;
+    use Illuminate\Support\Facades\Log;
 
     /**
      * Tener en cuenta como base modules/Document/Traits/SearchTrait.php
@@ -153,7 +154,7 @@
                 $item->with('warehousePrices');
                 $ItemToSearchBySeries->with('warehousePrices');
             }
-
+            
             $alt_item = $item;
 
             $bySerie = null;
@@ -212,6 +213,9 @@
                     }
                 }
             }
+
+            //$prueba = $item->get();
+            //Log::info('prueba'.$prueba);
 
             return $item->whereIsActive()->orderBy('id');
         }
@@ -510,6 +514,8 @@
         {
             $items_not_services = self::getNotServiceItem($request, $id);
             $items_services = self::getServiceItem($request, $id);
+            //$prueba1 = $items_not_services->merge($items_services);
+            //Log::info('prueba'.$prueba1);
             return self::TransformToModal($items_not_services->merge($items_services));
 
             $establishment_id = auth()->user()->establishment_id;

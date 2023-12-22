@@ -55,6 +55,7 @@ use Illuminate\Support\Str;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Throwable;
+use Illuminate\Support\Facades\Log;
 
 
     /**
@@ -102,7 +103,8 @@ use Throwable;
             return [
                 'date_of_issue' => 'Fecha de emisión',
                 'delivery_date' => 'Fecha de entrega',
-                'user_name' => 'Vendedor'
+                'user_name' => 'Vendedor',
+                //'product' => 'Producto'
             ];
         }
 
@@ -130,6 +132,7 @@ use Throwable;
                     ->latest();
 
             }
+            Log::info('records'.json_encode($records));
 
             return $records;
         }
