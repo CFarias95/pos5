@@ -30,7 +30,7 @@
                                 v-model="search.value"
                                 style="width: 100%;"
                                 prefix-icon="el-icon-search"
-                                @input="getRecords">
+                                @input="getRecords" clearable filterable>
                             </el-input>
                         </template>
                     </div>

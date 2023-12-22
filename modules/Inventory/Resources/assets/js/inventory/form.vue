@@ -1,132 +1,188 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
-        <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
-            <div class="form-body">
-                <div class="row">
-                    <div class="col-md-8">
-                        <div class="form-group" :class="{'has-danger': errors.item_id}">
-                            <label class="control-label">Producto</label>
-                            <el-select v-model="form.item_id"
-                                       filterable
-                                       remote
-                                       :remote-method="searchRemoteItems"
-                                       :loading="loading_search"
-                                       @change="changeItem">
-                                <el-option v-for="option in items"
-                                           :key="option.id"
-                                           :value="option.id"
-                                           :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.item_id"
-                                   v-text="errors.item_id[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group" :class="{'has-danger': errors.quantity}">
-                            <label class="control-label">Cantidad</label>
-                            <el-input-number
-                                v-model="form.quantity"
-                                :min="0"
-                                :controls="false"
-                                :precision="precision"
-
-                            ></el-input-number>
-                            <small class="form-control-feedback" v-if="errors.quantity"
-                                   v-text="errors.quantity[0]"></small>
-
-                        </div>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="form-group" :class="{'has-danger': errors.warehouse_id}">
-                            <label class="control-label">Almacén</label>
-                            <el-select v-model="form.warehouse_id" filterable @change="changeItem">
-                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id"
-                                           :label="option.description"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.warehouse_id"
-                                   v-text="errors.warehouse_id[0]"></small>
-                        </div>
-                    </div>
-                    <div class="col-md-4">
-                        <div class="form-group" :class="{'has-danger': errors.quantity}">
-                            <label class="control-label">Costo Promedio</label>
-                            <el-input-number
-                                v-model="form.purchase_mean_price"
-                                :min="0"
-                                :controls="false"
-                                :precision="precision"
-
-                            ></el-input-number>
-                        </div>
-                    </div>
-                    <div class="col-md-4" v-if="type == 'input' && form.lots_enabled">
-                        <div class="form-group" :class="{'has-danger': errors.lot_code}">
-                            <label class="control-label">
-                                Código lote
-                            </label>
-                            <el-input v-model="form.lot_code">
-                                <!-- <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button> -->
-                            </el-input>
-                            <small class="form-control-feedback" v-if="errors.lot_code"
-                                   v-text="errors.lot_code[0]"></small>
-                        </div>
-                    </div>
-
-                    <div class="col-md-3" v-show="form.lots_enabled">
-                        <div class="form-group" :class="{'has-danger': errors.date_of_due}">
-                            <label class="control-label">Fec. Vencimiento</label>
-                            <el-date-picker v-model="form.date_of_due" type="date" value-format="yyyy-MM-dd"
-                                            :clearable="true"></el-date-picker>
-                            <small class="form-control-feedback" v-if="errors.date_of_due"
-                                   v-text="errors.date_of_due[0]"></small>
-                        </div>
-                    </div>
-
-                    <div style="padding-top: 3%" class="col-md-4" v-if="form.warehouse_id && form.series_enabled">
-                        <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
-                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotcode">[&#10004;
-                            Ingresar series]</a>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="form-group" :class="{'has-danger': errors.inventory_transaction_id}">
-                            <label class="control-label">Motivo traslado</label>
-                            <el-select v-model="form.inventory_transaction_id" filterable>
-                                <el-option v-for="option in inventory_transactions" :key="option.id" :value="option.id"
-                                           :label="option.name"></el-option>
-                            </el-select>
-                            <small class="form-control-feedback" v-if="errors.inventory_transaction_id"
-                                   v-text="errors.inventory_transaction_id[0]"></small>
-                        </div>
-                    </div>
-                </div>
-                <div class="row">
-                    <div class="col-md-3">
-                            <label class="control-label">Fecha registro</label>
-                            <el-date-picker v-model="form.created_at" type="datetime"
-                                            value-format="yyyy-MM-dd HH:mm:ss" format="dd/MM/yyyy HH:mm:ss" :clearable="true"></el-date-picker>
-                    </div>
-                    <div class="col-md-8">
-                        <div class="form-group" :class="{'has-danger': errors.comments}">
-                            <label class="control-label">Comentarios
-                            </label>
-                            <el-input  type="textarea" :rows="3" :maxlength="250" v-model="form.comments"></el-input>
-                            <small class="form-control-feedback" v-if="errors.comments" v-text="errors.comments[0]"></small>
-                        </div>
-                    </div>
-                </div>
+  <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <form autocomplete="off" @submit.prevent="submit" v-loading="loading">
+      <div class="form-body">
+        <div class="row">
+          <div class="col-md-8">
+            <div class="form-group" :class="{ 'has-danger': errors.item_id }">
+              <label class="control-label">Producto</label>
+              <el-select
+                v-model="form.item_id"
+                filterable
+                remote
+                :remote-method="searchRemoteItems"
+                :loading="loading_search"
+                @change="changeItem"
+              >
+                <el-option
+                  v-for="option in items"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.description"
+                ></el-option>
+              </el-select>
+              <small
+                class="form-control-feedback"
+                v-if="errors.item_id"
+                v-text="errors.item_id[0]"
+              ></small>
             </div>
-            <div class="form-actions text-right mt-4">
-                <el-button @click.prevent="close()">Cancelar</el-button>
-                <el-button type="primary" native-type="submit" :loading="loading_submit">Aceptar</el-button>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group" :class="{ 'has-danger': errors.quantity }">
+              <label class="control-label">Cantidad</label>
+              <el-input-number
+                v-model="form.quantity"
+                :min="0"
+                :controls="false"
+                :precision="precision"
+              ></el-input-number>
+              <small
+                class="form-control-feedback"
+                v-if="errors.quantity"
+                v-text="errors.quantity[0]"
+              ></small>
             </div>
-        </form>
+          </div>
+          <div class="col-md-8">
+            <div class="form-group" :class="{ 'has-danger': errors.warehouse_id }">
+              <label class="control-label">Almacén</label>
+              <el-select v-model="form.warehouse_id" filterable @change="changeItem">
+                <el-option
+                  v-for="option in warehouses"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.description"
+                ></el-option>
+              </el-select>
+              <small
+                class="form-control-feedback"
+                v-if="errors.warehouse_id"
+                v-text="errors.warehouse_id[0]"
+              ></small>
+            </div>
+          </div>
+          <div class="col-md-4">
+            <div class="form-group" :class="{ 'has-danger': errors.quantity }">
+              <label class="control-label">Costo Promedio</label>
+              <el-input-number
+                v-model="form.purchase_mean_price"
+                :min="0"
+                :controls="false"
+                :precision="precision"
+              ></el-input-number>
+            </div>
+          </div>
+          <div class="col-md-4" v-if="type == 'input' && form.lots_enabled">
+            <div class="form-group" :class="{ 'has-danger': errors.lot_code }">
+              <label class="control-label"> Código lote </label>
+              <el-input v-model="form.lot_code">
+                <!-- <el-button slot="append" icon="el-icon-edit-outline"  @click.prevent="clickLotcode"></el-button> -->
+              </el-input>
+              <small
+                class="form-control-feedback"
+                v-if="errors.lot_code"
+                v-text="errors.lot_code[0]"
+              ></small>
+            </div>
+          </div>
 
-        <input-lots-form
-            :showDialog.sync="showDialogLots"
-            :stock="form.quantity"
-            :lots="form.lots"
-            @addRowLot="addRowLot">
-        </input-lots-form>
+          <div class="col-md-3" v-show="form.lots_enabled">
+            <div class="form-group" :class="{ 'has-danger': errors.date_of_due }">
+              <label class="control-label">Fec. Vencimiento</label>
+              <el-date-picker
+                v-model="form.date_of_due"
+                type="date"
+                value-format="yyyy-MM-dd"
+                :clearable="true"
+              ></el-date-picker>
+              <small
+                class="form-control-feedback"
+                v-if="errors.date_of_due"
+                v-text="errors.date_of_due[0]"
+              ></small>
+            </div>
+          </div>
+
+          <div
+            style="padding-top: 3%"
+            class="col-md-4"
+            v-if="form.warehouse_id && form.series_enabled"
+          >
+            <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
+            <a
+              href="#"
+              class="text-center font-weight-bold text-info"
+              @click.prevent="clickLotcode"
+              >[&#10004; Ingresar series]</a
+            >
+          </div>
+          <div class="col-md-8">
+            <div
+              class="form-group"
+              :class="{ 'has-danger': errors.inventory_transaction_id }"
+            >
+              <label class="control-label">Motivo traslado</label>
+              <el-select v-model="form.inventory_transaction_id" filterable>
+                <el-option
+                  v-for="option in inventory_transactions"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.name"
+                ></el-option>
+              </el-select>
+              <small
+                class="form-control-feedback"
+                v-if="errors.inventory_transaction_id"
+                v-text="errors.inventory_transaction_id[0]"
+              ></small>
+            </div>
+          </div>
+        </div>
+        <div class="row">
+          <div class="col-md-3">
+            <label class="control-label">Fecha registro</label>
+            <el-date-picker
+              v-model="form.created_at"
+              type="datetime"
+              value-format="yyyy-MM-dd HH:mm:ss"
+              format="dd/MM/yyyy HH:mm:ss"
+              :clearable="true"
+            ></el-date-picker>
+          </div>
+          <div class="col-md-8">
+            <div class="form-group" :class="{ 'has-danger': errors.comments }">
+              <label class="control-label">Comentarios </label>
+              <el-input
+                type="textarea"
+                :rows="3"
+                :maxlength="250"
+                v-model="form.comments"
+              ></el-input>
+              <small
+                class="form-control-feedback"
+                v-if="errors.comments"
+                v-text="errors.comments[0]"
+              ></small>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="form-actions text-right mt-4">
+        <el-button @click.prevent="close()">Cancelar</el-button>
+        <el-button type="primary" native-type="submit" :loading="loading_submit"
+          >Aceptar</el-button
+        >
+      </div>
+    </form>
+
+    <input-lots-form
+      :showDialog.sync="showDialogLots"
+      :stock="form.quantity"
+      :lots="form.lots"
+      @addRowLot="addRowLot"
+    >
+    </input-lots-form>
 
         <output-lots-form
             :showDialog.sync="showDialogLotsOutput"
@@ -277,12 +333,16 @@ export default {
                         return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
                 }
 
-                if (this.form.series_enabled) {
-                    if (this.form.lots.length > total_qty)
-                        return this.$message.error('La cantidad de series registradas es superior al stock');
-                    if (this.form.lots.length !== total_qty)
-                        return this.$message.error('La cantidad de series registradas son diferentes al stock');
-                }
+        if (this.form.series_enabled) {
+          if (this.form.lots.length > total_qty)
+            return this.$message.error(
+              "La cantidad de series registradas es superior al stock"
+            );
+          if (this.form.lots.length !== total_qty)
+            return this.$message.error(
+              "La cantidad de series registradas son diferentes al stock"
+            );
+        }
 
             } else {
                 if (this.form.lots.length > 0 && this.form.lots_enabled) {

@@ -21,7 +21,7 @@ class TenantInventoriesTable extends Migration
             $table->unsignedInteger('item_id');
             $table->unsignedInteger('warehouse_id');
             $table->unsignedInteger('warehouse_destination_id')->nullable();
-            $table->decimal('quantity', 12, 4);
+            $table->decimal('quantity', 16, 6);
             $table->timestamps();
         });
     }
