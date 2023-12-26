@@ -159,9 +159,9 @@
                                                 width="30%">Descripción</th>
                                             <th width="8%" class="text-center font-weight-bold">Unidad</th>
                                             <th width="8%" class="text-center font-weight-bold">Cantidad</th>
+                                            <th class="text-center font-weight-bold">Valor Unitario</th>
                                             <th class="text-center font-weight-bold">Precio Unitario</th>
                                             <th class="text-center font-weight-bold">Subtotal</th>
-                                            <!--<th class="text-right font-weight-bold">Cargo</th>-->
                                             <th class="text-center font-weight-bold">Total</th>
 
                                             <template v-if="is_generate_from_quotation">
@@ -179,7 +179,8 @@
                                             </td>
                                             <td class="text-center">{{ row.item.unit_type_id }}</td>
                                             <td class="text-center">{{ row.quantity }}</td>
-                                            <!-- <td class="text-right">{{currency_type.symbol}} {{row.unit_price}}</td> -->
+                                            <td class="text-center">{{currency_type.symbol}}
+                                                {{ getFormatUnitPriceRow(row.unit_value) }}</td>
                                             <td class="text-center">{{ currency_type.symbol }}
                                                 {{ getFormatUnitPriceRow(row.unit_price) }}
                                             </td>

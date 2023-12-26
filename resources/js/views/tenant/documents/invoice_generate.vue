@@ -4478,6 +4478,7 @@ export default {
             return total_pay
         },
         setDescriptionOfItem(item) {
+            console.log(item)
             return showNamePdfOfDescription(item, this.config.show_pdf_name)
         },
         checkKeyWithAlt(e) {
