@@ -29,6 +29,7 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Item;
+use Modules\Production\Models\Production;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Mail\Mailable;
 use Illuminate\Support\Facades\Config;
@@ -137,7 +138,14 @@ class InventoryController extends Controller
 			//            'items' => $this->optionsItemFull(),
 			'warehouses'             => $this->optionsWarehouse(),
 			'inventory_transactions' => $this->optionsInventoryTransaction($type),
+			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
 		];
+	}
+
+	public function filterProductionDate($filter_date)
+	{
+		$dates = Production::where('date_end', $filter_date)->get();
+		return $dates;
 	}
 
 	public function searchItems(Request $request)
@@ -206,6 +214,8 @@ class InventoryController extends Controller
 			$comments = $request->input('comments');
 			$created_at = $request->input('created_at');
 			$precio_perso = $request->input('purchase_mean_price');
+			//Log::info('datos '.$request);
+			$production_id = $request->input('production_id');
 			//Log::info('precio_perso'.$precio_perso);
 
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
@@ -238,6 +248,7 @@ class InventoryController extends Controller
 			$inventory->lot_code = $lot_code;
 			$inventory->comments = $comments;
 			$inventory->precio_perso = $precio_perso;
+			$inventory->production_id= $production_id;
 
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
@@ -623,19 +634,13 @@ class InventoryController extends Controller
 			$quantity = $request->input('quantity');
 			$quantity_real = $request->input('quantity_real');
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
-            $lot_code = null;
-			$lot_groups =($request->has('lot_groups')) ? $request->input('lot_groups') : [];
+
 			if ($quantity_real <= 0) {
 				return  [
 					'success' => false,
 					'message' => 'La cantidad de stock real debe ser mayor a 0'
 				];
 			}
-            foreach($lot_groups as $lot){
-                if($lot->checked){
-                    $lot_code = $lot->code;
-                }
-            }
 			$type=1;
 			$quantity_new=0;
 			$quantity_new=$quantity_real-$quantity;
@@ -651,7 +656,6 @@ class InventoryController extends Controller
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
 			$inventory->quantity = $quantity_new;
-            $inventory->lot_code = $lot_code;
 
 			if ($quantity_real<$quantity) {
 				$inventory->inventory_transaction_id = 28;

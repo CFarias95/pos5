@@ -140,6 +140,31 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-md-5">
+            <label class="control-label">Fecha Produccion Finalizada</label>
+            <el-date-picker
+              v-model="form.filter_date"
+              type="date"
+              value-format="yyyy-MM-dd"
+              format="dd/MM/yyyy"
+              :clearable="true"
+              @change="filterProductionDate"
+            ></el-date-picker>
+          </div>
+          <div class="col-md-7">
+            <label class="control-label">Produccion Finalizada</label>
+            <el-select v-model="form.production_id" filterable clearable>
+              <el-option
+                v-for="option in production"
+                :key="option.id"
+                :value="option.id"
+                :label="option.name"
+              >
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-md-3">
             <label class="control-label">Fecha registro</label>
             <el-date-picker
@@ -184,152 +209,170 @@
     >
     </input-lots-form>
 
-        <output-lots-form
-            :showDialog.sync="showDialogLotsOutput"
-            :lots="form.lots"
-            @addRowOutputLot="addRowOutputLot">
-        </output-lots-form>
+    <output-lots-form
+      :showDialog.sync="showDialogLotsOutput"
+      :lots="form.lots"
+      @addRowOutputLot="addRowOutputLot"
+    >
+    </output-lots-form>
 
-        <options
-            :showDialog.sync="showDialogOptions"
-            :recordId="this.inventory_id"
-            :showClose="this.showClose"
-            :type="this.type">
-        </options>
-    </el-dialog>
+    <options
+      :showDialog.sync="showDialogOptions"
+      :recordId="this.inventory_id"
+      :showClose="this.showClose"
+      :type="this.type"
+    >
+    </options>
+  </el-dialog>
 </template>
 
 <script>
-import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
-import OutputLotsForm from './partials/lots.vue'
-import Options from './partials/options.vue'
-import {filterWords} from "../../../../../../resources/js/helpers/functions";
+import InputLotsForm from "../../../../../../resources/js/views/tenant/items/partials/lots.vue";
+import OutputLotsForm from "./partials/lots.vue";
+import Options from "./partials/options.vue";
+import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
-    components: {InputLotsForm, OutputLotsForm, Options},
-    props: ['showDialog', 'recordId', 'type'],
-    data() {
-        return {
-            loading: false,
-            loading_search: false,
-            loading_submit: false,
-            showDialogLots: false,
-            showDialogLotsOutput: false,
-            showDialogOptions:false,
-            showClose:false,
-            titleDialog: null,
-            resource: 'inventory',
-            errors: {},
-            form: {},
-            items: [],
-            warehouses: [],
-            inventory_transactions: [],
-            precision:2,
-            inventory_id:null,
-            email:null,
+  components: { InputLotsForm, OutputLotsForm, Options },
+  props: ["showDialog", "recordId", "type"],
+  data() {
+    return {
+      loading: false,
+      loading_search: false,
+      loading_submit: false,
+      showDialogLots: false,
+      showDialogLotsOutput: false,
+      showDialogOptions: false,
+      showClose: false,
+      titleDialog: null,
+      resource: "inventory",
+      errors: {},
+      form: {},
+      items: [],
+      warehouses: [],
+      inventory_transactions: [],
+      precision: 2,
+      production: [],
+      inventory_id: null,
+      email: null,
+    };
+  },
+  methods: {
+    async changeItem() {
+      if (this.items.length > 0) {
+        if (this.type === "output") {
+          this.form.lots = [];
+          let item = await _.find(this.items, { id: this.form.item_id });
+          this.form.lots_enabled = item.lots_enabled;
+          let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
+          this.form.lots = lots;
+          this.form.lots_enabled = item.lots_enabled;
+          this.form.series_enabled = item.series_enabled;
+        } else {
+          let item = await _.find(this.items, { id: this.form.item_id });
+          this.form.lots_enabled = item.lots_enabled;
+          this.form.series_enabled = item.series_enabled;
+          this.form.purchase_mean_price = item.purchase_mean_price;
         }
+        this.ChangePrecision();
+      }
     },
-    methods: {
-        async changeItem() {
-            if (this.items.length > 0) {
-                if (this.type === 'output') {
-                    this.form.lots = []
-                    let item = await _.find(this.items, {'id': this.form.item_id})
-                    this.form.lots_enabled = item.lots_enabled
-                    let lots = await _.filter(item.lots, {'warehouse_id': this.form.warehouse_id})
-                    this.form.lots = lots
-                    this.form.lots_enabled = item.lots_enabled
-                    this.form.series_enabled = item.series_enabled
-
-                } else {
-                    let item = await _.find(this.items, {'id': this.form.item_id})
-                    this.form.lots_enabled = item.lots_enabled
-                    this.form.series_enabled = item.series_enabled
-                    this.form.purchase_mean_price = item.purchase_mean_price
-                }
-                this.ChangePrecision();
-            }
-        },
-        addRowOutputLot(lots) {
-            this.form.lots = lots
-        },
-        addRowLot(lots) {
-            this.form.lots = lots
-        },
-        clickLotcode() {
-            this.ChangePrecision();
-            this.showDialogLots = true
-        },
-        clickLotcodeOutput() {
-            this.showDialogLotsOutput = true
-        },
-        initForm() {
-            this.errors = {}
-            this.form = {
-
-                id: null,
-                item_id: null,
-                warehouse_id: null,
-                purchase_mean_price: 0,
-                inventory_transaction_id: null,
-                quantity: 0,
-                type: this.type,
-                lot_code: null,
-                lots_enabled: false,
-                series_enabled: false,
-                lots: [],
-                date_of_due: null,
-                created_at: null,
-                comments: null,
-            }
-        },
-        ChangePrecision(){
-            if (this.form.series_enabled) {
-                /* Para series, debe ser entero*/
-                this.precision = 0;
-            }else{
-                this.precision = 2;
-            }
-        },
-        async initTables() {
-            await this.$http.get(`/${this.resource}/tables/transaction/${this.type}`)
-                .then(response => {
-                    // this.items = response.data.items
-                    this.warehouses = response.data.warehouses
-                    this.inventory_transactions = response.data.inventory_transactions
-                })
-            await this.searchRemoteItems('')
-        },
-        async create() {
-            this.loading = true;
-            this.titleDialog = (this.type === 'input') ? 'Ingreso de producto al almacén' : 'Salida de producto del almacén'
-            await this.initTables();
-            this.initForm();
-            this.loading = false;
-        },
-        async searchRemoteItems(search) {
-            this.loading_search = true;
-            this.items = [];
-            await this.$http.post(`/${this.resource}/search_items`, {'search': search})
-                .then(response => {
-                    let items = response.data.items;
-                    //console.log('logs', items)
-                    if(items.length > 0) {
-                        this.items = items; //filterWords(search, items);
-                    }
-
-                })
-            this.loading_search = false;
-        },
-        async submit() {
-            let total_qty =  this.form.quantity * 1;
-            if (this.type === 'input') {
-                if (this.form.lots_enabled) {
-                    if (!this.form.lot_code)
-                        return this.$message.error('Código de lote es requerido');
-                    if (!this.form.date_of_due)
-                        return this.$message.error('Fecha de vencimiento es requerido si lotes esta habilitado.');
-                }
+    addRowOutputLot(lots) {
+      this.form.lots = lots;
+    },
+    addRowLot(lots) {
+      this.form.lots = lots;
+    },
+    clickLotcode() {
+      this.ChangePrecision();
+      this.showDialogLots = true;
+    },
+    clickLotcodeOutput() {
+      this.showDialogLotsOutput = true;
+    },
+    initForm() {
+      this.errors = {};
+      this.form = {
+        id: null,
+        item_id: null,
+        warehouse_id: null,
+        purchase_mean_price: 0,
+        inventory_transaction_id: null,
+        quantity: 0,
+        type: this.type,
+        lot_code: null,
+        lots_enabled: false,
+        series_enabled: false,
+        lots: [],
+        date_of_due: null,
+        created_at: null,
+        comments: null,
+        filter_date: null,
+        production_id: null,
+      };
+    },
+    ChangePrecision() {
+      if (this.form.series_enabled) {
+        /* Para series, debe ser entero*/
+        this.precision = 0;
+      } else {
+        this.precision = 2;
+      }
+    },
+    filterProductionDate() {
+      this.$http
+        .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
+        .then((response) => {
+          this.production = response.data;
+          //console.log('response', response.data);
+        });
+    },
+    async initTables() {
+      await this.$http
+        .get(`/${this.resource}/tables/transaction/${this.type}`)
+        .then((response) => {
+          // this.items = response.data.items
+          this.warehouses = response.data.warehouses;
+          this.inventory_transactions = response.data.inventory_transactions;
+          this.production = response.data.production_finalizada;
+        });
+      await this.searchRemoteItems("");
+    },
+    async create() {
+      this.loading = true;
+      this.titleDialog =
+        this.type === "input"
+          ? "Ingreso de producto al almacén"
+          : "Salida de producto del almacén";
+      await this.initTables();
+      this.initForm();
+      this.loading = false;
+    },
+    async searchRemoteItems(search) {
+      this.loading_search = true;
+      this.items = [];
+      await this.$http
+        .post(`/${this.resource}/search_items`, { search: search })
+        .then((response) => {
+          let items = response.data.items;
+          //console.log('logs', items)
+          if (items.length > 0) {
+            this.items = items; //filterWords(search, items);
+          }
+        });
+      this.loading_search = false;
+    },
+    async submit() {
+      let total_qty = this.form.quantity * 1;
+      if (this.type === "input") {
+        if (this.form.lots_enabled) {
+          if (!this.form.lot_code)
+            return this.$message.error("Código de lote es requerido");
+          if (!this.form.date_of_due)
+            return this.$message.error(
+              "Fecha de vencimiento es requerido si lotes esta habilitado."
+            );
+        }
 
         if (this.form.series_enabled) {
           if (this.form.lots.length > total_qty)
@@ -341,54 +384,53 @@ export default {
               "La cantidad de series registradas son diferentes al stock"
             );
         }
+      } else {
+        if (this.form.lots.length > 0 && this.form.lots_enabled) {
+          let select_lots = await _.filter(this.form.lots, { has_sale: true });
+          if (select_lots.length !== total_qty) {
+            return this.$message.error(
+              "La cantidad ingresada es diferente a las series seleccionadas"
+            );
+          }
+        }
+      }
 
-            } else {
-                if (this.form.lots.length > 0 && this.form.lots_enabled) {
-                    let select_lots = await _.filter(this.form.lots, {'has_sale': true})
-                    if (select_lots.length !== total_qty) {
-                        return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
-                    }
-                }
-            }
+      this.loading_submit = true;
+      this.form.type = this.type;
+      // console.log(this.form)
+      await this.$http
+        .post(`/${this.resource}/transaction`, this.form)
+        .then((response) => {
+          if (response.data.success) {
+            this.$message.success(response.data.message);
+            this.$eventHub.$emit("reloadData");
+            //this.$emit('update:showDialog', false)
 
-            this.loading_submit = true
-            this.form.type = this.type
-            // console.log(this.form)
-            await this.$http.post(`/${this.resource}/transaction`, this.form)
-                .then(response => {
-                    if (response.data.success) {
+            this.showClose = false;
+            this.inventory_id = response.data.id;
+            this.showDialogOptions = true;
 
-                        this.$message.success(response.data.message)
-                        this.$eventHub.$emit('reloadData')
-                        //this.$emit('update:showDialog', false)
-
-
-                        this.showClose = false
-                        this.inventory_id = response.data.id
-                        this.showDialogOptions = true
-
-                        this.initForm()
-
-                    } else {
-                        this.$message.error(response.data.message)
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data
-                        // console.log(error.response.data)
-                    } else {
-                        console.log(error)
-                    }
-                })
-                .then(() => {
-                    this.loading_submit = false
-                })
-        },
-        close() {
-            this.$emit('update:showDialog', false)
-            this.initForm()
-        },
-    }
-}
+            this.initForm();
+          } else {
+            this.$message.error(response.data.message);
+          }
+        })
+        .catch((error) => {
+          if (error.response.status === 422) {
+            this.errors = error.response.data;
+            // console.log(error.response.data)
+          } else {
+            console.log(error);
+          }
+        })
+        .then(() => {
+          this.loading_submit = false;
+        });
+    },
+    close() {
+      this.$emit("update:showDialog", false);
+      this.initForm();
+    },
+  },
+};
 </script>

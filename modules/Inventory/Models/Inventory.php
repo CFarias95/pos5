@@ -86,6 +86,8 @@
 
             'real_stock',
             'system_stock',
+            'precio_perso',
+            'production_id'
         ];
 
         /**

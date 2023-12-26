@@ -26,6 +26,8 @@ use App\Models\Tenant\ItemSupply;
 use App\Models\Tenant\Person;
 use App\Http\Controllers\Tenant\PurchaseController;
 use Illuminate\Support\Facades\Log;
+use Modules\Production\Models\Production;
+
 
 /**
  * Se debe tener en cuenta este trait para llevar el control de Kardex
@@ -287,6 +289,13 @@ trait InventoryTrait
                 'description' => $row->description
             ];
         });
+    }
+
+    public function optionProductionFinalizada()
+    {
+        $records = Produccion::where('state_type_id', '03')->get();
+        return $records;
+        
     }
 
     public function optionsCustomers()

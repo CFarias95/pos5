@@ -139,6 +139,7 @@
                     Route::get('records', 'InventoryController@records');
                     Route::get('columns', 'InventoryController@columns');
                     Route::get('tables', 'InventoryController@tables');
+                    Route::get('filterProduction/{filter_date}', 'InventoryController@filterProductionDate');
                     Route::get('tables/transaction/{type}', 'InventoryController@tables_transaction');
                     Route::get('record/{inventory}', 'InventoryController@record');
                     Route::post('/', 'InventoryController@store');
