@@ -972,7 +972,7 @@ class QuotationController extends Controller
         $mime = mime_content_type($temp);
         $data = file_get_contents($temp);
 
-        Storage::disk('tenant')->put('quotation/'.$file->getClientOriginalName(),$data);
+        Storage::disk('tenant')->put('quotation/pdf/'.$file->getClientOriginalName(),$data);
         return [
             'success' => true,
             'data' => [
@@ -981,5 +981,14 @@ class QuotationController extends Controller
                 'temp_image' => 'data:' . $mime . ';base64,' . base64_encode($data)
             ]
         ];
+    }
+    public function downloadUploadPdf($id)
+    {
+        $retention = Quotation::find($id);
+        if (!$retention) {
+            throw new Exception("El código {$id} es inválido, no se encontro documento relacionado");
+        }
+
+        return $this->downloadStorage(str_replace('.pdf','',$retention->upload_filename), 'pdf','quotation');
     }
 }

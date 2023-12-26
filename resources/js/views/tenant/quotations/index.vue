@@ -167,6 +167,9 @@
                             <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
                                     @click.prevent="clickOptionsPdf(row.id)">PDF
                             </button>
+                            <button v-if="row.upload_filename" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                                    @click.prevent="clickOptionsPdfExtra(row.id)">PDF Uploaded
+                            </button>
                         </td>
 
                         <td class="text-right">
@@ -388,6 +391,11 @@ export default {
         clickOptionsPdf(recordId = null) {
             this.recordId = recordId
             this.showDialogOptionsPdf = true
+        },
+        clickOptionsPdfExtra(recordId){
+
+            window.open(`/${this.resource}/uploaded/${recordId}`, "_blank");
+
         },
         clickAnulate(id) {
             this.anular(`/${this.resource}/anular/${id}`).then(() =>
