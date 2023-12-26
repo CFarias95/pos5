@@ -623,13 +623,19 @@ class InventoryController extends Controller
 			$quantity = $request->input('quantity');
 			$quantity_real = $request->input('quantity_real');
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
-
+            $lot_code = null;
+			$lot_groups =($request->has('lot_groups')) ? $request->input('lot_groups') : [];
 			if ($quantity_real <= 0) {
 				return  [
 					'success' => false,
 					'message' => 'La cantidad de stock real debe ser mayor a 0'
 				];
 			}
+            foreach($lot_groups as $lot){
+                if($lot->checked){
+                    $lot_code = $lot->code;
+                }
+            }
 			$type=1;
 			$quantity_new=0;
 			$quantity_new=$quantity_real-$quantity;
@@ -645,6 +651,7 @@ class InventoryController extends Controller
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
 			$inventory->quantity = $quantity_new;
+            $inventory->lot_code = $lot_code;
 
 			if ($quantity_real<$quantity) {
 				$inventory->inventory_transaction_id = 28;

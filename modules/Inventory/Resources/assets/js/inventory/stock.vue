@@ -43,11 +43,6 @@
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
                     </div>
-                    <div style="padding-top: 3%;" class="col-md-4 col-sm-4"
-                         v-if="form.item_id && form.lots_enabled && form.lots_group.length > 0">
-                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;
-                            Seleccionar lote]</a>
-                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -187,6 +182,9 @@
             close() {
                 this.$emit('update:showDialog', false)
                 this.initForm()
+            },
+            addRowSelectLot(lots) {
+                this.form.lots = lots
             },
         }
     }
