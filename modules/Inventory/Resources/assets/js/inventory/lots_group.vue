@@ -25,7 +25,7 @@
                                 <el-checkbox
                                     :disabled="row.quantity  < 1"
                                     v-model="row.checked"
-                                    @change="changeSelect(index, row.id, row.quantity)"
+                                    @change="changeSelect(index, row.code, row.quantity)"
                                 ></el-checkbox>
                             </th>
                             <th>{{ row.code }}</th>

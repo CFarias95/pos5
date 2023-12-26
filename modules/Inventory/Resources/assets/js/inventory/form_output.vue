@@ -328,7 +328,7 @@ export default {
         }
       }
       if (this.form.lots_enabled) {
-        if (!this.form.IdLoteSelected)
+        if (!this.form.lot_code)
           return this.$message.error("Debe seleccionar un lote.");
       }
       this.loading_submit = true;
@@ -371,7 +371,7 @@ export default {
       this.showDialogLots = true;
     },
     addRowLotGroup(id) {
-      this.form.IdLoteSelected = id;
+      this.form.lot_code = id;
     },
     async clickSelectLots() {
       this.showDialogSelectLots = true;
