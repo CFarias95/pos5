@@ -96,7 +96,7 @@ use Modules\Item\Models\ItemLotsGroup;
             $traslado->estado_id = $estado_id;
             //Log::info('trasladodespues'.$traslado);
             $traslado->save();
-        
+
             return [
                 'success' => true,
                 'message' => 'Se actualizo el estado de la transferencia'

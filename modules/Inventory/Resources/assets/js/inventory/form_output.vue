@@ -134,11 +134,12 @@
           <div class="col-md-7">
             <label class="control-label">Produccion Finalizada</label>
             <el-select v-model="form.production_id" filterable clearable>
-              <el-option 
-                  v-for="option in production"
-                  :key="option.id"
-                  :value="option.id"
-                  :label="option.name">
+              <el-option
+                v-for="option in production"
+                :key="option.id"
+                :value="option.id"
+                :label="option.name"
+              >
               </el-option>
             </el-select>
           </div>
@@ -194,18 +195,24 @@
       @addRowSelectLot="addRowSelectLot"
     >
     </select-lots-form>
+    <options
+      :showDialog.sync="showDialogOptions"
+      :recordId="this.inventory_id"
+      :showClose="this.showClose"
+      :type="this.type"
+    >
+    </options>
   </el-dialog>
 </template>
 
 <script>
-//  import InputLotsForm from '../../../../../../resources/js/views/tenant/items/partials/lots.vue'
-// import OutputLotsForm from './partials/lots.vue'
 import LotsGroup from "./lots_group.vue";
 import SelectLotsForm from "./lots.vue";
+import Options from "./partials/options.vue";
 import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
-  components: { LotsGroup, SelectLotsForm },
+  components: { LotsGroup, SelectLotsForm, Options },
   props: ["showDialog", "recordId"],
   data() {
     return {
@@ -215,6 +222,7 @@ export default {
       loading_submit: false,
       showDialogLots: false,
       showDialogSelectLots: false,
+      showDialogOptions: false,
       titleDialog: null,
       resource: "inventory",
       errors: {},
@@ -222,34 +230,21 @@ export default {
       items: [],
       warehouses: [],
       inventory_transactions: [],
-      production: [],
+      inventory_id: null,
+      email: null,
+      showClose: false,
     };
   },
-  // created() {
-  //     this.initForm()
-  // },
   methods: {
     async changeItem() {
       this.form.lots = [];
       let item = await _.find(this.items, { id: this.form.item_id });
       this.form.lots_enabled = item.lots_enabled;
-      let lots = await _.filter(item.lots, {
-        warehouse_id: this.form.warehouse_id,
-      });
-      // console.log(item)
+      let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
       this.form.lots = lots;
       this.form.lots_enabled = item.lots_enabled;
       this.form.series_enabled = item.series_enabled;
       this.form.lots_group = item.lots_group;
-    },
-    filterProductionDate()
-    {
-      this.$http
-      .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
-      .then((response) => {
-        this.production = response.data
-        console.log('response', response.data);
-      });
     },
     addRowOutputLot(lots) {
       this.form.lots = lots;
@@ -281,8 +276,6 @@ export default {
         lots_group: [],
         created_at: null,
         comments: null,
-        filter_date: null,
-        production_id: null,
       };
     },
     async initTables() {
@@ -292,7 +285,6 @@ export default {
           // this.items = response.data.items
           this.warehouses = response.data.warehouses;
           this.inventory_transactions = response.data.inventory_transactions;
-          this.production = response.data.production_finalizada;
         });
       await this.searchRemoteItems("");
     },
@@ -328,9 +320,7 @@ export default {
     },
     async submit() {
       if (this.form.lots.length > 0 && this.form.series_enabled) {
-        let select_lots = await _.filter(this.form.lots, {
-          has_sale: true,
-        });
+        let select_lots = await _.filter(this.form.lots, { has_sale: true });
         if (select_lots.length !== this.form.quantity) {
           return this.$message.error(
             "La cantidad ingresada es diferente a las series seleccionadas"
@@ -350,7 +340,13 @@ export default {
           if (response.data.success) {
             this.$message.success(response.data.message);
             this.$eventHub.$emit("reloadData");
-            this.close();
+            //this.$emit('update:showDialog', false)
+
+            this.showClose = false;
+            this.inventory_id = response.data.id;
+            this.showDialogOptions = true;
+
+            this.initForm();
           } else {
             this.$message.error(response.data.message);
           }

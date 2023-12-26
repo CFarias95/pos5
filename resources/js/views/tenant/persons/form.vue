@@ -761,7 +761,7 @@
                                 </div>
                             </div>
 
-                            <div class="col-md-3">
+                            <div class="col-md-4">
                                 <div :class="{'has-danger': errors.credit_quota}"
                                      class="form-group">
                                     <label class="control-label">Cupo de crédito</label>
@@ -787,6 +787,19 @@
                                            v-text="errors.default_payment[0]"></small>
                                 </div>
                             </div>
+                            <div class="col-md-4" v-if="this.type === 'suppliers'">
+                                <div :class="{'has-danger': errors.taxpayer_type_id}"
+                                     class="form-group">
+                                    <label class="control-label">Tipo de contribuyente</label>
+                                    <el-select v-model="form.taxpayer_type_id">
+                                        <el-option v-for="option in taxpayer_types" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small v-if="errors.taxpayer_type_id"
+                                           class="form-control-feedback"
+                                           v-text="errors.taxpayer_type_id[0]"></small>
+                                </div>
+                            </div>
+
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -879,6 +892,7 @@ export default {
             accounts:[],
             company : null,
             payment_types:[],
+            taxpayer_types:[],
         }
     },
     async created() {
@@ -902,6 +916,7 @@ export default {
                 this.accounts = response.data.accounts;
                 this.company = response.data.company;
                 this.payment_types = response.data.payment_types;
+                this.taxpayer_types = response.data.taxpayer_types;
             })
             .finally(() => {
                 if (this.api_service_token === false) {
@@ -955,6 +970,7 @@ export default {
                 pagoLocExt:'Local',
                 account:null,
                 default_payment:null,
+                taxpayer_type_id:null,
 
             }
             this.updateEmail()
@@ -979,11 +995,6 @@ export default {
             if (this.parentId !== undefined) {
                 this.parent = this.parentId;
             }
-            /*
-
-            'person',
-            'parentPerson',
-            */
             if (this.external) {
                 if (this.document_type_id === '01') {
                     this.form.identity_document_type_id = '6'

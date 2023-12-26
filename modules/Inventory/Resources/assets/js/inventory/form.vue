@@ -154,11 +154,12 @@
           <div class="col-md-7">
             <label class="control-label">Produccion Finalizada</label>
             <el-select v-model="form.production_id" filterable clearable>
-              <el-option 
-                  v-for="option in production"
-                  :key="option.id"
-                  :value="option.id"
-                  :label="option.name">
+              <el-option
+                v-for="option in production"
+                :key="option.id"
+                :value="option.id"
+                :label="option.name"
+              >
               </el-option>
             </el-select>
           </div>
@@ -214,16 +215,25 @@
       @addRowOutputLot="addRowOutputLot"
     >
     </output-lots-form>
+
+    <options
+      :showDialog.sync="showDialogOptions"
+      :recordId="this.inventory_id"
+      :showClose="this.showClose"
+      :type="this.type"
+    >
+    </options>
   </el-dialog>
 </template>
 
 <script>
 import InputLotsForm from "../../../../../../resources/js/views/tenant/items/partials/lots.vue";
 import OutputLotsForm from "./partials/lots.vue";
+import Options from "./partials/options.vue";
 import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
-  components: { InputLotsForm, OutputLotsForm },
+  components: { InputLotsForm, OutputLotsForm, Options },
   props: ["showDialog", "recordId", "type"],
   data() {
     return {
@@ -232,6 +242,8 @@ export default {
       loading_submit: false,
       showDialogLots: false,
       showDialogLotsOutput: false,
+      showDialogOptions: false,
+      showClose: false,
       titleDialog: null,
       resource: "inventory",
       errors: {},
@@ -239,13 +251,12 @@ export default {
       items: [],
       warehouses: [],
       inventory_transactions: [],
-      precision: 6,
+      precision: 2,
       production: [],
+      inventory_id: null,
+      email: null,
     };
   },
-  // created() {
-  //     this.initForm()
-  // },
   methods: {
     async changeItem() {
       if (this.items.length > 0) {
@@ -254,21 +265,14 @@ export default {
           let item = await _.find(this.items, { id: this.form.item_id });
           this.form.lots_enabled = item.lots_enabled;
           let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
-          // console.log(item)
           this.form.lots = lots;
           this.form.lots_enabled = item.lots_enabled;
           this.form.series_enabled = item.series_enabled;
-          //this.form.mean_price = item.purchase_mean_cost
         } else {
           let item = await _.find(this.items, { id: this.form.item_id });
           this.form.lots_enabled = item.lots_enabled;
           this.form.series_enabled = item.series_enabled;
-          //this.purchase_mean_price = item.purchase_mean_price
           this.form.purchase_mean_price = item.purchase_mean_price;
-          //console.log('precio1',item.purchase_mean_price)
-          //console.log('precio2',this.purchase_mean_price)
-          //console.log('precio',this.form.purchase_mean_price)
-          //console.log('items',item)
         }
         this.ChangePrecision();
       }
@@ -312,17 +316,16 @@ export default {
         /* Para series, debe ser entero*/
         this.precision = 0;
       } else {
-        this.precision = 6;
+        this.precision = 2;
       }
     },
-    filterProductionDate()
-    {
+    filterProductionDate() {
       this.$http
-      .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
-      .then((response) => {
-        this.production = response.data
-        //console.log('response', response.data);
-      });
+        .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
+        .then((response) => {
+          this.production = response.data;
+          //console.log('response', response.data);
+        });
     },
     async initTables() {
       await this.$http
@@ -381,16 +384,6 @@ export default {
               "La cantidad de series registradas son diferentes al stock"
             );
         }
-
-        /*if(this.form.lots_enabled){
-
-                    if(!this.form.lot_code)
-                        return this.$message.error('Código de lote es requerido');
-
-                    if(this.form.lots.length != this.form.quantity)
-                        return this.$message.error('La cantidad de series registradas son diferentes a la cantidad a ingresar');
-
-                }*/
       } else {
         if (this.form.lots.length > 0 && this.form.lots_enabled) {
           let select_lots = await _.filter(this.form.lots, { has_sale: true });
@@ -411,7 +404,13 @@ export default {
           if (response.data.success) {
             this.$message.success(response.data.message);
             this.$eventHub.$emit("reloadData");
-            this.close();
+            //this.$emit('update:showDialog', false)
+
+            this.showClose = false;
+            this.inventory_id = response.data.id;
+            this.showDialogOptions = true;
+
+            this.initForm();
           } else {
             this.$message.error(response.data.message);
           }

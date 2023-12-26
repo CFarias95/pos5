@@ -157,6 +157,7 @@
             'account',
             'credit_quota',
             'default_payment',
+            'taxpayer_type_id',
         ];
 
         protected $casts = [
@@ -631,6 +632,7 @@
                 'pagoLocExt' => $this->pagoLocExt,
                 'account' => $this->account,
                 'default_payment' => $this->default_payment,
+                'taxpayer_type_id' => $this->taxpayer_type_id,
 
             ];
             if ($childrens == true) {

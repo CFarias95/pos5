@@ -1217,20 +1217,17 @@ class ProductionController extends Controller
 
     public function pdf(Request $request)
     {
-        // $records = $this->getData($request);
+
         $records = $this->getRecords($request)->get()->transform(function (Production $row) {
             return $row->getCollectionData();
         });
 
-        /** @var \Barryvdh\DomPDF\PDF $pdf */
         $pdf = PDF::loadView(
             'production::production.partial.export',
             compact(
                 'records'
             )
-        )
-            ->setPaper('a4', 'landscape');
-
+        )->setPaper('a4', 'landscape');
 
         $filename = 'Reporte de produccion - ' . date('YmdHis');
         return $pdf->stream($filename . '.pdf');
