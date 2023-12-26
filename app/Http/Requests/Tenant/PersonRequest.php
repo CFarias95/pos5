@@ -41,7 +41,7 @@ class PersonRequest extends FormRequest
             // 'person_type_id' => [
             //     'required_if:type,"customers"',
             // ],
-            'department_id' => [
+            /*'department_id' => [
                 'required',
             ],
             'province_id' => [
@@ -49,7 +49,7 @@ class PersonRequest extends FormRequest
             ],
             'district_id' => [
                 'required',
-            ],
+            ],*/
             'address' => [
                 'required',
             ],

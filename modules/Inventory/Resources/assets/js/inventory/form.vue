@@ -140,6 +140,30 @@
           </div>
         </div>
         <div class="row">
+          <div class="col-md-5">
+            <label class="control-label">Fecha Produccion Finalizada</label>
+            <el-date-picker
+              v-model="form.filter_date"
+              type="date"
+              value-format="yyyy-MM-dd"
+              format="dd/MM/yyyy"
+              :clearable="true"
+              @change="filterProductionDate"
+            ></el-date-picker>
+          </div>
+          <div class="col-md-7">
+            <label class="control-label">Produccion Finalizada</label>
+            <el-select v-model="form.production_id" filterable clearable>
+              <el-option 
+                  v-for="option in production"
+                  :key="option.id"
+                  :value="option.id"
+                  :label="option.name">
+              </el-option>
+            </el-select>
+          </div>
+        </div>
+        <div class="row">
           <div class="col-md-3">
             <label class="control-label">Fecha registro</label>
             <el-date-picker
@@ -216,6 +240,7 @@ export default {
       warehouses: [],
       inventory_transactions: [],
       precision: 6,
+      production: [],
     };
   },
   // created() {
@@ -278,6 +303,8 @@ export default {
         date_of_due: null,
         created_at: null,
         comments: null,
+        filter_date: null,
+        production_id: null,
       };
     },
     ChangePrecision() {
@@ -288,6 +315,15 @@ export default {
         this.precision = 6;
       }
     },
+    filterProductionDate()
+    {
+      this.$http
+      .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
+      .then((response) => {
+        this.production = response.data
+        //console.log('response', response.data);
+      });
+    },
     async initTables() {
       await this.$http
         .get(`/${this.resource}/tables/transaction/${this.type}`)
@@ -295,6 +331,7 @@ export default {
           // this.items = response.data.items
           this.warehouses = response.data.warehouses;
           this.inventory_transactions = response.data.inventory_transactions;
+          this.production = response.data.production_finalizada;
         });
       await this.searchRemoteItems("");
     },

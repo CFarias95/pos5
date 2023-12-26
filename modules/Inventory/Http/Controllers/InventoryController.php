@@ -26,6 +26,8 @@ use Illuminate\Support\Facades\Log;
 use Maatwebsite\Excel\Excel;
 use Illuminate\Support\Str;
 use App\Models\Tenant\Item;
+use Modules\Production\Models\Production;
+
 
 class InventoryController extends Controller
 {
@@ -127,7 +129,14 @@ class InventoryController extends Controller
 			//            'items' => $this->optionsItemFull(),
 			'warehouses'             => $this->optionsWarehouse(),
 			'inventory_transactions' => $this->optionsInventoryTransaction($type),
+			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
 		];
+	}
+
+	public function filterProductionDate($filter_date)
+	{
+		$dates = Production::where('date_end', $filter_date)->get();
+		return $dates;
 	}
 
 	public function searchItems(Request $request)
@@ -196,6 +205,8 @@ class InventoryController extends Controller
 			$comments = $request->input('comments');
 			$created_at = $request->input('created_at');
 			$precio_perso = $request->input('purchase_mean_price');
+			Log::info('datos '.$request);
+			$production_id = $request->input('production_id');
 			//Log::info('precio_perso'.$precio_perso);
 
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
@@ -228,6 +239,7 @@ class InventoryController extends Controller
 			$inventory->lot_code = $lot_code;
 			$inventory->comments = $comments;
 			$inventory->precio_perso = $precio_perso;
+			$inventory->production_id= $production_id;
 
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
