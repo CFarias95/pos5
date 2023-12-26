@@ -43,6 +43,11 @@
                         <!-- <el-button type="primary" native-type="submit" icon="el-icon-check">Elegir serie</el-button> -->
                         <a href="#"  class="text-center font-weight-bold text-info" @click.prevent="clickLotcodeOutput">[&#10004; Seleccionar series]</a>
                     </div>
+                    <div style="padding-top: 3%;" class="col-md-4 col-sm-4"
+                         v-if="form.item_id && form.lots_enabled && form.lots_group.length > 0">
+                        <a href="#" class="text-center font-weight-bold text-info" @click.prevent="clickLotGroup">[&#10004;
+                            Seleccionar lote]</a>
+                    </div>
                 </div>
             </div>
             <div class="form-actions text-right mt-4">
@@ -55,6 +60,12 @@
             :lots="form.lots"
             @addRowOutputLot="addRowOutputLot">
         </output-lots-form>
+        <lots-group
+            :quantity="this.quantity"
+            :showDialog.sync="showDialogLots"
+            :lots_group="form.lots_group"
+            @addRowLotGroup="addRowLotGroup">
+        </lots-group>
 
         <options
             :showDialog.sync="showDialogOptions"
@@ -69,16 +80,18 @@
 
 <script>
     import OutputLotsForm from './partials/lots.vue'
+    import LotsGroup from './lots_group.vue'
     import Options from './partials/options.vue'
 
     export default {
-        components: {OutputLotsForm, Options},
+        components: {OutputLotsForm, Options, LotsGroup},
         props: ['showDialog', 'recordId'],
         data() {
             return {
                 loading_submit: false,
                 titleDialog: null,
                 showDialogLotsOutput:false,
+                showDialogLots:false,
                 resource: 'inventory',
                 errors: {},
                 form: {},
@@ -87,6 +100,7 @@
                 showDialogOptions:false,
                 type:'fix',
                 inventoryId:null,
+                quantity: 1,
             }
         },
         created() {
@@ -109,6 +123,7 @@
                 this.form = {
                     id: null,
                     item_id: null,
+                    lot_code: null,
                     item_description: null,
                     warehouse_id: null,
                     warehouse_description: null,
@@ -118,6 +133,7 @@
                     series_enabled:false,
                     inventory_transaction_id:null,
                     lots:[],
+                    lots_group:[],
                 }
             },
             create() {
@@ -163,6 +179,10 @@
                     .then(() => {
                         this.loading_submit = false
                     })
+            },
+            clickLotGroup() {
+                this.quantity = 1
+                this.showDialogLots = true
             },
             close() {
                 this.$emit('update:showDialog', false)

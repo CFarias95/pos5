@@ -37,6 +37,15 @@ class InventoryResource extends JsonResource
                     'lot_code' => ($row->item_loteable_type) ? (isset($row->item_loteable->lot_code) ? $row->item_loteable->lot_code:null):null
                 ];
             })->values(),
+            'lots_group' => collect($this->item->lots_group)->transform(function ($row2) {
+                return [
+                    'id' => $row2->id,
+                    'code' => $row2->code,
+                    'quantity' => $row2->quantity,
+                    'date_of_due' => $row2->date_of_due,
+                    'checked' => false
+                ];
+            })
         ];
     }
 }
