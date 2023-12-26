@@ -501,7 +501,7 @@ function showNamePdfOfDescription(item, show_pdf_name) {
             return temn;
         }
     }
-    return item.description
+    return item.name+'/'+item.description;
 }
 
 function sumAmountDiscountsNoBaseByItem(row) {

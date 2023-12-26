@@ -1305,11 +1305,9 @@ export default {
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
-            //this.form.unit_price_value = this.form.item.sale_unit_price;
             await this.$http.get(`/items/get-price/${this.form.item_id}/${localStorage.customer_id}/${localStorage.establishment.id}`).then((response) => {
-
-                    this.form.unit_price_value = parseFloat(response.data.price);
-                });
+                this.form.unit_price_value = parseFloat(response.data.price);
+            });
             this.lots = this.form.item.lots
 
             this.form.has_igv = this.form.item.has_igv;
