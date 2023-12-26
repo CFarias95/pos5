@@ -351,6 +351,7 @@ export default {
         this.$eventHub.$on('initInputPerson', () => {
             this.initInputPerson()
         });
+        this.form.currency_type_id = this.configuration.currency_type_id
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.currency_types = response.data.currency_types
@@ -361,7 +362,6 @@ export default {
                 // let company = response.data.company
                 // this.$store.commit('setCompany', company);
 
-                this.form.currency_type_id = (this.currency_types.length > 0) ? this.currency_types[0].id : null
                 this.form.establishment_id = (this.establishments.length > 0) ? this.establishments[0].id : null
                 this.payment_method_types = response.data.payment_method_types
 

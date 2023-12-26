@@ -60,6 +60,8 @@
 <div>
     <p align="center"
        class="title"><strong>Reporte {{ $tipo }} Inventario</strong></p>
+    <p align="center"
+       class="title"><strong>INV - {{ str_pad($records->id,9,'0',STR_PAD_LEFT) }}</strong></p>
 </div>
 <div style="margin-top:20px; margin-bottom:20px;">
     <table>
@@ -77,6 +79,16 @@
         <tr>
             <td>
                 <p><strong>Producto: </strong>{{$records->item->name}}</p>
+                @if($records->lot_code)
+                <p><strong>Lote: </strong>{{$records->lot_code}}</p>
+                <p><strong>F. Vencimiento: </strong>
+                @foreach($records->item->lots_group as $lot)
+                    @if($lot->code == $records->lot_code)
+                    {{ $lot->date_of_due}}
+                    @endif
+                @endforeach
+                </p>
+                @endif
             </td>
             <td>
                 <p><strong>Cantidad: </strong>{{$records->quantity}}</p>

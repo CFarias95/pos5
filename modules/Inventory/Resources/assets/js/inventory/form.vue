@@ -363,6 +363,7 @@ export default {
                         //this.$emit('update:showDialog', false)
 
 
+                        this.showClose = false
                         this.inventory_id = response.data.id
                         this.showDialogOptions = true
 
