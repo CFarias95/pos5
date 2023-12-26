@@ -100,12 +100,21 @@ use Illuminate\Support\Facades\Log;
 
         public function columns()
         {
-            return [
+            $columns =  [
                 'date_of_issue' => 'Fecha de emisión',
                 'delivery_date' => 'Fecha de entrega',
                 'user_name' => 'Vendedor',
-                //'product' => 'Producto'
+                'product' => 'Producto'
             ];
+
+            $items = Item::get()->transform(function($row){
+                return[
+                    'id'=>$row->id,
+                    'name'=>$row->name
+                ];
+            });
+
+            return compact('columns','items');
         }
 
         public function records(Request $request)
@@ -125,6 +134,14 @@ use Illuminate\Support\Facades\Log;
                     ->whereTypeUser()
                     ->latest();
 
+            }else if ($request->column == 'product') {
+
+                $records = OrderNote::with('items')->whereHas('items', function ($query) use ($request) {
+                    $query->where('order_note_items.item_id',$request->value);
+                })
+                    ->whereTypeUser()
+                    ->latest();
+
             } else {
 
                 $records = OrderNote::where($request->column, 'like', "%{$request->value}%")
@@ -132,8 +149,6 @@ use Illuminate\Support\Facades\Log;
                     ->latest();
 
             }
-            Log::info('records'.json_encode($records));
-
             return $records;
         }
 

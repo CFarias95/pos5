@@ -25,6 +25,12 @@
                                 @change="getRecords">
                             </el-date-picker>
                         </template>
+                        <template v-else-if="search.column == 'product'">
+                            <el-select v-model="search.value"  @change="getRecords" filterable clearable>
+                                <el-option v-for="item in items" :key="item.id" :value="item.id" :label="item.name" >
+                                </el-option>
+                            </el-select>
+                        </template>
                         <template v-else>
                             <el-input placeholder="Buscar"
                                 v-model="search.value"
@@ -100,7 +106,8 @@
                 records: [],
                 pagination: {},
                 showDialogDocuments: false,
-                loading_submit: false
+                loading_submit: false,
+                items : [],
             }
         },
         computed: {
@@ -114,8 +121,15 @@
             let column_resource = _.split(this.resource, '/')
            // console.log(column_resource)
             await this.$http.get(`/${_.head(column_resource)}/columns`).then((response) => {
-                this.columns = response.data
-                this.search.column = _.head(Object.keys(this.columns))
+                if(response.data.columns){
+                    this.columns = response.data.columns
+                    this.search.column = _.head(Object.keys(this.columns))
+                    this.items = response.data.items
+                }else{
+                    this.columns = response.data
+                    this.search.column = _.head(Object.keys(this.columns))
+                }
+
             });
             await this.getRecords()
 

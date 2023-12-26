@@ -94,6 +94,7 @@ class QuotationController extends Controller
             'seller_name' => 'Vendedor',
             'referential_information' => 'Inf.Referencial',
             'number' => 'Número',
+            'product' => 'Item/Producto',
         ];
     }
 
@@ -116,14 +117,22 @@ class QuotationController extends Controller
     {
         $column = $request->input('column');
         $value = $request->input('value');
+
         $query = Quotation::query();
 
         if ($column === 'user_name') {
+
             $query->whereHas('user', function ($q) use ($value) {
                 $q->where('name', 'like', "%{$value}%");
             })
-                ->whereTypeUser();
-        } else if ($column === 'customer') {
+            ->whereTypeUser();
+
+        }else if ($column === 'product') {
+            $query->whereHas('items', function ($q) use ($value) {
+                $q->where('item_id',$value);
+            });
+
+        }else if ($column === 'customer') {
             $query->whereHas('person', function ($q) use ($value) {
                 $q->where('name', 'like', "%{$value}%")
                     ->orWhere('number', 'like', "%{$value}%");
