@@ -313,6 +313,7 @@ class RetentionController extends Controller
                                         foreach ($xmlRet->docsSustento->docSustento->retenciones->retencion as $retC) {
 
                                             $detalleRet = $retC;
+                                            $detalleRet["numDocSustento"] = $xmlRet->docsSustento->docSustento->numDocSustento;
                                             $detalleRet["tipo"] = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
                                             $totalRet += floatval($retC->valorRetenido);
 
