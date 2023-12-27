@@ -99,6 +99,7 @@
                             <button v-if="typeUser == 'admin'" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                     @click.prevent="clickRemove(row.id)">Remover</button> -->
               <button
+                v-if="row.lots_enabled == 0"
                 type="button"
                 class="btn waves-effect waves-light btn-xs btn-warning"
                 @click.prevent="clickStock(row.id)"

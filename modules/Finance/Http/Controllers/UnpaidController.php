@@ -185,8 +185,10 @@ class UnpaidController extends Controller
         }
 
         if($external == 'SI'){
-
             $person = User::where('number',$user_id)->first();
+            if(isset($person) == false){
+                return;
+            }
             $user_id = $person->id;
         }
         $data = DB::connection('tenant')->select('CALL SP_CuentarPorCobrar(?,?,?,?,?,?,?,?,?)',[$establishment_id, $customer_id,$user_id,$purchase_order,$importe,$include_liquidated,$d_start,$d_end,$tipo]);
