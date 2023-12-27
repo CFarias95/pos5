@@ -13,6 +13,7 @@ use Facades\App\Http\Controllers\Tenant\DocumentController as DocumentController
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Modules\Dashboard\Helpers\DashboardView;
+use Modules\Finance\Http\Controllers\UnpaidController;
 use Modules\Finance\Http\Resources\UnpaidCollection;
 
 class toCollectController extends Controller
@@ -190,10 +191,13 @@ class toCollectController extends Controller
 
     public function getInvoicesDue(Request $request){
 
-        $records = (new DashboardView())->getUnpaidFilterUser($request->all());
-        $config = Configuration::first();
+        //$records = (new DashboardView())->getUnpaidFilterUser($request->all());
+        //$config = Configuration::first();
 
-        return (new UnpaidCollection($records->paginate(1000)));
+        $records =(new UnpaidController())->records($request);
+
+        //return (new UnpaidCollection($records->paginate(1000)));
+        return $records;
 
     }
 

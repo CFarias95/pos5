@@ -126,6 +126,7 @@ class UnpaidController extends Controller
 
     public function getRecordsBySP(Request $request){
 
+        $external = $request['external'] ?? 'NO';
         $establishment_id = $request['establishment_id'] ?? 0;
         $period = $request['period'] ?? 0;
         $date_start = $request['date_start'] ?? 0;
@@ -181,6 +182,12 @@ class UnpaidController extends Controller
 
         }else{
             $include_liquidated = 0;
+        }
+
+        if($external == 'SI'){
+
+            $person = User::where('number',$user_id)->first();
+            $user_id = $person->id;
         }
         $data = DB::connection('tenant')->select('CALL SP_CuentarPorCobrar(?,?,?,?,?,?,?,?,?)',[$establishment_id, $customer_id,$user_id,$purchase_order,$importe,$include_liquidated,$d_start,$d_end,$tipo]);
         return $data;
