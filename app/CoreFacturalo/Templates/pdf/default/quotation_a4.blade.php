@@ -9,7 +9,10 @@
     if($establishment->logo) {
         $logo = "{$establishment->logo}";
     }
-//Log::info('Document'.$document);
+//Log::info('Document'.$document->seller);
+//Log::info('establishment'.json_encode($establishment));
+//Log::info('customer'.json_encode($customer));
+//Log::info('accounts'.json_encode($accounts));
 @endphp
 <html>
 <head>
@@ -376,11 +379,16 @@
         {{ $document->user->name }}
     @endif
     , 
-    @if ($document->phone)
-        {{ $document->phone }}
+    @if ($document->seller->telephone)
+        {{ $document->seller->telephone }}
     @else
-        {{ $document->user->email }}
+        {{ $document->seller->email }}
     @endif
+    , 
+    @if ($document->seller->email)
+        {{ $document->seller->email }}    
+    @endif
+
 </b>
 <br>
 <br>
