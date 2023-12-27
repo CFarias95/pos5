@@ -51,6 +51,7 @@ use Illuminate\Support\Facades\Storage;
 use Maatwebsite\Excel\Excel;
 use Modules\Finance\Helpers\UploadFileHelper;
 use Swift_Mailer;
+use Illuminate\Support\Facades\Log;
 
 
 class QuotationController extends Controller
@@ -619,6 +620,7 @@ class QuotationController extends Controller
 
         $document = ($quotation != null) ? $quotation : $this->quotation;
         $company = ($this->company != null) ? $this->company : Company::active();
+        //Log::info('company'.$company);
         $filename = ($filename != null) ? $filename : $this->quotation->filename;
 
         $configuration = Configuration::first();
