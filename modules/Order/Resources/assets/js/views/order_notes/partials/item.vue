@@ -829,23 +829,27 @@ export default {
         // },
         create() {
             /* Migrado de resources/js/views/tenant/sale_notes/partials/item.vue*/
-            /*
+
 
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
+
             if(this.operation_types !== undefined) {
-                let operation_type = await _.find(this.operation_types, {id: this.operationTypeId})
+                let operation_type = _.find(this.operation_types, {id: this.operationTypeId})
                 if(operation_type !== undefined) {
-                    this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
+                    this.affectation_igv_types = _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
                 }
             }
 
             if (this.recordItem) {
-                await this.reloadDataItems(this.recordItem.item_id)
-                this.form.item_id = await this.recordItem.item_id
-                await this.changeItem()
+
+                //await this.reloadDataItems(this.recordItem.item_id)
+                this.form.item_id = this.recordItem.item_id
+                this.changeItem()
+
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
+                this.form.unit_price = (this.recordItem.has_igv)?this.recordItem.unit_price:this.recordItem.unit_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false
                 this.form.warehouse_id = this.recordItem.warehouse_id
                 this.isUpdateWarehouseId = this.recordItem.warehouse_id
@@ -858,7 +862,7 @@ export default {
 
                         this.form.document_item_id = this.recordItem.id ? this.recordItem.id : this.recordItem.document_item_id
                         this.form.item.lots = this.recordItem.item.lots
-                        await this.regularizeLots()
+                        this.regularizeLots()
                         this.lots = this.form.item.lots
                     }
 
@@ -886,7 +890,7 @@ export default {
                 this.isUpdateWarehouseId = null
             }
 
-            */
+
             //     this.initializeFields()
         },
         async regularizeLots() {
@@ -1059,8 +1063,17 @@ export default {
             this.initForm();
 
             // this.initializeFields()
-            this.$emit('add', this.row);
-            this.setFocusSelectItem()
+            if(this.recordItem){
+
+                this.$emit('add', this.row);
+                this.close()
+
+            }else{
+
+                this.$emit('add', this.row);
+                this.setFocusSelectItem()
+            }
+
         },
         cleanItems() {
             this.items = []

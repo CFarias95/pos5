@@ -203,7 +203,11 @@
                                             <td class="text-center">
                                                 <button type="button"
                                                         class="btn waves-effect waves-light btn-xs btn-danger"
-                                                        @click.prevent="clickRemoveItem(index)">x
+                                                        @click.prevent="clickRemoveItem(index)"><i class="fas fa-trash"></i>
+                                                </button>
+                                                <button type="button"
+                                                        class="btn waves-effect waves-light btn-xs btn-info"
+                                                        @click.prevent="clickEditItem(row, index)"><i class="fas fa-pen"></i>
                                                 </button>
                                             </td>
                                         </tr>
@@ -267,6 +271,7 @@
                               :typeUser="typeUser"
                               :configuration="config"
                               :percentage-igv="percentage_igv"
+                              :recordItem ="this.recordItem"
                               @add="addRow"></order-note-form-item>
 
         <person-form :showDialog.sync="showDialogNewPerson"
@@ -336,6 +341,7 @@ export default {
             lots_group: [],
             input_person: {},
             emailCustomer:null,
+            recordItem:null,
         }
     },
     created() {
@@ -593,7 +599,18 @@ export default {
             this.customers = this.all_customers
         },
         addRow(row) {
-            this.form.items.push(JSON.parse(JSON.stringify(row)));
+
+            this.calculateTotal();
+
+            if (this.recordItem) {
+                //this.form.items.$set(this.recordItem.indexi, row)
+                this.form.items[this.recordItem.indexi] = row
+                this.recordItem = null
+
+            } else {
+
+                this.form.items.push(JSON.parse(JSON.stringify(row)));
+            }
 
             this.calculateTotal();
         },
@@ -679,7 +696,6 @@ export default {
             this.form.total_taxes = _.round(total_igv, 2)
             this.form.total = _.round(total, 2)
         },
-
         async validateQuantityLotsGroup() {
 
             let error_lots_group = 0
@@ -703,7 +719,6 @@ export default {
 
             return {success: true}
         },
-
         async submit() {
 
             if (this.form.date_of_issue > this.form.date_of_due)
@@ -783,6 +798,12 @@ export default {
                 identity_document_type_id: null
             }
         },
+        clickEditItem(row, index){
+            console.log(index,row)
+            row.indexi = index
+            this.recordItem = row
+            this.showDialogAddItem = true;
+        },
     },
     computed: {
         ...mapState([
@@ -799,7 +820,7 @@ export default {
                 picture`/storage/uploads/logos/${this.company.logo}`
             }
             return picture
-        }
+        },
     },
 }
 </script>

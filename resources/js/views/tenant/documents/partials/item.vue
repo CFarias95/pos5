@@ -1128,6 +1128,7 @@ export default {
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
+                
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false

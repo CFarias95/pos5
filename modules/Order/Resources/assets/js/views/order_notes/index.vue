@@ -331,6 +331,7 @@
             },
             clickEdit(id)
             {
+                
                 this.recordId = id
                 this.showDialogFormEdit = true
             },

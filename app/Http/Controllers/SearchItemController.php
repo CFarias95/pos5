@@ -154,7 +154,7 @@
                 $item->with('warehousePrices');
                 $ItemToSearchBySeries->with('warehousePrices');
             }
-            
+
             $alt_item = $item;
 
             $bySerie = null;
@@ -736,6 +736,7 @@
                     'category' => $detail['category'],
                     'stock' => $detail['stock'],
                     'description' => $row->description,
+                    'name' => $row->name,
                     'currency_type_id' => $row->currency_type_id,
                     'currency_type_symbol' => $row->currency_type->symbol,
                     'sale_unit_price' => round($row->sale_unit_price, 2),
