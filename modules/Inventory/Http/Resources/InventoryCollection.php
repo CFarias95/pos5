@@ -16,7 +16,7 @@ class InventoryCollection extends ResourceCollection
     public function toArray($request)
     {
         return $this->collection->transform(function($row, $key) {
-            //Log::info('row'.$row);
+            Log::info('row'.$row);
             return [
                 'id' => $row->id,
                 'item_internal_id' => $row->item->internal_id,
@@ -25,6 +25,7 @@ class InventoryCollection extends ResourceCollection
                 'warehouse_description' => $row->warehouse->description,
                 'purchase_mean_cost' => $row->item->purchase_mean_cost,
                 'stock' => $row->stock,
+                'lots_enabled' => $row->item->lots_enabled,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];
