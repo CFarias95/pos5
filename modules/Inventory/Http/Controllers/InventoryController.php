@@ -50,7 +50,7 @@ class InventoryController extends Controller
 	public function columns()
 	{
 		return [
-			'description' => 'Producto',
+			'name' => 'Nombre Producto',
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
 		];
@@ -90,20 +90,12 @@ class InventoryController extends Controller
 	 */
 	public function getCommonRecords($request)
 	{
-		//Log::info('Entro aqui'.$request);
+		Log::info('Entro aqui'.$request->column.'-'.$request->value);
 		return ItemWarehouse::with(['item', 'warehouse'])
 							->whereHas('item', function ($query) use ($request) {
 								$query->where('unit_type_id', '!=', 'ZZ');
 								$query->whereNotIsSet();
-
-								if($this->applyAdvancedRecordsSearch() && $request->column === 'description')
-								{
-									if($request->value) $query->whereAdvancedRecordsSearch($request->column, $request->value);
-								}
-								else
-								{
-									$query->where($request->column, 'like', '%' . $request->value . '%');
-								}
+								$query->where($request->column, 'like', '%' . str_replace('%2F','',$request->value) . '%');
 							})
 							->orderBy('item_id');
 	}
@@ -153,13 +145,13 @@ class InventoryController extends Controller
 
 	public function searchItems(Request $request)
 	{
-		//Log::info('search'.json_encode($request));
+		Log::info('search'.$request->value);
 		$search = $request->input('search');
-		$print = $this->optionsItemFull($search, 20);
+		//$print = $this->optionsItemFull($search, 20);
 		//Log::info('print'.$print);
 
 		return [
-			'items' => $this->optionsItemFull($search, 20),
+			'items' => $this->optionsItemFull($request, 20),
 		];
 	}
 
