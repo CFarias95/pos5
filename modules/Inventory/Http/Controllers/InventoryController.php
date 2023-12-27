@@ -37,6 +37,7 @@ use Illuminate\Support\Facades\Mail;
 use Illuminate\Support\Facades\Storage;
 use Swift_Mailer;
 use Swift_SmtpTransport;
+use Modules\Item\Models\Category;
 
 class InventoryController extends Controller
 {
@@ -49,16 +50,22 @@ class InventoryController extends Controller
 
 	public function columns()
 	{
-		return [
+		$columns = [
 			'description' => 'Producto',
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
+			'category_id'   => 'Categoria',
+			
 		];
+		$categories_list = Category::get();
+
+		return compact('columns', 'categories_list');
 	}
 
 	public function records(Request $request)
 	{
 		$column = $request->input('column');
+		//Log::info('column'.$column);
 
 		if ($column == 'warehouse') {
 			//Log::info('entro al if');

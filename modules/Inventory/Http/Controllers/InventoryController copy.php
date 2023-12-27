@@ -54,6 +54,7 @@ class InventoryController extends Controller
 			'description' => 'Producto',
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
+			'categorie'   => 'Categoria',
 		];
 	}
 
