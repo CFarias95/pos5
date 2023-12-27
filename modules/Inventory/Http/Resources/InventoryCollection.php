@@ -24,7 +24,6 @@ class InventoryCollection extends ResourceCollection
                 'item_fulldescription' => ($row->item->internal_id) ? "{$row->item->internal_id} / {$row->item->name} / {$row->item->description}" :$row->item->description,
                 'warehouse_description' => $row->warehouse->description,
                 'purchase_mean_cost' => $row->item->purchase_mean_cost,
-                //Log::info('cost'.$row->item->purchase_mean_cost),
                 'stock' => $row->stock,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),

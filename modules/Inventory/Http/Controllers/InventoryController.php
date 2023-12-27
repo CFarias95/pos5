@@ -61,6 +61,7 @@ class InventoryController extends Controller
 		$column = $request->input('column');
 
 		if ($column == 'warehouse') {
+			//Log::info('entro al if');
 			$records = ItemWarehouse::with(['item', 'warehouse'])
 							->whereHas('item', function ($query) use ($request) {
 								$query->where('unit_type_id', '!=', 'ZZ');
@@ -73,6 +74,7 @@ class InventoryController extends Controller
 		}
 		else
 		{
+			//Log::info('Entro en else');
 			$records = $this->getCommonRecords($request);
 		}
 
@@ -88,6 +90,7 @@ class InventoryController extends Controller
 	 */
 	public function getCommonRecords($request)
 	{
+		//Log::info('Entro aqui'.$request);
 		return ItemWarehouse::with(['item', 'warehouse'])
 							->whereHas('item', function ($query) use ($request) {
 								$query->where('unit_type_id', '!=', 'ZZ');
