@@ -26,7 +26,7 @@ class InventoryCollection extends ResourceCollection
                 'purchase_mean_cost' => $row->item->purchase_mean_cost,
                 'stock' => $row->stock,
                 'lots_enabled' => $row->item->lots_enabled,
-                'category' => $row->item->category_id,
+                'category_id' => $row->item->category_id,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'updated_at' => $row->updated_at->format('Y-m-d H:i:s'),
             ];

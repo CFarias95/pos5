@@ -97,7 +97,7 @@ class InventoryController extends Controller
 	 */
 	public function getCommonRecords($request)
 	{
-		Log::info('Entro aqui'.$request->column.'-'.$request->value);
+		//Log::info('Entro aqui'.$request->column.'-'.$request->value);
 		return ItemWarehouse::with(['item', 'warehouse'])
 							->whereHas('item', function ($query) use ($request) {
 								$query->where('unit_type_id', '!=', 'ZZ');

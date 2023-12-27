@@ -105,7 +105,7 @@
             </template>
             <template v-else-if="search.column === 'category_id'">
               <el-select
-                v-model="search.category_id"
+                v-model="search.value"
                 style="width: 100%"
                 placeholder="Categoria"
                 @change="getRecords"
@@ -286,6 +286,7 @@ export default {
         .get(`/${this.resource}/records?${this.getQueryParameters()}`)
         .then((response) => {
           this.records = response.data.data;
+          //console.log('records', this.records);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         })
