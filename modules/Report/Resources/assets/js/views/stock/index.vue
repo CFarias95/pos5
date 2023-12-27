@@ -183,7 +183,7 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                console.log('data', this.records)
+                //console.log('data', this.records)
                 this.almacenList = this.records[this.records.length - 1]
                 let len = this.records.length
                 this.records.splice(len - 1, 1)

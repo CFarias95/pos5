@@ -19,7 +19,7 @@ use Modules\Inventory\Exports\InventoryTransferExport;
     use Modules\Inventory\Models\InventoryTransfer;
     use Modules\Inventory\Http\Requests\InventoryRequest;
     use Modules\Inventory\Http\Requests\TransferRequest;
-
+    use App\Models\Tenant\Person;
     use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 
@@ -50,11 +50,15 @@ use Modules\Item\Models\ItemLotsGroup;
         public function records(Request $request)
         {
             if ($request->column) {
-                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->where('created_at', 'like', "%{$request->value}%")->latest();
+                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory', 'client'])->where('created_at', 'like', "%{$request->value}%")->latest();
             } else {
-                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory'])->latest();
+                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory', 'client'])->latest();
 
             }
+
+            //$person = Person::where('id', $records->client_id)->get();
+            //Log::info('records'.json_encode($person));
+
             //return json_encode( $records );
             /*$records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
                                 ->where('type', 2)

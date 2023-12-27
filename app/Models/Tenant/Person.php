@@ -158,6 +158,7 @@
             'credit_quota',
             'default_payment',
             'taxpayer_type_id',
+            'mobile_number',
         ];
 
         protected $casts = [
@@ -604,7 +605,7 @@
                 'province' => $province,
                 'district_id' => $district['id']??null,
                 'district' => $district,
-
+                'mobile_number' => $this->mobile_number,
                 'telephone' => $this->telephone,
                 'email' => $this->email,
                 'perception_agent' => (bool)$this->perception_agent,

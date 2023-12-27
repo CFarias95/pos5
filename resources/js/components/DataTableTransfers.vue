@@ -86,6 +86,7 @@ export default {
       .get(`/${_.head(column_resource)}/columns`)
       .then(response => {
         this.columns = response.data;
+        console.log('columns', this.columns);
         this.search.column = _.head(Object.keys(this.columns));
       });
     await this.getRecords();
@@ -103,6 +104,7 @@ export default {
         .get(`/${this.resource}/records?${this.getQueryParameters()}`)
         .then(response => {
           this.records = response.data.data;
+          console.log('records', this.records);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });

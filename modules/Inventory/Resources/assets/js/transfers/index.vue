@@ -27,8 +27,9 @@
                         <th>#</th>
                         <th>Fecha</th>
                         <th>Almacen Inicial</th>
-
                         <th>Almacen Destino</th>
+                        <th># Traslado</th>
+                        <th>Cliente</th>
                         <th>Detalle</th>
                         <th>Detalle Productos</th>
                         <th>Cantidad Total Productos</th>
@@ -42,6 +43,8 @@
                         <td>{{ row.created_at }}</td>
                         <td>{{ row.warehouse }}</td>
                         <td>{{ row.warehouse_destination }}</td>
+                        <td>NT - {{ row.id }}</td>
+                        <td> {{ row.client_id }} </td>
                         <td>{{ row.description }}</td>
                         <td>
                             <el-popover placement="right" trigger="click" width="400">

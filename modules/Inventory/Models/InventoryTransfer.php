@@ -11,6 +11,7 @@ use App\Models\Tenant\ModelTenant;
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Illuminate\Database\Eloquent\Collection;
+    use App\Models\Tenant\Person;
 
     /**
      * Class InventoriesTransfer
@@ -117,6 +118,14 @@ use App\Models\Tenant\ModelTenant;
         public function user()
         {
             return $this->belongsTo(User::class, 'user_id');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function client()
+        {
+            return $this->belongsTo(Person::class, 'client_id');
         }
 
         /**

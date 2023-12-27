@@ -42,11 +42,23 @@ class MayorContableController extends Controller
         //Log::info($request);
         $sp = DB::connection('tenant')->select("CALL SP_Mayorcontable(?,?,?);", [$request->date_start, $request->date_end,  $request->cuenta]);
         //Log::info($sp);
+        $sp1 = array();
+        $sp2 = [];
+        foreach($sp as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
+        $paginatedCollection['datos'] = $sp2;
 
         return new MayorContableCollection($paginatedCollection);
     }

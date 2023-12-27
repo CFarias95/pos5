@@ -3,6 +3,7 @@
 namespace Modules\Inventory\Http\Resources;
 use Modules\Inventory\Models\Warehouse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class TransferCollection extends ResourceCollection
 {
@@ -17,6 +18,7 @@ class TransferCollection extends ResourceCollection
 
 
         return $this->collection->transform(function($row, $key) {
+            //Log::info('row'.$row);
             return [
                 'id' => $row->id,
                 'description' => $row->description,
@@ -25,6 +27,7 @@ class TransferCollection extends ResourceCollection
                 'warehouse_destination' => $row->warehouse_destination->description,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'estado_id' => $row->estado_id,
+                'client_id' => ($row->client) ? $row->client->name : 'NA',
                 'inventory' => $row->inventory->transform(function($o) use ($row) {
                     return [
                         'id' => $o->item->id,

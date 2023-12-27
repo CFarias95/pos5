@@ -215,7 +215,9 @@ class QuotationController extends Controller
         $configuration = Configuration::select('destination_sale')->first();
         $internalRequests = InternalRequest::all();
 
-        $sellers = User::GetSellers(false)->get();
+        //$sellers = User::GetSellers(false)->get();
+
+        $sellers = User::get();
 
         return compact('customers', 'establishments', 'currency_types', 'discount_types', 'charge_types', 'configuration',
             'company', 'document_type_03_filter', 'payment_method_types', 'payment_destinations', 'sellers', 'internalRequests');

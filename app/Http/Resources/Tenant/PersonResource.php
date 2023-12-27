@@ -58,6 +58,7 @@ class PersonResource extends JsonResource
             'account' => $this->account,
             'credit_quota' => $this->credit_quota,
             'default_payment' => $this->default_payment,
+            'mobile_number' => $this->mobile_number,
             // 'more_address' =>  $this->more_address,
         ];
     }
