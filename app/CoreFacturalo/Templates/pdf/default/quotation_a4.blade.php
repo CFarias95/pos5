@@ -256,7 +256,7 @@
             </td>
             <td class="text-left">{{ $brand }}</td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
-            <td class="text-right">{{ number_format($row->unit_price, 2) }}</td>
+            <td class="text-right">{{ number_format($row->unit_value  , 2) }}</td>
             <td class="text-right">
                 @if($row->discounts)
                     @php

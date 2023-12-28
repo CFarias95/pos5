@@ -14,7 +14,7 @@ class TenantSPBalanceresultados extends Migration
      */
     public function up()
     {
-        $sql_create = "
+        $sql_create = <<< EOF
         CREATE PROCEDURE `SP_Balanceresultados`(
             IN `d` INT,
             IN `date_start` DATE,
@@ -147,11 +147,9 @@ class TenantSPBalanceresultados extends Migration
                            GROUP_CONCAT(
                              -- DISTINCT    
                                       CONCAT(
-                                ' SUM(CASE WHEN a.nm = ',a.nm,' THEN (a.valor) ELSE 0 END)
-                                  AS "', a.mes, '"')
+                                ' SUM(CASE WHEN a.nm = ',a.nm,' THEN (a.valor) ELSE 0 END) AS "', a.mes, '"')
                                )  
-                                      )
-                                      AS dd
+                                      ) AS dd
                             INTO @SQLBG
                             FROM (  SELECT nm, mes, SUM(valor) valor FROM TMP_BG1 GROUP BY nm , mes) AS a ;
                             
@@ -165,7 +163,7 @@ class TenantSPBalanceresultados extends Migration
                 
                 END IF;
                 END
-        ";
+        EOF;
         DB::connection('tenant')->statement($sql_create);
     }
 
