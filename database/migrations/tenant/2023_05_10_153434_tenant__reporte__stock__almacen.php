@@ -97,7 +97,7 @@ class TenantReporteStockAlmacen extends Migration
                           EXECUTE stmt;
                           DEALLOCATE PREPARE stmt;
                             END`;
-        DB::connection('tenant')->statement($sql_create);
+        //DB::connection('tenant')->statement($sql_create);
     }
 
     /**
