@@ -41,6 +41,12 @@
               <br />
               <el-checkbox v-model="form.d">Si</el-checkbox>
             </div>
+            <div class="col-md-3">
+              <label class="control-label">Por meses</label>
+              <!--<el-input v-model="form.d" type="text"></el-input>-->
+              <br />
+              <el-checkbox v-model="form.pormeses">Si</el-checkbox>
+            </div>
             <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top: 29px">
               <el-button
                 class="submit"
@@ -131,6 +137,7 @@ export default {
         d: null,
         date_start: null,
         date_end: null,
+        pormeses: null,
       },
       loading_submit: false,
       balance_header: [],
@@ -177,6 +184,7 @@ export default {
         d: false,
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
+        pormeses: false,
       };
     },
     customIndex(index) {

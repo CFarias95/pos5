@@ -49,8 +49,17 @@ class BalanceResultadosController extends Controller
         if($request->d == 'false'){
             $detalle = 0;
         }
+        $pormeses = null;
+        if($request->pormeses == 'false')
+        {
+            $pormeses = 0;
+        }
+        if($request->pormeses == 'true')
+        {
+            $pormeses = 1;
+        }
         //Log::info($detalle);
-        $sp = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
+        $sp = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
         //Log::info($sp);
         $sp1 = array();
         $sp2 = [];
@@ -84,12 +93,36 @@ class BalanceResultadosController extends Controller
         if($request->d == 'false'){
             $detalle = 0;
         }
+
+        $pormeses = null;
+        if($request->pormeses == 'false')
+        {
+            $pormeses = 0;
+        }
+        if($request->pormeses == 'true')
+        {
+            $pormeses = 1;
+        }
+
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
+        
+        $sp1 = array();
+        $sp2 = [];
+        foreach($records as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
+
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
-        $pdf = PDF::loadView('tenant.balance_resultados.balance_resultados_pdf', compact("records", "company", "usuario_log", "request"));
+        $pdf = PDF::loadView('tenant.balance_resultados.balance_resultados_pdf', compact("records", "company", "usuario_log", "request", "sp2"));
 
         $filename = 'Reporte_Balance_Resultados_' . date('YmdHis');
 
@@ -106,8 +139,32 @@ class BalanceResultadosController extends Controller
         if($request->d == 'false'){
             $detalle = 0;
         }
+
+        $pormeses = null;
+        if($request->pormeses == 'false')
+        {
+            $pormeses = 0;
+        }
+        if($request->pormeses == 'true')
+        {
+            $pormeses = 1;
+        }
+
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?);", [$detalle, $request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_Balanceresultados(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
+        
+        $sp1 = array();
+        $sp2 = [];
+        foreach($records as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
+        
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
@@ -116,7 +173,8 @@ class BalanceResultadosController extends Controller
             ->records($records)
             ->company($company)
             ->usuario_log($usuario_log)
-            ->fechaActual($fechaActual);
+            ->fechaActual($fechaActual)
+            ->sp2($sp2);
 
         return $documentExport->download('Reporte_balance_resultados' . Carbon::now() . '.xlsx');
     }

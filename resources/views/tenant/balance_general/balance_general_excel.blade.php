@@ -89,20 +89,22 @@
                     <table class="">
                         <thead>
                             <tr>
-                                <th class="">P</th>
-                                <th class="">Código</th>
-                                <th class="">Descripción</th>
-                                <th class="">Valor</th>
+                                @foreach ($sp2 as $row)
+                                    <th>
+                                        {{$row}}
+                                    </th>
+                                @endforeach 
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($records as $row)
-                                <tr>
-                                    <td class="celda">{{ $row->P }}</td>
-                                    <td class="celda">{{ $row->CODE }}</td>
-                                    <td class="celda">{{ $row->DESCRIPTION }}</td>
-                                    <td class="celda">{{ $row->valor }}</td>
-                                </tr>
+                            @foreach ($records as $data)
+                            <tr>                   
+                                @foreach ($data as $name)
+                                    <td class="celda">
+                                        {{ $name }}&nbsp;
+                                    </td> 
+                                @endforeach                    
+                            </tr> 
                             @endforeach
                         </tbody>
                     </table>
