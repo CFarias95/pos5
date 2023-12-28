@@ -381,8 +381,6 @@
     , 
     @if ($document->seller->telephone)
         {{ $document->seller->telephone }}
-    @else
-        {{ $document->seller->email }}
     @endif
     , 
     @if ($document->seller->email)
