@@ -55,7 +55,7 @@ class InventoryController extends Controller
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
 			'category_id'   => 'Categoria',
-			
+
 		];
 		$categories_list = Category::get();
 
@@ -152,7 +152,7 @@ class InventoryController extends Controller
 
 	public function searchItems(Request $request)
 	{
-		Log::info('search'.$request->value);
+		Log::info('search'.$request->search);
 		$search = $request->input('search');
 		//$print = $this->optionsItemFull($search, 20);
 		//Log::info('print'.$print);

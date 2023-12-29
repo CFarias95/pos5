@@ -171,8 +171,14 @@ trait InventoryTrait
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
         if ($search && isset($search->column) && isset($search->value)) {
-            Log::error($search->input('column').'-'.$search['value']);
+            //Log::error($search->input('column').'-'.$search['value']);
             $query->where($search->column, 'like', "%{$search->value}%");
+        }
+        if ($search && isset($search->search)) {
+            //Log::error($search->input('column').'-'.$search['value']);
+            $query->where('name', 'like', "%{$search->search}%")
+                ->orWhere('description', 'like', "%{$search->search}%")
+                ->orWhere('internal_id', 'like', "%{$search->search}%");
         }
         if ($take) {
             $query->take($take);
