@@ -170,7 +170,7 @@ trait InventoryTrait
             ->with('item_lots', 'item_lots.item_loteable', 'lots_group')
             ->where([['item_type_id', '01'], ['unit_type_id', '!=', 'ZZ']])
             ->whereNotIsSet();
-        if ($search) {
+        if ($search && isset($search->column) && isset($search->value)) {
             Log::error($search->input('column').'-'.$search['value']);
             $query->where($search->column, 'like', "%{$search->value}%");
         }
