@@ -253,10 +253,11 @@
 
                 $whereItem[] = ['name', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
+                $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['description', 'like', '%' .  str_replace(' ','%',$input) . '%'];
 
-                if($search_factory_code_items) $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
+                //if($search_factory_code_items) $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
 
                 foreach ($whereItem as $index => $wItem) {
                     if ($index < 1) {
@@ -1169,6 +1170,7 @@
             if(!empty($input)) {
                 $whereItem[] = ['name', 'like', '%' . $input . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
+                $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['description', 'like', '%' . $input . '%'];
             }
