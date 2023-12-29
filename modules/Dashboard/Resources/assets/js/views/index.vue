@@ -1,553 +1,762 @@
 <template>
-    <div v-if="typeUser == 'admin'">
-        <header
-        class="page-header"
-        style="display: flex; justify-content: space-between; align-items: center"
-        >
-            <div>
-                <h2>Dashboard</h2>
-            </div>
-        </header>
-        <div class="card mb-0">
-            <RowTop :company="company" :utilities="utilities"></RowTop>
-            <div class="row">
-                <div class="col-12">
-                    <section class="card card-dashboard">
-                        <div class="card-body pt-2 pb-0">
-                            <div class="row border-bottom mb-2 no-gutters">
-                                <small class="col-12 text-muted text-center">Filtrar datos históricos</small>
-                            </div>
-                            <div class="row">
-                                <div class="col-6 col-md-3 form-group">
-                                    <label class="control-label">Establecimiento</label>
-                                    <el-select v-model="form.establishment_id" @change="loadAll">
-                                        <el-option
-                                        v-for="option in establishments"
-                                        :key="option.id"
-                                        :value="option.id"
-                                        :label="option.name"
-                                        ></el-option>
-                                    </el-select>
-                                </div>
-                                <div class="col-6 col-md-3">
-                                    <label class="control-label">Periodo</label>
-                                    <el-select v-model="form.period" @change="changePeriod">
-                                        <el-option key="all" value="all" label="Todos"></el-option>
-                                        <el-option key="last_week" value="last_week" label="Última semana"></el-option>
-                                        <el-option key="month" value="month" label="Por mes"></el-option>
-                                        <el-option key="between_months" value="between_months" label="Entre meses"></el-option>
-                                        <el-option key="date" value="date" label="Por fecha"></el-option>
-                                        <el-option key="between_dates" value="between_dates" label="Entre fechas"></el-option>
-                                    </el-select>
-                                </div>
-                                <template v-if="form.period === 'month' || form.period === 'between_months'">
-                                    <div class="col-6 col-md-3">
-                                        <label class="control-label">Mes de</label>
-                                        <el-date-picker
-                                            v-model="form.month_start"
-                                            type="month"
-                                            @change="changeDisabledMonths"
-                                            value-format="yyyy-MM"
-                                            format="MM/yyyy"
-                                            :clearable="false"
-                                        ></el-date-picker>
-                                    </div>
-                                </template>
-                                <template v-if="form.period === 'between_months'">
-                                    <div class="col-6 col-md-3">
-                                        <label class="control-label">Mes al</label>
-                                        <el-date-picker
-                                            v-model="form.month_end"
-                                            type="month"
-                                            :picker-options="pickerOptionsMonths"
-                                            @change="loadAll"
-                                            value-format="yyyy-MM"
-                                            format="MM/yyyy"
-                                            :clearable="false"
-                                        ></el-date-picker>
-                                    </div>
-                                </template>
-                                <template v-if="form.period === 'date' || form.period === 'between_dates'">
-                                    <div class="col-6 col-md-3">
-                                        <label class="control-label">Fecha del</label>
-                                        <el-date-picker
-                                            v-model="form.date_start"
-                                            type="date"
-                                            @change="changeDisabledDates"
-                                            value-format="yyyy-MM-dd"
-                                            format="dd/MM/yyyy"
-                                            :clearable="false"
-                                        ></el-date-picker>
-                                    </div>
-                                </template>
-                                <template v-if="form.period === 'between_dates'">
-                                    <div class="col-6 col-md-3">
-                                        <label class="control-label">Fecha al</label>
-                                        <el-date-picker
-                                            v-model="form.date_end"
-                                            type="date"
-                                            :picker-options="pickerOptionsDates"
-                                            @change="loadAll"
-                                            value-format="yyyy-MM-dd"
-                                            format="dd/MM/yyyy"
-                                            :clearable="false"
-                                        ></el-date-picker>
-                                    </div>
-                                </template>
-                            </div>
-                        </div>
-                    </section>
+  <div v-if="typeUser == 'admin'">
+    <header
+      class="page-header"
+      style="display: flex; justify-content: space-between; align-items: center"
+    >
+      <div>
+        <h2>Dashboard</h2>
+      </div>
+    </header>
+    <div class="card mb-0">
+      <RowTop :company="company" :utilities="utilities"></RowTop>
+      <div class="row">
+        <div class="col-12">
+          <section class="card card-dashboard">
+            <div class="card-body pt-2 pb-0">
+              <div class="row border-bottom mb-2 no-gutters">
+                <small class="col-12 text-muted text-center"
+                  >Filtrar datos históricos</small
+                >
+              </div>
+              <div class="row">
+                <div class="col-6 col-md-3 form-group">
+                  <label class="control-label">Establecimiento</label>
+                  <el-select v-model="form.establishment_id" @change="loadAll">
+                    <el-option
+                      v-for="option in establishments"
+                      :key="option.id"
+                      :value="option.id"
+                      :label="option.name"
+                    ></el-option>
+                  </el-select>
                 </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xl-12">
-                    <div class="row">
-                    <template v-if="configuration.dashboard_sales">
-                        <div class="col-xl-3">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.sale_note">
-                                    <template >
-                                        <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.sale_note">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="sale_note">
-                                            <div class="row no-gutters">
-                                                <div class="col-md-12 m-b-10">
-                                                    <label>Notas de venta</label>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <x-graph type="pie" :all-data="sale_note.graph"></x-graph>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.sale_note">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>Total Cobrado</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ sale_note.totals.total_payment }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>Pendiente de cobro</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ sale_note.totals.total_to_pay }}</td>
-                                            </tr>
-                                            <tr class="text-bold">
-                                                <td class="">Total</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ sale_note.totals.total }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="col-xl-3" v-if="soapCompany != '03'">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.document">
-                                    <template >
-                                        <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.document">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="document">
-                                            <div class="row no-gutters">
-                                                <div class="col-md-12 m-b-10">
-                                                    <label>Comprobantes</label>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <x-graph type="doughnut" :all-data="document.graph"></x-graph>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.document">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>Total Cobrado</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ document.totals.total_payment }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>Pendiente de cobro</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ document.totals.total_to_pay }}</td>
-                                            </tr>
-                                            <tr class="text-bold">
-                                                <td class="">Total</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ document.totals.total }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="col-xl-6 col-md-6">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.general">
-                                    <template >
-                                        <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.general">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="general">
-                                            <div class="summary">
-                                                <div class="row no-gutters">
-                                                    <div class="col-md-12 m-b-10">
-                                                        <label>Totales</label>
-                                                    </div>
-                                                </div>
-                                                <div class="row">
-                                                    <div class="col-md-12">
-                                                        <x-graph-line :all-data="general.graph"></x-graph-line>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.general">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>Total notas de venta</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ general.totals.total_sale_notes }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>Total comprobantes</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ general.totals.total_documents }}</td>
-                                            </tr>
-                                            <tr class="text-bold">
-                                                <td class="">Total</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ general.totals.total }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-                    </template>
-                    <template v-if="configuration.dashboard_general">
-                        <div class="col-xl-3 col-md-3">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.balance">
-                                    <template>
-                                        <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.balance">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="document">
-                                            <div class="row no-gutters">
-                                                <div class="col-md-12 m-b-10">
-                                                    <label>
-                                                        Balance
-                                                        <el-tooltip
-                                                            class="item"
-                                                            effect="dark"
-                                                            content="Ventas - Compras - Gastos"
-                                                            placement="top-start"
-                                                            >
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </el-tooltip>
-                                                        </label>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <x-graph type="doughnut" :all-data="balance.graph"></x-graph>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.balance">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>
-                                                    <el-popover placement="right" width="100%" trigger="hover">
-                                                        <p><span class="custom-badge">T. Ventas - T. Compras/Gastos</span></p>
-                                                        <p>Total comprobantes:<span class="custom-badge pull-right"> {{(this.configuration.currency_type_id)}} {{ balance.totals.total_document }}</span></p>
-                                                        <p>Total notas de venta:<span class="custom-badge pull-right"> {{(this.configuration.currency_type_id)}} {{ balance.totals.total_sale_note }}</span></p>
-                                                        <p>Total compras:<span class="custom-badge pull-right">- {{(this.configuration.currency_type_id)}} {{ balance.totals.total_purchase }}</span></p>
-                                                        <p>Total gastos:<span class="custom-badge pull-right">- {{(this.configuration.currency_type_id)}} {{ balance.totals.total_expense }}</span></p>
-                                                        <el-button icon="el-icon-view" type="primary" size="mini" slot="reference" circle></el-button>
-                                                    </el-popover>
-                                                    Totales
-                                                </td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ balance.totals.all_totals_payment }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>
-                                                    <el-popover placement="right" width="100%" trigger="hover">
-                                                    <p><span class="custom-badge">T. Pagos Ventas - T. Pagos Compras/Gastos</span></p>
-                                                    <p>Total pagos comprobantes:<span class="custom-badge pull-right"> {{(this.configuration.currency_type_id)}} {{ balance.totals.total_payment_document }}</span></p>
-                                                    <p>Total pagos notas de venta:<span class="custom-badge pull-right"> {{(this.configuration.currency_type_id)}} {{ balance.totals.total_payment_sale_note }}</span></p>
-                                                    <p>Total pagos compras:<span class="custom-badge pull-right">- {{(this.configuration.currency_type_id)}} {{ balance.totals.total_payment_purchase }}</span></p>
-                                                    <p>Total pagos gastos:<span class="custom-badge pull-right">- {{(this.configuration.currency_type_id)}} {{ balance.totals.total_payment_expense }}</span></p>
-                                                    <el-button icon="el-icon-view" type="danger" size="mini" slot="reference" circle></el-button>
-                                                    </el-popover>
-                                                    Total pagos
-                                                </td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ balance.totals.all_totals_payment }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="col-xl-3 col-md-3">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.utility">
-                                    <template>
-                                        <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.utility">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="utilities">
-                                            <div class="row no-gutters">
-                                                <div class="col-md-12 m-b-10">
-                                                    <label>Utilidades/Ganancias</label>
-                                                </div>
-                                            </div>
-                                            <div class="row">
-                                                <div class="col-md-12">
-                                                    <x-graph type="doughnut" :all-data="utilities.graph"></x-graph>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.utility">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <tr>
-                                                <td colspan="2">
-                                                    <el-checkbox  v-model="form.enabled_expense" @change="loadDataUtilities">Considerar gastos</el-checkbox><br>
-                                                    <el-checkbox  v-model="filter_item" @change="changeFilterItem">Filtrar por producto</el-checkbox>
-                                                </td>
-                                            </tr>
-                                            <tr v-if="filter_item">
-                                                <td colspan="2">
-                                                    <div class="form-group">
-                                                        <el-select v-model="form.item_id" filterable remote  popper-class="el-select-customers"  clearable
-                                                            placeholder="Buscar producto"
-                                                            :remote-method="searchRemoteItems"
-                                                            :loading="loading_search"
-                                                            @change="loadDataUtilities">
-                                                            <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
-                                                        </el-select>
-                                                    </div>
-                                                </td>
-                                            </tr>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>Ingreso</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ utilities.totals.total_income }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>Egreso</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ utilities.totals.total_egress }}</td>
-                                            </tr>
-                                            <tr class="text-bold">
-                                                <td class="">Utilidad</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ utilities.totals.utility }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-
-                        <div class="col-xl-6 col-md-6">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.purchase">
-                                    <template>
-                                        <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body" v-show="!loaders.purchase">
-                                    <div class="widget-summary">
-                                        <div class="widget-summary-col" v-if="general">
-                                            <div class="summary">
-                                                <div class="row no-gutters">
-                                                    <div class="col-md-12 m-b-10">
-                                                        <label>Compras
-                                                            <el-tooltip
-                                                            class="item"
-                                                            effect="dark"
-                                                            content="Aplica filtro por establecimiento"
-                                                            placement="top-start"
-                                                            >
-                                                                <i class="fa fa-info-circle"></i>
-                                                            </el-tooltip>
-                                                        </label>
-                                                    </div>
-                                                </div>
-                                                <div class="row m-t-20">
-                                                    <div class="col-md-12">
-                                                        <x-graph-line :all-data="purchase.graph"></x-graph-line>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.purchase">
-                                    <table class="table mb-0 table-sm">
-                                        <tbody>
-                                            <!-- JOINSOFTWARE -->
-                                            <tr class="text-info text-bold">
-                                                <td>Total percepciones</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ purchase.totals.purchases_total_perception }}</td>
-                                            </tr>
-                                            <tr class="text-danger text-bold">
-                                                <td>Total compras</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ purchase.totals.purchases_total }}</td>
-                                            </tr>
-                                            <tr class="text-bold">
-                                                <td class="">Total</td>
-                                                <td class="text-right font-weight-bold"> {{(this.configuration.currency_type_id)}} {{ purchase.totals.total }}</td>
-                                            </tr>
-                                        </tbody>
-                                    </table>
-                                </div>
-                            </section>
-                        </div>
-                    </template>
-                    <template v-if="configuration.dashboard_products">
-                        <div class="col-xl-3 col-md-6">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.items_by_sales">
-                                    <template>
-                                        <loader-graph :rows="4" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body pb-0" v-show="!loaders.items_by_sales">
-                                    <label>Ventas por producto</label>
-                                    <div class="mt-3">
-                                        <el-checkbox  v-model="form.enabled_move_item" @change="loadDataAditional">Ordenar por movimientos</el-checkbox><br>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.items_by_sales">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Código</th>
-                                                    <th>Nombre</th>
-                                                    <th class="text-right">
-                                                        Mov.
-                                                        <el-tooltip class="item" effect="dark" content="Movimientos (Cantidad de veces vendido)" placement="top-start"><i class="fa fa-info-circle"></i></el-tooltip>
-                                                    </th>
-                                                    <th class="text-right">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template v-for="(row, index) in items_by_sales">
-                                                    <tr :key="index">
-                                                        <td>{{ index + 1 }}</td>
-                                                        <td>{{ row.internal_id }}</td>
-                                                        <td>{{ row.description }}</td>
-                                                        <td class="text-right">{{ row.move_quantity }}</td>
-                                                        <td class="text-right">{{ row.total }}</td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                                <div class="card-body">
-                                    <a class="btn btn-primary btn-sm" href="dashboard/sales-by-product">Ver todo</a>
-                                </div>
-                            </section>
-                        </div>
-                    </template>
-                    <template v-if="configuration.dashboard_clients">
-                        <div class="col-xl-3 col-md-6">
-                            <section class="card card-dashboard">
-                                <div class="card-body" v-if="loaders.top_customers">
-                                    <template>
-                                        <loader-graph :rows="4" :columns="1" :radius="100" :hideCircle="true"></loader-graph>
-                                    </template>
-                                </div>
-                                <div class="card-body pb-0" v-show="!loaders.top_customers">
-                                    <label>Top clientes</label>
-                                    <div class="mt-3">
-                                        <el-checkbox  v-model="form.enabled_transaction_customer" @change="loadDataAditional">Ordenar por transacciones</el-checkbox><br>
-                                    </div>
-                                </div>
-                                <div class="card-body p-0" v-show="!loaders.top_customers">
-                                    <div class="table-responsive">
-                                        <table class="table">
-                                            <thead>
-                                                <tr>
-                                                    <th>#</th>
-                                                    <th>Cliente</th>
-                                                    <th class="text-right">
-                                                        Trans.
-                                                        <el-tooltip
-                                                            class="item"
-                                                            effect="dark"
-                                                            content="Transacciones (Cantidad de ventas realizadas)"
-                                                            placement="top-start"
-                                                        >
-                                                            <i class="fa fa-info-circle"></i>
-                                                        </el-tooltip>
-                                                    </th>
-                                                    <th class="text-right">Total</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                <template v-for="(row, index) in top_customers">
-                                                    <tr :key="index">
-                                                        <td>{{ index + 1 }}</td>
-                                                        <td>{{ row.name }}<br /><small v-text="row.number"></small></td>
-                                                        <td class="text-right">{{ row.transaction_quantity }}</td>
-                                                        <td class="text-right">{{ row.total }}</td>
-                                                    </tr>
-                                                </template>
-                                            </tbody>
-                                        </table>
-                                    </div>
-                                </div>
-                            </section>
-                        </div>
-                    </template>
-                    <template v-if="configuration.dashboard_products">
-                        <div class="col-xl-6 col-md-12 col-lg-12">
-                            <dashboard-stock></dashboard-stock>
-                        </div>
-                    </template>
-                    <template v-if="configuration.dashboard_products">
-                        <div class="col-xl-6 col-md-12 col-lg-12">
-                            <dashboard-inventory></dashboard-inventory>
-                        </div>
-                    </template>
-                    </div>
+                <div class="col-6 col-md-3">
+                  <label class="control-label">Periodo</label>
+                  <el-select v-model="form.period" @change="changePeriod">
+                    <el-option key="all" value="all" label="Todos"></el-option>
+                    <el-option
+                      key="last_week"
+                      value="last_week"
+                      label="Última semana"
+                    ></el-option>
+                    <el-option key="month" value="month" label="Por mes"></el-option>
+                    <el-option
+                      key="between_months"
+                      value="between_months"
+                      label="Entre meses"
+                    ></el-option>
+                    <el-option key="date" value="date" label="Por fecha"></el-option>
+                    <el-option
+                      key="between_dates"
+                      value="between_dates"
+                      label="Entre fechas"
+                    ></el-option>
+                  </el-select>
                 </div>
+                <template
+                  v-if="form.period === 'month' || form.period === 'between_months'"
+                >
+                  <div class="col-6 col-md-3">
+                    <label class="control-label">Mes de</label>
+                    <el-date-picker
+                      v-model="form.month_start"
+                      type="month"
+                      @change="changeDisabledMonths"
+                      value-format="yyyy-MM"
+                      format="MM/yyyy"
+                      :clearable="false"
+                    ></el-date-picker>
+                  </div>
+                </template>
+                <template v-if="form.period === 'between_months'">
+                  <div class="col-6 col-md-3">
+                    <label class="control-label">Mes al</label>
+                    <el-date-picker
+                      v-model="form.month_end"
+                      type="month"
+                      :picker-options="pickerOptionsMonths"
+                      @change="loadAll"
+                      value-format="yyyy-MM"
+                      format="MM/yyyy"
+                      :clearable="false"
+                    ></el-date-picker>
+                  </div>
+                </template>
+                <template
+                  v-if="form.period === 'date' || form.period === 'between_dates'"
+                >
+                  <div class="col-6 col-md-3">
+                    <label class="control-label">Fecha del</label>
+                    <el-date-picker
+                      v-model="form.date_start"
+                      type="date"
+                      @change="changeDisabledDates"
+                      value-format="yyyy-MM-dd"
+                      format="dd/MM/yyyy"
+                      :clearable="false"
+                    ></el-date-picker>
+                  </div>
+                </template>
+                <template v-if="form.period === 'between_dates'">
+                  <div class="col-6 col-md-3">
+                    <label class="control-label">Fecha al</label>
+                    <el-date-picker
+                      v-model="form.date_end"
+                      type="date"
+                      :picker-options="pickerOptionsDates"
+                      @change="loadAll"
+                      value-format="yyyy-MM-dd"
+                      format="dd/MM/yyyy"
+                      :clearable="false"
+                    ></el-date-picker>
+                  </div>
+                </template>
+              </div>
             </div>
+          </section>
         </div>
+      </div>
+
+      <div class="row">
+        <div class="col-xl-12">
+          <div class="row">
+            <template v-if="configuration.dashboard_sales">
+              <div class="col-xl-3">
+                <section class="card card-dashboard">
+                  <!-- <div class="card-body" v-if="loaders.general">
+                                    <template >
+                                        <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
+                                    </template>
+                                </div> -->
+                  <!-- <div class="card-body" v-show="!loaders.sale_note">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="sale_note">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Ventas totales por linea</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <x-graph
+                              type="doughnut"
+                              :all-data="sale_note.graph"
+                            ></x-graph>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div> -->
+                  <div class="card-body p-0" v-show="!loaders.sale_note">
+                    <table class="table mb-0 table-sm">
+                      <thead>
+                        <slot
+                          v-for="(key, value) in saleNote_headers"
+                          :index="customIndex(value)"
+                          :row="key"
+                        >
+                          <tr slot="heading" :key="value">
+                            <th
+                              v-for="(value1, name) in key"
+                              :index="customIndex(name)"
+                              :row="value1"
+                              class=""
+                              slot="heading"
+                              :key="name"
+                            >
+                              <strong>{{ value1 }}</strong>
+                            </th>
+                          </tr>
+                        </slot>
+                      </thead>
+                      <tbody>
+                        <slot
+                          v-for="(row, index) in saleNotesSP"
+                          :index="customIndex(index)"
+                          :row="row"
+                        >
+                          <tr v-for="valor in row" :row="valor" class="" slot="heading">
+                            <td
+                              v-for="(obj, nombre) in valor"
+                              :index="customIndex(nombre)"
+                              :row="obj"
+                              :key="nombre"
+                            >
+                              {{ isFinite(obj) ? parseFloat(obj).toFixed(2) : obj }}
+                            </td>
+                          </tr>
+                        </slot>
+                      </tbody>
+                    </table>
+                    <el-pagination
+                      :current-page.sync="pagination.current_page"
+                      :page-size="pagination.per_page"
+                      :total="pagination.total"
+                      layout="total, prev, pager, next"
+                      @current-change="getSaleNoteSP"
+                    >
+                    </el-pagination>
+                  </div>
+                </section>
+              </div>
+
+              <div class="col-xl-3" v-if="soapCompany != '03'">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.document">
+                    <template>
+                      <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body" v-show="!loaders.document">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="document">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Comprobantes</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <x-graph type="doughnut" :all-data="document.graph"></x-graph>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.document">
+                    <table class="table mb-0 table-sm">
+                      <tbody>
+                        <!-- JOINSOFTWARE -->
+                        <tr class="text-info text-bold">
+                          <td>Total Cobrado</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ document.totals.total_payment }}
+                          </td>
+                        </tr>
+                        <tr class="text-danger text-bold">
+                          <td>Pendiente de cobro</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ document.totals.total_to_pay }}
+                          </td>
+                        </tr>
+                        <tr class="text-bold">
+                          <td class="">Total</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ document.totals.total }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+
+              <div class="col-xl-6 col-md-6">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.general">
+                    <template>
+                      <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body" v-show="!loaders.general">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="general">
+                        <div class="summary">
+                          <div class="row no-gutters">
+                            <div class="col-md-12 m-b-10">
+                              <label>Totales</label>
+                            </div>
+                          </div>
+                          <div class="row">
+                            <div class="col-md-12">
+                              <x-graph-line :all-data="general.graph"></x-graph-line>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.general">
+                    <table class="table mb-0 table-sm">
+                      <tbody>
+                        <!-- JOINSOFTWARE -->
+                        <tr class="text-info text-bold">
+                          <td>Total notas de venta</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ general.totals.total_sale_notes }}
+                          </td>
+                        </tr>
+                        <tr class="text-danger text-bold">
+                          <td>Total comprobantes</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ general.totals.total_documents }}
+                          </td>
+                        </tr>
+                        <tr class="text-bold">
+                          <td class="">Total</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ general.totals.total }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </template>
+            <template v-if="configuration.dashboard_general">
+              <div class="col-xl-3 col-md-3">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.balance">
+                    <template>
+                      <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body" v-show="!loaders.balance">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="document">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>
+                              Balance
+                              <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Ventas - Compras - Gastos"
+                                placement="top-start"
+                              >
+                                <i class="fa fa-info-circle"></i>
+                              </el-tooltip>
+                            </label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <x-graph type="doughnut" :all-data="balance.graph"></x-graph>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.balance">
+                    <table class="table mb-0 table-sm">
+                      <tbody>
+                        <!-- JOINSOFTWARE -->
+                        <tr class="text-info text-bold">
+                          <td>
+                            <el-popover placement="right" width="100%" trigger="hover">
+                              <p>
+                                <span class="custom-badge"
+                                  >T. Ventas - T. Compras/Gastos</span
+                                >
+                              </p>
+                              <p>
+                                Total comprobantes:<span class="custom-badge pull-right">
+                                  {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_document }}</span
+                                >
+                              </p>
+                              <p>
+                                Total notas de venta:<span
+                                  class="custom-badge pull-right"
+                                >
+                                  {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_sale_note }}</span
+                                >
+                              </p>
+                              <p>
+                                Total compras:<span class="custom-badge pull-right"
+                                  >- {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_purchase }}</span
+                                >
+                              </p>
+                              <p>
+                                Total gastos:<span class="custom-badge pull-right"
+                                  >- {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_expense }}</span
+                                >
+                              </p>
+                              <el-button
+                                icon="el-icon-view"
+                                type="primary"
+                                size="mini"
+                                slot="reference"
+                                circle
+                              ></el-button>
+                            </el-popover>
+                            Totales
+                          </td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ balance.totals.all_totals_payment }}
+                          </td>
+                        </tr>
+                        <tr class="text-danger text-bold">
+                          <td>
+                            <el-popover placement="right" width="100%" trigger="hover">
+                              <p>
+                                <span class="custom-badge"
+                                  >T. Pagos Ventas - T. Pagos Compras/Gastos</span
+                                >
+                              </p>
+                              <p>
+                                Total pagos comprobantes:<span
+                                  class="custom-badge pull-right"
+                                >
+                                  {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_payment_document }}</span
+                                >
+                              </p>
+                              <p>
+                                Total pagos notas de venta:<span
+                                  class="custom-badge pull-right"
+                                >
+                                  {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_payment_sale_note }}</span
+                                >
+                              </p>
+                              <p>
+                                Total pagos compras:<span class="custom-badge pull-right"
+                                  >- {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_payment_purchase }}</span
+                                >
+                              </p>
+                              <p>
+                                Total pagos gastos:<span class="custom-badge pull-right"
+                                  >- {{ this.configuration.currency_type_id }}
+                                  {{ balance.totals.total_payment_expense }}</span
+                                >
+                              </p>
+                              <el-button
+                                icon="el-icon-view"
+                                type="danger"
+                                size="mini"
+                                slot="reference"
+                                circle
+                              ></el-button>
+                            </el-popover>
+                            Total pagos
+                          </td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ balance.totals.all_totals_payment }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+
+              <div class="col-xl-3 col-md-3">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.utility">
+                    <template>
+                      <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body" v-show="!loaders.utility">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="utilities">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Utilidades/Ganancias</label>
+                          </div>
+                        </div>
+                        <div class="row">
+                          <div class="col-md-12">
+                            <x-graph
+                              type="doughnut"
+                              :all-data="utilities.graph"
+                            ></x-graph>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.utility">
+                    <table class="table mb-0 table-sm">
+                      <tbody>
+                        <tr>
+                          <td colspan="2">
+                            <el-checkbox
+                              v-model="form.enabled_expense"
+                              @change="loadDataUtilities"
+                              >Considerar gastos</el-checkbox
+                            ><br />
+                            <el-checkbox v-model="filter_item" @change="changeFilterItem"
+                              >Filtrar por producto</el-checkbox
+                            >
+                          </td>
+                        </tr>
+                        <tr v-if="filter_item">
+                          <td colspan="2">
+                            <div class="form-group">
+                              <el-select
+                                v-model="form.item_id"
+                                filterable
+                                remote
+                                popper-class="el-select-customers"
+                                clearable
+                                placeholder="Buscar producto"
+                                :remote-method="searchRemoteItems"
+                                :loading="loading_search"
+                                @change="loadDataUtilities"
+                              >
+                                <el-option
+                                  v-for="option in items"
+                                  :key="option.id"
+                                  :value="option.id"
+                                  :label="option.description"
+                                ></el-option>
+                              </el-select>
+                            </div>
+                          </td>
+                        </tr>
+                        <!-- JOINSOFTWARE -->
+                        <tr class="text-info text-bold">
+                          <td>Ingreso</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ utilities.totals.total_income }}
+                          </td>
+                        </tr>
+                        <tr class="text-danger text-bold">
+                          <td>Egreso</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ utilities.totals.total_egress }}
+                          </td>
+                        </tr>
+                        <tr class="text-bold">
+                          <td class="">Utilidad</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ utilities.totals.utility }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+
+              <div class="col-xl-6 col-md-6">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.purchase">
+                    <template>
+                      <loader-graph :rows="2" :columns="3" :radius="100"></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body" v-show="!loaders.purchase">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="general">
+                        <div class="summary">
+                          <div class="row no-gutters">
+                            <div class="col-md-12 m-b-10">
+                              <label
+                                >Compras
+                                <el-tooltip
+                                  class="item"
+                                  effect="dark"
+                                  content="Aplica filtro por establecimiento"
+                                  placement="top-start"
+                                >
+                                  <i class="fa fa-info-circle"></i>
+                                </el-tooltip>
+                              </label>
+                            </div>
+                          </div>
+                          <div class="row m-t-20">
+                            <div class="col-md-12">
+                              <x-graph-line :all-data="purchase.graph"></x-graph-line>
+                            </div>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.purchase">
+                    <table class="table mb-0 table-sm">
+                      <tbody>
+                        <!-- JOINSOFTWARE -->
+                        <tr class="text-info text-bold">
+                          <td>Total percepciones</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ purchase.totals.purchases_total_perception }}
+                          </td>
+                        </tr>
+                        <tr class="text-danger text-bold">
+                          <td>Total compras</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ purchase.totals.purchases_total }}
+                          </td>
+                        </tr>
+                        <tr class="text-bold">
+                          <td class="">Total</td>
+                          <td class="text-right font-weight-bold">
+                            {{ this.configuration.currency_type_id }}
+                            {{ purchase.totals.total }}
+                          </td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+                </section>
+              </div>
+            </template>
+            <template v-if="configuration.dashboard_products">
+              <div class="col-xl-3 col-md-6">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.items_by_sales">
+                    <template>
+                      <loader-graph
+                        :rows="4"
+                        :columns="1"
+                        :radius="100"
+                        :hideCircle="true"
+                      ></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body pb-0" v-show="!loaders.items_by_sales">
+                    <label>Ventas por producto</label>
+                    <div class="mt-3">
+                      <el-checkbox
+                        v-model="form.enabled_move_item"
+                        @change="loadDataAditional"
+                        >Ordenar por movimientos</el-checkbox
+                      ><br />
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.items_by_sales">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Código</th>
+                            <th>Nombre</th>
+                            <th class="text-right">
+                              Mov.
+                              <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Movimientos (Cantidad de veces vendido)"
+                                placement="top-start"
+                                ><i class="fa fa-info-circle"></i
+                              ></el-tooltip>
+                            </th>
+                            <th class="text-right">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template v-for="(row, index) in items_by_sales">
+                            <tr :key="index">
+                              <td>{{ index + 1 }}</td>
+                              <td>{{ row.internal_id }}</td>
+                              <td>{{ row.description }}</td>
+                              <td class="text-right">{{ row.move_quantity }}</td>
+                              <td class="text-right">{{ row.total }}</td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                  <div class="card-body">
+                    <a class="btn btn-primary btn-sm" href="dashboard/sales-by-product"
+                      >Ver todo</a
+                    >
+                  </div>
+                </section>
+              </div>
+            </template>
+            <template v-if="configuration.dashboard_clients">
+              <div class="col-xl-3 col-md-6">
+                <section class="card card-dashboard">
+                  <div class="card-body" v-if="loaders.top_customers">
+                    <template>
+                      <loader-graph
+                        :rows="4"
+                        :columns="1"
+                        :radius="100"
+                        :hideCircle="true"
+                      ></loader-graph>
+                    </template>
+                  </div>
+                  <div class="card-body pb-0" v-show="!loaders.top_customers">
+                    <label>Top clientes</label>
+                    <div class="mt-3">
+                      <el-checkbox
+                        v-model="form.enabled_transaction_customer"
+                        @change="loadDataAditional"
+                        >Ordenar por transacciones</el-checkbox
+                      ><br />
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.top_customers">
+                    <div class="table-responsive">
+                      <table class="table">
+                        <thead>
+                          <tr>
+                            <th>#</th>
+                            <th>Cliente</th>
+                            <th class="text-right">
+                              Trans.
+                              <el-tooltip
+                                class="item"
+                                effect="dark"
+                                content="Transacciones (Cantidad de ventas realizadas)"
+                                placement="top-start"
+                              >
+                                <i class="fa fa-info-circle"></i>
+                              </el-tooltip>
+                            </th>
+                            <th class="text-right">Total</th>
+                          </tr>
+                        </thead>
+                        <tbody>
+                          <template v-for="(row, index) in top_customers">
+                            <tr :key="index">
+                              <td>{{ index + 1 }}</td>
+                              <td>
+                                {{ row.name }}<br /><small v-text="row.number"></small>
+                              </td>
+                              <td class="text-right">{{ row.transaction_quantity }}</td>
+                              <td class="text-right">{{ row.total }}</td>
+                            </tr>
+                          </template>
+                        </tbody>
+                      </table>
+                    </div>
+                  </div>
+                </section>
+              </div>
+            </template>
+            <template v-if="configuration.dashboard_products">
+              <div class="col-xl-6 col-md-12 col-lg-12">
+                <dashboard-stock></dashboard-stock>
+              </div>
+            </template>
+            <template v-if="configuration.dashboard_products">
+              <div class="col-xl-6 col-md-12 col-lg-12">
+                <dashboard-inventory></dashboard-inventory>
+              </div>
+            </template>
+          </div>
+        </div>
+      </div>
     </div>
+  </div>
 </template>
 <style>
 .widget-summary .summary {
@@ -559,8 +768,8 @@
 }
 .card.card-dashboard .table td,
 .card.card-dashboard .table th {
-    font-size: 0.9rem;
-    font-weight: 500;
+  font-size: 0.9rem;
+  font-weight: 500;
 }
 </style>
 <script>
@@ -569,13 +778,17 @@ import queryString from "query-string";
 import LoaderGraph from "../components/loaders/l-graph.vue";
 import RowTop from "./RowTop";
 import DashboardInventory from "./partials/dashboard_inventory.vue";
-import {mapActions, mapState} from "vuex/dist/vuex.mjs";
+import { mapActions, mapState } from "vuex/dist/vuex.mjs";
+import moment from "moment";
+//import { isNumeric } from "jquery";
+//import queryString from "query-string";
 
 export default {
-  props: ["typeUser", "soapCompany",'configuration'],
+  props: ["typeUser", "soapCompany", "configuration"],
   components: { DashboardStock, LoaderGraph, RowTop, DashboardInventory },
   data() {
     return {
+      pagination: {},
       loading_search: false,
       records_base: [],
       selected_customer: null,
@@ -630,11 +843,13 @@ export default {
       items: [],
       company: {},
       loaders: {},
+      saleNotesSP: [],
+      saleNote_headers: [],
     };
   },
   async created() {
-    this.loadConfiguration()
-    this.$store.commit('setConfiguration', this.configuration)
+    this.loadConfiguration();
+    this.$store.commit("setConfiguration", this.configuration);
     this.initForm();
     this.initLoaders();
     await this.$http.get(`/${this.resource}/filter`).then((response) => {
@@ -647,9 +862,7 @@ export default {
   },
 
   methods: {
-    ...mapActions([
-            'loadConfiguration',
-        ]),
+    ...mapActions(["loadConfiguration"]),
     changeFilterItem() {
       this.form.item_id = null;
       this.loadDataUtilities();
@@ -658,16 +871,14 @@ export default {
       if (input.length > 1) {
         this.loading_search = true;
         let parameters = `input=${input}`;
-        this.$http
-          .get(`/reports/data-table/items/?${parameters}`)
-          .then((response) => {
-            this.items = response.data.items;
-            this.loading_search = false;
+        this.$http.get(`/reports/data-table/items/?${parameters}`).then((response) => {
+          this.items = response.data.items;
+          this.loading_search = false;
 
-            if (this.items.length == 0) {
-              this.filterItems();
-            }
-          });
+          if (this.items.length == 0) {
+            this.filterItems();
+          }
+        });
       } else {
         this.filterItems();
       }
@@ -698,8 +909,8 @@ export default {
         enabled_expense: null,
         enabled_move_item: false,
         enabled_transaction_customer: false,
-        period: "last_week",
-        date_start: moment().subtract(7, 'days').format("YYYY-MM-DD"),
+        period: "between_dates",
+        date_start: moment().subtract(7, "days").format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
         month_start: moment().format("YYYY-MM"),
         month_end: moment().format("YYYY-MM"),
@@ -745,6 +956,7 @@ export default {
       //this.loadCustomer();
       this.loadCompany();
       this.changeStock();
+      this.getSaleNoteSP();
     },
     changeStock() {
       this.$eventHub.$emit("changeStock", this.form.establishment_id);
@@ -784,7 +996,8 @@ export default {
       this.$http.post(`/${this.resource}/data`, this.form).then((response) => {
         this.document = response.data.data.document;
         this.balance = response.data.data.balance;
-        this.sale_note = response.data.data.sale_note;
+        //this.sale_note.graph = response.data.graph;
+        //console.log("sales", this.sale_note.graph);
         this.general = response.data.data.general;
         this.customers = response.data.data.customers;
         this.items = response.data.data.items;
@@ -794,24 +1007,20 @@ export default {
     loadDataAditional() {
       this.showLoadersLoadDataAditional();
 
-      this.$http
-        .post(`/${this.resource}/data_aditional`, this.form)
-        .then((response) => {
-          this.purchase = response.data.data.purchase;
-          this.items_by_sales = response.data.data.items_by_sales;
-          this.top_customers = response.data.data.top_customers;
-          this.hideLoadersLoadDataAditional();
-        });
+      this.$http.post(`/${this.resource}/data_aditional`, this.form).then((response) => {
+        this.purchase = response.data.data.purchase;
+        this.items_by_sales = response.data.data.items_by_sales;
+        this.top_customers = response.data.data.top_customers;
+        this.hideLoadersLoadDataAditional();
+      });
     },
     loadDataUtilities() {
       this.loaders.utility = true;
 
-      this.$http
-        .post(`/${this.resource}/utilities`, this.form)
-        .then((response) => {
-          this.utilities = response.data.data.utilities;
-          this.loaders.utility = false;
-        });
+      this.$http.post(`/${this.resource}/utilities`, this.form).then((response) => {
+        this.utilities = response.data.data.utilities;
+        this.loaders.utility = false;
+      });
     },
     showLoadersLoadDataAditional() {
       this.loaders.purchase = true;
@@ -822,6 +1031,29 @@ export default {
       this.loaders.purchase = false;
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
+    },
+    getSaleNoteSP() {
+      return this.$http
+        .get(`/${this.resource}/sale_note_data?${this.getQueryParameters()}`)
+        .then((response) => {
+          this.saleNotesSP = response.data.data;
+          console.log("SaleNote", this.saleNotesSP);
+          this.saleNote_headers = this.saleNotesSP[this.saleNotesSP.length - 1];
+          let len = this.saleNotesSP.length;
+          this.saleNotesSP.splice(len - 1, 1);
+          this.pagination = response.data.meta;
+          this.pagination.per_page = parseInt(response.data.meta.per_page);
+        });
+    },
+    customIndex(index) {
+      return this.pagination.per_page * (this.pagination.current_page - 1) + index + 1;
+    },
+    getQueryParameters() {
+      return queryString.stringify({
+        page: this.pagination.current_page,
+        limit: this.limit,
+        ...this.form,
+      });
     },
   },
 };

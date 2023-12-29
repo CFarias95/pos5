@@ -41,7 +41,7 @@ class BalanceGeneralController extends Controller
     public function datosSP(Request $request)
     {
         $detalle = null;
-        Log::info($request);
+        //Log::info($request);
         if($request->d == 'true')
         {
             $detalle = 1;

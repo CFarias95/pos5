@@ -1,5 +1,6 @@
 @php
 $logo = "storage/uploads/logos/{$company->logo}";
+Log::info('Company'.$company);
 @endphp
 <!DOCTYPE html>
 <html lang="en">
