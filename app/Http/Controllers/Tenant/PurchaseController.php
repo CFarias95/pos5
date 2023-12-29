@@ -731,7 +731,7 @@ class PurchaseController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = 'Factura de compra F' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                $comment = 'Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
 
                 $total_debe = 0;
                 $total_haber = 0;
@@ -763,7 +763,7 @@ class PurchaseController extends Controller
 
                 $cabeceraC->save();
                 $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
-                //$cabeceraC->save();
+                $cabeceraC->save();
 
                 $customer = Person::find($cabeceraC->person_id);
                 $importP = Imports::find($document->import_id);
