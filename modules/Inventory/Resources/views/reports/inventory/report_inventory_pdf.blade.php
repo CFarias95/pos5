@@ -18,7 +18,7 @@
         table {
             width: 100%;
             border-spacing: 0;
-            border: 1px solid black;
+            border: white;
         }
 
         .celda {
@@ -119,7 +119,59 @@
 
             </td>
         </tr>
+        <tr>
+            <td>
+                <p><strong>Producción asosiada: </strong>{{$records->production->name}}  - {{ $records->production->date_end }} </p>
+            </td>
+        </tr>
     </table>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <br>
+    <table class="full-width mt-6">
+    <tbody class="font-sm">
+        <tr class="font-sm">
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Elaborado por: 
+                </b>
+                {{$user->name}}
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                {{$user->number}}
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Aprobado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                
+            </td>
+            <td class="p-1"  width="8%"></td>
+            <td class="border-top text-left p-1 font-sm" width="30%">
+                <b>
+                    Revisado por: 
+                </b>
+                <br>
+                <b>
+                    Cédula: 
+                </b>
+                
+            </td>
+         </tr>
+    </tbody>
+</table>
 </div>
 
 </body>
