@@ -138,9 +138,9 @@ class InventoryController extends Controller
 	{
 		return [
 			//            'items' => $this->optionsItemFull(),
-			//'warehouses'             => $this->optionsWarehouse(),
-			//'inventory_transactions' => $this->optionsInventoryTransaction($type),
-			//'production_finalizada'  => Production::where('state_type_id', '03')->get(),
+			'warehouses'             => $this->optionsWarehouse(),
+			'inventory_transactions' => $this->optionsInventoryTransaction($type),
+			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
 		];
 	}
 

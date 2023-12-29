@@ -233,6 +233,7 @@ export default {
       inventory_id: null,
       email: null,
       showClose: false,
+      production: [],
     };
   },
   methods: {
@@ -257,6 +258,14 @@ export default {
     },
     clickLotcodeOutput() {
       this.showDialogLotsOutput = true;
+    },
+    filterProductionDate() {
+      this.$http
+        .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
+        .then((response) => {
+          this.production = response.data;
+          //console.log('response', response.data);
+        });
     },
     initForm() {
       this.errors = {};
@@ -328,8 +337,7 @@ export default {
         }
       }
       if (this.form.lots_enabled) {
-        if (!this.form.lot_code)
-          return this.$message.error("Debe seleccionar un lote.");
+        if (!this.form.lot_code) return this.$message.error("Debe seleccionar un lote.");
       }
       this.loading_submit = true;
       this.form.type = this.type;
