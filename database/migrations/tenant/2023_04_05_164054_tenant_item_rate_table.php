@@ -18,7 +18,7 @@ class TenantItemRateTable extends Migration
             $table->unsignedInteger('rate_id');
             //$table->string('unit_type_id');
             //$table->decimal('quantity_unit',12,4);
-            $table->decimal('price1', 12, 2);
+            $table->decimal('price1', 12, 6);
             //$table->decimal('price2', 12, 2);
             //$table->decimal('price3', 12, 2);
             //$table->foreign('unit_type_id')->references('id')->on('cat_unit_types');
