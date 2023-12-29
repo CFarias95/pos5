@@ -830,7 +830,7 @@ export default {
         create() {
             /* Migrado de resources/js/views/tenant/sale_notes/partials/item.vue*/
 
-
+            //this.getTables()
             this.titleDialog = (this.recordItem) ? ' Editar Producto o Servicio' : ' Agregar Producto o Servicio';
             this.titleAction = (this.recordItem) ? ' Editar' : ' Agregar';
 
@@ -844,9 +844,10 @@ export default {
             if (this.recordItem) {
 
                 //await this.reloadDataItems(this.recordItem.item_id)
-                this.form.item_id = this.recordItem.item_id
-                this.changeItem()
+                this.form = this.recordItem
 
+                //this.changeItem()
+                this.form.item = this.recordItem.item
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.unit_price = (this.recordItem.has_igv)?this.recordItem.unit_price:this.recordItem.unit_value
@@ -982,6 +983,7 @@ export default {
             this.$emit('update:showDialog', false)
         },
         changeItem() {
+
             this.getItems();
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.unit_price = this.form.item.sale_unit_price;
@@ -1046,7 +1048,13 @@ export default {
                     return this.$message.error('La cantidad de series seleccionadas son diferentes a la cantidad a vender');
             }
 
-            if (this.validateTotalItem().total_item) return;
+            if(this.form.item.unit_type_id != 'ZZ'){
+
+                if (this.validateTotalItem().total_item) return;
+
+            }
+
+
 
             // this.form.item.unit_price = this.form.unit_price;
             //let unit_price = (this.form.has_igv) ? this.form.unit_price : this.form.unit_price * (1 + this.percentageIgv);
@@ -1084,7 +1092,7 @@ export default {
 
             this.errors = {}
 
-            if (this.form.item.calculate_quantity) {
+            if ( this.form.unit_type_id != 'ZZ' && this.form.item.calculate_quantity) {
                 if (this.total_item < 0.01)
                     this.$set(this.errors, 'total_item', ['total venta producto debe ser mayor a 0']);
             }

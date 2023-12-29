@@ -306,9 +306,7 @@
                 self::SetWarehouseToUser($item);
             }
 
-
             return $item->orderBy('id')->get();
-
         }
 
         /**

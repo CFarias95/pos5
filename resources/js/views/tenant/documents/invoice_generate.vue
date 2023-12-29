@@ -4021,39 +4021,43 @@ export default {
             let PaymentsPass = true;
             let letPaymentsTotal = 0;
             //validar pagos diferentes de o
-            this.form.payments.forEach((row) =>{
-                letPaymentsTotal += parseFloat(row.payment);
-                if(row.payment <= 0 ){
-                    PaymentsPass=false;
-                }
-            })
-            this.form.fee.forEach((row)=>{
-                letPaymentsTotal += parseFloat(row.payment);
-                if(row.payment <= 0 ){
-                    PaymentsPass=false;
-                }
-            })
+            if(this.form.document_type_id != '07') {
 
-            if(PaymentsPass == false){
-                this.$message.error('El monto en los pagos debe ser mayor a 0');
-                return false;
+                this.form.payments.forEach((row) =>{
+                    letPaymentsTotal += parseFloat(row.payment);
+                    if(row.payment <= 0 ){
+                        PaymentsPass=false;
+                    }
+                })
+                this.form.fee.forEach((row)=>{
+                    letPaymentsTotal += parseFloat(row.payment);
+                    if(row.payment <= 0 ){
+                        PaymentsPass=false;
+                    }
+                })
+
+                if(PaymentsPass == false){
+                    this.$message.error('El monto en los pagos debe ser mayor a 0');
+                    return false;
+                }
+                if(letPaymentsTotal > this.form.total || letPaymentsTotal < this.form.total){
+                    this.$message.error('La suma del total de los pagos'+letPaymentsTotal+'no es correcta');
+                    return;
+                }
+                //validar cupo
+                this.total_cuenta=0;
+                if(this.form.payment_condition_id !=='01'){
+                await this.calcularCupo();
+                }else{
+                    this.deuda=0;
+                    this.cupo=0;
+                }
+                let validar= await this.validacionCupo();
+                if(validar){
+                    return false;
+                }
             }
-            if(letPaymentsTotal > this.form.total || letPaymentsTotal < this.form.total){
-                this.$message.error('La suma del total de los pagos'+letPaymentsTotal+'no es correcta');
-                return;
-            }
-            //validar cupo
-            this.total_cuenta=0;
-            if(this.form.payment_condition_id !=='01'){
-              await this.calcularCupo();
-             }else{
-                this.deuda=0;
-                this.cupo=0;
-             }
-             let validar= await this.validacionCupo();
-            if(validar){
-                return false;
-            }
+
 
             //Validando las series seleccionadas
             let errorSeries = false;

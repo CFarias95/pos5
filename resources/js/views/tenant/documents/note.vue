@@ -281,7 +281,7 @@
                         </div>
                         <div class="col-md-8"></div>
 
-                        <div class="col-md-4">
+                        <div class="col-md-4" hidden>
                             <!-- Crédito -->
                             <template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
                                 <table v-if="form.fee.length>0"
