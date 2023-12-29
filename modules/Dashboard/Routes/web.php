@@ -12,6 +12,7 @@ if($current_hostname) {
                 Route::get('/', 'DashboardController@index')->name('tenant.dashboard.index');
                 Route::get('filter', 'DashboardController@filter');
                 Route::post('data', 'DashboardController@data');
+                //Route::post('data', 'DashboardController@graph_sale_noteSP');
                 Route::post('data_aditional', 'DashboardController@data_aditional');
                 // Route::post('unpaid', 'DashboardController@unpaid');
                 // Route::get('unpaidall', 'DashboardController@unpaidall')->name('unpaidall');
@@ -20,6 +21,7 @@ if($current_hostname) {
                 Route::post('utilities', 'DashboardController@utilities');
                 Route::get('global-data', 'DashboardController@globalData');
                 Route::get('sales-by-product', 'DashboardController@salesByProduct');
+                Route::get('sale_note_data', 'DashboardController@saleNoteSP');
             });
 
             //Commands

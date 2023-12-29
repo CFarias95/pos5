@@ -81,7 +81,7 @@ class InventoryController extends Controller
 		}
 		else
 		{
-			//Log::info('Entro en else');
+			//Log::info('Entro en else '.$request);
 			$records = $this->getCommonRecords($request);
 		}
 
@@ -138,9 +138,9 @@ class InventoryController extends Controller
 	{
 		return [
 			//            'items' => $this->optionsItemFull(),
-			'warehouses'             => $this->optionsWarehouse(),
-			'inventory_transactions' => $this->optionsInventoryTransaction($type),
-			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
+			//'warehouses'             => $this->optionsWarehouse(),
+			//'inventory_transactions' => $this->optionsInventoryTransaction($type),
+			//'production_finalizada'  => Production::where('state_type_id', '03')->get(),
 		];
 	}
 
@@ -152,10 +152,10 @@ class InventoryController extends Controller
 
 	public function searchItems(Request $request)
 	{
-		Log::info('search'.$request->search);
+		//Log::info('search - '.$request->value);
 		$search = $request->input('search');
 		//$print = $this->optionsItemFull($search, 20);
-		//Log::info('print'.$print);
+		//Log::info('print'.$search);
 
 		return [
 			'items' => $this->optionsItemFull($request, 20),

@@ -20,6 +20,9 @@ use Illuminate\Support\Arr;
 use Modules\Dashboard\Helpers\DashboardInventory;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\ConfigurationCash;
+use Illuminate\Pagination\LengthAwarePaginator;
+use Illuminate\Support\Facades\Log;
+use Modules\Dashboard\Http\Resources\DashboardSaleNoteSPCollection;
 /**
  * Class DashboardController
  *
@@ -155,6 +158,86 @@ class DashboardController extends Controller
     public function productOfDue(Request $request)
     {
         return  (new DashboardInventory())->data($request);
+    }
+
+    public function saleNoteSP(Request $request)
+    {
+        $sp = DB::connection('tenant')->select("CALL SP_NotasVentasDashboard(?,?);", [$request->date_start, $request->date_end]);
+
+        $sp1 = array();
+        $sp2 = [];
+        foreach($sp as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
+
+        //Log::info('sp - '.json_encode($sp));
+        //Log::info('sp1 - '.json_encode($sp1));
+        //Log::info('sp2 - '.json_encode($sp2));
+
+        $collection = collect($sp);
+        $per_page = (config('tenant.items_per_page'));
+        $page = request()->query('page') ?? 1;
+        $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
+        $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
+        $paginatedCollection['datos'] = $sp2;
+
+        //Log::info('sp - '.$collection);
+
+        return new DashboardSaleNoteSPCollection($paginatedCollection);
+    }
+
+    public function graph_sale_noteSP(Request $request)
+    {
+        $sp = DB::connection('tenant')->select("CALL SP_NotasVentasDashboard(?,?);", [$request->date_start, $request->date_end]);
+
+        $sp1 = array();
+        $sp2 = [];
+        foreach($sp as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
+        $sp3 = [];
+        $sp4 = [];
+        foreach($sp as $row)
+        {
+
+            foreach($row as $key => $data)
+            {
+                array_push($sp3, $data);   
+            }
+            $sp3 = array_slice($sp3, 1);
+            //Log::info('slice - '.json_encode($sp3));
+            array_push($sp4, $sp3);
+            $sp3 = [];
+        }
+        //Log::info('sp4 - '.json_encode($sp4));
+
+        return [
+            'graph' => [
+                'labels' => ["cantidad","total"],
+                'datasets' => [
+                    [
+                        'label' => 'Ventas totales por linea',
+                        'data' => $sp4,
+                        'backgroundColor' => [
+                            'rgb(54, 162, 235)',
+                            'rgb(255, 99, 132)',
+                        ]
+                    ]
+                ],
+            ],
+        ];
     }
 
 }
