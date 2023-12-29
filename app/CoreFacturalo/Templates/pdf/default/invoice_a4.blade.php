@@ -201,16 +201,16 @@
         <table class="full-width mt-10 mb-10">
             <thead>
             <tr style="background: #eaeaea;">
-                <th class="text-center py-2 pl-4" width="10%">CANT.</th>
-                <th class="text-center py-2" width="8%">UNIDAD</th>
-                <th class="text-left py-2">DESCRIPCIÓN</th>
-                <th class="text-left py-2">MODELO/REF</th>
-                <th class="text-left py-2">COD. FABRICANTE</th>
-                <th class="text-center py-2" width="8%">LOTE</th>
-                <th class="text-center py-2" width="8%">SERIE</th>
-                <th class="text-right py-2" width="12%">P.UNIT</th>
-                <th class="text-right py-2" width="8%">DTO.</th>
-                <th class="text-right py-2 pr-4" width="12%">TOTAL</th>
+                <th class="text-left py-2" width="5%">CANT.</th>
+                <th class="text-left py-2" width="5%">UNI.</th>
+                <th class="text-left py-2" width="10%">DESCRIPCIÓN</th>
+                <th class="text-left py-2"width="10%">MODELO</th>
+                <th class="text-left py-2" width="10%">COD.FABRICANTE</th>
+                <th class="text-center py-2" width="5%" >LOTE</th>
+                <th class="text-center py-2" width="7%">SERIE</th>
+                <th class="text-center py-2" width="7%">P.UNIT</th>
+                <th class="text-center py-2" width="5%">DTO.</th>
+                <th class="text-center py-2 pr-4" width="5%">TOTAL</th>
             </tr>
             </thead>
             <tbody>
@@ -272,7 +272,7 @@
                         @endif
                     </td>
                     <td class="text-left align-top">{{ $row->item->model ?? '' }}</td>
-                    <td class="text-left align-top">{{ $row->item->factory_code ?? '' }}</td>
+                    <td class="text-left align-top">{{ $row->m_item->factory_code ?? '' }}</td>
                     <td class="text-center align-top">
                         @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
                         {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
