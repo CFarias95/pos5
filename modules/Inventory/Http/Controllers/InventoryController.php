@@ -39,6 +39,7 @@ use Swift_Mailer;
 use Swift_SmtpTransport;
 use Modules\Item\Models\Category;
 
+
 class InventoryController extends Controller
 {
 	use InventoryTrait;
@@ -138,9 +139,9 @@ class InventoryController extends Controller
 	{
 		return [
 			//            'items' => $this->optionsItemFull(),
-			//'warehouses'             => $this->optionsWarehouse(),
-			//'inventory_transactions' => $this->optionsInventoryTransaction($type),
-			//'production_finalizada'  => Production::where('state_type_id', '03')->get(),
+			'warehouses'             => $this->optionsWarehouse(),
+			'inventory_transactions' => $this->optionsInventoryTransaction($type),
+			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
 		];
 	}
 
@@ -771,6 +772,7 @@ class InventoryController extends Controller
 
     public function generatePDF($id,$type){
 
+		$user = auth()->user();
         $records = Inventory::find($id);
         $company = Company::first();
         $tipo = 'Ingreso';
@@ -780,7 +782,7 @@ class InventoryController extends Controller
         if($type == 'fix'){
             $tipo = 'Ajuste';
         }
-        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo'))
+        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo', 'user'))
             ->setPaper('a4');
 
         $filename = 'INV-'.$id.'.pdf';
@@ -791,6 +793,8 @@ class InventoryController extends Controller
     public function print($id,$type){
 
         $records = Inventory::find($id);
+		//Log::info('productionController - '.$records->production);
+		$user = Auth()->user();
         $company = Company::first();
         $tipo = 'Ingreso';
         if($type == 'output'){
@@ -800,7 +804,7 @@ class InventoryController extends Controller
             $tipo = 'Ajuste';
         }
 
-        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo'))
+        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo', 'user'))
             ->setPaper('a4');
 
         $filename = $tipo.'_mercaderia_' . date('YmdHis');

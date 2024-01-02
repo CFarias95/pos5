@@ -3471,11 +3471,13 @@ export default {
             if (this.isUpdate) {
                 path = `/${this.resource}/${this.form.id}/update`;
             }
+            console.log('this_form', this.form);
             let temp = this.form.payment_condition_id;
             // Condicion de pago Credito con cuota pasa a credito
             if (this.form.payment_condition_id === '03') this.form.payment_condition_id = '02';
             this.$http.post(path, this.form).then(response => {
                 if (response.data.success) {
+                    console.log('response', response);
                     this.$eventHub.$emit('reloadDataItems', null)
                     this.resetForm();
                     this.documentNewId = response.data.data.id;

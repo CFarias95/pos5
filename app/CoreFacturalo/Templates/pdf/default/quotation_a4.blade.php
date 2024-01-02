@@ -399,6 +399,8 @@
 <table class="full-width mt-6">
     <tbody class="font-sm">
         <tr class="font-sm">
+            <td class="p-1" width="30%"></td>
+            <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
                     Elaborado por: 
@@ -411,27 +413,7 @@
                 {{$document->user->number}}
             </td>
             <td class="p-1"  width="8%"></td>
-            <td class="border-top text-left p-1 font-sm" width="30%">
-                <b>
-                    Aprobado por: 
-                </b>
-                <br>
-                <b>
-                    Cédula: 
-                </b>
-                
-            </td>
-            <td class="p-1"  width="8%"></td>
-            <td class="border-top text-left p-1 font-sm" width="30%">
-                <b>
-                    Revisado por: 
-                </b>
-                <br>
-                <b>
-                    Cédula: 
-                </b>
-                
-            </td>
+            <td class="p-1" width="30%"></td>
          </tr>
     </tbody>
 </table>

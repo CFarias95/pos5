@@ -9,6 +9,7 @@
     use Hyn\Tenancy\Traits\UsesTenantConnection;
     use Illuminate\Database\Eloquent\Builder;
     use Modules\Item\Models\ItemLot;
+    use Modules\Production\Models\Production;
 
 
     /**
@@ -140,6 +141,14 @@
         public function lots()
         {
             return $this->morphMany(ItemLot::class, 'item_loteable');
+        }
+
+        /**
+         * @return \Illuminate\Database\Eloquent\Relations\BelongsTo
+         */
+        public function production()
+        {
+        return $this->belongsTo(Production::class, 'production_id');
         }
     
     /**
