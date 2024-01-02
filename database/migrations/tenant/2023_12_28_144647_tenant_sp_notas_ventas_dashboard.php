@@ -45,7 +45,7 @@ class TenantSpNotasVentasDashboard extends Migration
         ";
 
         DB::connection('tenant')->statement($sqlDelete);
-        DB::connection('tenant')->statement($sqlCreate);
+        //DB::connection('tenant')->statement($sqlCreate);
     }
 
     /**
