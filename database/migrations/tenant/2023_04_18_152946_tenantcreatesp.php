@@ -15,7 +15,9 @@ class Tenantcreatesp extends Migration
         //Para crear, altera, inserta
         //Nombre Cliente total Facturado
 
-        $sqlDelete = "DROP PROCEDURE IF EXISTS SP_VentasPorCliente;";
+        $sqlDelete = "
+            DROP PROCEDURE IF EXISTS SP_VentasPorCliente;
+        ";
         $sql = "CREATE PROCEDURE `SP_VentasPorCliente`(
             IN `cliente_nombre` VARCHAR(35)
         )
