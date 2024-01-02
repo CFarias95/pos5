@@ -283,13 +283,14 @@ use Illuminate\Support\Facades\Log;
 
                     $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
 
-                    $items = Item::orderBy('description')->whereIsActive()->whereNotIsSet()
+                    $items = Item::query()//Item::orderBy('description')->whereIsActive()
                         // ->with(['warehouses' => function($query) use($warehouse){
                         //     return $query->where('warehouse_id', $warehouse->id);
                         // }])
                         ->get()->transform(function ($row) use ($warehouse) {
                             /** @var Item $row */
                             return $row->getDataToItemModal($warehouse, true, true);
+                            
                             $full_description = $this->getFullDescription($row);
                             // $full_description = ($row->internal_id)?$row->internal_id.' - '.$row->description:$row->description;
                             $lots = $row->item_lots->where('has_sale', false);

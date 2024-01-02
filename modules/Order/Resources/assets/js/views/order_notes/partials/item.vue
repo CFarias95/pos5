@@ -844,10 +844,15 @@ export default {
             if (this.recordItem) {
 
                 //await this.reloadDataItems(this.recordItem.item_id)
-                this.form = this.recordItem
 
-                //this.changeItem()
-                this.form.item = this.recordItem.item
+                this.form.unit_type_id = this.recordItem.unit_type_id
+
+                //this.searchRemoteItems(this.recordItem.item.name)
+
+                this.form.item_id = this.recordItem.item_id
+                this.changeItem()
+
+                //this.form.item = this.recordItem.item
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.unit_price = (this.recordItem.has_igv)?this.recordItem.unit_price:this.recordItem.unit_value
@@ -984,12 +989,22 @@ export default {
         },
         changeItem() {
 
-            this.getItems();
+            if(this.form.unit_type_id != 'ZZ'){
+
+                this.getItems();
+            }else{
+
+                this.searchRemoteItems(this.recordItem.item.name)
+            }
+
+            console.log('items',this.items)
+            console.log('item ID', this.form.item_id)
+
             this.form.item = _.find(this.items, {'id': this.form.item_id});
+            console.log('changeItem',this.form.item)
+
             this.form.unit_price = this.form.item.sale_unit_price;
-
             this.lots = this.form.item.lots
-
             this.form.has_igv = this.form.item.has_igv;
 
             this.form.affectation_igv_type_id = this.form.item.sale_affectation_igv_type_id;
@@ -1004,7 +1019,8 @@ export default {
         },
 
         focusTotalItem(change) {
-            if (!change && this.form.item.calculate_quantity) {
+
+            if (!change && this.form.unit_type_id != 'ZZ' && this.form.item.calculate_quantity) {
                 this.$refs.total_item.$el.getElementsByTagName('input')[0].focus()
                 this.total_item = this.form.unit_price_value
             }
@@ -1025,7 +1041,7 @@ export default {
             this.readonly_total = _.round((this.form.quantity * this.form.unit_price_value), 4)
         },
         calculateQuantity() {
-            if (this.form.item.calculate_quantity) {
+            if (this.form.unit_type_id != 'ZZ' && this.form.item.calculate_quantity) {
                 this.form.quantity = _.round((this.total_item / this.form.unit_price), 4)
             }
         },
