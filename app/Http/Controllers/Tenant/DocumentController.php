@@ -600,6 +600,7 @@ class DocumentController extends Controller
 
     public function store(DocumentRequest $request)
     {
+        //Log::info('request - '.$request);
         try{
             $validate = $this->validateDocument($request);
             if (!$validate['success']) return $validate;
@@ -623,7 +624,7 @@ class DocumentController extends Controller
 
                 return $res;
             }
-
+            Log::info('res - '.$res);
             if($res['success'] == false){
                 return $res;
             }

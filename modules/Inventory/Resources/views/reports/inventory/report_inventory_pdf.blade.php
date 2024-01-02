@@ -119,11 +119,24 @@
 
             </td>
         </tr>
-        <tr>
-            <td>
-                <p><strong>Producción asosiada: </strong>{{$records->production->name}}  - {{ $records->production->date_end }} </p>
-            </td>
-        </tr>
+        @if($records->production_id)
+        {
+            <tr>
+                <td>
+                    <p><strong>Producción asosiada: </strong>{{$records->production->name}}  - {{ $records->production->date_end }} </p>
+                </td>
+            </tr>
+        }
+        @else
+        {
+            <tr>
+                <td>
+                    <p><strong>Producción asosiada: </strong> NA  - NA </p>
+                </td>
+            </tr>
+        }
+        @endif
+        
     </table>
     <br>
     <br>

@@ -772,6 +772,7 @@ class InventoryController extends Controller
 
     public function generatePDF($id,$type){
 
+		$user = auth()->user();
         $records = Inventory::find($id);
         $company = Company::first();
         $tipo = 'Ingreso';
@@ -781,7 +782,7 @@ class InventoryController extends Controller
         if($type == 'fix'){
             $tipo = 'Ajuste';
         }
-        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo'))
+        $pdf = PDF::loadView('inventory::reports.inventory.report_inventory_pdf',compact('company','records','tipo', 'user'))
             ->setPaper('a4');
 
         $filename = 'INV-'.$id.'.pdf';
@@ -793,7 +794,7 @@ class InventoryController extends Controller
 
         $records = Inventory::find($id);
 		//Log::info('productionController - '.$records->production);
-		$user = auth()->user();
+		$user = Auth()->user();
         $company = Company::first();
         $tipo = 'Ingreso';
         if($type == 'output'){
