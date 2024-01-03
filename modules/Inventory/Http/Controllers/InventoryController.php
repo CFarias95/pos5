@@ -55,7 +55,7 @@ class InventoryController extends Controller
 			'name' => 'Nombre Producto',
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
-			'category_id'   => 'Categoria',
+			'category_id_array'   => 'Categoria',
 
 		];
 		$categories_list = Category::get();
@@ -66,7 +66,7 @@ class InventoryController extends Controller
 	public function records(Request $request)
 	{
 		$column = $request->input('column');
-		//Log::info('column'.$column);
+		Log::info('column'.$column);
 
 		if ($column == 'warehouse') {
 			//Log::info('entro al if');
