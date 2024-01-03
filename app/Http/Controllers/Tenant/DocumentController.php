@@ -86,6 +86,7 @@ use Swift_SmtpTransport;
 use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Swift_Mailer;
+use Modules\Inventory\Models\InventoryTransfer;
 
 class DocumentController extends Controller
 {
@@ -180,6 +181,13 @@ class DocumentController extends Controller
         ];
     }
 
+    /*public function bringTransfers()
+    {
+        $traslados = InventoryTransfer::get();
+
+        return compact('traslados');
+    }*/
+
     public function searchCustomers(Request $request)
     {
 
@@ -208,6 +216,7 @@ class DocumentController extends Controller
                     'address' => $row->address
                 ];
             });
+
 
         return compact('customers');
     }
@@ -276,6 +285,7 @@ class DocumentController extends Controller
         $is_client = $this->getIsClient();
         $select_first_document_type_03 = config('tenant.select_first_document_type_03');
         $payment_conditions = PaymentCondition::all();
+        $transfers = InventoryTransfer::get();
 
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function ($row) {
             return [
@@ -332,6 +342,7 @@ class DocumentController extends Controller
             'payment_conditions',
             'global_discount_types',
             'affectation_igv_types',
+            'transfers',
         );
 
     }
@@ -2385,25 +2396,34 @@ class DocumentController extends Controller
             return $row;
         });
 
-        $document = Document::find($document_id);
-        $secuencial = $document->clave_SRI;
+        //Log::info('id doc - '.$document_id);
+        if($document_id !== 'null')
+        {
+            //Log::info('entro if');
+            $document = Document::find($document_id);
+            //Log::info('doc - '.$document);
+            $secuencial = $document->clave_SRI;
 
-        //$purchase = Purchase::find($document_id);
-        //$secuencialP = $purchase->sequential_number;
+            //$purchase = Purchase::find($document_id);
+            //$secuencialP = $purchase->sequential_number;
 
-        $secuential = substr($secuencial,24,15);
+            $secuential = substr($secuencial,24,15);
 
-        Log::info('Secunecial documento para retenciones '.$secuential);
-        Log::info('Secunecial documento para retenciones '.$secuencial);
+            Log::info('Secunecial documento para retenciones '.$secuential);
+            Log::info('Secunecial documento para retenciones '.$secuencial);
 
-        $retentions = Retention::where('supplier_id',$client_id)->whereColumn('total_used','<','total_retention')->where('optional','like','%numDocSustento": "'.$secuential.'"%')->get()->transform(function($row){
-            $data['id'] = $row->id;
-            $data['name'] = $row->series.$row->number.'-'.$row->total_retention.'/'.($row->total_retention - $row->total_used);
-            $data['valor'] = (float)($row->total_retention - $row->total_used);
-            return $data;
-        });
+            $retentions = Retention::where('supplier_id',$client_id)->whereColumn('total_used','<','total_retention')->where('optional','like','%numDocSustento": "'.$secuential.'"%')->get()->transform(function($row){
+                $data['id'] = $row->id;
+                $data['name'] = $row->series.$row->number.'-'.$row->total_retention.'/'.($row->total_retention - $row->total_used);
+                $data['valor'] = (float)($row->total_retention - $row->total_used);
+                return $data;
+            });
 
-        return compact('advances','retentions');
+            return compact('advances','retentions');
+        }
+        
+
+        return compact('advances');
 
     }
 

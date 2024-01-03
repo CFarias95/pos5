@@ -148,6 +148,17 @@
                       </div>
                     </div>
                   </div> -->
+                  <div class="card-body" v-show="!loaders.sale_note">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="sale_note">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Ventas totales por linea</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="card-body p-0" v-show="!loaders.sale_note">
                     <table class="table mb-0 table-sm">
                       <thead>
