@@ -48,6 +48,10 @@ class Module extends ModelTenant
         'description',
     ];
 
+    protected $casts = [
+        'id'=>'int'
+    ];
+
     /**
      * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany
      */

@@ -21,6 +21,9 @@
             'label_menu',
             'route_path',
         ];
+        protected $casts = [
+            'id' => 'int',
+        ];
 
         /**
          * @return \Illuminate\Database\Eloquent\Relations\BelongsToMany

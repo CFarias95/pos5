@@ -549,8 +549,7 @@ $modules_levels = []){
         return  DB::connection('tenant')
                       ->table('module_level_user')
                       ->select('module_level_id')
-                      ->where('user_id',
- $this->id)
+                      ->where('user_id',$this->id)
                       ->get();
 
     }
@@ -563,8 +562,7 @@ $modules_levels = []){
         return  DB::connection('tenant')
                   ->table('module_user')
                   ->select('module_id')
-                  ->where('user_id',
- $this->id)
+                  ->where('user_id', $this->id)
                   ->get();
 
     }
