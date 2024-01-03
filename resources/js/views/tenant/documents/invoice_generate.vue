@@ -2645,8 +2645,9 @@ export default {
             return null;
         },
         onSetSeries(documentType, serie) {
-            // console.log('onSetSeries')
+            console.log('onSetSeries '.serie,documentType)
             const find = this.all_series.find(s => s.document_type_id == documentType && s.number == serie);
+            console.log('onSetSeries', find)
             if (find) {
                 return [find];
             }
@@ -3494,6 +3495,13 @@ export default {
                 'document_type_id': this.form.document_type_id,
                 'contingency': this.is_contingency
             });
+
+            console.log('series',this.all_series)
+            console.log('establishment_id',this.form.establishment_id)
+            console.log('document_type_id',this.form.document_type_id)
+            console.log('contingency',this.is_contingency)
+            console.log('filterSeries',series)
+
             if (this.form.document_type_id === this.config.user.document_id && this.typeUser == 'seller') {
                 // Se filtra si el documento es el mismo que el establecido para el usuario.
                 series = _.filter(this.all_series, {
