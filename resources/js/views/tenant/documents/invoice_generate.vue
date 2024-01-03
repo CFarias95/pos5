@@ -3491,7 +3491,7 @@ export default {
 
             this.form.series_id = null
             let series = _.filter(this.all_series, {
-                'establishment_id': this.form.establishment_id,
+                'establishment_id': parseInt(this.form.establishment_id),
                 'document_type_id': this.form.document_type_id,
                 'contingency': this.is_contingency
             });
