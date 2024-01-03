@@ -48,7 +48,7 @@ use Modules\Finance\Traits\FilePaymentTrait;
  *
  * @package App\CoreFacturalo
  */
-class Facturalo
+class Facturalo2
 {
     use StorageDocument, FinanceTrait, KardexTrait, FilePaymentTrait;
 
@@ -78,6 +78,7 @@ class Facturalo
     protected $response;
     protected $apply_change;
     protected $sendDocumentPse;
+    protected $clave_acceso;
 
     public function __construct()
     {
