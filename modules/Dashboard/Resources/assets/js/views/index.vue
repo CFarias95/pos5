@@ -148,6 +148,17 @@
                       </div>
                     </div>
                   </div> -->
+                  <div class="card-body" v-show="!loaders.sale_note">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="sale_note">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Ventas totales por linea</label>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                   <div class="card-body p-0" v-show="!loaders.sale_note">
                     <table class="table mb-0 table-sm">
                       <thead>
@@ -201,7 +212,7 @@
                 </section>
               </div>
 
-              <div class="col-xl-3" v-if="soapCompany != '03'">
+              <!-- <div class="col-xl-3" v-if="soapCompany != '03'">
                 <section class="card card-dashboard">
                   <div class="card-body" v-if="loaders.document">
                     <template>
@@ -227,7 +238,7 @@
                   <div class="card-body p-0" v-show="!loaders.document">
                     <table class="table mb-0 table-sm">
                       <tbody>
-                        <!-- JOINSOFTWARE -->
+                         JOINSOFTWARE
                         <tr class="text-info text-bold">
                           <td>Total Cobrado</td>
                           <td class="text-right font-weight-bold">
@@ -253,9 +264,84 @@
                     </table>
                   </div>
                 </section>
+              </div> -->
+              <div class="col-xl-4" v-if="soapCompany != '03'">
+                <section class="card card-dashboard">
+                  <!-- <div class="card-body" v-if="loaders.document">
+                    <template>
+                      <loader-graph :rows="4" :columns="1" :radius="50"></loader-graph>
+                    </template>
+                  </div> -->
+                  <div class="card-body" v-show="!loaders.document">
+                    <div class="widget-summary">
+                      <div class="widget-summary-col" v-if="document">
+                        <div class="row no-gutters">
+                          <div class="col-md-12 m-b-10">
+                            <label>Ventas por vendedor</label>
+                          </div>
+                        </div>
+                        <!-- <div class="row">
+                          <div class="col-md-12">
+                            <x-graph type="doughnut" :all-data="document.graph"></x-graph>
+                          </div>
+                        </div> -->
+                      </div>
+                    </div>
+                  </div>
+                  <div class="card-body p-0" v-show="!loaders.document">
+                    <table class="table mb-0 table-sm">
+                      <thead>
+                        <slot
+                          v-for="(key, value) in comprobantes_headers"
+                          :index="customIndex(value)"
+                          :row="key"
+                        >
+                          <tr slot="heading" :key="value">
+                            <th
+                              v-for="(value1, name) in key"
+                              :index="customIndex(name)"
+                              :row="value1"
+                              class=""
+                              slot="heading"
+                              :key="name"
+                            >
+                              <strong>{{ value1 }}</strong>
+                            </th>
+                          </tr>
+                        </slot>
+                      </thead>
+                      <tbody>
+                        <slot
+                          v-for="(row, index) in comprobantesSP"
+                          :index="customIndex(index)"
+                          :row="row"
+                        >
+                          <tr v-for="valor in row" :row="valor" class="" slot="heading">
+                            <td
+                              v-for="(obj, nombre) in valor"
+                              :index="customIndex(nombre)"
+                              :row="obj"
+                              :key="nombre"
+                            >
+                              {{ isFinite(obj) ? parseFloat(obj).toFixed(2) : obj }}
+                            </td>
+                          </tr>
+                        </slot>
+                      </tbody>
+                    </table>
+                    <el-pagination
+                      :current-page.sync="pagination.current_page"
+                      :page-size="pagination.per_page"
+                      :total="pagination.total"
+                      layout="total, prev, pager, next"
+                      @current-change="getComprobantesSP"
+                    >
+                    </el-pagination>
+                  </div>
+                </section>
               </div>
 
-              <div class="col-xl-6 col-md-6">
+              <div class="col-xl-5 col-md-6">
                 <section class="card card-dashboard">
                   <div class="card-body" v-if="loaders.general">
                     <template>
@@ -845,6 +931,8 @@ export default {
       loaders: {},
       saleNotesSP: [],
       saleNote_headers: [],
+      comprobantes_headers: [],
+      comprobantesSP: [],
     };
   },
   async created() {
@@ -957,6 +1045,7 @@ export default {
       this.loadCompany();
       this.changeStock();
       this.getSaleNoteSP();
+      this.getComprobantesSP();
     },
     changeStock() {
       this.$eventHub.$emit("changeStock", this.form.establishment_id);
@@ -1037,10 +1126,23 @@ export default {
         .get(`/${this.resource}/sale_note_data?${this.getQueryParameters()}`)
         .then((response) => {
           this.saleNotesSP = response.data.data;
-          console.log("SaleNote", this.saleNotesSP);
+          //console.log("SaleNote", this.saleNotesSP);
           this.saleNote_headers = this.saleNotesSP[this.saleNotesSP.length - 1];
           let len = this.saleNotesSP.length;
           this.saleNotesSP.splice(len - 1, 1);
+          this.pagination = response.data.meta;
+          this.pagination.per_page = parseInt(response.data.meta.per_page);
+        });
+    },
+    getComprobantesSP() {
+      return this.$http
+        .get(`/${this.resource}/comprobantes_data?${this.getQueryParameters()}`)
+        .then((response) => {
+          this.comprobantesSP = response.data.data;
+          //console.log("SaleNote", this.saleNotesSP);
+          this.comprobantes_headers = this.comprobantesSP[this.comprobantesSP.length - 1];
+          let len = this.comprobantesSP.length;
+          this.comprobantesSP.splice(len - 1, 1);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });

@@ -103,7 +103,7 @@
                 </el-option>
               </el-select>
             </template>
-            <template v-else-if="search.column === 'category_id'">
+            <template v-else-if="search.column === 'category_id_array'">
               <el-select
                 v-model="search.value"
                 style="width: 100%"

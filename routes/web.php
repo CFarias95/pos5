@@ -415,6 +415,8 @@ if ($hostname) {
             Route::get('documents/search/customer/{id}', 'Tenant\DocumentController@searchCustomerById');
             Route::get('documents/search/externalId/{external_id}', 'Tenant\DocumentController@searchExternalId');
 
+            //Route::get('documents/traslados', 'Tenant\DocumentController@bringTransfers');
+
             Route::get('documents', 'Tenant\DocumentController@index')->name('tenant.documents.index')->middleware(['redirect.level', 'tenant.internal.mode']);
             Route::get('documents/columns', 'Tenant\DocumentController@columns');
             Route::get('documents/records', 'Tenant\DocumentController@records');
