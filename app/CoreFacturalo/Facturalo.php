@@ -1582,11 +1582,11 @@ class Facturalo
                 $document = Document::find($id);
                 // si cambia la serie
                 if($inputs['series'] !== $document->series){
-                    // se consulta el ultimo numero de la nueva serie
-                    $last_number = Document::getLastNumberBySerie($inputs['series']);
-                    // se actualiza el numero actual en $imputs
+                    //se consulta el ultimo numero de la nueva serie
+                    $last_number = Document::getLastNumberBySerie($inputs['series'],$inputs['establishment_id']);
+                    //se actualiza el numero actual en $imputs
                     $inputs['number'] = $last_number + 1;
-                    // cambiamos el filename
+                    //cambiamos el filename
                     $inputs['filename'] = Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $inputs['number']);
                 }
                 $document->fill($inputs);
