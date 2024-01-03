@@ -147,16 +147,16 @@
                 'id' => $this->id,
                 'contingency' => (bool)$this->contingency,
                 'document_type_id' => $this->document_type_id,
-                'establishment_id' => $this->establishment_id,
+                'establishment_id' => (int)$this->establishment_id,
                 'number' => $this->number,
                 'disabled' => $disabled,
             ];
 
         }
 
-        
+
         /**
-         * 
+         *
          * Validar y determinar serie por defecto para el usuario
          *
          * @return bool
@@ -176,9 +176,9 @@
             return $is_default;
         }
 
-        
+
         /**
-         * 
+         *
          * Obtener datos para api (app)
          *
          * @return array
@@ -192,9 +192,9 @@
                 'is_default' => $this->is_default,
             ];
         }
-        
+
         /**
-         * 
+         *
          * Filtrar series para documentos de venta, cpe y nv - modo pos app
          *
          * @param  Builder $query
