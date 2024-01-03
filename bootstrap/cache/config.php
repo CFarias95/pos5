@@ -298,6 +298,11 @@
         'prefix' => '',
         'strict' => true,
         'engine' => NULL,
+        'options' => 
+        array (
+          1001 => true,
+          1000 => true,
+        ),
       ),
       'pgsql' => 
       array (
@@ -340,6 +345,7 @@
         'options' => 
         array (
           1001 => true,
+          1000 => true,
         ),
       ),
     ),
