@@ -636,6 +636,7 @@ class InventoryController extends Controller
 			$warehouse_id = $request->input('warehouse_id');
 			$quantity = $request->input('quantity');
 			$quantity_real = $request->input('quantity_real');
+            $precio_perso = $request->input('purchase_mean_price');
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
 
 			if ($quantity_real <= 0) {
@@ -666,7 +667,7 @@ class InventoryController extends Controller
 
 			$inventory->real_stock = $request->quantity_real;
 			$inventory->system_stock = $request->quantity;
-
+            $inventory->precio_perso = $precio_perso;
 			$inventory->save();
 
 			return  [

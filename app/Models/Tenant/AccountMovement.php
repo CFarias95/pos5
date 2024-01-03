@@ -21,6 +21,11 @@ class AccountMovement extends ModelTenant
         'account_group_id'
     ];
 
+    protected $casts = [
+        'account_group_id'=> 'int',
+        'cost_center' => 'bool',
+    ];
+
     public function account_group()
     {
         return $this->belongsTo(AccountGroup::class);

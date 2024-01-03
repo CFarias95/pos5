@@ -246,6 +246,7 @@ export default {
       this.form.lots_enabled = item.lots_enabled;
       this.form.series_enabled = item.series_enabled;
       this.form.lots_group = item.lots_group;
+      this.form.purchase_mean_price = item.purchase_mean_price;
     },
     addRowOutputLot(lots) {
       this.form.lots = lots;
@@ -285,6 +286,7 @@ export default {
         lots_group: [],
         created_at: null,
         comments: null,
+        purchase_mean_price:null,
       };
     },
     async initTables() {

@@ -326,9 +326,9 @@ class Document extends ModelTenant
      *
      * @return int
      */
-    public static function getLastNumberBySerie($serie)
+    public static function getLastNumberBySerie($serie,$establishment)
     {
-        $t = Document::where('series', $serie)->select('number')->orderby('number', 'DESC')->first();
+        $t = Document::where('series', $serie)->where('establishment_id',$establishment)->select('number')->orderby('number', 'DESC')->first();
         if (!empty($t)) {
             return $t->number;
         }

@@ -186,9 +186,13 @@ export default {
               prefix: valor.code,
               inputcode: data.code.toString().slice(valor.code.toString().length),
               description: data.description,
-              cost_center: data.cost_center,
+              cost_center: 0,
               account_group_id: data.account_group_id,
             };
+
+            if( data.cost_center > 0 || data.cost_center == true || data.cost_center == 'true'){
+                this.form.cost_center = 1
+            }
             //console.log('tis form', this.form);
             //this.form = response.data;
           });

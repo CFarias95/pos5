@@ -218,6 +218,14 @@ class Item extends ModelTenant
         'exchange_points' => 'boolean',
         'quantity_of_points' => 'float',
         'category_id_array' => 'json',
+        'brand_id' => 'integer',
+        'item_import_cta' => 'integer',
+        'item_finish_cta' => 'integer',
+        'item_process_cta' => 'integer',
+        'income_cta' => 'integer',
+        'sale_cost_cta' => 'integer',
+        'purchase_cta' => 'integer',
+
     ];
 
     /**

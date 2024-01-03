@@ -4,12 +4,15 @@ namespace Modules\Inventory\Models;
 
 use App\Models\Tenant\Dispatch;
 use App\Models\Tenant\Document;
+use App\Models\Tenant\Imports;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ItemWarehousePrice;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseSettlement;
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\Warehouse;
+use Illuminate\Support\Facades\Log;
 use Modules\Order\Models\OrderNote;
 
 /**
@@ -208,24 +211,27 @@ class InventoryKardex extends ModelTenant
                 break;
 
             case $models[1]: //COMPRA
+                $imp = Purchase::where('series',optional($inventory_kardexable)->series)->where('number',optional($inventory_kardexable)->number)->first();
+
+                Log::info('importacion asociada: '.json_encode($imp->import));
+                $numeroImp = '';
+                if($imp->import){
+                    Log::info('importacion asociada: '.json_encode($imp->import->numeroImportacion));
+                    $numeroImp = ' / '.$imp->import->numeroImportacion;
+                }
 
                 $data['balance'] = $balance += $qty;
-                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
+                $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number.$numeroImp;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Compra" : "Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 $cost = 'N/A';
 
-                if(isset($inventory_kardexable) == true){
-                    foreach ($inventory_kardexable->items as $key => $value) {
-                        if($value->item_id == $item->id){
-                            $cost=$value->unit_value;
-                        }
+                foreach ($inventory_kardexable->items as $key => $value) {
+                    if($value->item_id == $item->id){
+                        $cost=$value->unit_value;
                     }
-                }else{
-
-                    $cost='N/A';
-
                 }
+
                 $data['cost'] = $cost;
                 break;
 
@@ -250,10 +256,18 @@ class InventoryKardex extends ModelTenant
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
             case $models[3]:
-            {
+
                 $transaction = '';
                 $input = '';
                 $output = '';
+                $tranfer = '';
+                $movimiento = '-';
+
+                if($inventory_kardexable->warehouse_destination_id){
+                    $origenW = Warehouse::find($inventory_kardexable->warehouse_id);
+                    $destinoW = Warehouse::find($inventory_kardexable->warehouse_destination_id);
+                    $movimiento = $origenW->establishment->description. '/'.$destinoW->establishment->description;
+                }
                 if (!$inventory_kardexable->type) {
                     $transaction = InventoryTransaction::findOrFail($inventory_kardexable->inventory_transaction_id);
                 }
@@ -278,8 +292,12 @@ class InventoryKardex extends ModelTenant
                     $data['input'] = $input;
                     $data['output'] = $output;
                 }
+
+                $data['doc_asoc'] = $movimiento;
+                $data['number'] = 'INV - '.$inventory_kardexable->id;
+                $data['cost'] = ($inventory_kardexable->precio_perso)?$inventory_kardexable->precio_perso:'N/A';
                 break;
-            }
+
             case $models[4]:
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->prefix . '-' . optional($inventory_kardexable)->id;

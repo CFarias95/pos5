@@ -16,7 +16,10 @@ class UserDefaultDocumentType extends ModelTenant
         'series_id',
     ];
 
-
+    protected $casts = [
+        'user_id' => 'integer',
+        'series_id' => 'integer',
+    ];
     /**
      * @return BelongsTo
      */

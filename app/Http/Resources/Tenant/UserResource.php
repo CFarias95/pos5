@@ -18,12 +18,22 @@ class UserResource extends JsonResource {
      * @return array
      */
     public function toArray($request) {
+        /*
         $modules = $this->getCurrentModuleByTenant()
                         ->pluck('module_id')
                         ->toArray();
+
         $levels = $this->getCurrentModuleLevelByTenant()
                        ->pluck('module_level_id')
-                       ->toArray();
+                       ->toArray();*/
+
+        $modules = $this->getCurrentModuleByTenant()->transform(function($row){
+            return (int)$row->module_id;
+        });
+
+        $levels = $this->getCurrentModuleLevelByTenant()->transform(function($row){
+            return (int)$row->module_level_id;
+        });
 
 
         return [

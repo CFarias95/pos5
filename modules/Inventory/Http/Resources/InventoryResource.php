@@ -26,6 +26,7 @@ class InventoryResource extends JsonResource
             'quantity_real' => 0,
             'lots_enabled' => (bool)$this->item->lots_enabled,
             'series_enabled' => (bool)$this->item->series_enabled,
+            'purchase_mean_price' => $this->item->purchase_mean_cost,
             'lots' => $this->item->item_lots->where('has_sale', false)->where('warehouse_id', $this->warehouse_id)->transform(function($row) {
                 return [
                     'id' => $row->id,
