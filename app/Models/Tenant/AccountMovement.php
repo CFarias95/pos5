@@ -22,7 +22,8 @@ class AccountMovement extends ModelTenant
     ];
 
     protected $casts = [
-        'account_group_id'=> 'int'
+        'account_group_id'=> 'int',
+        'cost_center' => 'bool',
     ];
 
     public function account_group()
