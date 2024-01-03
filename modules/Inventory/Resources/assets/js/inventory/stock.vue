@@ -129,6 +129,7 @@
                     inventory_transaction_id:null,
                     lots:[],
                     lots_group:[],
+                    purchase_mean_price :null,
                 }
             },
             create() {
