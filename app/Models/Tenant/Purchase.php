@@ -15,6 +15,7 @@ use Illuminate\Database\Eloquent\Collection;
 use App\Models\Tenant\RetentionsDetailEC;
 use App\Models\Tenant\RetentionsEC;
 use Illuminate\Support\Facades\Log;
+use Sabberworm\CSS\Property\Import;
 
 /**
  * Class Purchase
@@ -146,6 +147,11 @@ class Purchase extends ModelTenant
     public function establishment()
     {
         return $this->belongsTo(Establishment::class);
+    }
+
+    public function import()
+    {
+        return $this->belongsTo(Imports::class,'import_id');
     }
 
     /**
