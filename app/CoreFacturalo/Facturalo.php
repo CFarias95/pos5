@@ -1585,6 +1585,7 @@ class Facturalo
                     //se consulta el ultimo numero de la nueva serie
                     $last_number = Document::getLastNumberBySerie($inputs['series'],$inputs['establishment_id']);
                     //se actualiza el numero actual en $imputs
+                    Log::info('LAST NUMBER FOR DOCUMENTS '.$last_number.'SERIE: '.$inputs['series'].' ESTABLECIMIENTO ID: '.$inputs['establishment_id'] );
                     $inputs['number'] = $last_number + 1;
                     //cambiamos el filename
                     $inputs['filename'] = Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $inputs['number']);
