@@ -15,6 +15,12 @@ class Category extends ModelTenant
         'parent_2_id',
         'parent_3_id',
     ];
+    protected $casts = [
+        'parent_id' => 'integer',
+        'parent_2_id' => 'integer',
+        'parent_3_id' => 'integer',
+        'id' => 'integer',
+    ];
 
     public function items()
     {
