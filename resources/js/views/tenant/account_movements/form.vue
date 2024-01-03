@@ -186,7 +186,7 @@ export default {
               prefix: valor.code,
               inputcode: data.code.toString().slice(valor.code.toString().length),
               description: data.description,
-              cost_center: data.cost_center,
+              cost_center: 0,
               account_group_id: data.account_group_id,
             };
 
