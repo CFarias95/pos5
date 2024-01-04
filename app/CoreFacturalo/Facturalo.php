@@ -2,7 +2,6 @@
 
 //JOINSOFTWARE//
 namespace App\CoreFacturalo;
-use Illuminate\Support\Str;
 use App\Http\Controllers\Tenant\EmailController;
 use Exception;
 use Mpdf\Mpdf;
@@ -10,8 +9,6 @@ use Mpdf\HTMLParserMode;
 use App\Traits\KardexTrait;
 use App\Models\Tenant\Voided;
 use App\Models\Tenant\Company;
-use App\Models\Tenant\DocumentItem;
-use App\Models\Tenant\Invoice;
 use App\Models\Tenant\Summary;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SriFormasPagos;
@@ -24,7 +21,6 @@ use Mpdf\Config\ConfigVariables;
 use App\Models\Tenant\Perception;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Configuration;
-use Illuminate\Support\Facades\Mail;
 use Modules\Finance\Traits\FinanceTrait;
 use App\CoreFacturalo\WS\Client\WsClient;
 use App\CoreFacturalo\Helpers\Xml\XmlHash;
@@ -32,7 +28,6 @@ use App\CoreFacturalo\WS\Signed\XmlSigned;
 use App\CoreFacturalo\Helpers\Xml\XmlFormat;
 use App\CoreFacturalo\WS\Services\BillSender;
 use App\CoreFacturalo\WS\Services\ExtService;
-use App\CoreFacturalo\WS\Services\SummarySender;
 use App\CoreFacturalo\WS\Services\SunatEndpoints;
 use App\CoreFacturalo\Helpers\QrCode\QrCodeGenerate;
 use App\CoreFacturalo\WS\Services\ConsultCdrService;
@@ -45,18 +40,11 @@ use App\CoreFacturalo\Services\Helpers\SendDocumentPse;
 use App\CoreFacturalo\SRI\FirmarSri;
 use Illuminate\Support\Facades\Log;
 use App\CoreFacturalo\WS\Services\AuthSri;
-use App\Models\Tenant\AccountingEntries;
-use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\DispatchItem;
 use App\Models\Tenant\Item;
-use App\Models\Tenant\Person;
 
-/**
- * Class Facturalo
- *
- * @package App\CoreFacturalo
- */
+
 class Facturalo
 {
     use StorageDocument, FinanceTrait, KardexTrait;
@@ -304,8 +292,6 @@ class Facturalo
         */
     }
 
-
-
     public function createXmlUnsigned()
     {
         $serie = null;
@@ -511,8 +497,6 @@ class Facturalo
     }
 
     public function createPdf($document = null, $type = null, $format = null, $output = 'pdf') {
-
-
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
@@ -1072,7 +1056,6 @@ class Facturalo
         return $send_to_pse;
     }
 
-
     public function sendCdrToPse($cdr_zip, $document)
     {
         if($this->sendToPse())
@@ -1231,7 +1214,6 @@ class Facturalo
         return;
     }
 
-
     public function updateRegularizeShipping($code, $description)
     {
 
@@ -1245,7 +1227,6 @@ class Facturalo
         ]);
 
     }
-
 
     public function senderXmlSignedSummary()
     {

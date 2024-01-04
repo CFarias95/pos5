@@ -43,11 +43,6 @@ use Illuminate\Support\Facades\Log;
 use Modules\Finance\Traits\FilePaymentTrait;
 
 
-/**
- * Class Facturalo
- *
- * @package App\CoreFacturalo
- */
 class Facturalo2
 {
     use StorageDocument, FinanceTrait, KardexTrait, FilePaymentTrait;
