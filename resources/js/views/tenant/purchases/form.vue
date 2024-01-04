@@ -471,7 +471,7 @@
                                         <tr v-for="(row, index) in form.items" :key="index">
                                             <td>{{ index + 1 }}</td>
                                             <td>{{
-                                                row.item.description
+                                                row.item.name + '/' + row.item.description
                                             }}<br /><small>{{ row.affectation_igv_type.description }}</small></td>
                                             <td class="text-left">{{ row.warehouse_description }}</td>
                                             <td class="text-left">{{ row.lot_code }}</td>

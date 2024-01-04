@@ -1314,7 +1314,7 @@ class Facturalo
                 $this->response = [
                     'sent' => true,
                     'code' => 500,
-                    'description' => 'Se anulo el documento',
+                    'description' => 'Se anuló el documento',
                     'notes' => 'Documento anulado Correctamente',
                     'is_accepted' => true,
                     'status_code' => 200,
