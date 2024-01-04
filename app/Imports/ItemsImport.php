@@ -350,6 +350,7 @@ class ItemsImport implements ToCollection
                     $registered += 1;
                 }
             }
+            
             $this->data = compact('total', 'registered', 'warehouse_id_de');
 
     }

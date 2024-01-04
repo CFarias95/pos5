@@ -69,7 +69,7 @@
         </div>
         <div class="col-md-12">
             <div class="table-responsive">
-                <table class="table">
+                <table class="table table-hover">
                     <thead>
                         <tr v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
                             <th v-for="(value1, name) in key">

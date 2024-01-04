@@ -202,6 +202,7 @@ import queryString from 'query-string'
 // import SaleNoteOptions from "../../sale_notes/partials/options.vue";
 import SeriesForm from "./series_form";
 import { mapActions, mapState } from "vuex/dist/vuex.mjs";
+import { calculateRowItem, showNamePdfOfDescription } from "@helpers/functions";
 
 export default {
     components: { DocumentOptions, SaleNoteOptions, SeriesForm },
@@ -339,19 +340,26 @@ export default {
                     if (this.record.items !== undefined) {
                         this.form.items = this.record.items
                     }
+                    let itemService = this.record.service
+                    itemService.unit_price =  this.record.cost
+                    itemService.name_product_pdf = item_description
+
+                    let row = calculateRowItem(itemService, this.config.currency_type_id, this.exchange_rate_sale, this.percentageIgv);
+                    console.log('calculated item',row)
 
                     this.form.technical_service_id = this.recordId
-
+                    this.form.items.push(row);
+                    /*
                     this.form.items.push({
                         'id': null,
-                        'item_id': null,
-                        'internal_id': moment().format("YYYYMMDDHHmmss"),
-                        'item_type_id': '02',
-                        'has_igv': true,
+                        'item_id': this.record.service_id,
+                        'internal_id': this.record.service.internal_id,
+                        'item_type_id': this.record.service.item_type_id,
+                        'has_igv': this.record.service.has_igv,
                         'price_type_id': '01',
                         'unit_type_id': 'ZZ',
-                        'affectation_igv_type_id': '10',
-                        'description': item_description,
+                        'affectation_igv_type_id': this.record.service.affectation_igv_type_id,
+                        'description': this.record.service.description,
                         'percentage_igv': this.percentageIgv * 100,
                         'currency_type_id': 'USD',
                         'unit_value': unit_value,
@@ -364,9 +372,8 @@ export default {
                         'quantity': 1,
                         'discounts': [],
                         'charges': [],
-
                     });
-
+                    */
                     total = 0;
                     total_taxed = 0
                     total_igv = 0

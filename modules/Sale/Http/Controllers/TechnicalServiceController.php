@@ -44,7 +44,7 @@ use Mpdf\Config\FontVariables;
 use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-
+use App\Models\Tenant\Item;
 
 /**
  * Class TechnicalServiceController
@@ -230,7 +230,13 @@ class TechnicalServiceController extends Controller
         $is_client = $this->getIsClient();
         $select_first_document_type_03 = config('tenant.select_first_document_type_03');
         $payment_conditions = PaymentCondition::all();
-
+        $services = Item::where('unit_type_id','ZZ')->get()->transform(function($row){
+            return[
+                'id'=>$row->id,
+                'description'=>$row->description,
+                'name' => $row->name
+            ];
+        });
         $document_types_guide = DocumentType::whereIn('id', ['09', '31'])->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
@@ -239,17 +245,6 @@ class TechnicalServiceController extends Controller
                 'description' => ucfirst(mb_strtolower(str_replace('REMITENTE ELECTRÓNICA', 'REMITENTE', $row->description))),
             ];
         });
-        // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
-        // $detraction_types = DetractionType::whereActive()->get();
-
-        //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
-        //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-        //                       'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-        //                       'document_types_guide');
-
-        // return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
-        //                'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-        //                'discount_types', 'charge_types', 'company', 'document_type_03_filter');
 
         $payment_destinations = $this->getPaymentDestinations();
         $document_id = auth()->user()->document_id;
@@ -282,7 +277,8 @@ class TechnicalServiceController extends Controller
             'select_first_document_type_03',
             'payment_destinations',
             'payment_conditions',
-            'affectation_igv_types'
+            'affectation_igv_types',
+            'services'
         );
     }
 
@@ -332,8 +328,10 @@ class TechnicalServiceController extends Controller
             $tc_id = ($request->has('id')) ? $request->id : null;
 
             $tech_preview = TechnicalService::find($request->input('id'));
+
             $pdf_name = ($tech_preview && $tech_preview->upload_filename) ? $tech_preview->upload_filename : null;
             $technical_service = TechnicalService::updateOrCreate(['id' => $request->input('id')], $data);
+
             if($pdf_name != null){
                 Storage::disk('tenant')->delete('technical_service_attached/'.$pdf_name);
             }
@@ -362,7 +360,6 @@ class TechnicalServiceController extends Controller
                     'technical_service_id' => $this->technical_service->id
                 ]);
             }
-
         });
 
         return [
@@ -389,7 +386,6 @@ class TechnicalServiceController extends Controller
 
     private function setFilename()
     {
-
         $name = ['TS', $this->technical_service->id, date('Ymd')];
         $this->technical_service->filename = join('-', $name);
         $this->technical_service->save();

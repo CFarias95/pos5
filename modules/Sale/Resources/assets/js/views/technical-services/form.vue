@@ -23,21 +23,18 @@
                             <small v-if="errors.customer_id" class="form-control-feedback"
                                 v-text="errors.customer_id[0]"></small>
                         </div>
-                        <div>
-                            <!-- Orden Servicio Pendientes Cliente-->
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="control-label">Orden/es de servicio pendientes por facturar</label>
-                                    <el-input v-model="form.servicioPendiente" type="textarea" disabled="disabled">
-                                    </el-input>
-                                </div>
+                        <div class="col-md-6">
+                            <div class="form-group">
+                                <label class="control-label">Orden/es de servicio pendientes por facturar</label>
+                                <el-input v-model="form.servicioPendiente" type="textarea" disabled="disabled">
+                                </el-input>
                             </div>
+                        </div>
+                        <div class="col-md-6">
                             <!-- Saldo pendiente -->
-                            <div class="col-md-12">
-                                <div class="form-group">
-                                    <label class="control-label">Saldo pendiente</label>
-                                    <el-input v-model="form.saldoPendiente" type="textarea" disabled="disabled"></el-input>
-                                </div>
+                            <div class="form-group">
+                                <label class="control-label">Saldo pendiente</label>
+                                <el-input v-model="form.saldoPendiente" type="textarea" disabled="disabled"></el-input>
                             </div>
                         </div>
                     </div>
@@ -47,6 +44,19 @@
                         <div :class="{ 'has-danger': errors.cellphone }" class="form-group">
                             <label class="control-label">Celular </label>
                             <el-input v-model="form.cellphone"></el-input>
+                            <small v-if="errors.cellphone" class="form-control-feedback"
+                                v-text="errors.cellphone[0]"></small>
+                        </div>
+                    </div>
+                    <div class="col-md-6 pb-2">
+                        <div :class="{ 'has-danger': errors.cellphone }" class="form-group">
+                            <label class="control-label">Servicio</label>
+                            <el-select v-model="form.service_id" :loading="loading_search"
+                               class="border-left rounded-left border-info"
+                                filterable clearable >
+                                <el-option v-for="option in services" :key="option.id" :label="option.name +' / '+option.description"
+                                    :value="option.id"></el-option>
+                            </el-select>
                             <small v-if="errors.cellphone" class="form-control-feedback"
                                 v-text="errors.cellphone[0]"></small>
                         </div>
@@ -339,6 +349,7 @@
     </el-dialog>
 </template>
 <script>
+
 import PersonForm from '@views/persons/form.vue'
 import { mapActions, mapState } from "vuex/dist/vuex.mjs";
 import { calculateRowItem } from "../../../../../../../resources/js/helpers/functions";
@@ -348,7 +359,7 @@ import { exchangeRate, functions } from "../../../../../../../resources/js/mixin
 export default {
     props: [
         'showDialog',
-        'recordId'
+        'recordId',
     ],
     computed: {
         ...mapState([
@@ -441,6 +452,7 @@ export default {
             affectation_igv_types: [],
             total_discount_no_base: 0,
             fileList: [],
+            services:[],
         }
     },
     async created() {
@@ -488,6 +500,8 @@ export default {
 
                 this.default_document_type = response.data.document_id;
                 this.default_series_type = response.data.series_id;
+                this.services = response.data.services;
+
             }).then(() => {
                 this.searchExchangeRateByDate(this.form.date_of_issue).then(response => {
                     this.$store.commit('setExchangeRate', response)
@@ -1206,6 +1220,7 @@ export default {
                 date_of_due: moment().format('YYYY-MM-DD'),
                 saldoPendiente: 0,
                 servicioPendiente: null,
+                service_id: null,
             }
             this.num_facturas_pendientes = null;
 

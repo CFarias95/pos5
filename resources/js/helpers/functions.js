@@ -166,10 +166,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     }
     //END SERVICIO
-
-
     let total_value_partial = unit_value * row.quantity
-
 
     /* Discounts */
     let discount_base = 0

@@ -272,7 +272,7 @@
                         </div>
                     </div>
 
-                    <div class="col-md-4 col-sm-4" v-if="authUser.documents_change_item_warehouse">
+                    <div class="col-md-4 col-sm-4" v-if="authUser && authUser.documents_change_item_warehouse">
                         <div class="form-group">
                             <label class="control-label">Almacén</label>
                             <el-select v-model="form.warehouse_id" filterable clearable>
@@ -1128,7 +1128,7 @@ export default {
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
-                
+
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
                 this.form.has_plastic_bag_taxes = (this.recordItem.total_plastic_bag_taxes > 0) ? true : false

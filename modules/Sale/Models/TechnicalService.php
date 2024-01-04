@@ -19,7 +19,8 @@
     use Illuminate\Database\Eloquent\Collection;
     use App\Models\Tenant\{
         Document,
-        SaleNote
+    Item,
+    SaleNote
     };
 
     /**
@@ -154,6 +155,7 @@
             'upload_filename',
             'finalized',
             'observation',
+            'service_id',
         ];
 
         protected $casts = [
@@ -304,7 +306,7 @@
                     $user = new User();
                 }
             }
-            else { 
+            else {
                 $user = auth()->user();
             }
             return ($user->type == 'seller') ? $query->where('user_id', $user->id) : null;
@@ -421,6 +423,8 @@
                 $number_document_sale_note = ($this->sale_note) ? $this->sale_note->number_full : $this->document->number_full;
             }
 
+            $service = Item::find($this->service_id);
+
             $data = array_merge($this->toArray(), [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,
@@ -435,7 +439,6 @@
                 'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
                 'customer_name' => $this->customer->name,
                 'customer_number' => $this->customer->number,
-
                 'customer_id' => $this->customer_id,
                 'time_of_issue' => $this->time_of_issue,
                 'description' => $this->description,
@@ -458,10 +461,10 @@
                 'observation' => $this->observation,
                 'items' => $items,
                 'payments' => $this->payments,
-
                 'has_document_sale_note' => $has_document_sale_note,
                 'number_document_sale_note' => $number_document_sale_note,
-
+                'service_id' => $this->service_id,
+                'service' => $service,
             ]);
 
             return $data;
@@ -1482,7 +1485,7 @@
             $this->finalized = $finalized;
             return $this;
         }
-        
+
         /**
          * @return string|null
          */
@@ -1496,13 +1499,13 @@
          *
          * @return TechnicalService
          */
-        
+
         public function setObservation(?string $observation): TechnicalService
         {
             $this->observation = $observation;
             return $this;
         }
-        
+
         /**
          * @return string|null
          */
@@ -1516,7 +1519,7 @@
          *
          * @return TechnicalService
          */
-        
+
         public function setUploadFilename(?string $upload_filename): TechnicalService
         {
             $this->upload_filename = $upload_filename;
@@ -1658,7 +1661,7 @@
 
 
         /**
-         * 
+         *
          * Obtener descripción del tipo de documento
          *
          * @return string
@@ -1670,7 +1673,7 @@
 
 
         /**
-         * 
+         *
          * Obtener pagos en efectivo
          *
          * @return Collection

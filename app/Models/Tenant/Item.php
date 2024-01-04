@@ -1178,9 +1178,14 @@ class Item extends ModelTenant
         $decimal_units = (int)$configuration->decimal_quantity;
         $stockPerCategory = ItemMovement::getStockByCategory($this->id, auth()->user()->establishment_id);
         $has_igv = (bool)$this->has_igv;
-        $percentage_icv = $this->sale_affectation_igv_type;
+        $percentage_icv = $this->sale_affectation_igv_type->description;
+        $value = intval(str_replace(['Gravado','-','IVA','','Inafecto'],'',$percentage_icv));
+
         // $igv = 1.18; // El igv es de 18%
-        $igv = $this->percentage_igv;
+        $igv = ($value + 100 )/100 ;
+
+        $percentageIgv = $this->sale_affectation_igv_type;
+
         $affectation_igv_types_exonerated_unaffected = self::AffectationIgvTypesExoneratedUnaffected();
         if (in_array($this->sale_affectation_igv_type_id, $affectation_igv_types_exonerated_unaffected)) {
             // Exonerado, solo se multiplica por la unidad para que no haga cambio.
