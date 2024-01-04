@@ -2421,7 +2421,7 @@ class DocumentController extends Controller
 
             return compact('advances','retentions');
         }
-        
+
 
         return compact('advances');
 
