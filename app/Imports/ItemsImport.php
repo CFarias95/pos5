@@ -134,13 +134,16 @@ class ItemsImport implements ToCollection
                 $lastCategorie = null;
                 $categories = [];
                 Log::info("tree:".json_encode($categoriasArray));
+                Log::info("conteo ARRAY :".sizeof($categoriasArray));
 
                 foreach ($categoriasArray as $value) {
+                    Log::info("nombre cat ".$value);
+                    Log::info("conteo:".sizeof($categories));
                     if($value == '' || isset($value) == false){
                         break;
                     }
-                    Log::info("conteo:".count($categories));
-                    if(count($categories) == 0){
+
+                    if(sizeof($categories) < 1){
                         $catModel = Category::where('name',$value)->first();
                         if(isset($catModel) == false) {
                             break;
@@ -149,10 +152,11 @@ class ItemsImport implements ToCollection
                         $lastCategorie = $catModel->id;
 
                         Log::info("ultima categoria: ".$lastCategorie);
-                        Log::info("ultima categorias: ".json_encode($categories));
+                        Log::info("ultima categorias: ".sizeof($categories));
                     }
-                    if(count($categories) == 1){
-                        $catModel = Category::where('name',$value)->where('parent_id',$lastCategorie)->first();
+
+                    elseif(sizeof($categories) > 0){
+                        $catModel = Category::where('name',$value)->where('parent_id',$categories[0])->first();
                         if(isset($catModel) == false) {
                             break;
                         }
@@ -160,9 +164,10 @@ class ItemsImport implements ToCollection
                         $lastCategorie = $catModel->id;
 
                         Log::info("ultima categoria: ".$lastCategorie);
-                        Log::info("ultima categorias: ".json_encode($categories));
+                        Log::info("ultima categorias: ".sizeof($categories));
                     }
-                    if(count($categories) == 2){
+
+                    elseif(sizeof($categories) > 1){
                         $catModel = Category::where('name',$value)->where('parent_id',$categories[0])->where('parent_2_id',$categories[1])->first();
                         if(isset($catModel) == false) {
                             break;
@@ -173,7 +178,8 @@ class ItemsImport implements ToCollection
                         Log::info("ultima categoria: ".$lastCategorie);
                         Log::info("ultima categorias: ".json_encode($categories));
                     }
-                    if(count($categories) == 3){
+
+                    elseif(sizeof($categories) > 2){
                         $catModel = Category::where('name',$value)->where('parent_id',$categories[0])->where('parent_2_id',$categories[1])->where('parent_3_id',$categories[2])->first();
                         if(isset($catModel) == false) {
                             break;
