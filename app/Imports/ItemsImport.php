@@ -15,6 +15,7 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 use Modules\Inventory\Models\InventoryTransaction;
 use Modules\Inventory\Models\Inventory;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\ItemLotsGroup;
 use Modules\Finance\Helpers\UploadFileHelper;
 
@@ -39,7 +40,7 @@ class ItemsImport implements ToCollection
                 $item_code = ($row[3])?:null;
                 $unit_type_id = $row[4];
                 $currency_type_id = $row[5];
-                $sale_unit_price = $row[6];
+                $sale_unit_price = floatval($row[6]);
                 $sale_affectation_igv_type_id = $row[7];
                 // $has_igv = (strtoupper($row[7]) === 'SI')?true:false;
 
@@ -55,7 +56,7 @@ class ItemsImport implements ToCollection
 
                 }
 
-                $purchase_unit_price = ($row[9])?:0;
+                $purchase_unit_price = ($row[9])?floatval($row[9]):0;
                 $purchase_affectation_igv_type_id = ($row[10])?:null;
                 $stock = $row[11];
                 $stock_min = $row[12];
@@ -69,6 +70,9 @@ class ItemsImport implements ToCollection
                 $date_of_due = $row[18];
                 $barcode = $row[19] ?? null;
                 $image_url = $row[20] ?? null;
+
+                $lots_enabled = $row[21] ?? 0;
+                $series_enabled = $row[22] ?? 0;
 
                 // image names
                 $file_name = 'imagen-no-disponible.jpg';
@@ -126,6 +130,58 @@ class ItemsImport implements ToCollection
 
                 $warehouse_id = request('warehouse_id');
 
+                $categoriasArray = explode(';',$category_name);
+                $lastCategorie = null;
+                $categories = [];
+                Log::info("tree:".json_encode($categoriasArray));
+
+                foreach ($categoriasArray as $value) {
+                    Log::info("conteo:".count($categories));
+                    if(count($categories) == 0){
+                        $catModel = Category::where('name',$value)->first();
+                        if(isset($catModel) == false) {
+                            break;
+                        }
+                        array_push($categories,$catModel->id);
+                        $lastCategorie = $catModel->id;
+
+                        Log::info("ultima categoria: ".$lastCategorie);
+                        Log::info("ultima categorias: ".json_encode($categories));
+                    }
+                    if(count($categories) == 1){
+                        $catModel = Category::where('name',$value)->where('parent_id',$lastCategorie)->first();
+                        if(isset($catModel) == false) {
+                            break;
+                        }
+                        array_push($categories,$catModel->id);
+                        $lastCategorie = $catModel->id;
+
+                        Log::info("ultima categoria: ".$lastCategorie);
+                        Log::info("ultima categorias: ".json_encode($categories));
+                    }
+                    if(count($categories) == 2){
+                        $catModel = Category::where('name',$value)->where('parent_id',$categories[0])->where('parent_2_id',$categories[1])->first();
+                        if(isset($catModel) == false) {
+                            break;
+                        }
+                        array_push($categories,$catModel->id);
+                        $lastCategorie = $catModel->id;
+
+                        Log::info("ultima categoria: ".$lastCategorie);
+                        Log::info("ultima categorias: ".json_encode($categories));
+                    }
+                    if(count($categories) == 3){
+                        $catModel = Category::where('name',$value)->where('parent_id',$categories[0])->where('parent_2_id',$categories[1])->where('parent_3_id',$categories[2])->first();
+                        if(isset($catModel) == false) {
+                            break;
+                        }
+                        array_push($categories,$catModel->id);
+                        $lastCategorie = $catModel->id;
+                    }
+                }
+
+                Log::info("ultima categoria: ".$lastCategorie);
+                Log::info("ultima categorias: ".json_encode($categories));
 
                 if($internal_id) {
                     $item = Item::where('internal_id', $internal_id)
@@ -136,16 +192,12 @@ class ItemsImport implements ToCollection
                 // $establishment_id = auth()->user()->establishment->id;
 
                 if(!$item) {
-                    $category = $category_name ? Category::updateOrCreate(['name' => $category_name]):null;
+
                     $brand = $brand_name ? Brand::updateOrCreate(['name' => $brand_name]):null;
                     // dd($row, $lot_code ,$date_of_due, $category, $brand);
 
                     if($lot_code && $date_of_due){
-
                         $_date_of_due = Date::excelToDateTimeObject($date_of_due)->format('Y-m-d');
-
-                        // dd($lot_code, $date_of_due, $x);
-
                         $new_item = Item::create([
                             'description' => $description,
                             'model' => $model,
@@ -165,7 +217,6 @@ class ItemsImport implements ToCollection
                             'brand_id' => optional($brand)->id,
                             'name' => $name,
                             'second_name' => $second_name,
-
                             'lots_enabled' => true,
                             'lot_code' => $lot_code,
                             'date_of_due' => $_date_of_due,
@@ -199,7 +250,7 @@ class ItemsImport implements ToCollection
                             'purchase_affectation_igv_type_id' => $purchase_affectation_igv_type_id,
                             'stock' => $stock,
                             'stock_min' => $stock_min,
-                            'category_id' => optional($category)->id,
+                            'category_id' => $lastCategorie,
                             'brand_id' => optional($brand)->id,
                             'name' => $name,
                             'second_name' => $second_name,
@@ -208,13 +259,13 @@ class ItemsImport implements ToCollection
                             'image' => $file_name,
                             'image_medium' => $file_name_medium,
                             'image_small' => $file_name_small,
+                            'lots_enabled' => $lots_enabled,
+                            'series_enabled' =>$series_enabled,
+                            'category_id_array' =>$categories
                         ]);
 
                     }
-
-
                     $registered += 1;
-
                 }else{
 
                     $inventory_transaction = InventoryTransaction::findOrFail('102');
@@ -240,9 +291,13 @@ class ItemsImport implements ToCollection
                         'name' => $name,
                         'second_name' => $second_name,
                         'barcode' => $barcode,
+                        'lots_enabled' => $lots_enabled,
+                        'series_enabled' =>$series_enabled,
+                        'category_id' => $lastCategorie,
+                        'category_id_array' =>$categories
                     ]);
 
-
+                    /*
                     $inventory = new Inventory();
                     $inventory->type = null;
                     $inventory->description = $inventory_transaction->name;
@@ -261,7 +316,6 @@ class ItemsImport implements ToCollection
                         if(!$date_of_due) {
                             throw new Exception("Debe ingresar el Fecha de vencimiento para el Lote", 500);
                         }
-
 
                         $current_lot = ItemLotsGroup::where([
                             'code' => $lot_code,
@@ -284,13 +338,10 @@ class ItemsImport implements ToCollection
                                 'item_id' => $item->id
                             ]);
                         }
-
-
                     }
-
+                    */
 
                     $registered += 1;
-
                 }
             }
             $this->data = compact('total', 'registered', 'warehouse_id_de');

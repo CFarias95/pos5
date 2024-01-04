@@ -69,11 +69,11 @@ class CategoryController extends Controller
         $error = null;
         $category = null;
         if(!empty($name)){
-            $category = Category::where('name', $name);
+            $category = Category::where('name', $name)->where('parent_id',null)->where('parent_2_id',null)->where('parent_3_id',null);
             if(empty($id)) {
                 $category= $category->first();
                 if (!empty($category)) {
-                    $error = 'El nombre de categoría ya existe';
+                    $error = 'El nombre del departamento ya existe';
                 }
             }else{
                 $category = $category->where('id','!=',$id)->first();

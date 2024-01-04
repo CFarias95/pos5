@@ -3,11 +3,11 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Stock por Almacen</span></li>
+                <li class="active"><span>Stock por Almacén</span></li>
             </ol>
         </div>
         <div class="card-header bg-info">
-            <h3 class="my-0">Stock por Almacen</h3>
+            <h3 class="my-0">Stock por Almacén</h3>
         </div>
         <div class="card mb-0 card-body">
             <div class="col-md-12 col-lg-12 col-xl-12 ">
@@ -41,11 +41,6 @@
                         </div>
                         <div class="col-3">
                             <label> Categoría</label>
-                            <!-- <el-select v-model="form.categorie_id" @change="getRecords()" filterable>
-                                <el-option value="0" label="Todas las categorias" />
-                                <el-option v-for="row in categories" :key="row.id" :label="row.name"
-                                    :value="row.id"></el-option>
-                            </el-select> -->
                             <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
                                 :show-all-levels="false" expandTrigger='hover' @change="getRecords" change-on-select></el-cascader>
                         </div>
@@ -76,19 +71,16 @@
             <div class="table-responsive">
                 <table class="table">
                     <thead>
-                        <slot v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
-                            <tr slot="heading" :key="value">
-                                <th v-for="(value1, name) in key" :index="customIndex(name)" :row="value1" class=""
-                                    slot="heading" :key="name">
-                                    <strong>{{ value1 }}</strong>
-                                </th>
-                            </tr>
-                        </slot>
+                        <tr v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
+                            <th v-for="(value1, name) in key" :index="customIndex(value1)" :row="value1">                                 slot="heading" :key="name">
+                                <strong>{{ value1 }}</strong>
+                            </th>
+                        </tr>
                     </thead>
                     <tbody>
-                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
-                            <tr v-for="valor in row" :row="valor" class="" slot="heading">
-                                <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre">
+                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row" >
+                            <tr v-for="valor in row" :row="valor" class="" slot="heading" >
+                                <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre" >
                                     {{ obj }}
                                 </td>
                             </tr>
