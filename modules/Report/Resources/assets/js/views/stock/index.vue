@@ -72,7 +72,7 @@
                 <table class="table">
                     <thead>
                         <tr v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
-                            <th v-for="(value1, name) in key" :index="customIndex(value1)" :row="value1">                                 slot="heading" :key="name">
+                            <th v-for="(value1, name) in key">
                                 <strong>{{ value1 }}</strong>
                             </th>
                         </tr>
@@ -110,7 +110,6 @@ export default {
                 categorie_id: 0,
                 linea: 'NA',
             },
-            //columns: [],
             loading_submit: false,
             records: [],
             data: [],

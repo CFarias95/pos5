@@ -268,11 +268,8 @@ class ItemsImport implements ToCollection
                     $registered += 1;
                 }else{
 
-                    $inventory_transaction = InventoryTransaction::findOrFail('102');
-                    $stock = $row[11];
-                    if (!$stock) {
-                        throw new Exception("Debe ingresar el stock", 500);
-                    }
+                    //$inventory_transaction = InventoryTransaction::findOrFail('102');
+
 
                     $item->update([
                         'description' => $description,
