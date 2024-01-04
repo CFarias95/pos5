@@ -74,9 +74,9 @@ class HelperFacturalo
         return $date_format[2].'-'.$month_name[$date_format[1]].'-'.$date_format[0];
     }
 
-    
+
     /**
-     * 
+     *
      * Validar si se agrega ticket de despacho al pdf
      *
      * @param  string $format_pdf
@@ -89,9 +89,9 @@ class HelperFacturalo
         return in_array($format_pdf, ['ticket', 'ticket_58', 'ticket_50']) && in_array($type, ['invoice', 'sale-note']) && (bool) $document->dispatch_ticket_pdf;
     }
 
-        
+
     /**
-     * 
+     *
      * Agregar ticket de despacho al pdf
      *
      * @param  Mpdf $pdf
@@ -121,7 +121,7 @@ class HelperFacturalo
             'mgb' => 0,
             'mgl' => 1
         ]);
-        
+
         $pdf->writeHTML($html_dispatch_ticket, HTMLParserMode::HTML_BODY);
     }
 

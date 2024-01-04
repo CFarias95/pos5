@@ -295,9 +295,7 @@ class DocumentController extends Controller
     {
 
         $items = SearchItemController::getItemsToDocuments($request);
-
         return compact('items');
-
     }
 
 
@@ -402,9 +400,9 @@ class DocumentController extends Controller
 
     }
 
-        
+
     /**
-     * 
+     *
      * Forzar el envio por resumen a una boleta enviada de forma individual
      *
      * @param  Request $request
