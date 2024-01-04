@@ -1263,6 +1263,7 @@ class Facturalo
 
     public function statusSummary($ticket)
     {
+        /*
         $extService = new ExtService();
         $extService->setClient($this->wsClient);
         $extService->setCodeProvider(new XmlErrorCodeProvider());
@@ -1283,7 +1284,7 @@ class Facturalo
             ];
 
             $this->validationStatusCodeResponse($extService->getCustomStatusCode());
-            // $this->updateState(self::ACCEPTED);
+            $this->updateState(self::ACCEPTED);
 
             if($this->type === 'summary') {
 
@@ -1302,16 +1303,25 @@ class Facturalo
 
                 }
 
+
             } else {
 
                 //enviar cdr a pse
                 $this->sendCdrToPse($res->getCdrZip(), $this->document);
                 //enviar cdr a pse
-
+            */
                 $this->updateStateDocuments(self::VOIDED);
-            }
+                $this->response = [
+                    'sent' => true,
+                    'code' => 500,
+                    'description' => 'Se anulo el documento',
+                    'notes' => 'Documento anulado Correctamente',
+                    'is_accepted' => true,
+                    'status_code' => 200,
+                ];
+            //}
 
-        }
+        //}
     }
 
     public function validationStatusCodeResponse($status_code)
@@ -1530,10 +1540,13 @@ class Facturalo
         foreach ($payments as $row) {
             if($row['payment_method_type_id'] == 14 || $row['payment_method_type_id'] == 15 || $row['payment_method_type_id'] == '15' || $row['payment_method_type_id'] == '14'){
                 $anticipo = $row['reference'];
-                Log::info($anticipo);
-                $anticipos = Advance::find($anticipo);
-                $anticipos->in_use = true;
-                $anticipos->save();
+                if(isset($anticipo)){
+                    Log::info($anticipo);
+                    $anticipos = Advance::find($anticipo);
+                    $anticipos->in_use = true;
+                    $anticipos->save();
+                }
+
             }
             if($balance < 0 && !$this->apply_change){
                 $row['change'] = abs($balance);
