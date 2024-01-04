@@ -136,6 +136,9 @@ class ItemsImport implements ToCollection
                 Log::info("tree:".json_encode($categoriasArray));
 
                 foreach ($categoriasArray as $value) {
+                    if($value == '' || isset($value) == false){
+                        break;
+                    }
                     Log::info("conteo:".count($categories));
                     if(count($categories) == 0){
                         $catModel = Category::where('name',$value)->first();
