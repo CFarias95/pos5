@@ -1535,6 +1535,7 @@ class DocumentController extends Controller
     {
         try{
             self::setChildrenToData($data);
+            Log::info($data);
             $fact = DB::connection('tenant')->transaction(function() use ($data) {
                 $facturalo = new Facturalo();
                 $facturalo->save($data);
@@ -1557,7 +1558,8 @@ class DocumentController extends Controller
                 ]
             ];
         }catch(Exception $ex){
-            Log::error($ex->getMessage());
+            Log::error('Error en storeWithData '.$ex->getMessage());
+            Log::error($ex);
             return [
                 'success' => false,
                 'message' =>'Se produjo un error al tratar de generar el documento '.$ex->getMessage(),

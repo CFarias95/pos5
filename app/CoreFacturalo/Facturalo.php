@@ -1528,8 +1528,9 @@ class Facturalo
         }
 
         foreach ($payments as $row) {
-            if($row['payment_method_type_id'] == 14 || $row['payment_method_type_id'] == 15){
+            if($row['payment_method_type_id'] == 14 || $row['payment_method_type_id'] == 15 || $row['payment_method_type_id'] == '15' || $row['payment_method_type_id'] == '14'){
                 $anticipo = $row['reference'];
+                Log::info($anticipo);
                 $anticipos = Advance::find($anticipo);
                 $anticipos->in_use = true;
                 $anticipos->save();
