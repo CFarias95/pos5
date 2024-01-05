@@ -207,12 +207,12 @@ class ProcessInventoryReport implements ShouldQueue
         Log::debug("ProcessInventoryReport Finish transaction");
     }
 
-    public function getRecordsTranform($warehouse_id, $filter, $attribute_id, $category, $brand)
+    public function getRecordsTranform($warehouse_id, $filter, $attribute_id, $attribute, $category, $brand)
     {
         Log::debug("warehouse_id " . $warehouse_id);
         Log::debug("getRecordsTranform init" . date('H:i:s'));
 
-        $records = $this->getRecordsNew($warehouse_id, $filter, $attribute_id, $category, $brand);
+        $records = $this->getRecordsNew($warehouse_id, $filter, $attribute_id,$attribute, $category, $brand);
 
         $data = [];
 
