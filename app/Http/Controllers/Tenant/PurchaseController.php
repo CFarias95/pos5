@@ -568,16 +568,33 @@ class PurchaseController extends Controller
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
-                            $item_lots_group = ItemLotsGroup::create([
-                                'code' => $row['lot_code'],
-                                'quantity' => $row['quantity'] * $presentation_quantity,
-                                // 'quantity' => $row['quantity'],
-                                'date_of_due' => $row['date_of_due'],
-                                'item_id' => $row['item_id']
-                            ]);
+                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])->where('lot_code',$row['lot_code'])->first();
+                            if(isset($validatLote) && $validatLote != ''){
+                                if($validatLote->date_of_due != $row['date_of_due']){
+                                    $doc->delete();
+                                    return [
+                                        'success' => false,
+                                        'message' => 'Ya existe un lote: '.$row['lot_code'].' pero las fecha ingresada no coinciden '.$validatLote->date_of_due.'/'.$row['date_of_due']
+                                    ];
 
-                            $p_item->item_lot_group_id = $item_lots_group->id;
-                            $p_item->update();
+                                }else{
+                                    $validatLote->quantity = $validatLote->quantity + ($row['quantity'] * $presentation_quantity);
+                                    $validatLote->save();
+                                }
+
+                            }else{
+                                $item_lots_group = ItemLotsGroup::create([
+                                    'code' => $row['lot_code'],
+                                    'quantity' => $row['quantity'] * $presentation_quantity,
+                                    // 'quantity' => $row['quantity'],
+                                    'date_of_due' => $row['date_of_due'],
+                                    'item_id' => $row['item_id']
+                                ]);
+
+                                $p_item->item_lot_group_id = $item_lots_group->id;
+                                $p_item->update();
+                            }
+
                         }
                     }
                 }
