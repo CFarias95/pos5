@@ -81,7 +81,10 @@ use Modules\Finance\Traits\FinanceTrait;
             try {
                 $inputs = $request->all();
                 $items = $request->input('items');
+
                 foreach ($items as $index => $item) {
+                    Log::info('Procesando item : ',$item);
+
                     $unit_type = $item['item']['unit_type_id']??'ZZ';
                     if (isset($item['additional_information']) && is_array($item['additional_information'])) {
                         $item['additional_information'] = implode(' ', $item['additional_information']);
@@ -89,17 +92,22 @@ use Modules\Finance\Traits\FinanceTrait;
                     if (isset($inputs['items'][$index]['item']['warehouses'])) {
                         unset($inputs['items'][$index]['item']['warehouses']);
                     }
+
                     if (!isset($item['item_id'])) {
                         $internal = $item['internal_id'];
                         $newItem = !empty($internal) ? Item::where('internal_id', $internal)->first() : null;
                         $inputs['items'][$index]['item_id'] = ($newItem === null) ? $this->storeItem($item) : $newItem->id;
                     }
+
                     $tempItem = $inputs['items'][$index];
+
                     if (isset($tempItem['additional_information']) && is_array($tempItem['additional_information'])) {
                         $tempItem['additional_information'] = implode(' ', $tempItem['additional_information']);
                     }
+
                     $a = new DocumentItem();
                     $a->fill($tempItem);
+
                     $inputs['items'][$index] = $a->toArray();
                     $inputs['items'][$index]['item'] = (array)$a->getArrayItem();
                     $inputs['items'][$index]['item']['unit_type_id']  = !empty($unit_type)?$unit_type:'ZZ';
@@ -108,18 +116,24 @@ use Modules\Finance\Traits\FinanceTrait;
                     }
                 }
                 //$inputs['items'][0]['item_id'] = $this->storeItem($request->input('items')[0]);
+                Log::info('storeWithData :'.json_encode($inputs));
+
                 if (in_array($request->input('document_type_id'), ['01', '03'])) {
                     $documentController = new DocumentController();
                     $doc_input = DocumentInput::set($inputs);
                     $res = $documentController->storeWithData($doc_input);
+
+
                 } else {
                     $inputs['items'] = DocumentInput::items($inputs);
                     $inputs['type_period'] = null;
                     $inputs['quantity_period'] = null;
                     $res = (new SaleNoteController())->storeWithData($inputs);
+
                 }
 
                 DB::connection('tenant')->commit();
+                Log::info('Generate items :'.json_encode($res));
                 return $res;
 
             } catch (Exception $e) {
@@ -143,7 +157,6 @@ use Modules\Finance\Traits\FinanceTrait;
          */
         public function storeItem($row)
         {
-
             $internal_id = $row['internal_id'] ?? ($row['item']['internal_id'] ?? null);
             $description = $row['description'] ?? ($row['item']['description'] ?? null);
             $item_type_id = $row['item_type_id'] ?? ($row['item']['item_type_id'] ?? null);

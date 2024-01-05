@@ -9,9 +9,9 @@ class InventoryKardexLots
 
     public static function transformRecords($records)
     {
-        
+
         return $records->transform(function($row, $key){
-          
+
             $diff = '';
 
             if($row->date_of_due)
@@ -26,15 +26,15 @@ class InventoryKardexLots
                 'code' => $row->code,
                 'quantity' => $row->quantity,
                 'date_of_due' => $row->date_of_due,
-                'name_item' => $row->item->description,
+                'name_item' => $row->item->name.'/'.$row->item->description,
                 'und_item' => $row->item->unit_type_id,
                 'code_item' => $row->item->internal_id,
                 'diff_days' => $diff,
             ];
-            
+
         });
 
-    } 
+    }
 
- 
+
 }

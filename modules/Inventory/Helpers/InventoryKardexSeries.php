@@ -9,9 +9,9 @@ class InventoryKardexSeries
 
     public static function transformRecords($records)
     {
-        
+
         return $records->transform(function($row, $key){
-          
+
             $status = '';
 
             if($row->has_sale){
@@ -27,17 +27,17 @@ class InventoryKardexSeries
             return [
                 'id' => $row->id,
                 'series' => $row->series,
-                'name_item' => $row->item->description,
+                'name_item' => $row->item->name.'/'.$row->item->description,
                 'und_item' => $row->item->unit_type_id,
                 'code_item' => $row->item->internal_id,
                 // 'status' => ($row->has_sale == 1 ? 'VENDIDO' : 'DISPONIBLE'),
                 'status' => $status,
                 'date' => $row->date
             ];
-            
+
         });
 
-    } 
+    }
 
- 
+
 }

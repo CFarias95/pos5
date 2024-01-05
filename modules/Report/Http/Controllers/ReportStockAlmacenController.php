@@ -68,7 +68,14 @@ class ReportStockAlmacenController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[request()->query('warehouse_id'),request()->query('item_id')]);
+        $linea = $request['linea'];
+        if($request['linea'] === 'NA' || $request['linea'] === null)
+        {
+            $linea = '';
+        }
+        //$sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?,?);",[request()->query('warehouse_id'),request()->query('item_id'),request()->query('categorie_id'),request()->query('brand_id'), $linea]);
+
+        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?,?);",[$request['warehouse_id'],$request['item_id'],$request['categorie_id'],$request['brand_id'], $linea]);
         $sp1 = array();
         $sp2 = [];
         foreach($records as $row)
@@ -94,7 +101,15 @@ class ReportStockAlmacenController extends Controller
 
         $company = Company::first();
         Log::info($request->input('warehouse_id'));
-        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?);",[$request['warehouse_id'],$request['item_id']]);
+
+        $linea = $request['linea'];
+        if($request['linea'] === 'NA' || $request['linea'] === null)
+        {
+            $linea = '';
+        }
+        //$sp = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?,?);",[request()->query('warehouse_id'),request()->query('item_id'),request()->query('categorie_id'),request()->query('brand_id'), $linea]);
+
+        $records = DB::connection('tenant')->select("CALL SP_StockAlmacen(?,?,?,?,?);",[$request['warehouse_id'],$request['item_id'],$request['categorie_id'],$request['brand_id'], $linea]);
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');

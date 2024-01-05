@@ -92,13 +92,15 @@ class ReportKardexController extends Controller
             ->get()
             ->transform(function ($row) {
                 $full_description = $this->getFullDescription($row);
-                $desciption = $row->name?$row->name:'N/A';
-                $model = $row->model?$row->model:'N/A';
-                $marca = ($row->brand && $row->brand->name)?$row->brand->name:'N/A';
+                $nombre = $row->name?$row->name:'-';
+                $descripcion = $row->description?$row->description:'-';
+                $model = $row->model?$row->model:'-';
+                $referencia = ($row->internal_id)?$row->internal_id:'-';
+                $fac = ($row->factory_code)?$row->factory_code:'-';
                 return [
 
                     'id' => $row->id,
-                    'full_description' => $desciption.' - '.$model.' - '.$marca,
+                    'full_description' => $nombre.'/'.$descripcion.'/'.$model.'/'.$referencia.'/'.$fac,
                     'internal_id' => $row->internal_id,
                     'description' => $row->name,
                     'warehouses' => $row->warehouses

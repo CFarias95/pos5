@@ -32,7 +32,7 @@ class ReportKardexItemLotCollection extends ResourceCollection
             return [
                 'id' => $row->id,
                 'series' => $row->series,
-                'name_item' => $row->item->description,
+                'name_item' => $row->item->name.'/'.$row->item->description,
                 'und_item' => $row->item->unit_type_id,
                 'code_item' => $row->item->internal_id,
                 // 'status' => ($row->has_sale == 1 ? 'VENDIDO' : 'DISPONIBLE'),
