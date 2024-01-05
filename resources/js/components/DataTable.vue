@@ -154,6 +154,10 @@
               </div>
             </template>
           </div>
+          <el-button class="submit" type="success" @click.prevent="clickDownloadExcel" v-if="this.resource === 'inventory'"><i
+                                    class="fa fa-file-excel"></i>
+                                Exportar Excel
+                            </el-button>
           <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
             <template v-if="resource == 'retentions'">
               <div class="d-flex">
@@ -279,6 +283,13 @@ export default {
     customIndex(index) {
       return this.pagination.per_page * (this.pagination.current_page - 1) + index + 1;
     },
+    clickDownloadExcel() {
+      let query = this.getQueryParameters();
+      //let data = getRecords();
+      //console.log('data', data);
+
+      window.open(`/${this.resource}/excel?${query}`, '_blank');
+    },
     getRecords() {
       this.loading_submit = true;
       //console.log('url ', `/${this.resource}/records?${this.getQueryParameters()}`)
@@ -286,7 +297,7 @@ export default {
         .get(`/${this.resource}/records?${this.getQueryParameters()}`)
         .then((response) => {
           this.records = response.data.data;
-          //console.log('records', this.records);
+          console.log('records', this.records);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         })

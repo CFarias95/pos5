@@ -38,6 +38,8 @@ use Illuminate\Support\Facades\Storage;
 use Swift_Mailer;
 use Swift_SmtpTransport;
 use Modules\Item\Models\Category;
+use Modules\Inventory\Exports\ReportInventoryExport;
+use Carbon\Carbon;
 
 
 class InventoryController extends Controller
@@ -66,7 +68,7 @@ class InventoryController extends Controller
 	public function records(Request $request)
 	{
 		$column = $request->input('column');
-		Log::info('column'.$column);
+		//Log::info('column'.$column);
 
 		if ($column == 'warehouse') {
 			//Log::info('entro al if');
@@ -867,6 +869,24 @@ class InventoryController extends Controller
         return [
             'success' => true
         ];
+
+    }
+
+	public function excel(Request $request) {
+
+        $company = Company::first();
+        $records = $this->records($request);
+        $filters = $request->all();
+        $usuario_log = auth()->user();
+        $fechaActual = date('d/m/Y');
+
+        return (new ReportInventoryExport)
+                ->records($records)
+                ->company($company)
+                ->filters($filters)
+                ->usuario_log($usuario_log)
+                ->fechaActual($fechaActual)
+                ->download('Lista_Inventarios_'.Carbon::now().'.xlsx');
 
     }
 }

@@ -151,6 +151,7 @@
                     Route::post('import', 'InventoryController@import');
                     Route::get('print/{id}/{type}','InventoryController@print');
                     Route::post('email','InventoryController@email');
+                    Route::get('excel', 'InventoryController@excel');
                     /**
                      * inventory/moves
                      * inventory/remove
