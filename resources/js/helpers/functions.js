@@ -1,8 +1,10 @@
 import { isArray, isSet, round } from "lodash";
 
-function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv, currency_type_id_def = null, change_currency = 0) {
+function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv = null, currency_type_id_def = null, change_currency = 0) {
     //console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
+    console.log("OLD ROW: ", row_old);
+
     let currency_type_id_old = row_old.item.currency_type_id
     let unit_price = parseFloat(row_old.unit_price)
     let unit_value_est = parseFloat(row_old.item.sale_unit_price)
@@ -26,7 +28,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    console.log("OLD ROW: ", row_old);
+    console.log("OLD ROW 2: ", row_old);
 
     let row = {
         item_id: row_old.item.id,

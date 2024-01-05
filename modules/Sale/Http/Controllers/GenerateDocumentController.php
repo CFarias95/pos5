@@ -19,7 +19,8 @@
     use Illuminate\Database\QueryException;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\DB;
-    use Modules\Finance\Traits\FinanceTrait;
+use Illuminate\Support\Facades\Log;
+use Modules\Finance\Traits\FinanceTrait;
     use Modules\Sale\Http\Resources\TechnicalServiceResource;
     use Modules\Sale\Models\TechnicalService;
 
@@ -74,6 +75,8 @@
 
         public function store(Request $request)
         {
+            Log::error("Store de generate document controller");
+
             DB::connection('tenant')->beginTransaction();
             try {
                 $inputs = $request->all();
@@ -121,6 +124,7 @@
 
             } catch (Exception $e) {
                 DB::connection('tenant')->rollBack();
+                Log::error($e);
                 return [
                     'success' => false,
                     'message' => $e->getFile() . '-' . $e->getLine() . '-' . $e->getMessage()

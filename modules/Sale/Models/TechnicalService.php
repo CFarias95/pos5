@@ -424,7 +424,7 @@
             }
 
             $service = Item::find($this->service_id);
-
+            
             $data = array_merge($this->toArray(), [
                 'id' => $this->id,
                 'soap_type_id' => $this->soap_type_id,

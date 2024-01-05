@@ -239,7 +239,7 @@ if($current_hostname) {
         Route::prefix('generate-document')->group(function () {
             Route::get('/record/{table}/{record}', 'GenerateDocumentController@record');
             Route::get('/tables', 'GenerateDocumentController@tables');
-            Route::post('/', 'GenerateDocumentController@store');
+            Route::post('', 'GenerateDocumentController@store');
             Route::post('/customers', 'GenerateDocumentController@customers');
 //            Route::post('/store_item', 'GenerateDocumentController@storeItem');
         });

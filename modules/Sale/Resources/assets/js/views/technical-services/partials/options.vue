@@ -325,55 +325,60 @@ export default {
                     this.record = response.data.data;
                     this.form.establishment_id = this.establishment.id;
                     this.form.customer_id = this.record.customer_id;
-                    // this.form.date_of_issue = this.record.date_of_issue;
-                    // this.form.time_of_issue = this.record.time_of_issue;
                     this.form.date_of_due = this.record.date_of_issue;
-                    // this.form.items.push({
-                    //     'description': `Descripción: ${this.record.description+"\n"}Estado: ${this.record.state+"\n"}Razón: ${this.record.reason+"\n"}`,
-                    //     'unit_price': this.record.cost
-                    // });
+                    console.log('ervice',this.record.service)
+                    let itemServiceNew = this.record.service;
                     let total = _.round(parseFloat(this.record.cost), 2);
                     let unit_value = this.record.cost / (1 + this.percentageIgv);
                     let total_taxed = _.round(unit_value, 2);
                     let total_igv = _.round(total - total_taxed, 2);
                     let item_description = `Descripción: ${this.record.description}, Estado: ${this.record.state}, Razón: ${this.record.reason + "\n"}`;
+
                     if (this.record.items !== undefined) {
                         this.form.items = this.record.items
                     }
+
                     let itemService = this.record.service
-                    itemService.unit_price =  this.record.cost
-                    itemService.name_product_pdf = item_description
+                    itemService.affectation_igv_type_id = response.data.data.service.sale_affectation_igv_type_id
+                    itemService.item = {
+                        'currency_type_id': this.record.service.currency_type_id
+                    }
+
+                    itemService.unit_price =  0//this.record.cost;
+                    itemService.unit_value =  this.record.cost
+                    itemService.quantity = 1
+                    itemService.name_product_pdf = item_description;
 
                     let row = calculateRowItem(itemService, this.config.currency_type_id, this.exchange_rate_sale, this.percentageIgv);
                     console.log('calculated item',row)
 
                     this.form.technical_service_id = this.recordId
-                    this.form.items.push(row);
-                    /*
+                    console.log('item',itemServiceNew)
+
                     this.form.items.push({
-                        'id': null,
-                        'item_id': this.record.service_id,
+                        'id':  null,
+                        'item_id': row.item_id,
+                        'item': itemServiceNew,
                         'internal_id': this.record.service.internal_id,
                         'item_type_id': this.record.service.item_type_id,
-                        'has_igv': this.record.service.has_igv,
-                        'price_type_id': '01',
+                        'has_igv': row.has_igv,
+                        'price_type_id': row.price_type_id,
                         'unit_type_id': 'ZZ',
-                        'affectation_igv_type_id': this.record.service.affectation_igv_type_id,
-                        'description': this.record.service.description,
-                        'percentage_igv': this.percentageIgv * 100,
-                        'currency_type_id': 'USD',
-                        'unit_value': unit_value,
-                        'unit_price': total,
-                        'total_base_igv': total_taxed,
-                        'total_igv': total_igv,
-                        'total_value': total_taxed,
-                        'total_taxes': total_igv,
-                        'total': total,
+                        'affectation_igv_type_id': row.affectation_igv_type_id,
+                        'description': item_description,
+                        'percentage_igv': row.percentage_igv,
+                        'currency_type_id': row.currency_type_id,
+                        'unit_value': row.unit_value,
+                        'unit_price': row.unit_price,
+                        'total_base_igv': row.total_base_igv,
+                        'total_igv': row.total_igv,
+                        'total_value': row.total_value,
+                        'total_taxes': row.total_taxes,
+                        'total': row.total,
                         'quantity': 1,
                         'discounts': [],
                         'charges': [],
                     });
-                    */
                     total = 0;
                     total_taxed = 0
                     total_igv = 0
@@ -382,18 +387,17 @@ export default {
                         total_igv += row.total_igv;
                         total_taxed += row.total_value;
                     });
-
-                    this.form.items = this.onPrepareItems(this.form.items)
+                    //this.form.items = this.onPrepareItems(this.form.items)
                     this.form.total_taxed = total_taxed;
                     this.form.total_igv = total_igv;
                     this.form.total_taxes = total_igv;
                     this.form.total_value = total_taxed;
                     this.form.total = total;
-
                     this.form.payments = this.record.payments
                     this.form.has_document_sale_note = this.record.has_document_sale_note
-
                     this.titleDialog = `Servicio de soporte técnico`;
+
+                    console.log('ITEMS: ',this.form.items)
                 });
 
             this.loading = false;
@@ -640,12 +644,13 @@ export default {
 
             } else {
 
+                this.loading_submit = true;
+                console.log(`/generate-document`,this.form)
                 await this.$http.post(`/generate-document`, this.form)
                     .then((response) => {
                         if (response.data.success) {
                             // console.log(response.data.data);
                             this.documentNewId = response.data.data.id;
-
                             this.getRecord()
 
                             if (this.form.document_type_id === "nv") {
@@ -663,10 +668,11 @@ export default {
                         }
                     })
                     .catch((error) => {
-                        if (error.response.status === 422) {
+                        console.log('error',error)
+                        if (error && error.response && error.response.status === 422) {
                             this.errors = error.response.data;
                         } else {
-                            this.$message.error(error.response.data.message);
+                            //this.$message.error(error.response.data.message);
                         }
                     })
                     .finally(() => {
