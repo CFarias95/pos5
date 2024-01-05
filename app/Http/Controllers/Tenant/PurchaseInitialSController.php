@@ -92,14 +92,12 @@ class PurchaseInitialSController extends Controller
 
             try{
                 $CI = $item->CI;
-
                 $numDoc = $item->documento;
                 $fechaDoc = date($item->fecha);
                 $fecha = date_create_from_format("d/m/Y", $item->fecha)->format("Y-m-d");
                 $time = date_create_from_format("d/m/Y", $item->fecha)->format("h:i:s");
                 $fechaVenci = date_create_from_format("d/m/Y", $item->vencimiento)->format("Y-m-d");
                 $importe =  floatval(str_replace(',','.',$item->importe));
-
                 $numero = Purchase::where('establishment_id', 1)->where('series', 'CC')->get()->max('number');
                 $supplier = Person::where('number',$CI)->first();
                 $purchase = new Purchase();
@@ -425,9 +423,7 @@ class PurchaseInitialSController extends Controller
 
         $retention_types_iva = RetentionType::where('type_id', '02')->whereActive()->get();
         $retention_types_income = RetentionType::where('type_id', '01')->whereActive()->get();
-
         $retention_types_purch = RetentionTypePurchase::get();
-
         $operation_types = OperationType::whereActive()->get();
         $is_client = $this->getIsClient();
         $configuration = Configuration::first();
@@ -457,9 +453,7 @@ class PurchaseInitialSController extends Controller
 
     public function record($id)
     {
-
         $record = new PurchaseResource(Purchase::findOrFail($id));
-
         return $record;
     }
 
@@ -475,7 +469,6 @@ class PurchaseInitialSController extends Controller
         $docIntern = PurchaseDocumentTypes2::where('idType', $request->document_type_intern)->get();
         $alteraStock = (bool)($docIntern && $docIntern[0]->stock) ? $docIntern[0]->stock : 0;
         $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
-
         $validar = Purchase::where('supplier_id', $data['supplier_id'])->where('sequential_number', $data['sequential_number'])->get();
         if ($validar && $validar->count() > 0) {
             return [
@@ -483,6 +476,7 @@ class PurchaseInitialSController extends Controller
                 'message' => 'La factura ' . $data['sequential_number'] . ' ya se encuentra registrada con ese proveedor',
             ];
         }
+
         try {
             $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
                 $numero = Purchase::where('establishment_id', $data['establishment_id'])->where('series', $data['series'])->count();
