@@ -123,10 +123,10 @@ class PurchaseInitialSController extends Controller
                 $purchase->total_value = $importe;
                 $purchase->total = $importe;
                 $purchase->sequential_number = $numDoc;
-                $purchase->document_type_intern = 'SI'; //ID documento INTERNO
+                $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
                 $purchase->save();
 
-                $item = Item::find(90); //cambiar al ID del ITEM basico
+                $item = Item::find(1); //cambiar al ID del ITEM basico
                 $purchaseItem = new PurchaseItem();
                 $purchaseItem->purchase_id = $purchase->id;
                 $purchaseItem->item_id = $item->id;
