@@ -148,9 +148,7 @@ class Facturalo
                         $row['name_product_pdf'] =$item->name.'/'.$item->description;
                     }
                     $document->items()->create($row);
-                    // $row['document_id']=  $document->id;
-                    // $item = new DocumentItem($row);
-                    // $item->push();
+
                 }
                 if( array_key_last($inputs['fee'])){
                     $lastKey = array_key_last($inputs['fee']);

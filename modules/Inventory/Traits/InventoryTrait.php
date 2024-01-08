@@ -388,13 +388,13 @@ trait InventoryTrait
         $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
         $item_warehouse->stock = $item_warehouse->stock + $quantity;
         // dd($item_warehouse->item->unit_type_id);
-        Log::info("updateStock".json_encode($item_warehouse));
+        //Log::info("updateStock".json_encode($item_warehouse));
         if ($quantity < 0 && $item_warehouse->item->unit_type_id !== 'ZZ') {
             if (($inventory_configuration->stock_control) && ($item_warehouse->stock < 0)) {
 
                 // dd('hasta aqui');
                 // return response()->json(['success' => false, 'message' => El producto {$item_warehouse->item->description} no tiene suficiente stock!]);
-                Log::info("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
+                //Log::info("El producto {$item_warehouse->item->description} no tiene suficiente stock!");
                 throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock!",500);
             }
         }
@@ -508,6 +508,8 @@ trait InventoryTrait
     private function updateDataLots($document_item)
     {
         // dd($document_item);
+        //Log::info('updateDataLots',$document_item);
+
         if (isset($document_item->item->IdLoteSelected)) {
             if ($document_item->item->IdLoteSelected != null) {
 

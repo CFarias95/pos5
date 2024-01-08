@@ -440,7 +440,6 @@ export default {
         async submit() {
 
             await this.assignDocument();
-
             let validate_payment_destination = await this.validatePaymentDestination()
 
             if (validate_payment_destination.error_by_item > 0) {
@@ -513,7 +512,11 @@ export default {
                 this.$message.error('El monto es mayor al cupo disponible');
                 this.loading_submit = false;
                 return false;
+
             } else {
+
+                console.log(`/${this.resource_documents}`,this.document)
+
                 this.$http
                     .post(`/${this.resource_documents}`, this.document)
                     .then(response => {

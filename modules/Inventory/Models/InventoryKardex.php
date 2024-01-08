@@ -255,7 +255,7 @@ class InventoryKardex extends ModelTenant
                 // $data['type_transaction'] = "Nota de venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
                 break;
-            case $models[3]:
+            case $models[3]: // MOVIMIENTOS DE INVENTARIO
 
                 $transaction = '';
                 $input = '';
@@ -274,18 +274,18 @@ class InventoryKardex extends ModelTenant
                 if ( $inventory_kardexable && $inventory_kardexable->type != null) {
                     $input = ($inventory_kardexable->type == 1) ? $qty : "-";
                 } else {
-                    $input = ($transaction->type == 'input') ? $qty : "-";
+                    $input = ($transaction && $transaction->type == 'input') ? $qty : "-";
                 }
                 if ($inventory_kardexable && $inventory_kardexable->type != null) {
                     $output = ($inventory_kardexable->type == 2 || $inventory_kardexable->type == 3) ? $qty : "-";
                 } else {
-                    $output = ($transaction->type == 'output') ? $qty : "-";
+                    $output = ($transaction && $transaction->type == 'output') ? $qty : "-";
                 }
                 $user = auth()->user();
                 $data['balance'] = $balance += $qty;
-                $data['type_transaction'] = $inventory_kardexable->description;
+                $data['type_transaction'] = isset($inventory_kardexable->description) ? $inventory_kardexable->description: null;
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
-                if ($inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
+                if ( $inventory_kardexable && $inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
                     $data['input'] = $output;
                     $data['output'] = $input;
                 } else {
@@ -294,8 +294,8 @@ class InventoryKardex extends ModelTenant
                 }
 
                 $data['doc_asoc'] = $movimiento;
-                $data['number'] = 'INV - '.$inventory_kardexable->id;
-                $data['cost'] = ($inventory_kardexable->precio_perso)?$inventory_kardexable->precio_perso:'N/A';
+                $data['number'] = isset($inventory_kardexable->id) ? 'INV - '.$inventory_kardexable->id : 'N/A';
+                $data['cost'] = isset($inventory_kardexable->precio_perso)?$inventory_kardexable->precio_perso:'N/A';
                 break;
 
             case $models[4]:

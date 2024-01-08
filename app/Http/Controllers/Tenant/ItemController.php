@@ -848,7 +848,7 @@ class ItemController extends Controller
         $request->validate([
             'warehouse_id' => 'required|numeric|min:1'
         ]);
-        
+
         if ($request->hasFile('file')) {
             try {
                 $import = new ItemsImport();
@@ -1476,7 +1476,6 @@ class ItemController extends Controller
     {
 
         $items = SearchItemController::getItemsToSupply($request);
-
         return compact('items');
     }
 

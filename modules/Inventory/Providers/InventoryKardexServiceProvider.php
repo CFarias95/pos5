@@ -17,7 +17,7 @@ use Modules\Item\Models\ItemLotsGroup;
 use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Models\DevolutionItem;
 use App\Models\Tenant\DispatchItem;
-
+use Illuminate\Support\Facades\Log;
 
 /**
  * Se debe tener en cuenta este provider para llevar el control de Kardex
@@ -93,6 +93,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         DocumentItem::created(function (DocumentItem $document_item) {
 
+            //Log::info('Sale Created Document Item'. json_encode($document_item));
+
+
             if (!$document_item->item->is_set)
             {
                 $presentationQuantity = (!empty($document_item->item->presentation)) ? $document_item->item->presentation->quantity_unit : 1;
@@ -146,10 +149,12 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
             /*
              * Calculando el stock por lote por factor según la unidad
-             */
+            */
 
-            if(!$document->isGeneratedFromExternalRecord())
-            {
+            //if(!$document->isGeneratedFromExternalRecord())
+            //{
+
+                //Log::info('Item Selected: '.json_encode($document_item->item));
 
                 if (isset($document_item->item->IdLoteSelected))
                 {
@@ -157,9 +162,9 @@ class InventoryKardexServiceProvider extends ServiceProvider
                     {
                         if(is_array($document_item->item->IdLoteSelected))
                         {
+                            //Log::info('isGeneratedFromExternalRecord : '.json_encode($document_item->item->IdLoteSelected));
                             // presentacion - factor de lista de precios
                             $quantity_unit = isset($document_item->item->presentation->quantity_unit) ? $document_item->item->presentation->quantity_unit : 1;
-
                             $lotesSelecteds = $document_item->item->IdLoteSelected;
                             $document_factor = ($document->document_type_id === '07') ? 1 : -1;
 
@@ -192,7 +197,7 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
                     }
                 }
-            }
+            //}
 
             if (isset($document_item->item->lots)) {
                 foreach ($document_item->item->lots as $it) {
