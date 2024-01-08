@@ -700,10 +700,12 @@
                 </section>
               </div>
             </template>
-            <template v-if="configuration.dashboard_products">
+            <!-- <template v-if="configuration.dashboard_products"> -->
+            <template>
               <div class="col-xl-3 col-md-6">
                 <section class="card card-dashboard">
-                  <div class="card-body" v-if="loaders.items_by_sales">
+                  <!-- <div class="card-body" v-if="loaders.items_by_sales"> -->
+                  <!-- <div class="card-body">
                     <template>
                       <loader-graph
                         :rows="4"
@@ -712,18 +714,68 @@
                         :hideCircle="true"
                       ></loader-graph>
                     </template>
-                  </div>
-                  <div class="card-body pb-0" v-show="!loaders.items_by_sales">
+                  </div> -->
+                  <div class="card-body pb-0">
                     <label>Ventas por producto</label>
-                    <div class="mt-3">
+                    <!-- <div class="mt-3">
                       <el-checkbox
                         v-model="form.enabled_move_item"
                         @change="loadDataAditional"
                         >Ordenar por movimientos</el-checkbox
                       ><br />
-                    </div>
+                    </div> -->
                   </div>
-                  <div class="card-body p-0" v-show="!loaders.items_by_sales">
+                  <div class="card-body p-0">
+                    <table class="table mb-0 table-sm">
+                      <thead>
+                        <slot
+                          v-for="(key, value) in ventas_producto_header"
+                          :index="customIndex(value)"
+                          :row="key"
+                        >
+                          <tr slot="heading" :key="value">
+                            <th
+                              v-for="(value1, name) in key"
+                              :index="customIndex(name)"
+                              :row="value1"
+                              class=""
+                              slot="heading"
+                              :key="name"
+                            >
+                              <strong>{{ value1 }}</strong>
+                            </th>
+                          </tr>
+                        </slot>
+                      </thead>
+                      <tbody>
+                        <slot
+                          v-for="(row, index) in ventas_productoSP"
+                          :index="customIndex(index)"
+                          :row="row"
+                        >
+                          <tr v-for="valor in row" :row="valor" class="" slot="heading">
+                            <td
+                              v-for="(obj, nombre) in valor"
+                              :index="customIndex(nombre)"
+                              :row="obj"
+                              :key="nombre"
+                            >
+                              {{ isFinite(obj) ? parseFloat(obj).toFixed(2) : obj }}
+                            </td>
+                          </tr>
+                        </slot>
+                      </tbody>
+                    </table>
+                    <el-pagination
+                      :current-page.sync="pagination.current_page"
+                      :page-size="pagination.per_page"
+                      :total="pagination.total"
+                      layout="total, prev, pager, next"
+                      @current-change="ventas_productoSP"
+                    >
+                    </el-pagination>
+                  </div>
+                  <!-- <div class="card-body p-0" v-show="!loaders.items_by_sales">
                     <div class="table-responsive">
                       <table class="table">
                         <thead>
@@ -762,7 +814,7 @@
                     <a class="btn btn-primary btn-sm" href="dashboard/sales-by-product"
                       >Ver todo</a
                     >
-                  </div>
+                  </div> -->
                 </section>
               </div>
             </template>
@@ -933,6 +985,8 @@ export default {
       saleNote_headers: [],
       comprobantes_headers: [],
       comprobantesSP: [],
+      ventas_productoSP: [],
+      ventas_producto_header: [],
     };
   },
   async created() {
@@ -1046,6 +1100,7 @@ export default {
       this.changeStock();
       this.getSaleNoteSP();
       this.getComprobantesSP();
+      this.getVentasProductoSP();
     },
     changeStock() {
       this.$eventHub.$emit("changeStock", this.form.establishment_id);
@@ -1143,6 +1198,21 @@ export default {
           this.comprobantes_headers = this.comprobantesSP[this.comprobantesSP.length - 1];
           let len = this.comprobantesSP.length;
           this.comprobantesSP.splice(len - 1, 1);
+          this.pagination = response.data.meta;
+          this.pagination.per_page = parseInt(response.data.meta.per_page);
+        });
+    },
+    getVentasProductoSP() {
+      return this.$http
+        .get(`/${this.resource}/ventas_prodcuto_data?${this.getQueryParameters()}`)
+        .then((response) => {
+          this.ventas_productoSP = response.data.data;
+          //console.log("SaleNote", this.saleNotesSP);
+          this.ventas_producto_header = this.ventas_productoSP[
+            this.ventas_productoSP.length - 1
+          ];
+          let len = this.ventas_productoSP.length;
+          this.ventas_productoSP.splice(len - 1, 1);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });

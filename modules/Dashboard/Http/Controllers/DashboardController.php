@@ -23,6 +23,7 @@ use App\Models\Tenant\ConfigurationCash;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Log;
 use Modules\Dashboard\Http\Resources\DashboardSaleNoteSPCollection;
+use Modules\Dashboard\Http\Resources\DashboardVentasProductoSPCollection;
 use Modules\Dashboard\Http\Resources\DashboardVentasVendedorSPCollection;
 
 /**
@@ -210,9 +211,32 @@ class DashboardController extends Controller
             break;
         }
 
-        //Log::info('sp - '.json_encode($sp));
-        //Log::info('sp1 - '.json_encode($sp1));
-        //Log::info('sp2 - '.json_encode($sp2));
+        $collection = collect($sp);
+        $per_page = (config('tenant.items_per_page'));
+        $page = request()->query('page') ?? 1;
+        $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
+        $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
+        $paginatedCollection['datos'] = $sp2;
+
+
+        return new DashboardVentasVendedorSPCollection($paginatedCollection);
+    }
+
+    public function ventas_productoSP(Request $request)
+    {
+        $sp = DB::connection('tenant')->select("CALL SP_Ventas_Productos(?,?);", [$request->date_start, $request->date_end]);
+
+        $sp1 = array();
+        $sp2 = [];
+        foreach($sp as $row)
+        {
+            foreach($row as $key => $data)
+            {
+                array_push($sp1, $data);
+                array_push($sp2, $key);
+            }
+            break;
+        }
 
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
@@ -221,9 +245,8 @@ class DashboardController extends Controller
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
         $paginatedCollection['datos'] = $sp2;
 
-        //Log::info('sp - '.$collection);
 
-        return new DashboardVentasVendedorSPCollection($paginatedCollection);
+        return new DashboardVentasProductoSPCollection($paginatedCollection);
     }
 
     public function graph_sale_noteSP(Request $request)

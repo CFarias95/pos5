@@ -23,6 +23,7 @@ if($current_hostname) {
                 Route::get('sales-by-product', 'DashboardController@salesByProduct');
                 Route::get('sale_note_data', 'DashboardController@saleNoteSP');
                 Route::get('comprobantes_data', 'DashboardController@comprobantesSP');
+                Route::get('ventas_prodcuto_data', 'DashboardController@ventas_productoSP');
             });
 
             //Commands
