@@ -252,6 +252,7 @@
             if (!empty($input)) {
 
                 $whereItem[] = ['name', 'like', '%' . str_replace(' ','%',$input) . '%'];
+                $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
@@ -797,7 +798,7 @@
             $desc = "{$desc} - {$brand}";
 
             return [
-                'full_description' => $desc,
+                'full_description' => $item->name.' / '.$item->description.' / '.$item->model.' / '.$item->internal_id,
                 'brand' => $brand,
                 'category' => $category,
                 'stock' => $stock,
