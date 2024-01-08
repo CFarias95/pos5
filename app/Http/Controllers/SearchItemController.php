@@ -794,7 +794,6 @@
                 $stock = '';
             }
 
-
             $desc = "{$desc} - {$brand}";
 
             return [
@@ -1142,7 +1141,7 @@
             $category = ($item->category) ? " - {$item->category->name}" : "";
             $brand = ($item->brand) ? " - {$item->brand->name}" : "";
 
-            $desc = "{$desc} {$category} {$brand}";
+            $desc = "{$item->name}- {$item->description } - {$category} {$brand}";
 
             return $desc;
         }

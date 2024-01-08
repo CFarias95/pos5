@@ -243,9 +243,9 @@
               <div :class="{ 'has-danger': errors.validity }" class="form-group">
                 <label class="control-label">Días de vencimiento</label>
                 <el-input-number
-                  step="1"
-                  max="9999999999"
-                  min="0"
+                  :step="1"
+                  :max="9999999999"
+                  :min="0"
                   v-model="form.validity"
                 ></el-input-number>
                 <small
@@ -735,9 +735,9 @@
                       <td width="150">
                         <el-input
                           v-model="item.price"
-                          min="0"
+                          :min="0"
                           placeholder="Precio"
-                          step="0.01"
+                          :step="0.01"
                           type="number"
                         ></el-input>
                       </td>
@@ -1186,7 +1186,7 @@
                   v-model="form.purchase_mean_cost"
                   dusk="purchase_unit_price"
                   type="number"
-                  step="0.0001"
+                  :step="0.0001"
                 ></el-input>
                 <small
                   v-if="errors.purchase_mean_cost"
@@ -1417,7 +1417,7 @@
                     >
                         <div slot="content" v-html="ItemSlotTooltipView(item)"></div>
                         <el-option
-                          :label="item.name"
+                          :label="ItemOptionDescriptionView(item)"
                           :value="item.id"
                         ></el-option>
 
@@ -1513,7 +1513,7 @@
                         <el-input
                           type="number"
                           v-model="row.quantity"
-                          step="0.000001"
+                          :step="0.000001"
                         ></el-input>
                       </td>
 
@@ -1541,16 +1541,16 @@
                         <el-input
                           type="number"
                           v-model="row.cost_per_unit"
-                          min="0"
-                          step="0.01"
+                          :min="0"
+                          :step="0.01"
                         ></el-input>
                       </td>
                       <td>
                         <el-input
                           type="number"
                           v-model="row.cost_total"
-                          min="0"
-                          step="0.01"
+                          :min="0"
+                          :step="0.01"
                         ></el-input>
                       </td>
                       <button
@@ -1830,6 +1830,7 @@ export default {
       form_brand: { add: false, name: null, id: null },
       warehouses: [],
       items: [],
+      item_selected:[],
       loading_submit: false,
       showPercentagePerception: false,
       has_percentage_perception: false,
@@ -2009,7 +2010,7 @@ export default {
       } else {
         this.noSaveForm = false;
       }
-      this.porcentajeT = total;
+      this.porcentajeT = _.round(total,6);
     },
     clickCancelRate(index) {
       this.form.item_rate.splice(index, 1);
@@ -2539,14 +2540,17 @@ export default {
     },
     changeItem() {
       //this.getItems();
-      console.log("item suppli: ", this.item_suplly);
-      this.item_suplly = _.find(this.items, { id: this.item_suplly });
-      console.log("item suppli: ", this.item_suplly);
+      console.log("item suppli pre: ", this.item_suplly);
+      this.item_selected = _.find(this.items, { id: this.item_suplly });
+      this.item_suplly = this.item_selected.id;
+      console.log("item suppli pos: ", this.item_suplly);
+      console.log("item selected: ",this.item_selected)
       //this.item_suplly.percentage_decimal = 0
       //this.clickAddSupply();
     },
     focusSelectItem() {
       this.$refs.selectSearchNormal.$el.getElementsByTagName("input")[0].focus();
+      console.log('Focus selected item: ',this.$refs.selectSearchNormal.$el.getElementsByTagName("input")[0].focus())
     },
     ItemSlotTooltipView(item) {
       return ItemSlotTooltip(item);
@@ -2558,7 +2562,7 @@ export default {
       //this.changeItem();
       // item_supplies
       if (this.form.supplies === undefined) this.form.supplies = [];
-      let item = this.item_suplly;
+      let item = this.item_selected; //this.item_suplly;
       if (item === null) return false;
       if (item === undefined) return false;
       if (item.id === undefined) return false;
