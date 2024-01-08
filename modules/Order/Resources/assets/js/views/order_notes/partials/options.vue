@@ -528,12 +528,8 @@ export default {
                                 this.showDialogDocumentOptions = true;
                             }
 
-                            //this.saveCashDocument();
-
                             this.$eventHub.$emit("reloadData");
-                            //this.resetDocument();
-                            //this.document.customer_id = this.form.order_note.customer_id;
-                            //this.changeCustomer();
+
                         } else {
                             this.$message.error(response.data.message);
                         }
@@ -596,6 +592,7 @@ export default {
             this.document.total = q.total;
             this.document.operation_type_id = "0101";
             // this.document.date_of_due = q.date_of_issue
+            console.log(q.items);
             this.document.items = this.getDataItems(q.items);
             // this.document.items = q.items;
             this.document.charges = q.charges;
@@ -640,6 +637,7 @@ export default {
                     if (row.item.IdLoteSelected) {
                         if (Array.isArray(row.item.IdLoteSelected)) {
                             row.IdLoteSelected = row.item.IdLoteSelected
+                            row.lots_group = null
                         }
                     }
                     else {

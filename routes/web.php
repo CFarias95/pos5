@@ -28,6 +28,10 @@ if ($hostname) {
         Route::get('retentions/print/{external_id}/{format?}', 'Tenant\RetentionsControllers@toPrint');
         Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
 
+        //TEMPORAL CERATE SALDOS INICIALES
+
+        Route::get('purchases/create/inicial', 'Tenant\PurchaseInitialSController@create');
+
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
             Route::get('list-reports', 'Tenant\SettingController@listReports');

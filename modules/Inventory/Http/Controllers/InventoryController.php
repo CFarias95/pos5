@@ -266,6 +266,9 @@ class InventoryController extends Controller
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;
 
 			if ($type == 'input') {
+
+                $validar = ItemLotsGroup::where('item_id',$item_id)->where('code',$lot_code)->first();
+
 				foreach ($lots as $lot) {
 
 					$inventory->lots()->create([
@@ -279,12 +282,31 @@ class InventoryController extends Controller
 				}
 
 				if ($lots_enabled) {
-					ItemLotsGroup::create([
-						'code'         => $lot_code,
-						'quantity'     => $quantity,
-						'date_of_due'  => $request->date_of_due,
-						'item_id'      => $item_id
-					]);
+
+                    $validar = ItemLotsGroup::where('item_id',$item_id)->where('code',$lot_code)->first();
+                    if(isset($validar) && $validar != ''){
+                        if($validar->date_of_due != $request->date_of_due){
+                            $inventory->delete();
+                            return  [
+                                'success' => false,
+                                'message' => 'Ya existe un lote con el código '.$lot_code.' pero la fecha de vencimiento ingresada no coincide'.$validar->date_of_due.' / '.$request->date_of_due,
+                                'id' => null,
+                                'email' => 'carlos.farias@joinec.net'
+                            ];
+                        }else{
+
+                            $validar->quantity = $validar->quantity + $quantity;
+                            $validar->save();
+                        }
+                    }else{
+                        ItemLotsGroup::create([
+                            'code'         => $lot_code,
+                            'quantity'     => $quantity,
+                            'date_of_due'  => $request->date_of_due,
+                            'item_id'      => $item_id
+                        ]);
+                    }
+
 				}
 			} else {
 				foreach ($lots as $lot) {

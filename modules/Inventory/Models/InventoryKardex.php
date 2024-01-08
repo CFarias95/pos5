@@ -263,20 +263,20 @@ class InventoryKardex extends ModelTenant
                 $tranfer = '';
                 $movimiento = '-';
 
-                if($inventory_kardexable->warehouse_destination_id){
+                if($inventory_kardexable && isset($inventory_kardexable->warehouse_destination_id)){
                     $origenW = Warehouse::find($inventory_kardexable->warehouse_id);
                     $destinoW = Warehouse::find($inventory_kardexable->warehouse_destination_id);
                     $movimiento = $origenW->establishment->description. '/'.$destinoW->establishment->description;
                 }
-                if (!$inventory_kardexable->type) {
+                if ($inventory_kardexable && !$inventory_kardexable->type) {
                     $transaction = InventoryTransaction::findOrFail($inventory_kardexable->inventory_transaction_id);
                 }
-                if ($inventory_kardexable->type != null) {
+                if ( $inventory_kardexable && $inventory_kardexable->type != null) {
                     $input = ($inventory_kardexable->type == 1) ? $qty : "-";
                 } else {
                     $input = ($transaction->type == 'input') ? $qty : "-";
                 }
-                if ($inventory_kardexable->type != null) {
+                if ($inventory_kardexable && $inventory_kardexable->type != null) {
                     $output = ($inventory_kardexable->type == 2 || $inventory_kardexable->type == 3) ? $qty : "-";
                 } else {
                     $output = ($transaction->type == 'output') ? $qty : "-";

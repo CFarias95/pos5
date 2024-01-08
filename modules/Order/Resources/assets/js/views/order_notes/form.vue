@@ -221,7 +221,7 @@
                             <div class="col-lg-12 col-md-6 d-flex align-items-end">
                                 <div class="form-group">
                                     <button type="button" class="btn waves-effect waves-light btn-primary"
-                                            @click.prevent="showDialogAddItem = true">+ Agregar Producto
+                                            @click.prevent="clickEditItem(null,null)">+ Agregar Producto
                                     </button>
                                 </div>
                             </div>
@@ -799,9 +799,12 @@ export default {
             }
         },
         clickEditItem(row, index){
-            console.log(index,row)
-            row.indexi = index
-            this.recordItem = row
+            if(row){
+                console.log(index,row)
+                row.indexi = index
+                this.recordItem = row
+            }
+
             this.showDialogAddItem = true;
         },
     },
