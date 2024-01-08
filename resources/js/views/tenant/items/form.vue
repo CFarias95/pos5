@@ -1497,9 +1497,9 @@
                       <!--                                        <td>{{ row.item_id }}</td>-->
                       <td>
                         {{
-                          (row.individual_item && (row.individual_item.description || row.individual_item.name))
-                            ? row.individual_item.name + ' / '+ row.individual_item.description
-                            : row.name + ' / '+ row.description
+                          (row.name || row.description )
+                            ? row.name + ' / '+ row.description
+                            : row.individual_item.name + ' / '+ row.individual_item.description
                         }}
                       </td>
                       <!-- <td>{{ row.description }}</td> -->
