@@ -1497,7 +1497,7 @@
                       <!--                                        <td>{{ row.item_id }}</td>-->
                       <td>
                         {{
-                          (row.individual_item && row.individual_item.description)
+                          (row.individual_item && (row.individual_item.description || row.individual_item.name))
                             ? row.individual_item.name + ' / '+ row.individual_item.description
                             : row.name + ' / '+ row.description
                         }}
@@ -2288,10 +2288,12 @@ export default {
             //         return w;
             //     });
             // }
-          });
+        });
+        this.calcularCantidad();
       }
 
       this.setDataToItemWarehousePrices();
+
     },
     setDataToItemWarehousePrices() {
       this.warehouses.forEach((warehouse) => {
