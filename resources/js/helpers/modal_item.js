@@ -4,6 +4,7 @@
  */
 function ItemOptionDescription(item) {
     let data = '';
+
     if (item !== undefined && item.full_description !== undefined ) {
         data += item.full_description ;
     }

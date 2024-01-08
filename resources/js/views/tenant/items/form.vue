@@ -1403,23 +1403,25 @@
                       :loading="loading_search"
                       :remote-method="searchRemoteItems"
                       filterable
+                      clearable
                       placeholder="Buscar"
                       popper-class="el-select-items"
                       remote
                       @change="changeItem"
                       @focus="focusSelectItem"
                     >
-                      <el-tooltip
-                        v-for="option in items"
-                        :key="option.id"
+                    <el-tooltip
+                        v-for="item in items"
+                        :key="item.id"
                         placement="left"
-                      >
-                        <div slot="content" v-html="ItemSlotTooltipView(option)"></div>
+                    >
+                        <div slot="content" v-html="ItemSlotTooltipView(item)"></div>
                         <el-option
-                          :label="ItemOptionDescriptionView(option)"
-                          :value="option.id"
+                          :label="item.name"
+                          :value="item.id"
                         ></el-option>
-                      </el-tooltip>
+
+                    </el-tooltip>
                     </el-select>
                   </el-input>
                 </template>
@@ -1496,8 +1498,8 @@
                       <td>
                         {{
                           row.individual_item
-                            ? row.individual_item.description
-                            : row.description
+                            ? row.individual_item.name + ' / '+ row.individual_item.description
+                            : row.name + ' / '+ row.description
                         }}
                       </td>
                       <!-- <td>{{ row.description }}</td> -->
@@ -2537,6 +2539,7 @@ export default {
     },
     changeItem() {
       //this.getItems();
+      console.log("item suppli: ", this.item_suplly);
       this.item_suplly = _.find(this.items, { id: this.item_suplly });
       console.log("item suppli: ", this.item_suplly);
       //this.item_suplly.percentage_decimal = 0
