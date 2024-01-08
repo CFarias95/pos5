@@ -1497,7 +1497,7 @@
                       <!--                                        <td>{{ row.item_id }}</td>-->
                       <td>
                         {{
-                          row.individual_item
+                          (row.individual_item && row.individual_item.description)
                             ? row.individual_item.name + ' / '+ row.individual_item.description
                             : row.name + ' / '+ row.description
                         }}
@@ -2568,7 +2568,6 @@ export default {
       if (item.id === undefined) return false;
       this.items = [];
       this.item_suplly = {};
-
       item.item_id = this.form.id;
       //item.individual_item_id = item.id
       item.individual_item_id = item.id;
@@ -2579,7 +2578,7 @@ export default {
         tipo: item.unit_type_id,
       }),
         //item.total_producir = this.form.supplies.total_producir
-        this.form.supplies.push(item);
+    this.form.supplies.push(item);
       this.calcularCantidad();
       //this.changeItem()
     },
