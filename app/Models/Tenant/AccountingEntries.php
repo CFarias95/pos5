@@ -68,7 +68,7 @@ class AccountingEntries extends ModelTenant
     }
     public function items()
     {
-        return $this->hasMany(AccountingEntryItems::class,'accounting_entrie_id','id');
+        return $this->hasMany(AccountingEntryItems::class,'accounting_entrie_id','id')->orderBy('haber','asc');
     }
 
     public function user()
