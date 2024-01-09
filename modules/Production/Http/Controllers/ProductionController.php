@@ -189,7 +189,7 @@ class ProductionController extends Controller
                     $qty = $item['quantityD'] ?? 0;
                     $production_supply->production_name = $production->name;
                     $production_supply->production_id = $production_id;
-                    $production_supply->item_supply_name = $item['individual_item'] ? $item['individual_item']['name'] .' / '. $item['individual_item']['description']  : $item['description'];
+                    $production_supply->item_supply_name = isset($item['individual_item']) ? $item['individual_item']['name'] .' / '. $item['individual_item']['description']  : $item['description'];
                     $production_supply->item_supply_id = $item['id'];
                     $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                     $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
