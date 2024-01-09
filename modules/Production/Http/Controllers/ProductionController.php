@@ -777,7 +777,7 @@ class ProductionController extends Controller
             // Salida insumos por molino
 
             foreach ($items_supplies as $item) {
-                Log::info($item);
+                //Log::info($item);
                 if ($item['unit_type'] != 'Servicio') {
                     $qty = $item['quantity'] ?? 0;
                     $inventory_it = new Inventory();
@@ -942,10 +942,10 @@ class ProductionController extends Controller
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
-                Log::info("ITEM SUPPLIES GLOBAL: ".json_encode($supplies));
+                //Log::info("ITEM SUPPLIES GLOBAL: ".json_encode($supplies));
                 $transformed_supplies = [];
                 foreach ($supplies as $value) {
-                    Log::info("ITEM SUPPLIES: ".json_encode($value));
+                    //Log::info("ITEM SUPPLIES: ".json_encode($value));
                     $lots_group = $value["individual_item"]["lots_group"];
 
                     foreach ($lots_group as $lot) {
