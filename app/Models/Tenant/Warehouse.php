@@ -22,7 +22,8 @@ class Warehouse extends ModelTenant
      *
      *
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
-     */
+    */
+
     public function inventory_kardex()
     {
         return $this->hasMany(InventoryKardex::class);

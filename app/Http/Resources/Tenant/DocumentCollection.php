@@ -3,7 +3,11 @@
 namespace App\Http\Resources\Tenant;
 
 use App\Models\Tenant\EmailSendLog;
+use App\Models\Tenant\Establishment;
+use App\Models\Tenant\Item;
+use App\Models\Tenant\Warehouse;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Illuminate\Support\Facades\Log;
 
 class DocumentCollection extends ResourceCollection
 {
@@ -195,7 +199,6 @@ class DocumentCollection extends ResourceCollection
                 'email_send_it' => $email_send_it,
                 'email_send_it_array' => $email_send_it_array,
                 'external_id' => $row->external_id,
-
                 'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
                     return [
                         'id' => $row->id,
@@ -221,6 +224,17 @@ class DocumentCollection extends ResourceCollection
                 'btn_force_send_by_summary' => $row->isAvailableForceSendBySummary(),
                 'btn_retention' => $btn_retention,
                 'aproved' => $row->aproved,
+                'items' => $row->items->transform(function($row){
+                    //$warehouse = $row->warehouse_id;
+                    $establishment = Warehouse::find($row->warehouse_id);
+                    $item = Item::find($row->item_id);
+
+                    return[
+                        'item' => $item->name.' / '.$item->description,
+                        'quantity' => $row->quantity,
+                        'establishment' => $establishment->description,
+                    ];
+                }),
             ];
         });
     }

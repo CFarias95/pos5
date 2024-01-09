@@ -53,7 +53,6 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => array(
-                //PDO::ATTR_EMULATE_PREPARES => true,
                 PDO::MYSQL_ATTR_LOCAL_INFILE => true,
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
             ),
@@ -97,7 +96,6 @@ return [
             'strict' => true,
             'engine' => null,
             'options' => array_filter([
-                //PDO::ATTR_EMULATE_PREPARES => true,
                 PDO::MYSQL_ATTR_LOCAL_INFILE => true,
                 PDO::MYSQL_ATTR_USE_BUFFERED_QUERY => true
             ]),

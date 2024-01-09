@@ -85,6 +85,7 @@
                         </th>
                         <th>Cliente</th>
                         <th>Número</th>
+                        <th>Productos</th>
                         <th v-if="columns.notes.visible">Notas C/D</th>
                         <th v-if="columns.dispatch.visible">Guía de Remisión</th>
                         <th v-if="columns.sales_note.visible">Nota de venta</th>
@@ -96,9 +97,7 @@
                         <th class="text-center" v-if="columns.currency_type_id.visible">Moneda</th>
                         <th class="text-right" v-if="columns.guides.visible">Guia
                         </th>
-
                         <th class="text-center" v-if="columns.plate_numbers.visible">Placa</th>
-
                         <th class="text-right" v-if="columns.total_exportation.visible">T.Exportación
                         </th>
                         <th class="text-right" v-if="columns.total_free.visible">T.Gratuita
@@ -142,6 +141,19 @@
                         <td>{{ row.number }}<br />
                             <small v-text="row.document_type_description"></small><br />
                             <small v-if="row.affected_document" v-text="row.affected_document"></small>
+                        </td>
+                        <td>
+                            <el-popover
+                                placement="right"
+                                width="400"
+                                trigger="click">
+                                <el-table :data="row.items">
+                                    <el-table-column width="80" property="item" label="Item"></el-table-column>
+                                    <el-table-column width="220" property="establishment" label="Bodega"></el-table-column>
+                                    <el-table-column width="90" property="quantity" label="Cantidad"></el-table-column>
+                                </el-table>
+                                <el-button slot="reference"> <i class="fa fa-eye"></i></el-button>
+                            </el-popover>
                         </td>
                         <td v-if="columns.notes.visible">
                             <template v-for="(row, index) in row.notes">

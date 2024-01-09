@@ -291,14 +291,12 @@ class UnpaidController extends Controller
     }
 
     public function toPrint($external_id,$type,$format, $id, $index) {
-        //Log::info('index'.$index);
+        
         if ($type=='sale') {
             $sale_note = SaleNote::where('external_id', $external_id)->first();
         } else {
             $sale_note = Document::where('external_id', $external_id)->first();
         }
-
-        //Log::info(json_encode($sale_note));
 
         if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
 
