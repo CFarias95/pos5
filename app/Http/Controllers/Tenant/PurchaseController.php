@@ -568,7 +568,7 @@ class PurchaseController extends Controller
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
-                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])->where('lot_code',$row['lot_code'])->first();
+                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])->where('code',$row['lot_code'])->first();
                             if(isset($validatLote) && $validatLote != ''){
                                 if($validatLote->date_of_due != $row['date_of_due']){
                                     $doc->delete();
