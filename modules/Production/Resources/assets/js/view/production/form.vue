@@ -411,7 +411,7 @@
                             </thead>
                             <tbody>
                             <tr v-for="row in this.supplies" :key="row.id">
-                                <th> {{ row.description }}</th>
+                                <th> {{ row.individual_item ? row.individual_item.name +' / ' + row.individual_item.description  : row.description }}</th>
                                 <th>
                                     <!-- {{ row.quantity }} -->
                                     <el-input-number v-model="row.quantityD" :disabled="row.modificable == 0 || form.records_id != '01'"></el-input-number>

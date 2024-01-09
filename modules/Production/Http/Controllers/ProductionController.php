@@ -942,15 +942,16 @@ class ProductionController extends Controller
             ->transform(function (Item $row) {
                 $data = $row->getCollectionData();
                 $supplies = $data["supplies"];
-                //Log::info("ITEM SUPPLIES: ".json_encode($supplies));
+                Log::info("ITEM SUPPLIES GLOBAL: ".json_encode($supplies));
                 $transformed_supplies = [];
                 foreach ($supplies as $value) {
+                    Log::info("ITEM SUPPLIES: ".json_encode($value));
                     $lots_group = $value["individual_item"]["lots_group"];
 
                     foreach ($lots_group as $lot) {
                         $lot["item_supply_id"] = $value["id"];
                     }
-                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["description"] : $value["individual_item"]["name"];
+                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["name"].'/'.$value["individual_item"]["description"] : $value["individual_item"]["name"];
                     $transformed_supply = [
                         'id' => $value["id"],
                         'individual_item_id' => $value["individual_item_id"],

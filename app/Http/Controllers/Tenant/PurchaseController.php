@@ -593,6 +593,7 @@ class PurchaseController extends Controller
 
                                 $p_item->item_lot_group_id = $item_lots_group->id;
                                 $p_item->update();
+                                
                             }
 
                         }
