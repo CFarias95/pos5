@@ -573,8 +573,6 @@ class ProductionController extends Controller
             $informative = ($request->informative) ?: false;
             $production->user_id = auth()->user()->id;
             $production->soap_type_id = $this->getCompanySoapTypeId();
-
-
             $items_supplies = $request->supplies;
             $costoT = 0;
 
@@ -699,6 +697,7 @@ class ProductionController extends Controller
                     $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
                 }
+
             } catch (Exception $ex) {
                 Log::error("Error UPDATE PRODUCTION: " . $ex->getMessage());
                 $production->state_type_id = '01';
@@ -779,27 +778,41 @@ class ProductionController extends Controller
             foreach ($items_supplies as $item) {
                 //Log::info($item);
                 if ($item['unit_type'] != 'Servicio') {
-                    $qty = $item['quantity'] ?? 0;
-                    $inventory_it = new Inventory();
-                    $inventory_it->type = null;
-                    $inventory_it->description = $inventory_transaction_item->name;
-                    $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
-                    $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
-                    $inventory_it->quantity = (float) ($qty * $production->quantity);
-                    $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
-                    $inventory_it->save();
 
                     if ($item["lots_group"]) {
                         $lots_group = $item["lots_group"];
                         foreach ($lots_group as $lots) {
-                            $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
-                            if ($production->state_type_id == '04') {
-                                $item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
-                            } else {
-                                $item_lots_group->quantity -= isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                            if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
+                                $qty = floatval($lots["compromise_quantity"]) ?? 0;
+                                $inventory_it = new Inventory();
+                                $inventory_it->type = null;
+                                $inventory_it->description = $inventory_transaction_item->name;
+                                $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
+                                $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
+                                $inventory_it->quantity = (float) ($qty * $production->quantity);
+                                $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                                $inventory_it->lot_code = $lots["code"];
+                                $inventory_it->save();
+
+                                $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
+                                if ($production->state_type_id == '04') {
+                                    $item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                                } else {
+                                    $item_lots_group->quantity -= isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                                }
+                                $item_lots_group->save();
                             }
-                            $item_lots_group->save();
                         }
+                    }else{
+                        $qty = $item['quantity'] ?? 0;
+                        $inventory_it = new Inventory();
+                        $inventory_it->type = null;
+                        $inventory_it->description = $inventory_transaction_item->name;
+                        $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
+                        $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
+                        $inventory_it->quantity = (float) ($qty * $production->quantity);
+                        $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
+                        $inventory_it->save();
                     }
                 }
             }

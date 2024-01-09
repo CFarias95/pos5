@@ -379,8 +379,6 @@ export default {
         clickCreate(recordId = '') {
             window.location.href = `./${this.resource}/create/${recordId}`;
 
-            // this.recordId = recordId
-            // this.showDialog = true
         },
         clickPDF(recordId) {
             window.open(`/${this.resource}/pdf_Atributos/${recordId}`, '_blank');

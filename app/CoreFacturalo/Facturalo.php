@@ -1565,10 +1565,9 @@ class Facturalo
      */
     public function update($inputs,$id)
     {
-
         $this->actions = array_key_exists('actions', $inputs)?$inputs['actions']:[];
         $this->type = @$inputs['type'];
-        // dd($inputs);
+        Log::error('Facturalo update: '.json_encode($inputs));
         switch ($this->type) {
             case 'invoice':
                 $this->doc_type = '01';
@@ -1578,7 +1577,7 @@ class Facturalo
                     //se consulta el ultimo numero de la nueva serie
                     $last_number = Document::getLastNumberBySerie($inputs['series'],$inputs['establishment_id']);
                     //se actualiza el numero actual en $imputs
-                    Log::info('LAST NUMBER FOR DOCUMENTS '.$last_number.'SERIE: '.$inputs['series'].' ESTABLECIMIENTO ID: '.$inputs['establishment_id'] );
+                    Log::error('LAST NUMBER FOR DOCUMENTS '.$last_number.'SERIE: '.$inputs['series'].' ESTABLECIMIENTO ID: '.$inputs['establishment_id'] );
                     $inputs['number'] = $last_number + 1;
                     //cambiamos el filename
                     $inputs['filename'] = Functions::filename(Company::active(), $inputs['document_type_id'], $inputs['series'], $inputs['number']);

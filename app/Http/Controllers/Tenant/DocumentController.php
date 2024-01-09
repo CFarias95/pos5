@@ -1558,7 +1558,7 @@ class DocumentController extends Controller
             ];
         }catch(Exception $ex){
             Log::error('Error en storeWithData '.$ex->getMessage());
-            Log::error($ex);
+            //Log::error($ex);
             return [
                 'success' => false,
                 'message' =>'Se produjo un error al tratar de generar el documento '.$ex->getMessage(),
