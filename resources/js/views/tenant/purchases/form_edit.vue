@@ -1055,8 +1055,15 @@ export default {
                     }
                     if(dato.fee.length > 0){
                         this.form.fee = dato.fee
+                        let indexi = 0;
+                        this.form.fee.forEach((item) => {
+                            console.log('Fee index: ', indexi)
+                            this.changePaymentMethodType(indexi);
+                            indexi = indexi + 1;
+                        })
+
                     }else{
-                        //this.changePaymentMethodType(0);
+                        this.changePaymentMethodType(0);
                     }
 
                     console.log("FORM ITEMS: ", this.form.items)
@@ -1159,6 +1166,7 @@ export default {
             }
 
             let payment_method_type = _.find(this.payment_method_types, { 'id': id })
+            console.log('changePaymentMethodType',payment_method_type)
 
             if (payment_method_type.number_days) {
 
@@ -1166,11 +1174,12 @@ export default {
                 this.readonly_date_of_due = true
 
                 let date = moment(this.form.date_of_issue).add(payment_method_type.number_days, 'days').format('YYYY-MM-DD')
+                console.log('date ',date)
 
                 if (this.form.fee.length > 0) {
-                    for (let index = 0; index < this.form.fee.length; index++) {
+                    //for (let index = 0; index < this.form.fee.length; index++) {
                         this.form.fee[index].date = date
-                    }
+                    //}
                 }
 
             } else {
@@ -1404,6 +1413,7 @@ export default {
             this.form.ret = []
 
             this.form.items.forEach((row) => {
+
                 if (row.iva_retention >= 0 || row.income_retention >= 0) {
 
                     retention_iva = parseFloat(row.iva_retention)
@@ -1415,7 +1425,7 @@ export default {
 
                         this.form.ret.forEach((data) => {
 
-                            console.log(data)
+                            console.log('calculateTotal RET',data)
 
                             if (row.iva_retention >= 0 && row.retention_type_id_iva) {
 
@@ -1504,7 +1514,6 @@ export default {
                     }
                 }
 
-
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
@@ -1533,14 +1542,12 @@ export default {
 
                 total_value += parseFloat(row.total_value)
                 total_igv += parseFloat(row.total_igv)
-
-
                 total += parseFloat(row.total)
-
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
 
+                console.log('Total en foreach item: ', total)
             });
 
             // isc
@@ -1559,7 +1566,13 @@ export default {
             this.form.total_taxes = _.round(total_igv + total_isc, 2)
             this.form.total_ret = _.round(toal_retenido, 2)
 
-            total = total - toal_retenido
+            console.log('Total Calculated ',total +' - '+toal_retenido)
+
+            if(toal_retenido){
+                total = total - parseFloat(toal_retenido)
+            }else{
+                total = total
+            }
 
             this.form.total = _.round(total, 2)
 
@@ -1597,12 +1610,9 @@ export default {
                     this.form.total_perception = null
 
                 }
-
             }
-
-
         },
-        validatePaymentDestination() {
+        validatePaymentDestination(){
 
             let error_by_item = 0
             this.form.payments.forEach((item) => {
