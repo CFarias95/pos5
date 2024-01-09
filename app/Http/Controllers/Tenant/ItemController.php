@@ -154,9 +154,14 @@ class ItemController extends Controller
             default:
                 if ($request->has('column')) {
                     if ($this->applyAdvancedRecordsSearch() && $request->column === 'description') {
-                        if ($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value);
-                    } else {
-                        $records->where($request->column, 'like', "%{$request->value}%");
+                        if ($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value)->orderBy($request->column);
+                    }
+                    elseif ($request->column === 'internal_id'){
+                        $records->where($request->column, 'like', "%{$request->value}%")
+                        ->orderBy('internal_id','desc');
+                    }else {
+                        $records->where($request->column, 'like', "%{$request->value}%")
+                        ->orderBy($request->column);
                     }
                 }
                 break;
@@ -178,7 +183,7 @@ class ItemController extends Controller
             $records->Pharmacy()
                 ->with(['cat_digemid']);
         }
-        return $records->orderBy('description');
+        return $records;
     }
 
 
@@ -1474,7 +1479,6 @@ class ItemController extends Controller
 
     public function searchItems(Request $request)
     {
-
         $items = SearchItemController::getItemsToSupply($request);
         return compact('items');
     }
