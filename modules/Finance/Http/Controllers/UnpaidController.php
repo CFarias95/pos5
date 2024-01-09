@@ -341,6 +341,8 @@ class UnpaidController extends Controller
 
         $docs = $this->document;
 
+        Log::info('Document ID: '.$docs->id);
+        Log::info('FEE ID: '.$id);
         $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
         Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
 
