@@ -84,8 +84,10 @@
                 <td width="50%">
                 @if($company->logo)
 
-                        <div class="company_logo_box">
-                            <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 40px; max-width: 150px" >
+                        <div class="company_logo_box" style="align-content: center">
+
+                            <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 1%; padding-bottom: 5%; width: 100%" >
+
                         </div>
 
                 @else
@@ -494,14 +496,15 @@
                                 <tr style="background: #f7f7f5;">
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $pago->sridesc }}</td>
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->currency_type->symbol }}{{ number_format($pago->amount, 2) }}</td>
-                                    <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ date_diff($document->date_of_issue, $pago->date)->format('%a') }} días</td>
+                                    <td style="font-size: 10px; text-align: start; padding-left: 15px; padding-right: 5px;">Plazo: {{ date_diff($document->date_of_issue, $pago->date)->format('%a') }} días<br>Fecha: {{ $pago->date->format('Y/m/d') }}</td>
                                 </tr>
+
                             @endforeach
                             @else
                             <tr style="background: #f7f7f5;">
                                 <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->fee[(count($document->fee)-1)]->sridesc }}</td>
                                 <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
-                                <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ date_diff($document->date_of_issue, $document->fee[(count($document->fee)-1)]->date)->format('%a') }} días</td>
+                                <td style="text-align: start; padding-left: 15px; padding-right: 5px;">Plazo: {{ date_diff($document->date_of_issue, $document->fee[(count($document->fee)-1)]->date)->format('%a') }} días<br>Fecha: {{ $document->fee[(count($document->fee)-1)]->date->format('Y/m/d') }}</td>
                             </tr>
                             @endif
                             @endif
