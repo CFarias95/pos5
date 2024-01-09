@@ -323,7 +323,7 @@ class UnpaidController extends Controller
         $this->createPdf1($sale_note, $format, $filename, $id, $index);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index = null) {
+    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index = 0) {
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
