@@ -5,13 +5,17 @@
         <div
           class="card-body border border-success"
           :class="{
-            'border-danger': isDueWarning
+            'border-danger': isDueWarning,
           }"
         >
           <div class="card-title">Fec venc del <br />Certificado</div>
-          <span class="text-success font-weight-bold" :class="{
-            'text-danger': isDueWarning
-          }">{{ company.certificate_due }}</span>
+          <span
+            class="text-success font-weight-bold"
+            :class="{
+              'text-danger': isDueWarning,
+            }"
+            >{{ company.certificate_due }}</span
+          >
         </div>
       </div>
     </div>
@@ -27,11 +31,11 @@
       <div class="card card-dashboard border">
         <div class="card-body">
           <div class="card-title">Monto total <br />comprobantes</div>
-          <span class="font-weight-bold">{{ document_total_global }}</span>
+          <span class="font-weight-bold">{{ comprobantes }}</span>
         </div>
       </div>
     </div>
-    <div class="col-6 col-md-2">
+    <!-- <div class="col-6 col-md-2">
       <div class="card card-dashboard">
         <div class="card-body border">
           <div class="card-title">Monto total notas <br />de ventas</div>
@@ -50,11 +54,11 @@
     <div class="col-6 col-md-2" v-if="utilities.totals">
       <div class="card card-dashboard">
         <div class="card-body border">
-          <div class="card-title">Utitlidad <br />neta</div>
+          <div class="card-title">Utilidad <br />neta</div>
           <span class="font-weight-bold">{{ utilities.totals.utility }}</span>
         </div>
       </div>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -62,7 +66,7 @@
 import moment from "moment";
 
 export default {
-  props: ["company", 'utilities'],
+  props: ["company", "utilities", "comprobantes"],
   data() {
     return {
       document_total_global: 0,
@@ -80,7 +84,7 @@ export default {
         const dueDate = moment(this.company.certificate_due);
 
         const now = moment();
-        const diffInDays = dueDate.diff(now, 'days')
+        const diffInDays = dueDate.diff(now, "days");
         return diffInDays <= 15;
       }
       return false;

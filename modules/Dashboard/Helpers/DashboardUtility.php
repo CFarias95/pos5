@@ -63,8 +63,9 @@ class DashboardUtility
 
 
         if($d_start && $d_end){
-
-            $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+            if($establishment_id != 0)
+            {
+                $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
                                             ->whereHas('document',function($query) use($establishment_id, $d_start, $d_end){
                                                 $query->where('establishment_id', $establishment_id)
                                                         ->whereIn('state_type_id', ['01','03','05','07','13'])
@@ -74,20 +75,43 @@ class DashboardUtility
                                             ->get();
 
 
-            $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
-                                            ->whereHas('sale_note', function($query) use($establishment_id, $d_start, $d_end){
+                $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                                ->whereHas('sale_note', function($query) use($establishment_id, $d_start, $d_end){
 
-                                                $query->where([['establishment_id', $establishment_id],['changed',false]])
-                                                        ->whereIn('state_type_id', ['01','03','05','07','13'])
-                                                        ->whereBetween('date_of_issue', [$d_start, $d_end]);
+                                                    $query->where([['establishment_id', $establishment_id],['changed',false]])
+                                                            ->whereIn('state_type_id', ['01','03','05','07','13'])
+                                                            ->whereBetween('date_of_issue', [$d_start, $d_end]);
+                                                })
+                                                ->get();
+
+                $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get():null;
+            }else{
+                $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                            ->whereHas('document',function($query) use($d_start, $d_end){
+                                                $query->whereIn('state_type_id', ['01','03','05','07','13'])
+                                                        ->whereBetween('date_of_issue', [$d_start, $d_end])
+                                                        ->whereIn('document_type_id', ['01','03','08']);
                                             })
                                             ->get();
 
-            $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$d_start, $d_end])->get():null;
+
+                $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                                ->whereHas('sale_note', function($query) use($d_start, $d_end){
+
+                                                    $query->whereIn('state_type_id', ['01','03','05','07','13'])
+                                                            ->whereBetween('date_of_issue', [$d_start, $d_end]);
+                                                })
+                                                ->get();
+
+                $expenses = ($enabled_expense) ? Expense::whereBetween('date_of_issue', [$d_start, $d_end])->get():null;
+            }
+            
 
 
         }else{
-            $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+            if($establishment_id != 0)
+            {
+                $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
                                             ->whereHas('document', function($query) use($establishment_id) {
                                                 $query->where('establishment_id', $establishment_id)
                                                         ->whereIn('state_type_id', ['01','03','05','07','13']);
@@ -95,16 +119,35 @@ class DashboardUtility
                                             ->get();
 
 
-            $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
-                                            ->whereHas('sale_note', function($query) use($establishment_id){
+                $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                                ->whereHas('sale_note', function($query) use($establishment_id){
 
-                                                $query->where([['establishment_id', $establishment_id],['changed',false]])
-                                                        ->whereIn('state_type_id', ['01','03','05','07','13']);
+                                                    $query->where([['establishment_id', $establishment_id],['changed',false]])
+                                                            ->whereIn('state_type_id', ['01','03','05','07','13']);
+                                                })
+                                                ->get();
+
+
+                $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->get():null;
+            }else{
+                $document_items = DocumentItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                            ->whereHas('document', function($query) {
+                                                $query->whereIn('state_type_id', ['01','03','05','07','13']);
                                             })
                                             ->get();
 
 
-            $expenses = ($enabled_expense) ? Expense::where('establishment_id', $establishment_id)->get():null;
+                $sale_note_items = SaleNoteItem::without(['affectation_igv_type', 'system_isc_type', 'price_type'])
+                                                ->whereHas('sale_note', function($query){
+
+                                                    $query->whereIn('state_type_id', ['01','03','05','07','13']);
+                                                })
+                                                ->get();
+
+
+                $expenses = ($enabled_expense) ? Expense::get():null;
+            }
+            
 
         }
 

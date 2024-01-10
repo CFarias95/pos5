@@ -484,7 +484,11 @@ class Purchase extends ModelTenant
             ]
         );
         $query->WhereStateTypeAccepted();
-        $query->where('establishment_id', $establishment_id);
+        if($establishment_id != 0)
+        {
+            $query->where('establishment_id', $establishment_id);
+        }
+        
         $query->select(
             'id',
             'state_type_id',

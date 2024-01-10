@@ -81,6 +81,7 @@ class DashboardData
             'total_cpe' => Configuration::first()->quantity_documents,
             'document_total_global' => $this->document_totals_globals(),
             'sale_note_total_global' => $this->sale_note_totals_global(),
+            ''
         ];
     }
 
@@ -388,25 +389,44 @@ class DashboardData
     {
 
         if($date_start && $date_end){
-            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+            if($establishment_id != 0)
+            {
+                $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
                                            ->whereBetween('date_of_issue', [$date_start, $date_end])
                                            ->whereStateTypeAccepted()
                                            ->get();
 
-            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+                $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }else{
+
+                $sale_notes = SaleNote::query()->where('changed', false)
+                ->whereBetween('date_of_issue', [$date_start, $date_end])
+                ->whereStateTypeAccepted()
+                ->get();
+
+                $documents = Document::query()->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }
+            
 
         }else{
-            $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
+            if($establishment_id != 0)
+            {
+                $sale_notes = SaleNote::query()->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
                                            ->whereStateTypeAccepted()
                                            ->get();
 
-            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+                $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+            }else{
+                $sale_notes = SaleNote::query()->where('changed', false)
+                                           ->whereStateTypeAccepted()
+                                           ->get();
+
+                $documents = Document::query()->get();
+            }
+            
         }
-
-
-
 
 
         //DOCUMENT

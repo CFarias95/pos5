@@ -96,6 +96,11 @@
                                 Stock Actual por Almacen
                             </a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.recetas_kits.index')}}">
+                                Reporte Recetas - Kits
+                            </a>
+                        </li>
                     </ul>
                 </div>
             </div>
@@ -327,7 +332,9 @@
                         <li>
                             <a href="{{route('tenant.reports.tocollect.statement.index')}}">Cuentas por Cobrar</a>
                         </li>
-
+                        <li>
+                            <a href="{{route('tenant.anticipos_reporte.index')}}">Reporte Anticipos Cliente-Proveedor</a>
+                        </li>
                     </ul>
                 </div>
             </div>

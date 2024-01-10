@@ -521,6 +521,12 @@ Vue.component('tenant-balance_general-index', require('./views/tenant/balance_ge
 Vue.component('tenant-balance_resultados-index', require('./views/tenant/balance_resultados/index.vue'));
 //Vue.component('tenant-typesaccountingentries-index', require('./views/tenant/types_accounting_entries/index.vue'));
 
+//SP Recetas
+Vue.component('tenant-recetas_kits-index', require('../../modules/Report/Resources/assets/js/views/recetas_kits/index.vue'));
+
+//SP Anticipos Clientes-Proveedores
+Vue.component('tenant-anticipos_reporte-index', require('../../modules/Report/Resources/assets/js/views/anticipos/index.vue'));
+
 //Lista tarifas
 Vue.component('tenant-ratelists-index', require('./views/tenant/rates/index.vue'));
 

@@ -9,7 +9,11 @@
       </div>
     </header>
     <div class="card mb-0">
-      <RowTop :company="company" :utilities="utilities"></RowTop>
+      <RowTop
+        :company="company"
+        :utilities="utilities"
+        :comprobantes="comprobantes"
+      ></RowTop>
       <div class="row">
         <div class="col-12">
           <section class="card card-dashboard">
@@ -987,6 +991,7 @@ export default {
       comprobantesSP: [],
       ventas_productoSP: [],
       ventas_producto_header: [],
+      comprobantes: null,
     };
   },
   async created() {
@@ -1101,6 +1106,7 @@ export default {
       this.getSaleNoteSP();
       this.getComprobantesSP();
       this.getVentasProductoSP();
+      this.loadComprobantesTotal();
     },
     changeStock() {
       this.$eventHub.$emit("changeStock", this.form.establishment_id);
@@ -1165,6 +1171,14 @@ export default {
         this.utilities = response.data.data.utilities;
         this.loaders.utility = false;
       });
+    },
+    loadComprobantesTotal() {
+      return this.$http
+        .post(`/${this.resource}/comprobantes?${this.getQueryParameters()}`)
+        .then((response) => {
+          this.comprobantes = response.data.total;
+          console.log("comprobantes", response.data.total);
+        });
     },
     showLoadersLoadDataAditional() {
       this.loaders.purchase = true;
