@@ -28,7 +28,7 @@
                     <div class="col-md-8">
                         <div class="form-group" :class="{'has-danger': errors.cta_account}">
                             <label class="control-label">Cuenta contable</label>
-                            <el-select v-model="form.cta_account" filterable >
+                            <el-select v-model="form.cta_account" filterable clearable>
                                 <el-option v-for="option in accounts" :key="option.id" :value="option.id"
                                            :label="option.code + ' - ' + option.description"></el-option>
                             </el-select>
