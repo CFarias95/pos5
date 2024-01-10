@@ -386,6 +386,9 @@ trait InventoryTrait
     {
         $inventory_configuration = InventoryConfiguration::firstOrFail();
         $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
+
+        Log::info("El producto {$item_warehouse->item->name}/{$item_warehouse->item->description} " . json_encode($item_warehouse));
+
         $item_warehouse->stock = $item_warehouse->stock + $quantity;
         // dd($item_warehouse->item->unit_type_id);
         Log::info("updateStock".json_encode($item_warehouse));
@@ -393,10 +396,8 @@ trait InventoryTrait
         if ($quantity < 0 && $item_warehouse->item->unit_type_id !== 'ZZ') {
             if (($inventory_configuration->stock_control) && ($item_warehouse->stock < 0)) {
 
-                // dd('hasta aqui');
-                // return response()->json(['success' => false, 'message' => El producto {$item_warehouse->item->description} no tiene suficiente stock!]);
-                Log::info("El producto {$item_warehouse->item->description} no tiene suficiente stock!" . json_encode($item_warehouse));
-                throw new Exception("El producto {$item_warehouse->item->description} no tiene suficiente stock en la bodega: ",500);
+                Log::info("El producto {$item_warehouse->item->name}/{$item_warehouse->item->description} no tiene suficiente stock! " . json_encode($item_warehouse));
+                throw new Exception("El producto {$item_warehouse->item->name}/{$item_warehouse->item->description} no tiene suficiente stock en la bodega: ",500);
             }
         }
         $item_warehouse->save();
