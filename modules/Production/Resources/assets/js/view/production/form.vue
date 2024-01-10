@@ -414,7 +414,7 @@
                                 <th> {{ row.individual_item ? row.individual_item.name +' / ' + row.individual_item.description  : row.description }}</th>
                                 <th>
                                     <!-- {{ row.quantity }} -->
-                                    <el-input-number v-model="row.quantityD" :disabled="row.modificable == 0 || form.records_id != '01'"></el-input-number>
+                                    <el-input-number v-model="row.quantityD" :disabled="row.modificable == 0 "></el-input-number>
 
                                     <div v-if="row.lots_enabled && isCreating" style="padding-top: 1%;">
                                         <a class="text-center font-weight-bold text-info" href="#"
