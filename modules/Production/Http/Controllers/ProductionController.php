@@ -652,7 +652,6 @@ class ProductionController extends Controller
                     $stockA = $item->stock;
                     $totalA = $production->cost_supplies;
 
-
                     $stockN = $production->quantity;
                     $totalN = $production->cost_supplies;
 
@@ -660,7 +659,7 @@ class ProductionController extends Controller
                     $costoT = $totalA + $totalN;
                     $costoT = round($costoT / $stockT, 4);
 
-                    //Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
+                    Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
                     $item->purchase_mean_cost = $costoT;
                     $item->save();
                 } catch (Exception $ex2) {
