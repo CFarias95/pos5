@@ -113,7 +113,7 @@ class GeneralItemCollection extends ResourceCollection
 
         $purchase_unit_price = (Item::find($record->item_id))->getPurchaseUnitPrice() * $record->quantity;
 
-        //Log::info($purchase_unit_price);
+        Log::info($purchase_unit_price);
 
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
