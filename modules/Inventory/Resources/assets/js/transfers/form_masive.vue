@@ -42,7 +42,7 @@
                     <div class="col-md-4">
                         <div class="form-group">
                             <label class="control-label">Cliente</label>
-                            <el-select v-model="form.client_id">
+                            <el-select v-model="form.client_id" filterable clearable>
                                 <el-option v-for="cliente in clientes" :key="cliente.id" :label="cliente.name"
                                     :value="cliente.id"></el-option>
                             </el-select>
