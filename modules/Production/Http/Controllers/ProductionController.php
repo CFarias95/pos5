@@ -778,12 +778,22 @@ class ProductionController extends Controller
             foreach ($items_supplies as $item) {
                 //Log::info($item);
                 if ($item['unit_type'] != 'Servicio') {
-
                     if ($item["lots_group"]) {
                         $lots_group = $item["lots_group"];
+
                         foreach ($lots_group as $lots) {
+
                             if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
                                 $qty = floatval($lots["compromise_quantity"]) ?? 0;
+                                //PRIMERO INTENTA REALIZAR EL INGRESO O SALIDA DEL STOCK
+                                $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
+                                if ($production->state_type_id == '04') {
+                                    $item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                                } else {
+                                    $item_lots_group->quantity -= isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                                }
+                                $item_lots_group->save();
+                                //GENERA EL MOVIMIENTO DE INVENTARIO
                                 $inventory_it = new Inventory();
                                 $inventory_it->type = null;
                                 $inventory_it->description = $inventory_transaction_item->name;
@@ -793,17 +803,10 @@ class ProductionController extends Controller
                                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                                 $inventory_it->lot_code = $lots["code"];
                                 $inventory_it->save();
-
-                                $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
-                                if ($production->state_type_id == '04') {
-                                    $item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
-                                } else {
-                                    $item_lots_group->quantity -= isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
-                                }
-                                $item_lots_group->save();
                             }
                         }
                     }else{
+
                         $qty = $item['quantity'] ?? 0;
                         $inventory_it = new Inventory();
                         $inventory_it->type = null;

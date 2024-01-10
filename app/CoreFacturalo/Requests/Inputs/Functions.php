@@ -6,6 +6,7 @@ use App\Models\Tenant\Document;
 use App\Models\Tenant\Series;
 use Carbon\Carbon;
 use Exception;
+use Illuminate\Support\Facades\Log;
 use Modules\Document\Models\SeriesConfiguration;
 
 class Functions
@@ -14,6 +15,8 @@ class Functions
     {
 
         if ($number === '#') {
+
+            Log::error("newNumber: soap_type_id ".$soap_type_id. '  document_type_id: '.$document_type_id.' series: '.$series);
 
             $document = $model::select('number')
                                     ->where('soap_type_id', $soap_type_id)
@@ -36,17 +39,6 @@ class Functions
         }
 
         return $number;
-
-        // if ($number === '#') {
-        //     $document = $model::select('number')
-        //                         ->where('soap_type_id', $soap_type_id)
-        //                         ->where('document_type_id', $document_type_id)
-        //                         ->where('series', $series)
-        //                         ->orderBy('number', 'desc')
-        //                         ->first();
-        //     return ($document)?(int)$document->number+1:1;
-        // }
-        // return $number;
     }
 
     public static function filename($company, $document_type_id, $series, $number)

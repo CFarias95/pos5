@@ -328,9 +328,11 @@ class Document extends ModelTenant
      */
     public static function getLastNumberBySerie($serie,$establishment)
     {
-        $t = Document::where('series', $serie)->where('establishment_id',$establishment)->select('number')->orderby('number', 'DESC')->first();
+        $t = Document::where('series', $serie)->where('establishment_id',$establishment)->get();
         if (!empty($t)) {
-            return $t->number;
+            Log::info('MMAX NUMBER: '.$t->max('number'));
+            return $t->max('number');
+
         }
         return 0;
     }
