@@ -148,7 +148,7 @@ class GeneralItemCollection extends ResourceCollection
                 ->latest('id')
                 ->first();
 
-            $purchase_unit_price = $purchase_item->getPurchaseUnitPrice();
+            $purchase_unit_price = (Item::find($purchase_item->item_id))->getPurchaseUnitPrice();//$purchase_item->getPurchaseUnitPrice();
             $purchase = Purchase::find($purchase_item->purchase_id);
             $exchange_rate_sale = $purchase->exchange_rate_sale * 1;
             // Si la venta es en soles, y la compra del producto es en dolares, se hace la transformcaion
