@@ -792,7 +792,7 @@ class ProductionController extends Controller
                                     if($item_lots_group->quantity < $lots["compromise_quantity"]){
                                         return[
                                             'success' => false,
-                                            'message' => 'No existe suficiente stock de '.$item['name']
+                                            'message' => 'No existe suficiente stock de '.$item['name'].' Stok actual: '.$item_lots_group->quantity.' Lote:'.$lots["code"]
                                         ];
                                     }
                                 }
