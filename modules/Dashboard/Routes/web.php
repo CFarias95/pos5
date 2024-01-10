@@ -19,6 +19,7 @@ if($current_hostname) {
                 Route::get('stock-by-product/records', 'DashboardController@stockByProduct');
                 Route::get('product-of-due/records', 'DashboardController@productOfDue');
                 Route::post('utilities', 'DashboardController@utilities');
+                Route::post('comprobantes', 'DashboardController@comprobantes');
                 Route::get('global-data', 'DashboardController@globalData');
                 Route::get('sales-by-product', 'DashboardController@salesByProduct');
                 Route::get('sale_note_data', 'DashboardController@saleNoteSP');

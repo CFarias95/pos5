@@ -45,6 +45,47 @@ if ($current_hostname) {
                 Route::get('tocollect/excel','ReportsFinancesController@excelToCollect');
                 Route::get('tocollect/tables','ReportsFinancesController@tablesStatement');
 
+                //SP Recetas - Kits
+                Route::prefix('recetas_kits')->group(function () {
+                    Route::get('', 'RecetasKitsController@index')
+                        ->name('tenant.recetas_kits.index');
+                    Route::get('/pdf', 'RecetasKitsController@pdf');
+                    Route::get('/datosSP', 'RecetasKitsController@datosSP');
+                    /*Route::get('/excel', 'PlanCuentasController@excel')
+                        ->name('tenant.plan_cuentas.excel');
+                    Route::get('/records', 'PlanCuentasController@records')
+                        ->name('tenant.plan_cuentas.records');
+                    Route::get('/filter', 'PlanCuentasController@filter')
+                        ->name('tenant.plan_cuentas.filter');
+                    Route::get('/item/tables', 'PlanCuentasController@item_tables')
+                        ->name('tenant.plan_cuentas.item_tables');
+                    Route::get('/tables', 'PlanCuentasController@tables')
+                        ->name('tenant.plan_cuentas.tables');
+                    Route::get('/columns', 'PlanCuentasController@columns');*/
+                    
+                });
+
+                //SP Reporte Anticipos
+                Route::prefix('anticipos')->group(function () {
+                    Route::get('', 'ReporteClienteProveedorAnticipoController@index')
+                        ->name('tenant.anticipos_reporte.index');
+                    Route::get('/pdf', 'ReporteClienteProveedorAnticipoController@pdf');
+                    Route::get('/datosSP', 'ReporteClienteProveedorAnticipoController@datosSP');
+                    /*Route::get('/excel', 'PlanCuentasController@excel')
+                        ->name('tenant.plan_cuentas.excel');
+                    Route::get('/records', 'PlanCuentasController@records')
+                        ->name('tenant.plan_cuentas.records');
+                    Route::get('/filter', 'PlanCuentasController@filter')
+                        ->name('tenant.plan_cuentas.filter');
+                    Route::get('/item/tables', 'PlanCuentasController@item_tables')
+                        ->name('tenant.plan_cuentas.item_tables');
+                    Route::get('/tables', 'PlanCuentasController@tables')
+                        ->name('tenant.plan_cuentas.tables');
+                    Route::get('/columns', 'PlanCuentasController@columns');*/
+                    
+                });
+
+
                 Route::prefix('purchases')->group(function () {
                     /**
                      * reports/purchases/

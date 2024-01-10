@@ -20,17 +20,30 @@ trait TotalsTrait
     {
 
         if($date_start && $date_end){
-
-            $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
+            if($establishment_id != 0)
+            {
+                $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
                                         ->where('establishment_id', $establishment_id)
                                         ->whereBetween('date_of_issue', [$date_start, $date_end])
                                         ->get();
 
+            }else{
+                $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
+                                        ->whereBetween('date_of_issue', [$date_start, $date_end])
+                                        ->get();
+            }
+            
         }else{
-
-            $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
+            if($establishment_id != 0)
+            {
+                $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
                                         ->where('establishment_id', $establishment_id)
                                         ->get();
+            }else{
+                $purchases = Purchase::query()->whereIn('state_type_id', ['01','03','05','07','13'])
+                                        ->get();
+            }
+            
         }
 
 
@@ -75,17 +88,30 @@ trait TotalsTrait
 
 
         if($date_start && $date_end){
-
-            $expenses = Expense::query()->where('establishment_id', $establishment_id)
+            if($establishment_id != 0)
+            {
+                $expenses = Expense::query()->where('establishment_id', $establishment_id)
                                         ->whereBetween('date_of_issue', [$date_start, $date_end])
                                         ->where('state_type_id','05')
                                         ->get();
-
-        }else{
-
-            $expenses = Expense::query()->where('establishment_id', $establishment_id)
+            }else{
+                $expenses = Expense::query()->whereBetween('date_of_issue', [$date_start, $date_end])
                                         ->where('state_type_id','05')
                                         ->get();
+            }
+            
+
+        }else{
+            if($establishment_id != 0)
+            {
+                $expenses = Expense::query()->where('establishment_id', $establishment_id)
+                                        ->where('state_type_id','05')
+                                        ->get();
+            }else{
+                $expenses = Expense::query()->where('state_type_id','05')
+                                        ->get();
+            }
+            
         }
 
         $expenses_total = $expenses->where('currency_type_id', 'PEN')->sum('total');
@@ -117,14 +143,28 @@ trait TotalsTrait
     {
 
         if($date_start && $date_end){
-            $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+            if($establishment_id != 0)
+            {
+                $sale_notes = SaleNote::query()->whereStateTypeAccepted()
                                            ->where('establishment_id', $establishment_id)
                                            ->where('changed', false)
                                            ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }else{
+                $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+                                           ->where('changed', false)
+                                           ->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }
         }else{
-            $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+            if($establishment_id != 0)
+            {
+                $sale_notes = SaleNote::query()->whereStateTypeAccepted()
                                            ->where('establishment_id', $establishment_id)
                                            ->where('changed', false)->get();
+            }else{
+                $sale_notes = SaleNote::query()->whereStateTypeAccepted()
+                                           ->where('changed', false)->get();
+            }
+            
         }
 
 
@@ -174,9 +214,20 @@ trait TotalsTrait
     {
 
         if($date_start && $date_end){
-            $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            if($establishment_id != 0)
+            {
+                $documents = Document::query()->where('establishment_id', $establishment_id)->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }else{
+                $documents = Document::query()->whereBetween('date_of_issue', [$date_start, $date_end])->get();
+            }
+            
         }else{
-            $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+            if($establishment_id != 0)
+            {
+                $documents = Document::query()->where('establishment_id', $establishment_id)->get();
+            }else{
+                $documents = Document::query()->get();
+            }
         }
 
         //PEN

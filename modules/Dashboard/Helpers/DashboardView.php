@@ -21,12 +21,16 @@ class DashboardView
 {
     public static function getEstablishments()
     {
-        return Establishment::all()->transform(function ($row) {
+        $establishments = Establishment::all()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'name' => $row->description
             ];
         });
+
+        $establishments->prepend(['id'  => 0, 'name' => 'Todos los establecimientos']);
+
+        return $establishments;
     }
 
     public static function getUnpaid($request)

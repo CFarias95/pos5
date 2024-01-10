@@ -112,6 +112,19 @@ class DashboardController extends Controller
         ];
     }
 
+    public function comprobantes(Request $request)
+    {
+        $date_start = $request->input('date_start');
+        $date_end = $request->input('date_end');
+
+        $total = DB::connection('tenant')->table('documents')
+            ->where('series', 'not like', 'B%')
+            ->whereBetween('date_of_issue', [$date_start, $date_end])
+            ->sum('subtotal');
+
+        return compact("total");
+    }
+
     public function df()
     {
         $path = app_path();
