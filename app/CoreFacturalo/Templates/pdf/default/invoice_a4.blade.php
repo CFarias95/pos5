@@ -491,7 +491,7 @@
                             @endforeach
                             @endif
                             @if($document->payment_condition_id === '02')
-                            @if(count($document->fee) < 4)
+                            @if(count($document->fee) <= 4)
                             @foreach($document->fee as $pago)
                                 <tr style="background: #f7f7f5;">
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">{{ $pago->sridesc }}</td>

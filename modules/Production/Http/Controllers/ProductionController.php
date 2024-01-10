@@ -781,6 +781,24 @@ class ProductionController extends Controller
                     if ($item["lots_group"]) {
                         $lots_group = $item["lots_group"];
 
+                        //VALIDAR CANTIDADES EN LOSTES PRIMERO
+                        foreach ($lots_group as $lots) {
+                            if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
+                                $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
+
+                                if ($production->state_type_id == '04') {
+                                    //$item_lots_group->quantity += isset($lots["compromise_quantity"]) ? $lots["compromise_quantity"] : 0;
+                                } else {
+                                    if($item_lots_group->quantity < $lots["compromise_quantity"]){
+                                        return[
+                                            'success' => false,
+                                            'message' => 'No existe suficiente stock de '.$item['name']
+                                        ];
+                                    }
+                                }
+                            }
+                        }
+
                         foreach ($lots_group as $lots) {
 
                             if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
