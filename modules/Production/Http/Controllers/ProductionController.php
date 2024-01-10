@@ -782,7 +782,7 @@ class ProductionController extends Controller
                         $lots_group = $item["lots_group"];
 
                         //VALIDAR CANTIDADES EN LOSTES PRIMERO
-                        foreach ($lots_group as $lots) {
+                         /*foreach ($lots_group as $lots) {
                             if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
                                 $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
 
@@ -792,12 +792,12 @@ class ProductionController extends Controller
                                     if($item_lots_group->quantity < $lots["compromise_quantity"]){
                                         return[
                                             'success' => false,
-                                            'message' => 'Item: '.$item['name'].' Stok actual: '.$item_lots_group->quantity.' Lote:'.$lots["code"]. ' Stock pedido: '.$lots["compromise_quantity"]
+                                            'message' => 'Item:  Stok actual: '.$item_lots_group->quantity.' Lote:'.$lots["code"]. ' Stock pedido: '.$lots["compromise_quantity"]
                                         ];
                                     }
                                 }
                             }
-                        }
+                        }*/
 
                         foreach ($lots_group as $lots) {
 

@@ -343,7 +343,7 @@
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.dispacher}" class="form-group">
                                 <label class="control-label">Selección rápida de transportista</label>
-                                <el-select v-model="dispacher" @change="changeTransport" clearable>
+                                <el-select v-model="dispacher" @change="changeTransport" clearable filterable>
                                     <el-option
                                         v-for="option in dispachers"
                                         :key="option.id"
@@ -402,7 +402,7 @@
                         <div class="col-lg-4">
                             <div :class="{'has-danger': errors.driver}" class="form-group">
                                 <label class="control-label">Selección rápida de conductor</label>
-                                <el-select v-model="driver" @change="changeDriver" clearable>
+                                <el-select v-model="driver" @change="changeDriver" clearable filterable>
                                     <el-option
                                         v-for="option in drivers"
                                         :key="option.id"
