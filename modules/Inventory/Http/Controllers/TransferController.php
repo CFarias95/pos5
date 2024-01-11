@@ -336,6 +336,7 @@ use Modules\Item\Models\ItemLotsGroup;
         public function items($warehouse_id)
         {
             return ['items'=>SearchItemController::getItemToTrasferWithoutSearch($warehouse_id)];
+
             return [
                 'items' => $this->optionsItemWareHousexId($warehouse_id),
             ];
