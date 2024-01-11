@@ -72,15 +72,14 @@
             @endforeach
             </tbody>
         </table>
-        <table style="border: none">
+        <table style="border: none" class="full-width">
             <tr>
-                <td rowspan="3" style="border-bottom: 2px"></td>
-                <td rowspan="3" style="border-bottom: 2px:royalblue"></td>
+                <td style="border-bottom:solid;"></td>
+                <td> <strong>Entregado por:</strong></td>
             </tr>
-
             <tr>
-                <td rowspan="3"> <strong>Entregado por: </strong></td>
-                <td rowspan="3"> <strong>Recibido por:</strong></td>
+                <td style="border-bottom:solid;"></td>
+                <td> <strong>Recibido por:</strong></td>
             </tr>
         </table>
     </div>
