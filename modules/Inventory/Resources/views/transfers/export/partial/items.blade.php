@@ -73,6 +73,20 @@
 
             </tbody>
         </table>
+        <br><br><br>
+
+        <table style="border: none">
+            <tr>
+                <td rowspan="3" style="border-bottom: 2px"></td>
+                <td rowspan="3" style="border-bottom: 2px:royalblue"></td>
+            </tr>
+
+            <tr>
+                <td rowspan="3"> <strong>Entregado por: </strong></td>
+                <td rowspan="3"> <strong>Recibido por:</strong></td>
+            </tr>
+        </table>
+
     </div>
 </div>
 
