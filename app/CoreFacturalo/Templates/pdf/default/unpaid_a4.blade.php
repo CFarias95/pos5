@@ -28,7 +28,7 @@
     $num_comprobante = str_pad(($index + 1), 8, '0', STR_PAD_LEFT);
     //Log::info('datos'.json_encode($account_entry))
     //Log::info('index'.$index);
-    //Log::info('id'.$id);
+    //Log::info('user_log'.$user_log);
 @endphp
 <html>
 <head>
@@ -308,12 +308,12 @@
                 <b>
                     Elaborado por: 
                 </b>
-                {{$document->user->name}}
+                {{$user_log->name}}
                 <br>
                 <b>
                     Cédula por: 
                 </b>
-                {{$document->user->number}}
+                {{$user_log->number}}
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">

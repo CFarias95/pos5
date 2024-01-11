@@ -705,7 +705,7 @@
               </div>
             </template>
             <!-- <template v-if="configuration.dashboard_products"> -->
-            <template>
+            <template v-if="configuration.dashboard_products">
               <div class="col-xl-3 col-md-6">
                 <section class="card card-dashboard">
                   <!-- <div class="card-body" v-if="loaders.items_by_sales"> -->
@@ -1004,6 +1004,7 @@ export default {
       this.form.establishment_id =
         this.establishments.length > 0 ? this.establishments[0].id : null;
     });
+    //console.log('establishments', this.form.establishment_id)
     await this.loadAll();
     await this.filterItems();
   },
@@ -1052,12 +1053,12 @@ export default {
     initForm() {
       this.form = {
         item_id: null,
-        establishment_id: null,
+        establishment_id: 0,
         enabled_expense: null,
         enabled_move_item: false,
         enabled_transaction_customer: false,
         period: "between_dates",
-        date_start: moment().subtract(7, "days").format("YYYY-MM-DD"),
+        date_start: moment().subtract(15, "days").format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
         month_start: moment().format("YYYY-MM"),
         month_end: moment().format("YYYY-MM"),
@@ -1109,6 +1110,7 @@ export default {
       this.loadComprobantesTotal();
     },
     changeStock() {
+      //console.log('changeStock', this.form.establishment_id);
       this.$eventHub.$emit("changeStock", this.form.establishment_id);
     },
     loadCompany() {
@@ -1177,7 +1179,7 @@ export default {
         .post(`/${this.resource}/comprobantes?${this.getQueryParameters()}`)
         .then((response) => {
           this.comprobantes = response.data.total;
-          console.log("comprobantes", response.data.total);
+          //console.log("comprobantes", response.data.total);
         });
     },
     showLoadersLoadDataAditional() {
@@ -1190,6 +1192,7 @@ export default {
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
     },
+    
     getSaleNoteSP() {
       return this.$http
         .get(`/${this.resource}/sale_note_data?${this.getQueryParameters()}`)

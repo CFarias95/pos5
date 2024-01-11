@@ -15,7 +15,7 @@ class Template
         return self::render($path_template, $company, $document);
     }
 
-    public function pdf1($base_template, $template, $company, $document, $format_pdf, $id, $account_entry, $index)
+    public function pdf1($base_template, $template, $company, $document, $format_pdf, $id, $account_entry, $index, $user_log)
     {
         if($template === 'credit' || $template === 'debit') {
             $template = 'note';
@@ -23,7 +23,7 @@ class Template
 
         $path_template =  $this->validate_template($base_template, $template, $format_pdf);
         // Log::info($document);
-        return self::render1($path_template, $company, $document, $id, $account_entry, $index);
+        return self::render1($path_template, $company, $document, $id, $account_entry, $index, $user_log);
     }
 
     public function pdf2($base_template, $template, $company, $document, $format_pdf, $id, $index, $account_entry)
@@ -67,11 +67,11 @@ class Template
         return view($view, compact('company', 'document'))->render();
     }
 
-    private function render1($view, $company, $document, $id, $account_entry, $index)
+    private function render1($view, $company, $document, $id, $account_entry, $index, $user_log)
     {
         view()->addLocation(__DIR__.'/Templates');
 
-        return view($view, compact('company', 'document', 'id', 'account_entry', 'index'))->render();
+        return view($view, compact('company', 'document', 'id', 'account_entry', 'index', 'user_log'))->render();
     }
 
     private function render3($view, $company, $document, $id, $index, $account_entry)

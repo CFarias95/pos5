@@ -80,10 +80,13 @@ export default {
     },
     getRecords() {
       if (this.form.establishment_id) {
+        console.log('inventorydatabtable', this.form.establishment_id)
+        console.log('resource', this.resource)
         return this.$http
           .get(`/${this.resource}/records?${this.getQueryParameters()}`)
           .then((response) => {
             this.records = response.data.data;
+            console.log('records', this.records)
             this.pagination = response.data.meta;
             this.pagination.per_page = parseInt(response.data.meta.per_page);
             this.$eventHub.$emit("recordsSkeletonLoader", false);

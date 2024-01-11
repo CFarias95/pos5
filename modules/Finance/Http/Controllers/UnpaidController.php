@@ -347,10 +347,12 @@ class UnpaidController extends Controller
         $i = $conect[$index];
         $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
 
+        $user_log = auth()->user();
+
         //Log::info('info1'.json_encode($account_entry));
         //Log::info('index1'.$id);
 
-        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index);
+        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index, $user_log);
 
         /* cuentas por cobrar formato a4 */
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {

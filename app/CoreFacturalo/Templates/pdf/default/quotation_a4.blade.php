@@ -12,7 +12,7 @@
 //Log::info('Document'.$document->seller);
 //Log::info('establishment'.json_encode($establishment));
 //Log::info('customer'.json_encode($customer));
-//Log::info('accounts'.json_encode($accounts));
+Log::info('documents-items'.json_encode($document->items));
 @endphp
 <html>
 <head>
@@ -221,7 +221,7 @@
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
                 {{ $row->item->name_product_pdf }}
                 @else
-                {{ $row->item->name }}
+                {{ $row->item->name }} / {{ $row->item->description }}
                 @endif
                 @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
                 @if($row->attributes)
@@ -270,7 +270,7 @@
                 0
                 @endif
             </td>
-            <td class="text-right">{{ number_format($row->total, 2) }}</td>
+            <td class="text-right">{{ number_format(($row->quantity * $row->unit_value), 2) }}</td>
         </tr>
         <tr>
             <td colspan="8" class="border-bottom"></td>
@@ -325,7 +325,7 @@
         </tr>
     </tbody>
 </table>
-<table class="full-width">
+{{-- <table class="full-width">
     <tr>
         <td width="65%" style="text-align: top; vertical-align: top;">
             <br>
@@ -341,7 +341,7 @@
         </td>
     </tr>
     <tr>
-        {{-- <td width="65%">
+        <td width="65%">
             @foreach($document->legends as $row)
                 <p>Son: <span class="font-bold">{{ $row->value }} {{ $document->currency_type->description }}</span></p>
             @endforeach
@@ -350,11 +350,11 @@
             @foreach($document->additional_information as $information)
                 <p>{{ $information }}</p>
             @endforeach
-        </td> --}}
+        </td>
     </tr>
-</table>
+</table> --}}
 <br>
-<table class="full-width">
+{{-- <table class="full-width">
     <tr>
         <td>
         <strong>PAGOS:</strong> </td></tr>
@@ -370,9 +370,9 @@
             <tr><td><strong>SALDO:</strong> {{ $document->currency_type->symbol }} {{ number_format($document->total - $payment, 2) }}</td>
     </tr>
 
-</table>
+</table> --}}
 
-<b>Si desea realizar alguna consulta con respecto a la cotización, pongase en contacto con 
+Si desea realizar alguna consulta con respecto a la cotización, pongase en contacto con: <b>
     @if ($document->seller->name)
         {{ $document->seller->name }}
     @else
@@ -401,8 +401,13 @@
         <tr class="font-sm">
             <td class="p-1" width="30%"></td>
             <td class="p-1"  width="8%"></td>
-            <td class="border-top text-left p-1 font-sm" width="30%">
-                <b>
+            
+             <td class="text-center p-1 font-sm" width="30%">
+                <p style="font-size: large"><b>Gracias por preferirnos</b></p>
+                <br>
+                <br>
+                <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 200px;">
+                {{--<b>
                     Elaborado por: 
                 </b>
                 {{$document->user->name}}
@@ -410,7 +415,7 @@
                 <b>
                     Cédula: 
                 </b>
-                {{$document->user->number}}
+                {{$document->user->number}} --}}
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="p-1" width="30%"></td>

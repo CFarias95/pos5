@@ -5,6 +5,7 @@ namespace Modules\Dashboard\Helpers;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Dashboard\Http\Resources\DashboardStockCollection;
 use App\Models\Tenant\Establishment;
+use Illuminate\Support\Facades\Log;
 
 class DashboardStock
 {
@@ -18,12 +19,15 @@ class DashboardStock
     {
 
         $establishment_id = $request->establishment_id;
+        Log::info('establishment_id - '.$establishment_id);
 
         if(!$establishment_id){
             $establishment_id = Establishment::select('id')->first()->id;
         }
 
-        $products = ItemWarehouse::whereHas('item',function($query){
+        if($establishment_id != 0)
+        {
+            $products = ItemWarehouse::whereHas('item',function($query){
 
                         $query->whereNotIsSet();
                         $query->where('status',true);
@@ -36,6 +40,19 @@ class DashboardStock
                     ->where('stock','<=', 20)
                     ->orderBy('stock')
                     ->paginate(config('tenant.items_per_page_simple_d_table'));
+        }else{
+            $products = ItemWarehouse::whereHas('item',function($query){
+
+                $query->whereNotIsSet();
+                $query->where('status',true);
+                $query->where('unit_type_id','!=', 'ZZ');
+                
+            })
+            ->where('stock','<=', 20)
+            ->orderBy('stock')
+            ->paginate(config('tenant.items_per_page_simple_d_table'));
+        }
+            
                             
         return new DashboardStockCollection($products);
     }
