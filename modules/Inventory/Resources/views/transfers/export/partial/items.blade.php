@@ -75,11 +75,11 @@
         <table style="border: none" class="full-width">
             <tr>
                 <td style="border-bottom:solid;"></td>
-                <td> <strong>Entregado por:</strong></td>
+                <td><strong>Entregado por:</strong></td>
             </tr>
             <tr>
                 <td style="border-bottom:solid;"></td>
-                <td> <strong>Recibido por:</strong></td>
+                <td><strong>Recibido por:</strong></td>
             </tr>
         </table>
     </div>
