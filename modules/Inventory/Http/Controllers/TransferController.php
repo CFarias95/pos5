@@ -259,7 +259,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
-                                $inventory->description = 'Traslado';
+                                $inventory->description = 'Traslado Lotes';
                                 $inventory->item_id = $it['id'];
                                 $inventory->warehouse_id = $request->warehouse_id;
                                 $inventory->warehouse_destination_id = $request->warehouse_destination_id;
@@ -284,7 +284,7 @@ use Modules\Item\Models\ItemLotsGroup;
                         //si tienes series
                         $inventory = new Inventory();
                         $inventory->type = 2;
-                        $inventory->description = 'Traslado';
+                        $inventory->description = 'Traslado Serie';
                         $inventory->item_id = $it['id'];
                         $inventory->warehouse_id = $request->warehouse_id;
                         $inventory->warehouse_destination_id = $request->warehouse_destination_id;
@@ -298,8 +298,10 @@ use Modules\Item\Models\ItemLotsGroup;
                                 $item_lot = ItemLot::findOrFail($lot['id']);
                                 $item_lot->warehouse_id = $inventory->warehouse_destination_id;
                                 $item_lot->update();
-                            }
 
+                                $inventory->lot_code = $item_lot->series;
+                                $inventory->save();
+                            }
                         }
                     }else{
                         $inventory = new Inventory();
