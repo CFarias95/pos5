@@ -112,7 +112,7 @@ class AdvanceController extends Controller
         //$establishment = Establishment::get();
 
         $collection = new AdvanceCollection($records);
-        
+
         $filename = 'Reporte_Avances_'.date('YmdHis');
 
         $pdf = PDF::loadView('finance::advances.avance_pdf_a4', compact("collection", "company"));
@@ -130,7 +130,6 @@ class AdvanceController extends Controller
 
     public function store(AdvanceRequest $request)
     {
-
         $id = $request->input('id');
         $estado = $request->input('estado');
         $advance = Advance::firstOrNew(['id' => $id]);

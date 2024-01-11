@@ -29,7 +29,7 @@
                                         <td>{{ row.payment_method_type_description }}</td>
                                         <td>{{ row.destination_description }}</td>
                                         <td class="text-center">{{ row.payment }}<br> {{ row.postdated ? row.postdated : ''
-                                        }}
+                                            }}
                                         </td>
                                         <td class="text-left">
                                             <!-- pagos que no cuenten con la opcion pago recibido -->
@@ -48,7 +48,7 @@
                                             <template v-else>
 
                                                 <span class="d-block mb-2 font-bold">{{ row.payment_received_description
-                                                }}</span>
+                                                    }}</span>
 
                                                 <template v-if="row.payment_received">
 
@@ -302,6 +302,41 @@
                     </template>
                 </div>
             </div>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showOverPayment" title="Generar con sobre pago" append-to-body
+                    align-center>
+                    <el-form>
+                        <el-form-item label="Valor extra">
+                            <el-input v-model="formSubmit.overPaymentValue" autocomplete="off" readonly />
+                        </el-form-item>
+                        <el-form-item label="Generar anticipo">
+                            <el-switch v-model="formSubmit.overPaymentAdvance">
+                                <template #active-action>
+                                    <span class="custom-active-action">T</span>
+                                </template>
+                                <template #inactive-action>
+                                    <span class="custom-inactive-action">F</span>
+                                </template>
+                            </el-switch>
+                        </el-form-item>
+
+                        <el-form-item v-if="formSubmit.overPaymentAdvance == false" label="Cuenta Contable">
+                            <el-select v-model="formSubmit.overPaymentAccount" placeholder="Seleccione una cuenta contable" filterable clearable>
+                                <el-option v-for="account in accounts" :key="account.id" :label="account.description" :value="account.id" />
+                            </el-select>
+                        </el-form-item>
+
+                    </el-form>
+                    <template #footer>
+                        <span class="dialog-footer">
+                            <el-button type="danger" @click="cancelOverPayment()">Cancel</el-button>
+                            <el-button type="primary" @click="generateWithOverPayment()">
+                                Generar
+                            </el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+            </template>
         </div>
 
         <dialog-link-payment :documentPaymentId="documentPayment.id" :currencyTypeId="document.currency_type_id"
@@ -312,6 +347,7 @@
         <document-options :recordId="this.documentId" :showDialogOptions.sync="showDialogOptions"
             :showClose="showDialogClose" :type="this.type" :configuration="this.configuration" :id="this.index"
             :monto="this.monto" :index="this.documentFeeId"></document-options>
+
     </el-dialog>
 </template>
 
@@ -353,7 +389,31 @@ export default {
             index: null,
             index_id: null,
             monto: 0,
-            credits : [],
+            credits: [],
+            showOverPayment: false,
+            valorOverPayment: 0,
+            advanceOverPayment: false,
+            accounts:[],
+            indexSelected:null,
+            formSubmit: {
+                id: null,
+                document_id: null,
+                date_of_payment: null,
+                payment_method_type_id: null,
+                payment_destination_id: null,
+                reference: null,
+                filename: null,
+                temp_path: null,
+                payment: null,
+                payment_received: null,
+                fee_id: this.documentFeeId,
+                date_of_due: null,
+                postdated: null,
+                overPayment: false,
+                overPaymentValue: 0,
+                overPaymentAdvance: false,
+                overPaymentAccount: null,
+            },
         }
     },
     async created() {
@@ -363,11 +423,10 @@ export default {
                 this.payment_method_types = response.data.payment_method_types;
                 this.payment_destinations = response.data.payment_destinations
                 this.permissions = response.data.permissions
+                this.accounts = response.data.accounts
                 //this.initDocumentTypes()
             })
         await this.events();
-
-
     },
     methods: {
         events() {
@@ -472,7 +531,10 @@ export default {
 
         },
         initForm() {
-            this.records = [];
+            this.showOverPayment = false,
+                this.valorOverPayment = 0,
+                this.advanceOverPayment = false,
+                this.records = [];
             this.fileList = [];
             this.showAddButton = true;
         },
@@ -503,7 +565,6 @@ export default {
 
         },
         clickAddRow() {
-
             this.records.push({
                 id: null,
                 date_of_payment: moment().format('YYYY-MM-DD'),
@@ -526,30 +587,65 @@ export default {
             this.fileList = []
             this.showAddButton = true;
         },
+        validateOverPayment(index) {
+
+            this.formSubmit.overPaymentValue = this.records[index].payment - parseFloat(this.document.total_difference);
+            this.formSubmit.overPayment = true;
+            this.formSubmit.overPaymentAdvance = true;
+            this.formSubmit.overPaymentAccount = null;
+            this.indexSelected = index;
+            this.showOverPayment = true;
+            console.log('El valor de pago adicional es de: ', this.formSubmit.overPaymentValue)
+
+            //this.records[index].payment = parseFloat(this.document.total_difference)
+        },
+        generateWithOverPayment() {
+
+            if(this.formSubmit.overPaymentAdvance == false && this.formSubmit.overPaymentAccount == null){
+
+                this.$message.error('Debe seleccionar una cuenta contable');
+                return;
+
+            }else{
+
+                this.formSubmit.overPayment = true;
+                this.records[this.indexSelected].payment = parseFloat(this.document.total_difference);
+                this.showOverPayment = false;
+                this.clickSubmit(this.indexSelected);
+
+            }
+        },
+        cancelOverPayment() {
+
+            this.formSubmit.overPaymentValue = 0;
+            this.formSubmit.overPayment = false;
+            this.indexSelected = null;
+            this.showOverPayment = false;
+
+        },
         clickSubmit(index) {
 
             if (this.records[index].payment > parseFloat(this.document.total_difference)) {
-                this.$message.error('El monto ingresado supera al monto pendiente de pago, verifique.');
+                this.validateOverPayment(index);
+
                 return;
             }
 
-            let form = {
-                id: this.records[index].id,
-                document_id: this.documentId,
-                date_of_payment: this.records[index].date_of_payment,
-                payment_method_type_id: this.records[index].payment_method_type_id,
-                payment_destination_id: this.records[index].payment_destination_id,
-                reference: this.records[index].reference,
-                filename: this.records[index].filename,
-                temp_path: this.records[index].temp_path,
-                payment: this.records[index].payment,
-                payment_received: this.records[index].payment_received,
-                fee_id: this.documentFeeId,
-                date_of_due: moment().format('YYYY-MM-DD'),
-                postdated: this.records[index].postdated,
-            };
+            this.formSubmit.id = this.records[index].id
+            this.formSubmit.document_id = this.documentId
+            this.formSubmit.date_of_payment = this.records[index].date_of_payment
+            this.formSubmit.payment_method_type_id = this.records[index].payment_method_type_id
+            this.formSubmit.payment_destination_id = this.records[index].payment_destination_id
+            this.formSubmit.reference = this.records[index].reference
+            this.formSubmit.filename = this.records[index].filename
+            this.formSubmit.temp_path = this.records[index].temp_path
+            this.formSubmit.payment = this.records[index].payment
+            this.formSubmit.payment_received = this.records[index].payment_received
+            this.formSubmit.fee_i = this.documentFeeId
+            this.formSubmit.date_of_due = moment().format('YYYY-MM-DD')
+            this.formSubmit.postdated = this.records[index].postdated
 
-            this.$http.post(`/${this.resource}`, form)
+            this.$http.post(`/${this.resource}`, this.formSubmit)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
