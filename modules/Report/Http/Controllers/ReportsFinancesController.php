@@ -65,7 +65,7 @@ class ReportsFinancesController extends Controller
     //RECORDS DE RETENCIONES
     public function reportRetentionRecords(Request $request)
     {
-        $records = $this->getRecordsRetentions($request->all());
+        $records = $this->getRecordsRetentions($request);
         return $records;
     }
 
