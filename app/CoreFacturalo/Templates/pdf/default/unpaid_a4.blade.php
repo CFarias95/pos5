@@ -228,7 +228,7 @@
         </td>
     </tr>
     <tr>
-        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }} - {{ $referencia != '' ? $referencia:$data[$index]->reference }} - {{ $document->currency_type->symbol }}{{$data[$index]->payment}}</td>
+        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }} - {{ $referencia != '' ? $referencia:$data[$index]->reference }} - ${{number_format($account_entry['total_debe'], 2, '.', ',')}}</td>
     </tr>
     @php
         $payment = 0;

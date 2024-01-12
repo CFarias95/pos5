@@ -141,7 +141,7 @@
               </el-select>
             </template>
           </div>
-          <div class="d-flex">
+          <div class="d-flex" v-if="this.resource == 'items'">
             <div style="width: 100px">Marca:</div>
             <el-select
               placeholder="Marca"
@@ -303,7 +303,10 @@ export default {
         this.search.column = _.head(Object.keys(this.columns));
       }
     });
-    await this.getBrands();
+    if (this.resource === "items") {
+      await this.getBrands();
+    }
+
     await this.getRecords();
   },
   methods: {
