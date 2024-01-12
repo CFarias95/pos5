@@ -820,7 +820,7 @@ class Item extends ModelTenant
     }
 
     public function getPurchaseUnitPrice(){
-        
+
         $unitPrice = $this->purchase_unit_price;
         $hasIgv = $this->purchase_has_igv;
         $igvType = $this->purchase_affectation_igv_type_id;
@@ -1008,6 +1008,7 @@ class Item extends ModelTenant
             'stock'                            => $stock,
             'internal_id'                      => $this->internal_id,
             'description'                      => $this->description,
+            'name'                             => $this->name,
             'currency_type_id'                 => $this->currency_type_id,
             'currency_type_symbol'             => $currency->symbol,
             'has_igv'                          => (bool)$this->has_igv,

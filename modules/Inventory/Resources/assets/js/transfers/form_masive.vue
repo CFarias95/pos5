@@ -131,7 +131,7 @@
                                 <tr v-for="(row, index) in form.items" :key="index" width="100%">
                                     <td>{{ index + 1 }}</td>
                                     <td>{{ row.barcode }}</td>
-                                    <td>{{ row.description }}</td>
+                                    <td>{{ row.name }} / {{ row.description }}</td>
                                     <td>
                                         {{ row.quantity }}
                                         <!-- <el-input-number v-model="row.quantity" :min="0.01" :step="1"
@@ -351,10 +351,11 @@ export default {
             }
             else {
                 const row = this.items.find(x => x.id == this.form_add.item_id)
-
+                console.log('item', row);
                 this.form.items.push({
                     id: row.id,
                     description: row.description,
+                    name:row.name,
                     barcode: row.barcode,
                     current_stock: parseFloat(this.form_add.stock),
                     quantity: this.form_add.quantity,
@@ -418,9 +419,10 @@ export default {
             }
 
             let row = this.items.find(x => x.id == this.form_add.item_id);
-
+            console.log('clickAddItem',row);
             this.form.items.push({
                 id: row.id,
+                name: row.name,
                 description: row.description,
                 barcode: row.barcode,
                 current_stock: parseFloat(this.form_add.stock),

@@ -589,7 +589,7 @@ export default {
         },
         validateOverPayment(index) {
 
-            this.formSubmit.overPaymentValue = this.records[index].payment - parseFloat(this.document.total_difference);
+            this.formSubmit.overPaymentValue = _.round(this.records[index].payment - parseFloat(this.document.total_difference),4);
             this.formSubmit.overPayment = true;
             this.formSubmit.overPaymentAdvance = true;
             this.formSubmit.overPaymentAccount = null;
