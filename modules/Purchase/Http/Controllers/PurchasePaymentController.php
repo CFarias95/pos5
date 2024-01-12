@@ -369,7 +369,7 @@ class PurchasePaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    if($detalle->save() == false){
+                    if($detalle2->save() == false){
                         $cabeceraC->delete();
                         return;
                         //abort(500,'No se pudo generar el asiento contable del documento');
