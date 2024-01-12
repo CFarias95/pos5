@@ -199,6 +199,7 @@ if ($hostname) {
             Route::get('items/records', 'Tenant\ItemController@records');
             Route::get('items/tables', 'Tenant\ItemController@tables');
             Route::get('items/record/{item}', 'Tenant\ItemController@record');
+            Route::get('items/brands', 'Tenant\ItemController@brands');
             Route::post('items', 'Tenant\ItemController@store');
             Route::delete('items/{item}', 'Tenant\ItemController@destroy');
             Route::delete('items/item-unit-type/{item}', 'Tenant\ItemController@destroyItemUnitType');

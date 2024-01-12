@@ -141,6 +141,24 @@
               </el-select>
             </template>
           </div>
+          <div class="d-flex" v-if="this.resource == 'items'">
+            <div style="width: 100px">Marca:</div>
+            <el-select
+              placeholder="Marca"
+              clearable
+              filterable
+              v-model="search.marca"
+              @change="getRecords"
+            >
+              <el-option
+                v-for="brand in brands"
+                :key="brand.id"
+                :label="brand.name"
+                :value="brand.name"
+              >
+              </el-option>
+            </el-select>
+          </div>
           <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
             <template v-if="resource == 'cnp'">
               <div class="d-flex">
@@ -154,10 +172,14 @@
               </div>
             </template>
           </div>
-          <el-button class="submit" type="success" @click.prevent="clickDownloadExcel" v-if="this.resource === 'inventory'"><i
-                                    class="fa fa-file-excel"></i>
-                                Exportar Excel
-                            </el-button>
+          <el-button
+            class="submit"
+            type="success"
+            @click.prevent="clickDownloadExcel"
+            v-if="this.resource === 'inventory'"
+            ><i class="fa fa-file-excel"></i>
+            Exportar Excel
+          </el-button>
           <div class="col-lg-3 col-md-4 col-sm-12 pb-2">
             <template v-if="resource == 'retentions'">
               <div class="d-flex">
@@ -237,6 +259,7 @@ export default {
         column: null,
         value: null,
         included: false,
+        marca: null,
       },
       columns: [],
       records: [],
@@ -247,6 +270,7 @@ export default {
       suppliers: [],
       category_list: [],
       customers: [],
+      brands: [],
     };
   },
   created() {
@@ -260,23 +284,29 @@ export default {
   },
   async mounted() {
     let column_resource = _.split(this.resource, "/");
+    //console.log("column_resource", column_resource);
+    //console.log("this.resource", this.resource);
     await this.$http.get(`/${_.head(column_resource)}/columns`).then((response) => {
       if (response.data.columns) {
         //console.log('Entro if');
         this.columns = response.data.columns;
         this.search.column = _.head(Object.keys(this.columns));
         this.parentsList = response.data.categories;
-        this.category_list = response.data.categories_list;  
+        this.category_list = response.data.categories_list;
         //console.log('categories', this.category_list);
         (this.suppliers = response.data.suppliers),
           (this.customers = response.data.customers),
           (this.persons = response.data.persons);
       } else {
-        this.columns = response.data;     
+        this.columns = response.data;
         //console.log('columns', this.columns);
         this.search.column = _.head(Object.keys(this.columns));
       }
     });
+    if (this.resource === "items") {
+      await this.getBrands();
+    }
+
     await this.getRecords();
   },
   methods: {
@@ -288,7 +318,13 @@ export default {
       //let data = getRecords();
       //console.log('data', data);
 
-      window.open(`/${this.resource}/excel?${query}`, '_blank');
+      window.open(`/${this.resource}/excel?${query}`, "_blank");
+    },
+    getBrands() {
+      return this.$http.get(`/${this.resource}/brands`).then((response) => {
+        //console.log("brands", response);
+        this.brands = response.data.brands;
+      });
     },
     getRecords() {
       this.loading_submit = true;
@@ -297,7 +333,7 @@ export default {
         .get(`/${this.resource}/records?${this.getQueryParameters()}`)
         .then((response) => {
           this.records = response.data.data;
-          console.log('records', this.records);
+          console.log("records", this.records);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         })

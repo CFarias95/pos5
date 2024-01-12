@@ -144,6 +144,7 @@
             <th>Unidad</th>
             <th>Nombre</th>
             <th v-if="columns.description.visible">Descripción</th>
+            <th>Código de Fábrica</th>
             <th v-if="columns.model.visible">Modelo</th>
             <th v-if="columns.brand.visible">Marca</th>
             <th v-if="columns.item_code.visible">Cód. SUNAT</th>
@@ -196,6 +197,7 @@
             <td>{{ row.unit_type_id }}</td>
             <td>{{ row.name }}</td>
             <td v-if="columns.description.visible">{{ row.description }}</td>
+            <td>{{ row.factory_code }}</td>
             <td v-if="columns.model.visible">{{ row.model }}</td>
             <td v-if="columns.brand.visible">{{ row.brand }}</td>
             <td v-if="columns.item_code.visible">{{ row.item_code }}</td>
@@ -467,7 +469,7 @@ export default {
       columns: {
         description: {
           title: "Descripción",
-          visible: false,
+          visible: true,
         },
         item_code: {
           title: "Cód. SUNAT",
@@ -484,11 +486,11 @@ export default {
         },
         model: {
           title: "Modelo",
-          visible: false,
+          visible: true,
         },
         brand: {
           title: "Marca",
-          visible: false,
+          visible: true,
         },
         sanitary: {
           title: "N° Sanitario",

@@ -1225,6 +1225,7 @@ class Item extends ModelTenant
             'model' => $this->model,
             'barcode' => $this->barcode,
             'brand' => $brand,
+            'factory_code' => $this->factory_code,
             'category_description' => optional($this->category)->name,
             'warehouse_id' => $this->warehouse_id,
             'internal_id' => $this->internal_id,

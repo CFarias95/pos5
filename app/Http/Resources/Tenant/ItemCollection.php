@@ -4,6 +4,7 @@ namespace App\Http\Resources\Tenant;
 
 use Illuminate\Http\Resources\Json\ResourceCollection;
 use App\Models\Tenant\Configuration;
+use Illuminate\Support\Facades\Log;
 
 class ItemCollection extends ResourceCollection
 {
@@ -19,9 +20,11 @@ class ItemCollection extends ResourceCollection
         $configuration =  Configuration::first();
 
         return $this->collection->transform(function($row, $key) use($configuration){
-            /** @var \App\Models\Tenant\Item  $row */
             //Log::info('row - '.$row);
+            /** @var \App\Models\Tenant\Item  $row */
+            //Log::info('row1 - '.$row);
             return $row->getCollectionData($configuration);
+            //Log::info('row2 - '.$row);
             /** Se ha movido la salida, al modelo */
             $brand = null;
             if(!empty($row->brand_id)) {
@@ -53,6 +56,7 @@ class ItemCollection extends ResourceCollection
                 'model' => $row->model,
                 'barcode' => $row->barcode,
                 'brand' => $brand,
+                'factory_code' => $row->factory_code,
                 'warehouse_id' => $row->warehouse_id,
                 'internal_id' => $row->internal_id,
                 'item_code' => $row->item_code,
