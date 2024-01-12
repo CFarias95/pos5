@@ -55,7 +55,7 @@
                                     Cliente
                                     <!--<a href="#" @click.prevent="showDialogNewPerson = true">[+ Nuevo]</a>-->
                                     <span class="text-danger"> *</span></label>
-                                <el-select v-model="form.customer_id" :disabled="true">
+                                <el-select v-model="form.customer_id" clearable filterable>
                                     <el-option v-for="option in customers" :key="option.id" :label="option.description"
                                                :value="option.id"></el-option>
                                 </el-select>

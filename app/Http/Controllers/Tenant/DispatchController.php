@@ -180,7 +180,7 @@ class DispatchController extends Controller
                 $document->establishment_id = $document->warehouse_id;
                 $document->establishment = $document->warehouse->establishment;
                 //$document->date_of_issue = $document->created_at;
-                $document->customer_id = $document->warehouse_destination->establishment->customer_associate_id;
+                $document->customer_id = $document->client_id;//warehouse_destination->establishment->customer_associate_id;
                 $document->transfer_reason_type_id = '04';
                 $document->transfer_reason_description = $document->description;
                 $document->customer =  $document->warehouse_destination->establishment->associated;
