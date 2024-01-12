@@ -538,7 +538,7 @@ class DocumentPaymentController extends Controller
                     $detalle = new AccountingEntryItems();
                     $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
                     $detalle->accounting_entrie_id = $cabeceraC->id;
-                    $detalle->account_movement_id = $configuration->cta_cient_advances;
+                    $detalle->account_movement_id = $configuration->cta_client_advances;
                     $detalle->seat_line = 3;
                     $detalle->haber = $requestP['overPaymentValue'];
                     $detalle->debe = 0;
