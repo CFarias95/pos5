@@ -143,7 +143,7 @@ class AdvanceController extends Controller
         $msg = '';
         $msg = ($id) ? 'Anticipo editado con éxito' : 'Anticipo registrado con éxito';
 
-        if(!$id){
+        if(!$id && $request->input('generate_account') != 0 ){
             $this->createAccountingEntry($advance->id);
         }
         return [

@@ -307,6 +307,7 @@ class DocumentPaymentController extends Controller
                     $requestA->id_payment = $request['payment_method_type_id'];
                     $requestA->reference =  $request['reference'];
                     $requestA->valor = $request['overPaymentValue'];
+                    $requestA['generate_account'] = 0;
 
                     $advanceController = new AdvanceController();
                     $advanceController->store($requestA);
@@ -324,6 +325,7 @@ class DocumentPaymentController extends Controller
                     $requestA['observation'] = 'Anticipo generado por sobre pago, PAGO-'.$data->id;
                     $requestA['is_supplier'] = 0;
                     $requestA['in_use'] = 0;
+                    $requestA['generate_account'] = 0;
                     $advanceController = new AdvanceController();
                     $advanceController->store($requestA);
                 }
@@ -343,6 +345,7 @@ class DocumentPaymentController extends Controller
                 $requestA['observation'] = 'Anticipo generado por sobre pago, PAGO-'.$data->id;
                 $requestA['is_supplier'] = 0;
                 $requestA['in_use'] = 0;
+                $requestA['generate_account'] = 0;
                 $advanceController = new AdvanceController();
                 $advanceController->store($requestA);
             }
@@ -506,7 +509,7 @@ class DocumentPaymentController extends Controller
                     $detalle2->accounting_entrie_id = $cabeceraC->id;
                     $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$configuration->cta_charge;
                     $detalle2->seat_line = 2;
-                    $detalle2->debe = ($requestP['overPayment'] && $requestP['overPaymentAdvance'] == false) ? $request->payment + $requestP['overPaymentValue'] : $request->payment;
+                    $detalle2->debe = ($requestP['overPayment']) ? $request->payment + $requestP['overPaymentValue'] : $request->payment;
                     $detalle2->haber = 0;
                     if($detalle2->save() == false){
                         $cabeceraC->delete();
@@ -522,6 +525,20 @@ class DocumentPaymentController extends Controller
                     $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
                     $detalle->accounting_entrie_id = $cabeceraC->id;
                     $detalle->account_movement_id = $requestP['overPaymentAccount'];
+                    $detalle->seat_line = 3;
+                    $detalle->haber = $requestP['overPaymentValue'];
+                    $detalle->debe = 0;
+                    $detalle->save();
+
+                }
+
+                if($requestP['overPayment'] && $requestP['overPaymentAdvance'] == true){
+
+                    Log::info('Generando linea de overPayment');
+                    $detalle = new AccountingEntryItems();
+                    $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = $configuration->cta_cient_advances;
                     $detalle->seat_line = 3;
                     $detalle->haber = $requestP['overPaymentValue'];
                     $detalle->debe = 0;
