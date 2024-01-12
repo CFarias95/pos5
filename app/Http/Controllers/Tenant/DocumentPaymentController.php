@@ -530,6 +530,10 @@ class DocumentPaymentController extends Controller
                     $detalle->debe = 0;
                     $detalle->save();
 
+                    $cabeceraC->total_debe = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->total_haber = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->save();
+
                 }
 
                 if($requestP['overPayment'] && $requestP['overPaymentAdvance'] == true){
@@ -543,6 +547,10 @@ class DocumentPaymentController extends Controller
                     $detalle->haber = $requestP['overPaymentValue'];
                     $detalle->debe = 0;
                     $detalle->save();
+
+                    $cabeceraC->total_debe = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->total_haber = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->save();
 
                 }
 
