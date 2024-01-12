@@ -666,7 +666,9 @@ export default {
         },
 
         async submit() {
-            if (this.form.quantity < 1) {
+            if (this.form.quantity > 0 ) {
+
+            }else{
                 return this.$message.error('La cantidad debe ser mayor a 0');
             }
 
