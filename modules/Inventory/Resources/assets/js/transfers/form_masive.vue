@@ -316,7 +316,7 @@ export default {
                 }
             }
 
-            if (this.form_add.quantity < 1) {
+            if (this.form_add.quantity == 0) {
                 return {
                     success: false,
                     message: 'La cantidad debe ser mayor o igual a 1.'
