@@ -106,7 +106,8 @@ class ItemController extends Controller
             'lot_code' => 'Código lote',
             'active' => 'Habilitados',
             'inactive' => 'Inhabilitados',
-            'category' => 'Categoria'
+            'category' => 'Categoria',
+            'factory_code' => 'Código de Fabrica',
         ];
     }
 
@@ -127,6 +128,7 @@ class ItemController extends Controller
      */
     public function getRecords(Request $request)
     {
+        //Log::info('request - marca - '.$request->column);
         // $records = Item::whereTypeUser()->whereNotIsSet();
         $records = $this->getInitialQueryRecords();
 
@@ -134,34 +136,36 @@ class ItemController extends Controller
 
             case 'brand':
                 $records->whereHas('brand', function ($q) use ($request) {
-                    $q->where('name', 'like', "%{$request->value}%");
+                    $q->where('name', 'like', "%{$request->value}%")
+                    ->orderByRaw('ISNULL(internal_id) asc, internal_id');
                 });
                 break;
             case 'category':
                 $records->whereHas('category', function ($q) use ($request) {
-                    $q->where('name', 'like', "%{$request->value}%");
+                    $q->where('name', 'like', "%{$request->value}%")
+                    ->orderByRaw('ISNULL(internal_id) asc, internal_id');
                 });
                 break;
 
             case 'active':
-                $records->whereIsActive();
+                $records->whereIsActive()->orderByRaw('ISNULL(internal_id) asc, internal_id');;
                 break;
 
             case 'inactive':
-                $records->whereIsNotActive();
+                $records->whereIsNotActive()->orderByRaw('ISNULL(internal_id) asc, internal_id');;
                 break;
 
             default:
                 if ($request->has('column')) {
                     if ($this->applyAdvancedRecordsSearch() && $request->column === 'description') {
-                        if ($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value)->orderBy($request->column);
+                        if ($request->value) $records->whereAdvancedRecordsSearch($request->column, $request->value)->orderByRaw('ISNULL(internal_id) asc, internal_id');;
                     }
                     elseif ($request->column === 'internal_id'){
                         $records->where($request->column, 'like', "%{$request->value}%")
-                        ->orderBy('internal_id','desc');
+                        ->orderByRaw('ISNULL(internal_id) asc, internal_id');;
                     }else {
                         $records->where($request->column, 'like', "%{$request->value}%")
-                        ->orderBy($request->column);
+                        ->orderByRaw('ISNULL(internal_id) asc, internal_id');;
                     }
                 }
                 break;
@@ -170,9 +174,9 @@ class ItemController extends Controller
         if ($request->type) {
             if ($request->type === 'PRODUCTS') {
                 // listar solo productos en la lista de productos
-                $records->whereNotService();
+                $records->whereNotService()->orderByRaw('ISNULL(internal_id) asc, internal_id');;
             } else {
-                $records->whereService();
+                $records->whereService()->orderByRaw('ISNULL(internal_id) asc, internal_id');;
             }
         }
         $isPharmacy = false;
@@ -181,9 +185,30 @@ class ItemController extends Controller
         }
         if ($isPharmacy == true) {
             $records->Pharmacy()
-                ->with(['cat_digemid']);
+                ->with(['cat_digemid'])->orderByRaw('ISNULL(internal_id) asc, internal_id');
         }
+
+        if($request->marca != null)
+        {
+            //Log::info('Entro al if marca - '.$records);
+            $marca = (string) $request->marca;
+            //$records = $records->whereHas('brand', 'LIKE', '%'.$marca.'%')->get();
+            $records = $records->whereHas('brand', function ($q) use ($request) {
+                $q->where('name', 'like', "%{$request->marca}%")
+                ->orderByRaw('ISNULL(internal_id) asc, internal_id');
+            });
+        }
+
+        //$records = $records->orderBy('internal_id', 'asc');
+        
         return $records;
+    }
+
+    public function brands()
+    {
+        $brands = Brand::get();
+
+        return compact("brands");
     }
 
 
