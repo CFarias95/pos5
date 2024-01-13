@@ -388,7 +388,7 @@ export default {
                 return this.$message.error("El stock debe ser mayor o igual a 1");
             }
 
-            if (this.form_add.quantity < 1) {
+            if (this.form_add.quantity == 0 || this.form_add.quantity == null) {
                 return this.$message.error("La cantidad debe ser mayor o igual a 1");
             }
 

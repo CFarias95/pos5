@@ -4,6 +4,7 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $document_number = $document->establishment->code.'-'.substr($document->series,1,3).'-'.str_pad($document->number, 9, '0', STR_PAD_LEFT);
     $str2 = explode("|", $document->correo);
+    //Log::error("DOCUMENTO DISPATCH: ".json_encode($document->items));
     if ($document->adicionales != null) {
         //$fixStr = rtrim($document->adicionales, ";");
         $str3 = explode(";", $document->adicionales);
@@ -261,7 +262,7 @@
                                         <th class="text-left py-2 pl-4">Cantidad</th>
                                         <th class="text-left py-2 pl-4">Descripción</th>
                                         <th class="text-left py-2 pl-4">Código principal</th>
-                                        <th class="text-left py-2 pl-4">Código auxiliar</th>
+                                        <th class="text-left py-2 pl-4">Código auxiliar/Referencia</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -271,7 +272,7 @@
                                             {{$detalle->quantity}}
                                         </td>
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->item->description}}
+                                            {{$detalle->relation_item->name}}/{{$detalle->item->description}}
                                         </td>
                                         <td class="text-left align-top pl-4">
                                             {{$detalle->item_id}}
