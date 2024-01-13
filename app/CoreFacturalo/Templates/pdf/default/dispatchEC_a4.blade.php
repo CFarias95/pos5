@@ -272,7 +272,7 @@
                                             {{$detalle->quantity}}
                                         </td>
                                         <td class="text-left align-top pl-4">
-                                            {{$detalle->relation_item->name}}/{{$detalle->item->description}}
+                                            {{$detalle->relation_item->name}} / {{$detalle->item->description}}
                                         </td>
                                         <td class="text-left align-top pl-4">
                                             {{$detalle->item_id}}
