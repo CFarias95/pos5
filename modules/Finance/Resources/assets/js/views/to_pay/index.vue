@@ -258,7 +258,7 @@
                         <th>F.Vencimiento</th>
                         <th>Fecha Posfechado</th>
                         <th>Ref. Posfechado</th>
-                        <th>Número</th>
+                        <th>Número/Secuencial</th>
                         <th>Proveedor</th>
                         <th>Días de retraso</th>
                         <th>Ver Cartera</th>
@@ -285,7 +285,7 @@
                           </td>
                           <td>{{ row.f_posdated ? row.f_posdated : "" }}</td>
                           <td>{{ row.posdated }}</td>
-                          <td>{{ row.number_full }}</td>
+                          <td>{{ row.number_full }} / {{ row.sequential_number }}</td>
                           <td>{{ row.supplier_name }}</td>
                           <td>
                             {{
@@ -683,6 +683,7 @@ export default {
     loadToPay() {
       this.$http.post(`/${this.resource}/records`, this.form).then((response) => {
         this.records = response.data.records;
+        //console.log('to-pay records', this.records)
       });
     },
     clickPurchasePayment(feeID, recordId, customer) {

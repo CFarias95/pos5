@@ -8,6 +8,7 @@ use Modules\Expense\Models\ExpensePayment;
 use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
 
 /**
  * Class ToPay
@@ -108,6 +109,7 @@ class ToPay
             "CONCAT(purchases.series,'-',purchases.number) AS number_full, " .
             'purchases.total as total, ' .
             'purchases.user_id as user_id, ' .
+            'purchases.sequential_number, ' .
             " fee.amount as amount, " .
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
@@ -174,6 +176,7 @@ class ToPay
             'expenses.number as number_full, ' .
             'expenses.total as total, ' .
             'expenses.user_id as user_id, ' .
+            "null as sequential_number, " .
             " 0 as amount, " .
             " null as date, " .
             " null as fee_id, " .
@@ -227,6 +230,7 @@ class ToPay
                 'bank_loans.total as total, ' .
                 // 'bank_loans.user_id as user_id, ' .
                 ' null as user_id, ' .
+                "null as sequential_number, " .
                 " 0 as amount, " .
                 " null as date, " .
                 " null as fee_id, " .
@@ -281,6 +285,7 @@ class ToPay
         }
 
         $records = $records->get();
+        //Log::info('records - '.json_encode($records));
 
         return $records->transform(function($row) {
 
@@ -337,7 +342,7 @@ class ToPay
                     'total' => number_format((float) $row->total,2, ".", ""),
                     'total_payment' => number_format((float)$row->total_payment),
                     'total_subtraction' => $total_subtraction,
-
+                    'sequential_number' => $row->sequential_number,
                     'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
                     'type' => $row->type,
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,

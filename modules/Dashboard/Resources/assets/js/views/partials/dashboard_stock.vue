@@ -68,11 +68,12 @@
             events(){
                 this.$eventHub.$on('recordsSkeletonLoader', (status) => {
                     this.loader = status
+                    //console.log('status', status);
                 })
 
                 this.$eventHub.$on('changeStock', (establishment_id) => {
                     this.$eventHub.$emit('reloadSimpleDataTable', establishment_id)
-                    // console.log(establishment_id)
+                    //console.log('prueba dash', this.$eventHub.$emit('reloadSimpleDataTable', establishment_id))
                 })
             },
             clickProvision(){

@@ -72,6 +72,7 @@ export default {
           .get(`/${this.resource}/records?${this.getQueryParameters()}`)
           .then((response) => {
             this.records = response.data.data;
+            console.log('records SDT', this.records)
             this.pagination = response.data.meta;
             this.pagination.per_page = parseInt(response.data.meta.per_page);
             this.$eventHub.$emit("recordsSkeletonLoader", false);
