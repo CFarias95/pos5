@@ -277,7 +277,6 @@
                             <label class="control-label">Almacén</label>
                             <el-select v-model="form.warehouse_id" filterable clearable>
                                 <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description">
-
                                 </el-option>
                             </el-select>
                         </div>
@@ -609,6 +608,7 @@
 
         <select-lots-form
             :documentItemId="documentItem"
+            :warehouseId = "form.warehouse_id"
             :itemId="form.item_id"
             :lots="lots"
             :showDialog.sync="showDialogSelectLots"

@@ -153,6 +153,7 @@ class InventoryKardex extends ModelTenant
             'item_warehouse_price' => $price,
             'warehouse' => $warehouseName,
             'cost' => 'N/A',
+
         ];
         $inventory_kardexable = $this->inventory_kardexable;
         $qty = $this->quantity;
@@ -164,6 +165,7 @@ class InventoryKardex extends ModelTenant
 
             case $models[0]: //venta
 
+                $lot_code = 'N/A';
                 //$cpe_input = ($qty > 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
 
                 //$cpe_output = ($qty < 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
@@ -201,17 +203,20 @@ class InventoryKardex extends ModelTenant
                     foreach (optional($inventory_kardexable)->items as $key => $value) {
                         if($value->item_id == $item->id){
                             $cost=(isset($value->item->purchase_mean_cost))?$value->item->purchase_mean_cost:'N/A';
+                            $lot_code = $value->lot_code;
                         }
                     }
                 }else{
                     $cost='N/A';
                 }
                 $data['cost'] = $cost;//$item->purchase_mean_cost;
+                $data['lot_code'] = $lot_code;
 
                 break;
 
             case $models[1]: //COMPRA
                 $imp = Purchase::where('series',optional($inventory_kardexable)->series)->where('number',optional($inventory_kardexable)->number)->first();
+                $lot_code = 'N/A';
 
                 Log::info('importacion asociada: '.json_encode($imp->import));
                 $numeroImp = '';
@@ -229,10 +234,12 @@ class InventoryKardex extends ModelTenant
                 foreach ($inventory_kardexable->items as $key => $value) {
                     if($value->item_id == $item->id){
                         $cost=$value->unit_value;
+                        $lot_code = $value->lot_code;
                     }
                 }
 
                 $data['cost'] = $cost;
+                $data['lot_code'] = $lot_code;
                 break;
 
             case $models[2]: // Nota de venta
@@ -254,6 +261,7 @@ class InventoryKardex extends ModelTenant
                 $data['type_transaction'] = ($qty < 0) ? "Nota de venta" : "Anulación Nota de venta";
                 // $data['type_transaction'] = "Nota de venta";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
             case $models[3]: // MOVIMIENTOS DE INVENTARIO
 
@@ -296,6 +304,7 @@ class InventoryKardex extends ModelTenant
                 $data['doc_asoc'] = $movimiento;
                 $data['number'] = isset($inventory_kardexable->id) ? 'INV - '.$inventory_kardexable->id : 'N/A';
                 $data['cost'] = isset($inventory_kardexable->precio_perso)?$inventory_kardexable->precio_perso:'N/A';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
 
             case $models[4]:
@@ -303,12 +312,14 @@ class InventoryKardex extends ModelTenant
                 $data['number'] = optional($inventory_kardexable)->prefix . '-' . optional($inventory_kardexable)->id;
                 $data['type_transaction'] = ($qty < 0) ? "Pedido" : "Anulación Pedido";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
             case $models[5]: // Devolution
                 $data['balance'] = $balance += $qty;
                 $data['number'] = optional($inventory_kardexable)->number_full;
                 $data['type_transaction'] = "Devolución";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
             case $models[6]: // Dispatch
                 $data['input'] = ($qty > 0) ? (isset($inventory_kardexable->reference_sale_note_id) || isset($inventory_kardexable->reference_order_note_id) || isset($inventory_kardexable->reference_document_id) ? "-" : $qty) : "-";
@@ -320,6 +331,7 @@ class InventoryKardex extends ModelTenant
                 $data['sale_note_asoc'] = isset($inventory_kardexable->reference_sale_note_id) ? optional($inventory_kardexable)->sale_note->number_full : "-";
                 $data['order_note_asoc'] = isset($inventory_kardexable->reference_order_note_id) ? optional($inventory_kardexable)->order_note->number_full : "-";
                 $data['doc_asoc'] = isset($inventory_kardexable->reference_document_id) ? $inventory_kardexable->reference_document->getNumberFullAttribute() : '-';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
             case $models[7]: // liquidacion de compra
 
@@ -327,6 +339,7 @@ class InventoryKardex extends ModelTenant
                 $data['number'] = optional($inventory_kardexable)->series . '-' . optional($inventory_kardexable)->number;
                 $data['type_transaction'] = ($qty < 0) ? "Anulación Liquidacion Compra" : "Liquidacion Compra";
                 $data['date_of_issue'] = isset($inventory_kardexable->date_of_issue) ? $inventory_kardexable->date_of_issue->format('Y-m-d') : '';
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
         }
         $decimalRound = 6; // Cantidad de decimales a aproximar

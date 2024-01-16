@@ -7,8 +7,6 @@
                     <h5 v-bind:class="{ 'text-danger': (toAttend < 0) }">Por Atender: {{toAttend}}</h5>
             </div>
             <div class="row" >
-
-
                 <div class="col-md-6 col-lg-6 col-xl-6 ">
                     <template v-if="search_series_by_barcode">
                         <el-input placeholder="Buscar serie ..."
@@ -97,7 +95,7 @@
     import queryString from 'query-string'
 
     export default {
-        props: ['showDialog', 'lots', 'stock','itemId', 'documentItemId', 'quantity', 'saleNoteItemId'],
+        props: ['showDialog', 'lots', 'stock','itemId', 'documentItemId', 'quantity', 'saleNoteItemId', 'warehouseId'],
         data() {
             return {
                 titleDialog: 'Series',
@@ -231,6 +229,7 @@
                     item_id: null,
                     document_item_id: this.documentItemId,
                     sale_note_item_id: this.saleNoteItemId,
+                    warehouse_id: this.warehouseId,
                 }
 
             },

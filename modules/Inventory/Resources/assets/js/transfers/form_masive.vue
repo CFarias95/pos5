@@ -309,17 +309,17 @@ export default {
             this.form_add.lots = lots;
         },
         validateAddItem() {
-            if (parseFloat(this.form_add.stock) < 1) {
+            if (parseFloat(this.form_add.stock) == 0 || parseFloat(this.form_add.stock) <= 0) {
                 return {
                     success: false,
-                    message: 'El stock debe ser mayor o igual a 1.'
+                    message: 'El stock actual en 0 o menos'
                 }
             }
 
             if (this.form_add.quantity == 0 || this.form_add.quantity == null) {
                 return {
                     success: false,
-                    message: 'La cantidad debe ser mayor o igual a 1.'
+                    message: 'La cantidad debe ser mayor o igual a 1'
                 }
             }
 
@@ -384,7 +384,7 @@ export default {
               return;
             }*/
 
-            if (parseFloat(this.form_add.stock) < 1) {
+            if (parseFloat(this.form_add.stock) == 0 || parseFloat(this.form_add.stock) <= 0) {
                 return this.$message.error("El stock debe ser mayor o igual a 1");
             }
 

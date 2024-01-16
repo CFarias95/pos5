@@ -491,7 +491,6 @@
                             <tr v-for="(row, index) in form.items" :key="index">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ setDescriptionOfItem(row) }}</td>
-                                <!-- <td>{{ row.item.description }}</td> -->
                                 <template v-if="!filterIndex(index)">
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>
@@ -808,12 +807,15 @@ export default {
     },
     methods: {
         setDescriptionOfItem(item) {
+
+            /*
             if(this.configuration.show_pdf_name) {
                 if(item.name_product_pdf !== '' && !_.isNull(item.name_product_pdf)) {
                     return item.name_product_pdf;
                 }
-            }
-            return item.description;
+            }*/
+
+            return item.name+' / '+item.description;
         },
         changeTransferReasonType(){
 

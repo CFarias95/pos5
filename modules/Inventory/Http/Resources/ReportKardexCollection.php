@@ -88,10 +88,11 @@ class ReportKardexCollection extends ResourceCollection
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
                     'order_note_asoc' => isset($row->inventory_kardexable->order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
                     // 'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
-                    'doc_asoc' => $cpe_doc_asoc
+                    'doc_asoc' => $cpe_doc_asoc,
+                    'lot_code' => $row->inventory_kardexable->lot_code,
                 ];
 
-            case $models[1]:
+            case $models[1]: // COMPRA
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -104,7 +105,8 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
-                    'doc_asoc' => '-'
+                    'doc_asoc' => '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
                 ];
 
             case $models[2]: // Nota de venta
@@ -121,7 +123,8 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
-                    'doc_asoc' => '-'
+                    'doc_asoc' => '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
 
                 ];
 
@@ -160,7 +163,8 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
-                    'doc_asoc' => '-'
+                    'doc_asoc' => '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
                 ];
                 if ($row->inventory_kardexable->warehouse_destination_id === $user->establishment_id) {
                     $return['input'] = $output;
@@ -171,9 +175,7 @@ class ReportKardexCollection extends ResourceCollection
                 }
                 return $return;
             }
-
-
-            case $models[4]:
+            case $models[4]: //PEDIDOS
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
@@ -186,7 +188,8 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
-                    'doc_asoc' => '-'
+                    'doc_asoc' => '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
                 ];
 
             case $models[5]: // Devolution
@@ -202,7 +205,8 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => self::$balance+= $row->quantity,
                     'sale_note_asoc' => '-',
                     'order_note_asoc' => '-',
-                    'doc_asoc' => '-'
+                    'doc_asoc' => '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
 
                 ];
 
@@ -230,7 +234,8 @@ class ReportKardexCollection extends ResourceCollection
                     // 'doc_asoc' => '-'
                     'sale_note_asoc' => isset($row->inventory_kardexable->reference_sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
                     'order_note_asoc' => isset($row->inventory_kardexable->reference_order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
-                    'doc_asoc' => isset($row->inventory_kardexable->reference_document_id) ? $row->inventory_kardexable->reference_document->getNumberFullAttribute() : '-'
+                    'doc_asoc' => isset($row->inventory_kardexable->reference_document_id) ? $row->inventory_kardexable->reference_document->getNumberFullAttribute() : '-',
+                    'lot_code' => $row->inventory_kardexable->lot_code
                 ];
 
         }

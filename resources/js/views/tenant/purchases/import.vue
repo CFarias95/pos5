@@ -30,10 +30,10 @@
                                     <td>{{ item.quantity }}</td>
                                     <td style="align-content: center;">
                                         <el-select :disabled="item.item_id != null" v-model="item.item_id"
-                                            @change="changeItem(item.item_id, index)" filterable required="true"
-                                            :remote-method="searchRemoteItems" remote>
+                                            @change="changeItem(item.item_id, index)" filterable required="true">
+                                            <!-- :remote-method="searchRemoteItems" remote> -->
                                             <el-option v-for="(prod, index2) in items_all" :key="index2" :value="prod.id"
-                                                :label="prod.name"></el-option>
+                                                :label="prod.full_description"></el-option>
                                         </el-select>
                                     </td>
                                 </tr>
@@ -83,7 +83,7 @@ export default {
         this.loadAllItems(this.$store)
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
-            console.log("ITEMS IMPORT: ", response.data.items)
+            console.log("ITEMS IMPORT: ", response.data.items_import)
             this.items_all = response.data.items;
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
@@ -293,13 +293,8 @@ export default {
         },
         findItem(search) {
 
-            if (search === '') return undefined;
+            //if (search === '') return undefined;
             let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
-
-            //console.error(item)
-            //console.error(this.all_items)
-
-            if (item !== undefined) return item
 
             return item
         },
@@ -375,8 +370,12 @@ export default {
             //console.info(self.form.items)
         },
         async changeItem(id, index) {
+
             let formItem = this.findItem(id);
             let itemActual = this.form.items[index]
+
+            console.log('changeItem',itemActual)
+            console.log('formItem',formItem)
 
             if (formItem !== undefined) {
 
