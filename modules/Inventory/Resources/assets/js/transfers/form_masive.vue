@@ -309,10 +309,10 @@ export default {
             this.form_add.lots = lots;
         },
         validateAddItem() {
-            if (parseFloat(this.form_add.stock) < 1) {
+            if (parseFloat(this.form_add.stock) == 0 || parseFloat(this.form_add.stock) < 0) {
                 return {
                     success: false,
-                    message: 'El stock debe ser mayor o igual a 1.'
+                    message: 'El stock actual en 0 o menos'
                 }
             }
 

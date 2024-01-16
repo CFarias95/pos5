@@ -293,13 +293,8 @@ export default {
         },
         findItem(search) {
 
-            if (search === '') return undefined;
+            //if (search === '') return undefined;
             let item = this.all_items.find(obj => obj.id == search || obj.item_code == search || obj.model == search || obj.internal_id == search)
-
-            //console.error(item)
-            //console.error(this.all_items)
-
-            if (item !== undefined) return item
 
             return item
         },
