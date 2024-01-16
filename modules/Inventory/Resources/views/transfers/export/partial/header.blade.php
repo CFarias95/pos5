@@ -27,6 +27,7 @@
     $company = !empty($data['company']) ? $data['company'] : new Company();
 
     $pdf = $pdf ?? false;
+    //Log::info('data - '.json_encode($data));
 ?>
 <div>
     <table class="no-border">
@@ -125,6 +126,12 @@
                         >
                             {{ $motivo }}
                         </td>
+                        <td></td>
+                        <td></td>
+                    </tr>
+                    <tr>
+                        <td><strong>CLIENTE:</strong></td>
+                        <td>{{ $data['client']->name  }}</td>
                         <td></td>
                         <td></td>
                     </tr>
