@@ -370,8 +370,12 @@ export default {
             //console.info(self.form.items)
         },
         async changeItem(id, index) {
+
             let formItem = this.findItem(id);
             let itemActual = this.form.items[index]
+
+            console.log('changeItem',itemActual)
+            console.log('formItem',formItem)
 
             if (formItem !== undefined) {
 
