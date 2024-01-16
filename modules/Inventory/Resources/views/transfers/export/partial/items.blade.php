@@ -39,8 +39,8 @@
                     <!--<th class="ten-width text-left">CODIGO INTERNO</th>-->
                     <th class="fourteen-width text-left">DESCRIPCIÓN PRODUCTO</th>
                     <th class="ten-width">UNIDAD</th>
-                    <th class="ten-width">CANTIDAD</th>
-                    <th class="ten-width">LOTE/SERIE</th>
+                    <th class="eight-width">CANT</th>
+                    <th class="twelve-width">LOTE/SERIE</th>
 
                     <!--        <th width="10%">SERIE</th>-->
                 </tr>
@@ -68,7 +68,7 @@
                         <td class="celda text-left">{{ $itemCollection['description'] }}</td>
                         <td class="celda">{{ $itemCollection['unit_type_text'] }}</td>
                         <td class="celda">{{ $qty }}</td>
-                        <td class="celda text-left">{{ $inventory->lot_code }}</td>
+                        <td class="celda">{{ $inventory->lot_code }}</td>
                         <!--            <td>SERIE</td>-->
                     </tr>
                 @endforeach

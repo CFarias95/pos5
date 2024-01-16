@@ -358,7 +358,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
             return null;
             $export = new InventoryTransferExport();
-           $export->setInventory($inventoryTransfer);
+            $export->setInventory($inventoryTransfer);
             return $export->download('Reporte_Traslado_' . $inventoryTransfer->id . '_' . date('YmdHis') . '.xlsx');
         }
 

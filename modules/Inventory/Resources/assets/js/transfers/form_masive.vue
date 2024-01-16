@@ -319,7 +319,7 @@ export default {
             if (this.form_add.quantity == 0 || this.form_add.quantity == null) {
                 return {
                     success: false,
-                    message: 'La cantidad debe ser mayor o igual a 1.'
+                    message: 'La cantidad debe ser mayor o igual a 1'
                 }
             }
 
