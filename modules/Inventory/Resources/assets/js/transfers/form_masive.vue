@@ -384,7 +384,7 @@ export default {
               return;
             }*/
 
-            if (parseFloat(this.form_add.stock) < 1) {
+            if (parseFloat(this.form_add.stock) == 0 || parseFloat(this.form_add.stock) <= 0) {
                 return this.$message.error("El stock debe ser mayor o igual a 1");
             }
 
