@@ -11,6 +11,7 @@
                     <th>Doc. Asociado</th>
                     <th>Feha emisión</th>
                     <th>Costo</th>
+                    <th>Lote/Serie</th>
                     <th>Entrada</th>
                     <th>Salida</th>
                     <th v-if="item_id">Saldo</th>
@@ -31,6 +32,7 @@
                     <td>{{ row.doc_asoc }}</td>
                     <td>{{ row.date_of_issue }}</td>
                     <td>{{ row.cost }}</td>
+                    <td>{{ row.lot_code }}</td>
                     <td>{{ row.input }}</td>
                     <td>{{ row.output }}</td>
                     <td v-if="item_id">{{ row.balance }}</td>

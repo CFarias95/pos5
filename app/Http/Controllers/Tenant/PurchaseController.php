@@ -313,6 +313,30 @@ class PurchaseController extends Controller
                 'item_code' => $row->item_code,
                 'full_description' => $full_description,
                 'description' => $row->description,
+                'currency_type_id' => $row->currency_type_id,
+                'currency_type_symbol' => $row->currency_type->symbol,
+                'sale_unit_price' => $row->sale_unit_price,
+                'purchase_unit_price' => $row->purchase_unit_price,
+                'unit_type_id' => $row->unit_type_id,
+                'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+                'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+                'purchase_has_igv' => (bool)$row->purchase_has_igv,
+                'has_perception' => (bool)$row->has_perception,
+                'lots_enabled' => (bool)$row->lots_enabled,
+                'percentage_perception' => $row->percentage_perception,
+                'item_unit_types' => $row->item_unit_types->transform(function ($row) {
+                    if (is_array($row)) return $row;
+                    if (is_object($row)) {
+                        /**@var ItemUnitType $row */
+                        return $row->getCollectionData();
+                    }
+                    return $row;
+                }),
+                'series_enabled' => (bool)$row->series_enabled,
+                'purchase_has_isc' => $row->purchase_has_isc,
+                'purchase_system_isc_type_id' => $row->purchase_system_isc_type_id,
+                'purchase_percentage_isc' => $row->purchase_percentage_isc,
+
             ];
         });
         $categories = [];
