@@ -40,6 +40,14 @@
             $totalIVA0= $totalIVA0 + $item->total_taxes;
         }
     }
+    //Log::info('documents - '.$document->items);
+    /*$modelo = $document->items->item_model;
+    if($modelo != null)
+    {
+        Log::info('modelo - '.$modelo);
+    }else{
+        Log::info('Sin datos');
+    }*/
 @endphp
 <html>
 <head>
@@ -188,6 +196,7 @@
         <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
         <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
         <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
+        <th class="border-top-bottom text-left py-2">MODELO</th>
         <th class="border-top-bottom text-center py-2" width="8%">LOTE</th>
         <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
         <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
@@ -219,11 +228,14 @@
                 @endif
             </td>
 
+            <td class="text-left align-top">{{ $row->itemModel->model }}</td>
+
+
             <td class="text-center align-top">
                 {{ $row->getSaleLotGroupCodeDescription() }}
             </td>
 
-            <td class="text-right align-top">{{ $row->getStringUnitPrice()}}</td>
+            <td class="text-right align-top">{{ $row->unit_value}}</td>
             <td class="text-right align-top">
                 @if($row->discounts)
                     @php
@@ -237,21 +249,21 @@
                 0
                 @endif
             </td>
-            <td class="text-right align-top">{{ $row->getStringTotal() }}</td>
+            <td class="text-right align-top">{{ $row->unit_value * $row->getStringQty() }}</td>
         </tr>
         <tr>
-            <td colspan="7" class="border-bottom"></td>
+            <td colspan="8" class="border-bottom"></td>
         </tr>
     @endforeach
         @if($document->total_exportation > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
             </tr>
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
@@ -264,44 +276,44 @@
         @endif --}}
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
         @if($document->total_taxed > 0)
-            <tr>
+            {{-- <tr>
                 <td colspan="6" class="text-right font-bold">Subtotal 0%:</td>
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
-            </tr>
+            </tr> --}}
             <tr>
-                <td colspan="6" class="text-right font-bold">Subtotal 12%:</td>
+                <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
             <tr>
-                <td colspan="6" class="text-right font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        <tr>
+        {{-- <tr>
             <td colspan="6" class="text-right font-bold">IVA 0%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
-        </tr>
+        </tr> --}}
         <tr>
-            <td colspan="6" class="text-right font-bold">IVA 12%:</td>
+            <td colspan="7" class="text-right font-bold">IVA 12%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
 </table>
 <table class="full-width">
-    <tr>
+    {{-- <tr>
         <td width="65%" style="text-align: top; vertical-align: top;">
             <br>
             @foreach($accounts as $account)
@@ -314,7 +326,7 @@
                 </p>
             @endforeach
         </td>
-    </tr>
+    </tr> --}}
     <tr>
         {{-- <td width="65%">
             @foreach($document->legends as $row)

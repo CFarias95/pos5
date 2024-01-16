@@ -512,6 +512,7 @@ use Illuminate\Support\Facades\Log;
 
             // $base_template = config('tenant.pdf_template');
             $base_template = Establishment::find($document->establishment_id)->template_pdf;
+            //Log::info('template - '.json_encode($document->items[0]->itemModel));
 
             $html = $template->pdf($base_template, "order_note", $company, $document, $format_pdf);
 
@@ -867,6 +868,7 @@ use Illuminate\Support\Facades\Log;
         public function toPrint($external_id, $format)
         {
             $order_note = OrderNote::where('external_id', $external_id)->first();
+            //Log::info('order note - '.json_encode($order_note->items[0]->item_model['name']));
 
             if (!$order_note) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
 

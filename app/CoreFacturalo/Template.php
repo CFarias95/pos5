@@ -4,7 +4,7 @@ namespace App\CoreFacturalo;
 use Illuminate\Support\Facades\Log;
 class Template
 {
-    public function pdf($base_template, $template, $company, $document, $format_pdf)
+    public function pdf($base_template, $template, $company, $document, $format_pdf, $account_entry = null)
     {
         if($template === 'credit' || $template === 'debit') {
             $template = 'note';
@@ -12,7 +12,7 @@ class Template
 
         $path_template =  $this->validate_template($base_template, $template, $format_pdf);
         // Log::info($document);
-        return self::render($path_template, $company, $document);
+        return self::render($path_template, $company, $document, $account_entry);
     }
 
     public function pdf1($base_template, $template, $company, $document, $format_pdf, $id, $account_entry, $index, $user_log)
@@ -60,11 +60,11 @@ class Template
         return view($view, compact('company', 'document','clave_acceso'))->render();
     }
 
-    private function render($view, $company, $document)
+    private function render($view, $company, $document, $account_entry=null)
     {
         view()->addLocation(__DIR__.'/Templates');
 
-        return view($view, compact('company', 'document'))->render();
+        return view($view, compact('company', 'document', 'account_entry'))->render();
     }
 
     private function render1($view, $company, $document, $id, $account_entry, $index, $user_log)

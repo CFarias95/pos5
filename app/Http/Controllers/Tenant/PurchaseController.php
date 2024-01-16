@@ -1430,7 +1430,17 @@ class PurchaseController extends Controller
 
         $base_template = Establishment::find($document->establishment_id)->template_pdf;
 
-        $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf);
+        Log::info('Purchase: '.$document);
+        //Log::info('FEE ID: '.$id);
+        //$conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
+        //Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
+
+        //$i = $conect[$index];
+        $account_entry = AccountingEntries::where('document_id', 'C'.$document->id)->first();
+
+        //$user_log = auth()->user();
+
+        $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf, $account_entry);
 
 
         $pdf_font_regular = config('tenant.pdf_name_regular');
@@ -1489,6 +1499,7 @@ class PurchaseController extends Controller
     public function toPrint($external_id, $format)
     {
         $purchase = Purchase::where('external_id', $external_id)->first();
+        //Log::info('purchase - '.$purchase);
 
         if (!$purchase) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
 

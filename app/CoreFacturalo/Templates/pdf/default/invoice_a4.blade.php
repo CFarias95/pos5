@@ -243,11 +243,11 @@
                             <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
                         @endif
 
-                        @if($row->attributes)
+                        {{-- @if($row->attributes)
                             @foreach($row->attributes as $attr)
                                 <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
                             @endforeach
-                        @endif
+                        @endif 
                         @if($row->discounts)
                             @foreach($row->discounts as $dtos)
                                 <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
@@ -258,7 +258,7 @@
                             @foreach($row->charges as $charge)
                                 <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
                             @endforeach
-                        @endif
+                        @endif--}}
 
                         @if($row->item->is_set == 1)
                         <br>

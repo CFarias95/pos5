@@ -259,6 +259,7 @@
                         <th>Fecha Posfechado</th>
                         <th>Ref. Posfechado</th>
                         <th>Número/Secuencial</th>
+                        <th># Cuota</th>
                         <th>Proveedor</th>
                         <th>Días de retraso</th>
                         <th>Ver Cartera</th>
@@ -286,6 +287,7 @@
                           <td>{{ row.f_posdated ? row.f_posdated : "" }}</td>
                           <td>{{ row.posdated }}</td>
                           <td>{{ row.number_full }} / {{ row.sequential_number }}</td>
+                          <td>C - {{ row.num_couta }}</td>
                           <td>{{ row.supplier_name }}</td>
                           <td>
                             {{

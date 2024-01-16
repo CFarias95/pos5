@@ -1126,7 +1126,6 @@
                 <label class="control-label">Precio Unitario</label>
                 <el-input
                   v-model="form.purchase_unit_price"
-                  dusk="purchase_unit_price"
                   @input="calculatePercentageOfProfitByPurchase"
                 ></el-input>
                 <small
@@ -1186,7 +1185,7 @@
                   v-model="form.purchase_mean_cost"
                   dusk="purchase_unit_price"
                   type="number"
-                  :step="0.0001"
+                  :step="0.000001"
                 ></el-input>
                 <small
                   v-if="errors.purchase_mean_cost"

@@ -12,7 +12,7 @@
 //Log::info('Document'.$document->seller);
 //Log::info('establishment'.json_encode($establishment));
 //Log::info('customer'.json_encode($customer));
-Log::info('documents-items'.json_encode($document->items));
+Log::info('documents-items'.json_encode($document->seller));
 @endphp
 <html>
 <head>
@@ -379,8 +379,8 @@ Si desea realizar alguna consulta con respecto a la cotización, pongase en cont
         {{ $document->user->name }}
     @endif
     , 
-    @if ($document->seller->telephone)
-        {{ $document->seller->telephone }}
+    @if ($document->seller->corporate_cell_phone)
+        {{ $document->seller->corporate_cell_phone }}
     @endif
     , 
     @if ($document->seller->email)

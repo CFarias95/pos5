@@ -110,6 +110,7 @@ class ToPay
             'purchases.total as total, ' .
             'purchases.user_id as user_id, ' .
             'purchases.sequential_number, ' .
+            'fee.number as fee_number, ' .
             " fee.amount as amount, " .
             " DATE_FORMAT(fee.date, '%Y/%m/%d') date, " .
             " fee.id as fee_id, " .
@@ -177,6 +178,7 @@ class ToPay
             'expenses.total as total, ' .
             'expenses.user_id as user_id, ' .
             "null as sequential_number, " .
+            'null as fee_number, ' .
             " 0 as amount, " .
             " null as date, " .
             " null as fee_id, " .
@@ -231,6 +233,7 @@ class ToPay
                 // 'bank_loans.user_id as user_id, ' .
                 ' null as user_id, ' .
                 "null as sequential_number, " .
+                'null as fee_number, ' .
                 " 0 as amount, " .
                 " null as date, " .
                 " null as fee_id, " .
@@ -343,6 +346,7 @@ class ToPay
                     'total_payment' => number_format((float)$row->total_payment),
                     'total_subtraction' => $total_subtraction,
                     'sequential_number' => $row->sequential_number,
+                    'num_couta' => $row->fee_number,
                     'total_to_pay' => ($row->amount && $row->amount > 0)?number_format($row->amount - $to_pay_fee, 2, ".", ""):number_format($total_to_pay, 2, ".", ""),
                     'type' => $row->type,
                     'date_payment_last' => ($date_payment_last) ? $date_payment_last->date_of_payment->format('Y-m-d') : null,

@@ -331,9 +331,9 @@
                                     </template>
 
                                     <div class="dropdown-divider"></div>
-                                    <button class="dropdown-item" hidden @click.prevent="clickPayment(row.id)">
+                                    <!-- <button class="dropdown-item" hidden @click.prevent="clickPayment(row.id)">
                                         Pagos
-                                    </button>
+                                    </button> -->
                                     <template v-if="row.btn_retention">
                                         <div class="dropdown-divider"></div>
                                         <button class="dropdown-item" @click.prevent="clickRetention(row.id)">

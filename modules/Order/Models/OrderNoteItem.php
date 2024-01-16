@@ -72,7 +72,8 @@
         protected $with = [
             'affectation_igv_type',
             'system_isc_type',
-            'price_type'
+            'price_type',
+            'itemModel'
         ];
         protected $fillable = [
             'order_note_id',
@@ -1063,6 +1064,15 @@
         public function getSaleLotGroupCodeDescription()
         {
             return implode('/', $this->getSaleLotGroupCode());
+        }
+
+
+        /**
+         * @return BelongsTo
+         */
+        public function itemModel()
+        {
+            return $this->hasOne(Item::class, 'id','item_id');
         }
 
     }
