@@ -12,6 +12,7 @@
                             <small v-if="errors.file" class="form-control-feedback" v-text="errors.file[0]"></small>
                         </div>
                     </div>
+
                     <div class="col-md-12 mt-12" v-if="has_file && form.items && form.items.length > 0"
                         style="align-content: center;">
                         <div style="text-align: center;">
@@ -79,12 +80,16 @@ export default {
         };
     },
     created() {
+
+        this.loading == true;
+
         this.loadWarehouses(this.$store)
         this.loadAllItems(this.$store)
 
         this.$http.get(`/${this.resource}/item/tables`).then(response => {
             console.log("ITEMS IMPORT: ", response.data.items_import)
-            this.items_all = response.data.items;
+            this.items_all = response.data.items_import;
+            
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
             this.discount_types = response.data.discount_types;
@@ -93,6 +98,7 @@ export default {
             this.$store.commit('setWarehouses', response.data.warehouses)
 
         });
+
         this.initForm();
     },
     mounted() {
@@ -469,8 +475,6 @@ export default {
                 has_payment: true,
                 payment_condition_id: "01",
             };
-
-            //this.initInputPerson();
         },
         create() {
             this.titleDialog = "Importar Factura Compra";
