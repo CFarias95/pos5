@@ -333,10 +333,12 @@ class DocumentController extends Controller
             $warehouse = ModuleWarehouse::select('id')
                                         ->where('establishment_id', auth()->user()->establishment_id)
                                         ->first();
+
+            $warehouseID = (isset($request->warehouse_id))?$request->warehouse_id:$warehouse->id;
             $records
                 ->where('item_id', $request->item_id)
                 ->where('has_sale', false)
-                ->where('warehouse_id', $warehouse->id)
+                ->where('warehouse_id', $warehouseID)
                 ->latest();
         }
 
