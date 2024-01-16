@@ -600,7 +600,7 @@
                             <tr v-for="(row, index) in form.items">
                                 <td>{{ index + 1 }}</td>
                                 <td>{{ row.unit_type_id }}</td>
-                                <td>{{ row.description }}</td>
+                                <td>{{ row.name }} / {{ row.description }}</td>
                                 <td class="text-right">{{ getFormatQuantity(row.quantity) }}</td>
                                 <!-- <td class="text-right">{{ row.quantity }}</td> -->
                                 <td class="text-right">
@@ -1452,6 +1452,7 @@ export default {
             this.form.items.push({
                 attributes: attributes,
                 description: it.description,
+                name: it.name,
                 internal_id: it.internal_id,
                 quantity: form.quantity,
                 item_id: it.id,

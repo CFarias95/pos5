@@ -48,8 +48,8 @@
             @addRowLotGroup="addRowLotGroup">
         </lots-group>
     </el-dialog>
+    
 </template>
-
 <script>
     import itemForm from '../items/form.vue';
     import LotsGroup from '../documents/partials/lots_group.vue';

@@ -171,6 +171,7 @@ class DispatchController extends Controller
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
+                        'name' => $item->item->name,
                         'name_product_pdf' => $name_product_pdf
                     ];
                 }
@@ -202,6 +203,7 @@ class DispatchController extends Controller
                         'item' => $item->item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
+                        'name' => $item->item->name,
                         'name_product_pdf' => $name_product_pdf
                     ];
                 }
@@ -214,6 +216,7 @@ class DispatchController extends Controller
                     'item' => $item,
                     'quantity' => $item->quantity,
                     'description' => $item->item->description,
+                    'name' => $item->item->name,
                     'name_product_pdf' => $name_product_pdf
                 ];
             }
