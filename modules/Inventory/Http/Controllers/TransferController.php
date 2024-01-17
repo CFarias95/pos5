@@ -386,6 +386,7 @@ use Modules\Item\Models\ItemLotsGroup;
         public function getPdf(InventoryTransfer $inventoryTransfer): \Illuminate\Http\Response
         {
             $data = $inventoryTransfer->getPdfData();
+            Log::info('data pdf - '.json_encode($data));
             $transfer_id = $inventoryTransfer->id;
             $lote = DB::connection('tenant')->select("SELECT i.lot_code FROM items i
             RIGHT JOIN inventories inv ON i.id = inv.item_id

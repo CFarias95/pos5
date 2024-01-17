@@ -152,6 +152,7 @@ use App\Models\Tenant\ModelTenant;
             $data['inventories'] = $this->inventories;
             $data['configuration'] = Configuration::first();
             $data['company'] = Company::active();
+            $data['client'] = $this->client;
 
             return $data;
         }
