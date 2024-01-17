@@ -40,7 +40,7 @@
             $totalIVA0= $totalIVA0 + $item->total_taxes;
         }
     }
-    //Log::info('documents - '.$document->items);
+    //Log::info('documents - '.$document->items->affectation_igv_type);
     /*$modelo = $document->items->item_model;
     if($modelo != null)
     {
@@ -287,7 +287,18 @@
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
             </tr> --}}
             <tr>
-                <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
+                {{-- @if($document->items->affectation_igv_type->id == 10)
+                    <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
+                @elseif($document->items->affectation_igv_type->id == 30)
+                    <td colspan="7" class="text-right font-bold">Subtotal 0%:</td>
+                @elseif($document->items->affectation_igv_type->id == 11)
+                    <td colspan="7" class="text-right font-bold">Subtotal 8%:</td>
+                @elseif($document->items->affectation_igv_type->id == 12)
+                    <td colspan="7" class="text-right font-bold">Subtotal 14%:</td>
+                @else
+                    <td colspan="7" class="text-right font-bold">Subtotal:</td>
+                @endif --}}
+                <td colspan="7" class="text-right font-bold">Subtotal:</td>
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
             </tr>
         @endif
@@ -303,12 +314,23 @@
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
         </tr> --}}
         <tr>
-            <td colspan="7" class="text-right font-bold">IVA 12%:</td>
+            {{-- @if($document->items->affectation_igv_type->id == 10)
+                <td colspan="7" class="text-right font-bold">IVA 12%:</td>
+            @elseif($document->items->affectation_igv_type->id == 30)
+                <td colspan="7" class="text-right font-bold">IVA 0%:</td>
+            @elseif($document->items->affectation_igv_type->id == 11)
+                <td colspan="7" class="text-right font-bold">IVA 8%:</td>
+            @elseif($document->items->affectation_igv_type->id == 12)
+                <td colspan="7" class="text-right font-bold">IVA 14%:</td>
+            @else
+                <td colspan="7" class="text-right font-bold">IVA:</td>
+             @endif --}}
+            <td colspan="7" class="text-right font-bold">IVA:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: </td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
 </table>

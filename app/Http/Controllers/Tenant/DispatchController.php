@@ -161,7 +161,7 @@ class DispatchController extends Controller
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
         if (isset($document)) {
-            Log::info(json_encode($document));
+            Log::info('Log dispatch - '.json_encode($document));
 
             if ($type != 't') {
                 foreach ($document->items as $item) {
@@ -171,7 +171,7 @@ class DispatchController extends Controller
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
-                        'name' => $item->item->name,
+                        'name' => $item->item->name ? $item->item->name : '-',
                         'name_product_pdf' => $name_product_pdf
                     ];
                 }
