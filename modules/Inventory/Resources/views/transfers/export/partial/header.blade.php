@@ -131,7 +131,7 @@
                     </tr>
                     <tr>
                         <td><strong>CLIENTE:</strong></td>
-                        <td>{{ $data['client']->name  }}</td>
+                        <td>{{ ($data['client']->name  ? $data['client']->name : '-') }}</td>
                         <td></td>
                         <td></td>
                     </tr>
