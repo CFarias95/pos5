@@ -28,7 +28,10 @@
             </div>
           </div>
           <div class="col-md-6">
-            <div class="form-group" :class="{'has-danger': errors.warehouse_destination_id}">
+            <div
+              class="form-group"
+              :class="{ 'has-danger': errors.warehouse_destination_id }"
+            >
               <label class="control-label">Almacén Final</label>
               <el-select v-model="form.warehouse_destination_id">
                 <el-option
@@ -46,17 +49,23 @@
             </div>
           </div>
           <div class="col-md-12">
-            <div class="form-group" :class="{'has-danger': errors.detail}">
+            <div class="form-group" :class="{ 'has-danger': errors.detail }">
               <label class="control-label">Motivo de Traslado</label>
               <el-input v-model="form.detail"></el-input>
-              <small class="form-control-feedback" v-if="errors.detail" v-text="errors.detail[0]"></small>
+              <small
+                class="form-control-feedback"
+                v-if="errors.detail"
+                v-text="errors.detail[0]"
+              ></small>
             </div>
           </div>
         </div>
       </div>
       <div class="form-actions text-right mt-4">
         <el-button @click.prevent="close()">Cancelar</el-button>
-        <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+        <el-button type="primary" native-type="submit" :loading="loading_submit"
+          >Guardar</el-button
+        >
       </div>
     </form>
   </el-dialog>
@@ -73,12 +82,12 @@ export default {
       resource: "transfers",
       errors: {},
       form: {},
-      warehouses: []
+      warehouses: [],
     };
   },
   created() {
     this.initForm();
-    this.$http.get(`/${this.resource}/tables`).then(response => {
+    this.$http.get(`/${this.resource}/tables`).then((response) => {
       this.warehouses = response.data.warehouses;
     });
   },
@@ -100,31 +109,31 @@ export default {
         warehouse_description: null,
         stock: 0,
         quantity: 0,
-        lots:[],
-        detail: null
+        lots: [],
+        detail: null,
       };
     },
     create() {
       this.titleDialog = "Editar traslado";
-      this.$http
-        .get(`/${this.resource}/record/${this.recordId}`)
-        .then(response => {
-          this.form = response.data.data;
-          this.form.lots = Object.values(response.data.data.lots)
-        });
+      this.$http.get(`/${this.resource}/record/${this.recordId}`).then((response) => {
+        this.form = response.data.data;
+        this.form.lots = Object.values(response.data.data.lots);
+      });
     },
     async submit() {
-       if(this.form.lots_enabled){
-           let select_lots = await _.filter(this.form.lots, {'has_sale':true})
-           if(select_lots.length != this.form.quantity_move){
-               return this.$message.error('La cantidad ingresada es diferente a las series seleccionadas');
-           }
+      if (this.form.lots_enabled) {
+        let select_lots = await _.filter(this.form.lots, { has_sale: true });
+        if (select_lots.length != this.form.quantity_move) {
+          return this.$message.error(
+            "La cantidad ingresada es diferente a las series seleccionadas"
+          );
+        }
       }
 
       this.loading_submit = true;
       await this.$http
         .post(`/${this.resource}`, this.form)
-        .then(response => {
+        .then((response) => {
           if (response.data.success) {
             this.$message.success(response.data.message);
             this.$eventHub.$emit("reloadData");
@@ -133,7 +142,7 @@ export default {
             this.$message.error(response.data.message);
           }
         })
-        .catch(error => {
+        .catch((error) => {
           if (error.response.status === 422) {
             this.errors = error.response.data.errors;
           } else {
@@ -147,7 +156,7 @@ export default {
     close() {
       this.$emit("update:showDialog", false);
       this.initForm();
-    }
-  }
+    },
+  },
 };
 </script>

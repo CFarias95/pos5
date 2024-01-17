@@ -19,7 +19,7 @@
                                      class="form-group">
                                     <label class="control-label">Nùmero <span class="text-danger">*</span></label>
                                     <el-input v-model="form.numeroImportacion"
-                                                :disabled="isEditForm"
+                                                
                                                 dusk="name"></el-input>
                                     <small v-if="errors.numeroImportacion"
                                            class="form-control-feedback"

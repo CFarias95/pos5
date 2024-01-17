@@ -3,7 +3,7 @@
     $supplier = $document->supplier;
     $payments = $document->payments;
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    Log::info('data - '.$document);
+    Log::info('data - '.$account_entry);
 @endphp
 <html>
 <head>

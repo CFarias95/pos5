@@ -299,7 +299,7 @@
                     <td colspan="7" class="text-right font-bold">Subtotal:</td>
                 @endif --}}
                 <td colspan="7" class="text-right font-bold">Subtotal:</td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) + number_format($total0, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
