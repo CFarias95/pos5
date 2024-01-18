@@ -35,6 +35,7 @@ use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Http\Resources\AdvanceCollection;
 use Modules\Finance\Http\Resources\AdvanceResource;
 use Barryvdh\DomPDF\Facade as PDF;
+use Carbon\Carbon;
 
 class AdvanceController extends Controller
 {
@@ -105,6 +106,43 @@ class AdvanceController extends Controller
         return compact('clients','methodTypes','methodTypes2');
     }
 
+    public function filterPersons(Request $request)
+    {
+        //Log::info('request - '.$request->methodTypes);
+        $tipo_persona = $request->methodTypes;
+
+        if($tipo_persona){
+            if($tipo_persona == 14){
+                $clients = Person::where('type', '=', 'customers')->get()->transform(function($row){
+                    return[
+                        'id' =>$row->id,
+                        'name' => $row->name,
+                        'type' =>$row->type,
+                    ];
+                });
+            }
+            if($tipo_persona == 15){
+                $clients = Person::where('type', '=', 'suppliers')->get()->transform(function($row){
+                    return[
+                        'id' =>$row->id,
+                        'name' => $row->name,
+                        'type' =>$row->type,
+                    ];
+                });
+            }
+        }else{
+            $clients = Person::get()->transform(function($row){
+                return[
+                    'id' =>$row->id,
+                    'name' => $row->name,
+                    'type' =>$row->type,
+                ];
+            }); 
+        }
+
+        return compact('clients');
+    }
+
     public function pdf($id) {
 
         $records = Advance::where('id',$id)->get();
@@ -130,13 +168,22 @@ class AdvanceController extends Controller
 
     public function store(AdvanceRequest $request)
     {
+        //Log::info('Created - '.$request->created_at);
+        $created_at = Carbon::parse($request->created_at);
+        //Log::info('Created - '.$created_at);
+
         $id = $request->input('id');
         $estado = $request->input('estado');
         $advance = Advance::firstOrNew(['id' => $id]);
         $data = $request->all();
         unset($data['id']);
 
+        //$created_at = $request->created_at;
+
         $advance->fill($data);
+        
+        $advance->created_at = $created_at;
+        
         $advance->save();
 
 

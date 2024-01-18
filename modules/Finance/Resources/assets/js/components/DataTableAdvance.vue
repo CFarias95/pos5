@@ -23,17 +23,17 @@
                 <div class="row mt-2" v-if="see_more">
                     <div class="col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label class="control-label">Cliente</label>
-                            <el-select v-model="search.idCliente" popper-class="el-select-document_type" filterable clearable>
-                                <el-option v-for="option in clients_all" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            <label class="control-label">Tipo</label>
+                            <el-select v-model="search.methodTypes" popper-class="el-select-document_type" filterable clearable @change="filterPersons()">
+                                <el-option v-for="option in methodTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
                             </el-select>
                         </div>
                     </div>
                     <div class="col-lg-3 col-md-3">
                         <div class="form-group">
-                            <label class="control-label">Tipo</label>
-                            <el-select v-model="search.methodTypes" popper-class="el-select-document_type" filterable clearable>
-                                <el-option v-for="option in methodTypes" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                            <label class="control-label">Cliente</label>
+                            <el-select v-model="search.idCliente" popper-class="el-select-document_type" filterable clearable >
+                                <el-option v-for="option in clients_all" :key="option.id" :value="option.id" :label="option.name"></el-option>
                             </el-select>
                         </div>
                     </div>
@@ -149,6 +149,8 @@ export default {
                 },
                 clients_all:[],
                 methodTypes:[],
+                person_filtered: [],
+                //proveedores: [],
             }
         },
         computed: {
@@ -211,7 +213,7 @@ export default {
             getRecords() {
 
                 return this.$http.get(`/${this.resource}/records?${this.getQueryParameters()}`).then((response) => {
-                    console.log(response.data)
+                    //console.log(response.data)
                     this.records = response.data.data
                     this.pagination = response.data.meta
                     this.pagination.per_page = parseInt(response.data.meta.per_page)
@@ -225,6 +227,13 @@ export default {
                     this.totals = response.data;
                 });
 
+            },
+            filterPersons(){
+                return this.$http.get(`/${this.resource}/filterPersons?${this.getQueryParameters()}`).then((response) => {
+                    //console.log('filterPersons',response.data)
+                    this.clients_all = response.data.clients
+                    
+                });
             },
             getQueryParameters() {
                 return queryString.stringify({

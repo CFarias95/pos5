@@ -66,6 +66,7 @@
             $totalIVA0= $totalIVA0 + $item->total_taxes;
         }
     }
+    Log::info('pagos - '.$document->payment_condition_id);
 @endphp
 
 

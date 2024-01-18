@@ -391,7 +391,8 @@
                           </td>
                           <td>{{ row.f_posdated ? row.f_posdated : "" }}</td>
                           <td>{{ row.posdated }}</td>
-                          <td>{{ row.number_full }}</td>
+                          <td>{{ row.number_full }} / {{ row.sequential_number }}</td>
+                          <td>C - {{ row.num_couta }}</td>
                           <td>{{ row.supplier_name }}</td>
                           <td>
                             {{
