@@ -125,7 +125,6 @@
                 <el-date-picker
                   v-model="form.date_of_due"
                   type="date"
-                  :readonly="readonly_date_of_due"
                   value-format="yyyy-MM-dd"
                   :clearable="false"
                 ></el-date-picker>
@@ -1484,7 +1483,7 @@ export default {
           //}
         }
       } else {
-        this.form.date_of_due = this.form.date_of_issue;
+        //this.form.date_of_due = this.form.date_of_issue;
         this.readonly_date_of_due = false;
       }
     },
@@ -1608,7 +1607,7 @@ export default {
       }
     },
     async changeDateOfIssue() {
-      this.form.date_of_due = this.form.date_of_issue;
+      //this.form.date_of_due = this.form.date_of_issue;
       await this.searchExchangeRateByDate(this.form.date_of_issue).then((response) => {
         this.form.exchange_rate_sale = response;
       });

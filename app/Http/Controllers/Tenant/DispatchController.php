@@ -171,7 +171,7 @@ class DispatchController extends Controller
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
-                        'name' => $item->item->name ? $item->item->name : '-',
+                        'name' => ($item->item->name != null) ? $item->item->name : ' ',
                         'name_product_pdf' => $name_product_pdf
                     ];
                 }

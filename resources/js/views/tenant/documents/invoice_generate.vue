@@ -3036,7 +3036,7 @@ export default {
         }
       } else if (payment_method_type.id == "09") {
         this.form.payment_method_type_id = payment_method_type.id;
-        this.form.date_of_due = this.form.date_of_issue;
+        //this.form.date_of_due = this.form.date_of_issue;
         // this.form.payments = []
         this.enabled_payments = false;
       } else if (payment_method_type.description.includes("Anticipo")) {
@@ -3046,12 +3046,12 @@ export default {
           type: "success",
         });
         this.form.payments[index].payment_method_type_id_desc = "Anticipo";
-        this.form.date_of_due = this.form.date_of_issue;
+        //this.form.date_of_due = this.form.date_of_issue;
         this.readonly_date_of_due = false;
         this.form.payment_method_type_id = null;
         this.enabled_payments = true;
       } else {
-        this.form.date_of_due = this.form.date_of_issue;
+        //this.form.date_of_due = this.form.date_of_issue;
         this.readonly_date_of_due = false;
         this.form.payment_method_type_id = null;
         this.enabled_payments = true;
@@ -3696,7 +3696,7 @@ export default {
     async changeDateOfIssue() {
       this.validateDateOfIssue();
 
-      this.form.date_of_due = this.form.date_of_issue;
+      //this.form.date_of_due = this.form.date_of_issue;
       // if (! this.isUpdate) {
       await this.searchExchangeRateByDate(this.form.date_of_issue).then((response) => {
         this.form.exchange_rate_sale = response;

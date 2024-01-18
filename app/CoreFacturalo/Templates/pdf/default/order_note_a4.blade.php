@@ -268,12 +268,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        {{-- @if($document->total_unaffected > 0)
+        @if($document->total_unaffected > 0 && !$document->total_taxed)
             <tr>
-                <td colspan="6" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
-        @endif --}}
+        @endif
         @if($document->total_exonerated > 0)
             <tr>
                 <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
@@ -282,24 +282,13 @@
         @endif
         <!-- JOINSOFTWARE -->
         @if($document->total_taxed > 0)
-            {{-- <tr>
-                <td colspan="6" class="text-right font-bold">Subtotal 0%:</td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
-            </tr> --}}
             <tr>
-                {{-- @if($document->items->affectation_igv_type->id == 10)
-                    <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
-                @elseif($document->items->affectation_igv_type->id == 30)
-                    <td colspan="7" class="text-right font-bold">Subtotal 0%:</td>
-                @elseif($document->items->affectation_igv_type->id == 11)
-                    <td colspan="7" class="text-right font-bold">Subtotal 8%:</td>
-                @elseif($document->items->affectation_igv_type->id == 12)
-                    <td colspan="7" class="text-right font-bold">Subtotal 14%:</td>
-                @else
-                    <td colspan="7" class="text-right font-bold">Subtotal:</td>
-                @endif --}}
-                <td colspan="7" class="text-right font-bold">Subtotal:</td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) + number_format($total0, 2) }}</td>
+                <td colspan="7" class="text-right font-bold">Subtotal 0%:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
+            </tr>
+            <tr>
+                <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
             </tr>
         @endif
         @if($document->total_discount > 0)
@@ -309,23 +298,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        {{-- <tr>
-            <td colspan="6" class="text-right font-bold">IVA 0%:</td>
-            <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
-        </tr> --}}
         <tr>
-            {{-- @if($document->items->affectation_igv_type->id == 10)
-                <td colspan="7" class="text-right font-bold">IVA 12%:</td>
-            @elseif($document->items->affectation_igv_type->id == 30)
-                <td colspan="7" class="text-right font-bold">IVA 0%:</td>
-            @elseif($document->items->affectation_igv_type->id == 11)
-                <td colspan="7" class="text-right font-bold">IVA 8%:</td>
-            @elseif($document->items->affectation_igv_type->id == 12)
-                <td colspan="7" class="text-right font-bold">IVA 14%:</td>
-            @else
-                <td colspan="7" class="text-right font-bold">IVA:</td>
-             @endif --}}
-            <td colspan="7" class="text-right font-bold">IVA:</td>
+            <td colspan="7" class="text-right font-bold">IVA 0%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
+        </tr>
+        <tr>
+            <td colspan="7" class="text-right font-bold">IVA 12%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
         </tr>
         <tr>

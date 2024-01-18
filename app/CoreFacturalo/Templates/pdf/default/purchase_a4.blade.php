@@ -3,7 +3,7 @@
     $supplier = $document->supplier;
     $payments = $document->payments;
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    Log::info('data - '.$account_entry);
+    //Log::info('data - '.$account_entry);
 @endphp
 <html>
 <head>
@@ -110,9 +110,9 @@
     </tr>
     @endif
     <tr>
-        <td width="15%">Sequencial:</td>
+        <td width="15%">Documento:</td>
         <td width="45%">{{ $document->sequential_number }}</td>
-        <td width="25%">Código Interno</td>
+        <td width="25%">Código Sustento</td>
         <td width="15%">{{ $document->document_type_intern }}</td>
     </tr>
 </table>
