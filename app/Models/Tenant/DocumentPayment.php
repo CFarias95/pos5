@@ -38,7 +38,7 @@ class DocumentPayment extends ModelTenant
 
     public function payment_method_type()
     {
-        return $this->belongsTo(PaymentMethodType::class);
+        return $this->belongsTo(PaymentMethodType::class,'payment_method_type_id','id');
     }
 
     public function card_brand()

@@ -44,6 +44,8 @@
                                         <td class="series-table-actions text-right">
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                 @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                                @click.prevent="clickReverse(row.id)">Reversar</button>
                                             <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                         </td>
                                     </template>
@@ -588,7 +590,13 @@ export default {
             }
             )
         },
-
+        clickReverse(id) {
+            this.$http.get(`/${this.resource}/reverse/${id}`).then(() => {
+                this.getData()
+                this.$eventHub.$emit('reloadData')
+            }
+            )
+        },
         clickPrint(format, index) {
             this.index = index;
             window.open(`to-pay/print/${format}/${this.purchaseId}/${this.index}`, '_blank');

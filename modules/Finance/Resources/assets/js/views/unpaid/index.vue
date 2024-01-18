@@ -307,6 +307,17 @@
                       <i class="fa fa-file-pdf"></i>
                       Exportar PDF
                     </el-button>
+
+                    <el-button
+                      v-if="records.length > 0"
+                      class="submit"
+                      type="warning"
+                      @click.prevent="clickMultiPay()"
+                    >
+                      <i class="fa fa-check-square-o"></i>
+                      Generar Pago Multiple
+                    </el-button>
+
                   </div>
                   <div class="col-md-1 mt-5 text-right"></div>
 
@@ -342,6 +353,7 @@
                     <table class="table">
                       <thead>
                         <tr>
+                          <th>P. Multi</th>
                           <th>#</th>
                           <th>F.Emisión</th>
                           <th>F.Vencimiento</th>
@@ -357,7 +369,6 @@
                             Plataforma
                           </th>
                           <th v-if="columns.purchase_order.visible">Orden de compra</th>
-
                           <th>Ver Cartera</th>
                           <th>Moneda</th>
                           <th class="text-right">Por cobrar</th>
@@ -369,6 +380,12 @@
                       <tbody>
                         <template v-for="(row, index) in records">
                           <tr v-if="row.total_to_pay > 0" :key="index">
+                            <td>
+                                <el-switch
+                                    v-model="row.selected"
+
+                                ></el-switch>
+                            </td>
                             <td>
                               {{ customIndex(index) }}
                             </td>
@@ -565,6 +582,11 @@
                             }"
                             :key="index"
                           >
+                            <td>
+                                <el-switch
+                                    v-model="row.selected"
+                                ></el-switch>
+                            </td>
                             <td>
                               {{ customIndex(index) }}
                             </td>

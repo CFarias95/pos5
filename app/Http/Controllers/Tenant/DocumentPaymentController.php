@@ -28,10 +28,12 @@ use App\Models\Tenant\CreditNotesPayment;
 use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Retention;
+use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\Finance\Http\Controllers\AdvanceController;
 use Modules\Finance\Http\Requests\AdvanceRequest;
+use Modules\Finance\Models\GlobalPayment;
 
 class DocumentPaymentController extends Controller
 {
@@ -566,6 +568,196 @@ class DocumentPaymentController extends Controller
 
     }
 
+    /* Crear los asientos contables del REVERSO */
+    private function createAccountingEntryReverse($requestP, $request){
+
+        $document = Document::find($requestP->document_id);
+        $entry = (AccountingEntries::get())->last();
+
+        if($document && ($document->document_type_id == '01' || $document->document_type_id == '03')){
+
+            try{
+                $idauth = auth()->user()->id;
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                $configuration = Configuration::first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+
+                $comment = (($document->document_type_id == '03')?'Reverso cobro '.substr($document->series,0,1):'Reverso cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+
+                $total_debe = 0;
+                $total_haber = 0;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = date('y-m-d');
+                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->comment = $comment;
+                $cabeceraC->serie = null;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $request->payment * -1;
+                $cabeceraC->total_haber = $request->payment  * -1;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->currency_type_id = $document->currency_type_id;
+                $cabeceraC->doctype = $document->document_type_id;
+                $cabeceraC->is_client = ($document->customer)?true:false;
+                $cabeceraC->establishment_id = $document->establishment_id;
+                $cabeceraC->establishment = $document -> establishment;
+                $cabeceraC->prefix = 'ASC';
+                $cabeceraC->person_id = $document->customer_id;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = 'CF'.$request->id;
+
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $customer = Person::find($cabeceraC->person_id);
+
+                $detalle = new AccountingEntryItems();
+                $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_clients;
+                $detalle->seat_line = 1;
+                $detalle->haber = 0;
+                $detalle->debe = $request->payment  * -1;
+
+                if($detalle->save() == false){
+                    $cabeceraC->delete();
+                    return;
+                    //abort(500,'No se pudo generar el asiento contable del documento');
+                }
+
+                if($request->payment_method_type_id == '99'){
+                    $debe = ($requestP['overPayment'] && $requestP['overPaymentAdvance'] == false) ? $request->payment + $requestP['overPaymentValue'] : $request->payment;
+                    $reference = $request->reference;
+                    $retention = Retention::find($reference);
+                    $detRet = $retention->optional;
+                    Log::error($detRet);
+                    if(is_array($detRet) == false ){
+                        $detRet = json_decode($detRet);
+                    }
+                    $seat = 2;
+
+                    foreach ($detRet as $ret) {
+
+                        if($debe > 0){
+                            $valor = (is_array($ret) == true)?floatval($ret['valorRetenido']):floatval($ret->valorRetenido);
+                            $debeInterno = 0;
+                            $cuentaId = null;
+                            if($valor >=  $debe){
+                                $debeInterno = $debe;
+                                $debe = 0;
+                            }
+                            if($valor < $debe){
+                                $debeInterno = $valor;
+                                $debe -=  $valor;
+                            }
+                            if(is_array($ret) &&  $ret['codigo']== '2' || isset($ret->codigo) && $ret->codigo == '2'){
+                                $cuentaId=$ceuntaC->countable_acount;
+                            }
+                            if(is_array($ret) &&  $ret['codigo']== '1' || isset($ret->codigo) && $ret->codigo == '1'){
+                                $cuentaId=$ceuntaC->countable_acount_payment;
+                            }
+                            if($cuentaId == null){
+                                $cabeceraC->delete();
+                                throw new Exception("Cuentas contables para Canje Retenciones sin asignar", 1);
+                            }
+
+                            $detalle2 = new AccountingEntryItems();
+                            $detalle2->accounting_entrie_id = $cabeceraC->id;
+                            $detalle2->account_movement_id = $cuentaId;
+                            $detalle2->seat_line = $seat;
+                            $detalle2->haber = $debeInterno  * -1;
+                            $detalle2->debe = 0;
+                            if($detalle2->save() == false){
+                                $cabeceraC->delete();
+                                break;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
+
+                            $seat += 1;
+                        }
+                    }
+                }else{
+
+                    $detalle2 = new AccountingEntryItems();
+                    $detalle2->accounting_entrie_id = $cabeceraC->id;
+                    $detalle2->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$configuration->cta_charge;
+                    $detalle2->seat_line = 2;
+                    $detalle2->haber = ($requestP['overPayment']) ? $request->payment + $requestP['overPaymentValue'] : $request->payment  * -1;
+                    $detalle2->debe = 0;
+                    if($detalle2->save() == false){
+                        $cabeceraC->delete();
+                        return;
+                        //abort(500,'No se pudo generar el asiento contable del documento');
+                    }
+                }
+
+                if($requestP['overPayment'] && $requestP['overPaymentAdvance'] == false){
+
+                    Log::info('Generando linea de overPayment');
+                    $detalle = new AccountingEntryItems();
+                    $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = $requestP['overPaymentAccount'];
+                    $detalle->seat_line = 3;
+                    $detalle->debe = $requestP['overPaymentValue'];
+                    $detalle->haber = 0;
+                    $detalle->save();
+
+                    $cabeceraC->total_debe = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->total_haber = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->save();
+
+                }
+
+                if($requestP['overPayment'] && $requestP['overPaymentAdvance'] == true){
+
+                    Log::info('Generando linea de overPayment');
+                    $detalle = new AccountingEntryItems();
+                    $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+                    $detalle->accounting_entrie_id = $cabeceraC->id;
+                    $detalle->account_movement_id = $configuration->cta_client_advances;
+                    $detalle->seat_line = 3;
+                    $detalle->debe = $requestP['overPaymentValue'];
+                    $detalle->haber = 0;
+                    $detalle->save();
+
+                    $cabeceraC->total_debe = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->total_haber = $request->payment + $requestP['overPaymentValue'];
+                    $cabeceraC->save();
+
+                }
+
+            }catch(Exception $ex){
+
+                Log::error('Error al intentar generar el asiento contable');
+                Log::error($ex->getMessage());
+            }
+
+        }else{
+            Log::info('tipo de documento no genera asiento contable de momento');
+        }
+
+    }
+
     public function destroy($id)
     {
 
@@ -688,6 +880,93 @@ class DocumentPaymentController extends Controller
                 ->records($records)
                 ->download($filename . Carbon::now() . '.xlsx');
         }
+
+    }
+
+    public function generateExpenses(Request $request){
+        $id = $request->id;
+        $valor = $request->overPaymentValue;
+        $cuenta = $request->overPaymentAccount;
+
+        $entry = AccountingEntries::where('document_id','CF'.$id)->first();
+        if(isset($entry)){
+            $entry->total_debe += $valor;
+            $entry->total_haber += $valor;
+
+            $entryItems = AccountingEntryItems::where('accounting_entrie_id',$entry->id)->get();
+            foreach($entryItems as $item){
+                if($item->debe > 0){
+                    $item->debe += $valor;
+                    $item->save();
+                }
+            }
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $entryItems[0]->accounting_entrie_id;
+            $detalle->account_movement_id = $cuenta;
+            $detalle->seat_line = 3;
+            $detalle->haber = $valor;
+            $detalle->debe = 0;
+            $detalle->save();
+
+            return[
+                'success' => true,
+                'message' => 'Valor extra agregado al pago'
+            ];
+
+        }else{
+            return[
+                'success' => false,
+                'message' => 'No se pudo agregar el valor extra al pago'
+            ];
+        }
+    }
+    public function generateReverse(Request $request){
+
+        Log::info('generateReverse');
+        $id = $request->id;
+        $motivo = $request->reference;
+
+        $payment = DocumentPayment::find($id);
+        $globalPayment = GlobalPayment::where('payment_id',$id)->first();
+
+
+        if(isset($payment)){
+
+            $newPayment = new DocumentPayment();
+            $newPayment->document_id = $payment->document_id;
+            $newPayment->date_of_payment = date('Y-m-d');
+            $newPayment->payment_method_type_id = $payment->payment_method_type_id;
+            $newPayment->has_card = $payment->has_card;
+            $newPayment->card_brand_id = $payment->card_brand_id;
+            $newPayment->reference = $payment->reference.'/'.$motivo;
+            $newPayment->change = $payment->change;
+            $newPayment->payment = $payment->payment * -1;
+            $newPayment->payment_received = $payment->payment_received;
+            $newPayment->fee_id = $payment->fee_id;
+            $newPayment->postdated = $payment->postdated;
+            $newPayment->save();
+
+            $newGlobalPayment = new GlobalPayment();
+            $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
+            $newGlobalPayment->destination_id = $globalPayment->destination_id;
+            $newGlobalPayment->destination_type = $globalPayment->destination_type;
+            $newGlobalPayment->payment_id = $newPayment->id;
+            $newGlobalPayment->payment_type = $globalPayment->payment_type;
+            $newGlobalPayment->user_id = $globalPayment->user_id;
+            $newGlobalPayment->save();
+
+            $this->createAccountingEntryReverse($newPayment,$newPayment);
+
+            return [
+                'success'=>true,
+                'message' => 'Reverso generado de forma exitosa!'
+            ];
+
+        }else{
+            Log::error('No s eencontro un pago con el ID: '.$id);
+        }
+
 
     }
 
