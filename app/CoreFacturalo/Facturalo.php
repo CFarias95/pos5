@@ -474,8 +474,8 @@ class Facturalo
                     $pagoCred->sridesc = $PagoSri[0]->description;
                     Log::error('metodo de pago: '.$PagoSri[0]->description);
                 }else{
-                    $pagoCred->sridesc = 'SIN UTILIZACION DEL SISTEMA FINANCIERO';
-                    Log::error('SIN MEDOTO DE PAGO DEFINIDO');
+                    $pagoCred->sridesc = 'OTROS CON UTILIZACION DEL SISTEMA FINANCIERO';
+                    Log::error('OTROS CON UTILIZACION DEL SISTEMA FINANCIERO');
                 }
 
             }

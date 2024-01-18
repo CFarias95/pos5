@@ -46,7 +46,7 @@
                         </div>
                     </div>
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-4">
-                        <label class="control-label">Fecha emisión</label>
+                        <label class="control-label">Fecha Creada:</label>
                         <el-date-picker
                             v-model="search.date_created"
                             type="date"
