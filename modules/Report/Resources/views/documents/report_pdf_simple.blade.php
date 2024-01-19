@@ -308,13 +308,13 @@
                                     }
                                 @endphp
                             @endforeach
-                            <tr>
+                            {{-- <tr>
                                 <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales PEN</td>
                                 <td class="celda">{{$acum_total_taxed}}</td>
                                 <td class="celda">{{$acum_total_igv}}</td>
                                 <td class="celda">{{$acum_total}}</td>
-                            </tr>
+                            </tr> --}}
                             <tr>
                                 <td class="celda" colspan="15"></td>
                                 <td class="celda" >Totales USD</td>

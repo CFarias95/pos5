@@ -446,7 +446,7 @@
 
                     @endphp
                 @endforeach
-                <tr>
+                {{-- <tr>
                     <td colspan="23"></td>
                     <td colspan="2">Totales PEN</td>
                     <td>{{number_format($acum_total_charges, 2)}}</td>
@@ -458,7 +458,7 @@
                     <td>{{$acum_total_igv}}</td>
                     <td></td>
                     <td>{{$acum_total}}</td>
-                </tr>
+                </tr> --}}
                 <tr>
                     <td colspan="23"></td>
                     <td colspan="2">Totales USD</td>
