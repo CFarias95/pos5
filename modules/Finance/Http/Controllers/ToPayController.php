@@ -68,7 +68,7 @@ class ToPayController extends Controller
         });
         $supplier = [];
         $supplier[] = [
-            'id' => null,
+            'id' => 0,
             'description' => 'Todos',
             'name' => 'Todos',
             'number' => '',

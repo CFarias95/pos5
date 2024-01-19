@@ -40,7 +40,7 @@
             $totalIVA0= $totalIVA0 + $item->total_taxes;
         }
     }
-    //Log::info('documents - '.$document->items->affectation_igv_type);
+    Log::info('documents - '.$document->items);
     /*$modelo = $document->items->item_model;
     if($modelo != null)
     {
@@ -214,6 +214,7 @@
             <td class="text-center align-top"> {{ $row->getStringQty() }} </td>
             <td class="text-center align-top">{{ $item->unit_type_id }}</td>
             <td class="text-left">
+                @if($item->name != null) {{  $item->name }} / @endif 
                 {!!$row->getTemplateDescription() !!}
                 @if (!empty($item->presentation)) {!!$item->presentation->description!!} @endif
                 @if($row->attributes)

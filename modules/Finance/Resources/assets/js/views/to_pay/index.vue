@@ -138,6 +138,7 @@
                     <el-select
                       filterable
                       clearable
+                      multiple
                       v-model="form.supplier_id"
                       placeholder="Seleccionar proveedor"
                     >
@@ -554,6 +555,7 @@ export default {
     await this.initForm();
     await this.filter();
     await this.changePeriod();
+    this.form.supplier_id = [0];
   },
   computed: {
     getCurrentBalance() {
@@ -584,7 +586,7 @@ export default {
         source = _.filter(self.records, function (item) {
           return (
             item.total_to_pay > 0 &&
-            item.supplier_id == self.form.supplier_id &&
+            //item.supplier_id == self.form.supplier_id &&
             item.currency_type_id == "USD"
           );
         });
@@ -603,7 +605,7 @@ export default {
 
       if (self.form.supplier_id) {
         return _.filter(self.records, function (item) {
-          return item.total_to_pay > 0 && item.supplier_id == self.form.supplier_id;
+          return item.total_to_pay > 0 /*&& item.supplier_id == self.form.supplier_id*/;
         }).length;
       } else {
         return _.filter(this.records, function (item) {
@@ -639,7 +641,7 @@ export default {
         source = _.filter(self.records, function (item) {
           return (
             item.total_to_pay > 0 &&
-            item.supplier_id == self.form.supplier_id &&
+            //item.supplier_id == self.form.supplier_id &&
             item.currency_type_id == "USD"
           );
         });
@@ -670,7 +672,7 @@ export default {
         date_end: moment().format("YYYY-MM-DD"),
         month_start: moment().format("YYYY-MM"),
         month_end: moment().format("YYYY-MM"),
-        supplier_id: null,
+        supplier_id: [],
         user: null,
       };
     },

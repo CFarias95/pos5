@@ -179,7 +179,7 @@
                                         </div>
                                     </div>
                                     <div class="form-group col-6 col-md-2" v-if="form.upload_filename != null">
-                                        <label>Remplazar PDF en el correo</label>
+                                        <label>Reemplazar PDF en el correo</label>
                                         <el-switch v-model="form.send_upload_pdf" class="ml-2"
                                             style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949" />
                                     </div>
