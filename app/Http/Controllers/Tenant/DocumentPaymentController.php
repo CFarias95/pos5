@@ -166,8 +166,6 @@ class DocumentPaymentController extends Controller
                 $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
                 $pagado = $pago->sum('payment');
 
-                if($pagado > 0 ){
-
                     $valorCuota = $cuotas->amount - $pagado;
                     $cuotaid = $cuotas->id;
                     $sequential = DocumentPayment::latest('id')->first();
@@ -214,6 +212,7 @@ class DocumentPaymentController extends Controller
                             $valorPagar = 0 ;
                         }
                     }else if(isset($fee_id) == false){
+
                         if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
                             $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorCuota, $cuotaid) {
@@ -255,7 +254,6 @@ class DocumentPaymentController extends Controller
                             $valorPagar = 0 ;
                         }
                     }
-                }
             }
 
         }else{

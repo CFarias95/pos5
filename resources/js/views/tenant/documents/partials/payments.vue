@@ -694,7 +694,7 @@ export default {
             this.formSubmit.temp_path = this.records[index].temp_path
             this.formSubmit.payment = this.records[index].payment
             this.formSubmit.payment_received = this.records[index].payment_received
-            this.formSubmit.fee_i = this.documentFeeId
+            this.formSubmit.fee_id = this.documentFeeId
             this.formSubmit.date_of_due = moment().format('YYYY-MM-DD')
             this.formSubmit.postdated = this.records[index].postdated
 
