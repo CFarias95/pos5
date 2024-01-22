@@ -110,6 +110,7 @@ class DocumentPaymentController extends Controller
     public function store(DocumentPaymentRequest $request)
     {
         $id = $request->input('id');
+        $data = $request->all();
 
         if ($request['payment_method_type_id'] == '99' && !$id) {
 
