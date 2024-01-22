@@ -110,7 +110,7 @@ class DocumentPaymentController extends Controller
     public function store(DocumentPaymentRequest $request)
     {
         $id = $request->input('id');
-
+        $data = null;
 
         if ($request['payment_method_type_id'] == '99' && !$id) {
 
@@ -300,6 +300,7 @@ class DocumentPaymentController extends Controller
 
                 }
             }
+
             if($id){
 
                 $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
@@ -365,7 +366,7 @@ class DocumentPaymentController extends Controller
 
 
         if((Company::active())->countable > 0 ){
-            $this->createAccountingEntry($request, $request);
+            $this->createAccountingEntry($request, $data);
         }
 
         $this->verifyPayment($request);
