@@ -36,6 +36,7 @@ use Modules\Production\Models\Production;
 use Modules\Production\Models\StateTypeProduction;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
+use App\Models\Tenant\ItemWarehouse;
 
 class ProductionController extends Controller
 {
@@ -952,6 +953,8 @@ class ProductionController extends Controller
         });
         $state_types_prod = StateTypeProduction::get();
         $state_type_descr = StateTypeProduction::find('01');
+        $item_warehouses = ItemWarehouse::get();
+        
         return [
             'items' => self::optionsItemProduction(),
             'warehouses' => $this->optionsWarehouse(),
@@ -959,6 +962,7 @@ class ProductionController extends Controller
             'state_types_prod' => $state_types_prod,
             //'state_types_id' => count($state_types_prod) > 0 ? $state_types_prod->first()->id : null,
             'state_type_descr' => $state_type_descr->description,
+            'item_warehouses' => $item_warehouses,
         ];
     }
 
