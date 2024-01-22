@@ -28,6 +28,8 @@ class DocumentPayment extends ModelTenant
         'payment_received',
         'fee_id',
         'postdated',
+        'sequential',
+        'multipay',
     ];
 
     protected $casts = [

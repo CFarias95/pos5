@@ -32,6 +32,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\Finance\Http\Controllers\AdvanceController;
+use Modules\Finance\Http\Controllers\UnpaidController;
 use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Models\GlobalPayment;
 
@@ -164,97 +165,105 @@ class DocumentPaymentController extends Controller
                 $pago = DocumentPayment::where('fee_id',$cuotas->id)->get();
                 $pagado = $pago->sum('payment');
 
-                $valorCuota = $cuotas->amount - $pagado;
-                $cuotaid = $cuotas->id;
+                if($pagado > 0 ){
 
-                if(isset($fee_id) && $cuotaid == $fee_id){
-                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+                    $valorCuota = $cuotas->amount - $pagado;
+                    $cuotaid = $cuotas->id;
+                    $sequential = DocumentPayment::latest('id')->first();
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+                    if(isset($fee_id) && $cuotaid == $fee_id){
+                        if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-                            $record = DocumentPayment::firstOrNew(['id' => $id]);
-                            $record->fill($request->all());
-                            $record->payment = $valorCuota;
-                            $record->fee_id = $cuotaid;
-                            $record->save();
+                            $data = DB::connection('tenant')->transaction(function () use ( $sequential, $id, $request, $valorCuota, $cuotaid) {
 
-                            $this->createGlobalPayment($record, $request->all());
-                            $this->saveFiles($record, $request, 'documents');
+                                $record = DocumentPayment::firstOrNew(['id' => $id]);
+                                $record->fill($request->all());
+                                $record->sequential = $sequential->sequential + 1;
+                                $record->payment = $valorCuota;
+                                $record->fee_id = $cuotaid;
+                                $record->save();
 
-                            return $record;
-                        });
+                                $this->createGlobalPayment($record, $request->all());
+                                $this->saveFiles($record, $request, 'documents');
 
-                        $valorPagar = $valorPagar - $valorCuota;
+                                return $record;
+                            });
 
-                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+                            $valorPagar = $valorPagar - $valorCuota;
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+                        }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
 
-                            unset($request->id);
-                            //$request->payment = $valorPagar;
-                            $record = new DocumentPayment();
-                            $record->fill($request->all());
-                            $record->payment = $valorPagar;
-                            $record->fee_id = $cuotaid;
-                            $record->save();
+                            $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorPagar, $cuotaid) {
 
-                            $this->createGlobalPayment($record, $request->all());
-                            $this->saveFiles($record, $request, 'documents');
+                                unset($request->id);
+                                //$request->payment = $valorPagar;
+                                $record = new DocumentPayment();
+                                $record->fill($request->all());
+                                $record->payment = $valorPagar;
+                                $record->fee_id = $cuotaid;
+                                $record->sequential = $sequential->sequential + 1;
+                                $record->save();
 
-                            return $record;
-                        });
+                                $this->createGlobalPayment($record, $request->all());
+                                $this->saveFiles($record, $request, 'documents');
 
-                        $valorPagar = 0 ;
-                    }
-                }else if(isset($fee_id) == false){
-                    if( $valorPagar > 0 && $valorPagar >= $valorCuota){
+                                return $record;
+                            });
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+                            $valorPagar = 0 ;
+                        }
+                    }else if(isset($fee_id) == false){
+                        if( $valorPagar > 0 && $valorPagar >= $valorCuota){
 
-                            $record = DocumentPayment::firstOrNew(['id' => $id]);
-                            $record->fill($request->all());
-                            $record->payment = $valorCuota;
-                            $record->fee_id = $cuotaid;
-                            $record->save();
+                            $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorCuota, $cuotaid) {
 
-                            $this->createGlobalPayment($record, $request->all());
-                            $this->saveFiles($record, $request, 'documents');
+                                $record = DocumentPayment::firstOrNew(['id' => $id]);
+                                $record->fill($request->all());
+                                $record->payment = $valorCuota;
+                                $record->fee_id = $cuotaid;
+                                $record->sequential = $sequential->sequential + 1;
+                                $record->save();
 
-                            return $record;
-                        });
+                                $this->createGlobalPayment($record, $request->all());
+                                $this->saveFiles($record, $request, 'documents');
 
-                        $valorPagar = $valorPagar - $valorCuota;
+                                return $record;
+                            });
 
-                    }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
+                            $valorPagar = $valorPagar - $valorCuota;
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+                        }else if ($valorPagar > 0 && $valorPagar < $valorCuota){
 
-                            unset($request->id);
-                            //$request->payment = $valorPagar;
-                            $record = new DocumentPayment();
-                            $record->fill($request->all());
-                            $record->payment = $valorPagar;
-                            $record->fee_id = $cuotaid;
-                            $record->save();
+                            $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorPagar, $cuotaid) {
 
-                            $this->createGlobalPayment($record, $request->all());
-                            $this->saveFiles($record, $request, 'documents');
+                                unset($request->id);
+                                //$request->payment = $valorPagar;
+                                $record = new DocumentPayment();
+                                $record->fill($request->all());
+                                $record->payment = $valorPagar;
+                                $record->fee_id = $cuotaid;
+                                $record->sequential = $sequential->sequential + 1;
+                                $record->save();
 
-                            return $record;
-                        });
+                                $this->createGlobalPayment($record, $request->all());
+                                $this->saveFiles($record, $request, 'documents');
 
-                        $valorPagar = 0 ;
+                                return $record;
+                            });
+
+                            $valorPagar = 0 ;
+                        }
                     }
                 }
-
-
             }
 
         }else{
 
             $data = DB::connection('tenant')->transaction(function() use ($id, $request) {
+                $sequential = DocumentPayment::latest('id')->first();
                 $record = DocumentPayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
+                $record->sequential = $sequential->sequential + 1;
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'documents');
@@ -791,18 +800,35 @@ class DocumentPaymentController extends Controller
 
         $advance = Advance::where('observation','like','%PAGO-'.$item->id)->delete();
 
+        $sequential = $item->sequential;
+        $multiPAy = $item->multipay;
+
         $item->delete();
 
-        $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
-        foreach($asientos as $ass){
-            $ass->delete();
-        }
-        $asientos2 = AccountingEntries::where('document_id','PC'.$id)->get();
-        foreach($asientos2 as $ass){
-            $ass->delete();
-        }
+        if($multiPAy == 'SI'){
+            $item = DocumentPayment::where('sequential',$sequential);
+            foreach ($item as $value) {
+                $value->delete();
+            }
 
+            $asientos = AccountingEntries::where('document_id','like','%CF'.$id.';%')->get();
+            foreach($asientos as $ass){
+                $ass->delete();
+            }
 
+        }else{
+
+            $asientos = AccountingEntries::where('document_id','CF'.$id)->get();
+            foreach($asientos as $ass){
+                $ass->delete();
+            }
+
+            $asientos2 = AccountingEntries::where('document_id','PC'.$id)->get();
+            foreach($asientos2 as $ass){
+                $ass->delete();
+            }
+
+        }
 
         return [
             'success' => true,
@@ -884,6 +910,7 @@ class DocumentPaymentController extends Controller
     }
 
     public function generateExpenses(Request $request){
+
         $id = $request->id;
         $valor = $request->overPaymentValue;
         $cuenta = $request->overPaymentAccount;
@@ -924,14 +951,15 @@ class DocumentPaymentController extends Controller
     public function generateReverse(Request $request){
 
         Log::info('generateReverse');
+
         $id = $request->id;
         $motivo = $request->reference;
 
         $payment = DocumentPayment::find($id);
-        $globalPayment = GlobalPayment::where('payment_id',$id)->first();
+        $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
+        $sequential = DocumentPayment::latest('id')->first();
 
-
-        if(isset($payment)){
+        if(isset($payment) && $payment->multipay == 'NO'){
 
             $newPayment = new DocumentPayment();
             $newPayment->document_id = $payment->document_id;
@@ -939,12 +967,13 @@ class DocumentPaymentController extends Controller
             $newPayment->payment_method_type_id = $payment->payment_method_type_id;
             $newPayment->has_card = $payment->has_card;
             $newPayment->card_brand_id = $payment->card_brand_id;
-            $newPayment->reference = $payment->reference.'/'.$motivo;
+            $newPayment->reference = $motivo;
             $newPayment->change = $payment->change;
             $newPayment->payment = $payment->payment * -1;
             $newPayment->payment_received = $payment->payment_received;
             $newPayment->fee_id = $payment->fee_id;
             $newPayment->postdated = $payment->postdated;
+            $newPayment->sequential = $sequential->sequential + 1;
             $newPayment->save();
 
             $newGlobalPayment = new GlobalPayment();
@@ -957,6 +986,51 @@ class DocumentPaymentController extends Controller
             $newGlobalPayment->save();
 
             $this->createAccountingEntryReverse($newPayment,$newPayment);
+
+            return [
+                'success'=>true,
+                'message' => 'Reverso generado de forma exitosa!'
+            ];
+
+        }elseif(isset($payment) && $payment->multipay == 'SI'){
+
+            $multiPays = DocumentPayment::where('sequential',$payment->sequential)->get();
+            $paymentsIds = '';
+            foreach ($multiPays as $value) {
+                $paymentM = DocumentPayment::find($value->id);
+                $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
+                $sequential = DocumentPayment::latest('id')->first();
+
+                $newPayment = new DocumentPayment();
+                $newPayment->document_id = $paymentM->document_id;
+                $newPayment->date_of_payment = date('Y-m-d');
+                $newPayment->payment_method_type_id = $paymentM->payment_method_type_id;
+                $newPayment->has_card = $paymentM->has_card;
+                $newPayment->card_brand_id = $paymentM->card_brand_id;
+                $newPayment->reference = $motivo;
+                $newPayment->change = $paymentM->change;
+                $newPayment->payment = $paymentM->payment * -1;
+                $newPayment->payment_received = $paymentM->payment_received;
+                $newPayment->fee_id = $paymentM->fee_id;
+                $newPayment->postdated = $paymentM->postdated;
+                $newPayment->sequential = $sequential->sequential + 1;
+                $newPayment->multipay = 'SI';
+                $newPayment->save();
+
+                $paymentsIds .= 'CF'.$newPayment->id.';';
+
+                $newGlobalPayment = new GlobalPayment();
+                $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
+                $newGlobalPayment->destination_id = $globalPayment->destination_id;
+                $newGlobalPayment->destination_type = $globalPayment->destination_type;
+                $newGlobalPayment->payment_id = $newPayment->id;
+                $newGlobalPayment->payment_type = $globalPayment->payment_type;
+                $newGlobalPayment->user_id = $globalPayment->user_id;
+                $newGlobalPayment->save();
+            }
+
+            $unp = new UnpaidController();
+            $unp->generateMultiPayReverse('CF'.$payment->id,$paymentsIds);
 
             return [
                 'success'=>true,

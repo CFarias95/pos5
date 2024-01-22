@@ -58,6 +58,7 @@ if($hostname) {
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'UnpaidController@PosDatedShow');
                     Route::post('/posdated', 'UnpaidController@PosDatedUpdate');
+                    Route::post('/multipay','UnpaidController@generateMultiPay');
 
                 });
                 Route::post('payment-file/upload', 'PaymentFileController@uploadAttached');

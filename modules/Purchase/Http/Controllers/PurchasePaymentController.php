@@ -5,6 +5,7 @@ namespace Modules\Purchase\Http\Controllers;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
@@ -18,11 +19,14 @@ use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\Retention;
 use Exception;
+use Illuminate\Http\Request;
 use Modules\Finance\Traits\FinanceTrait;
 use Modules\Finance\Traits\FilePaymentTrait;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
+use Modules\Finance\Http\Controllers\ToPayController;
+use Modules\Finance\Models\GlobalPayment;
 
 class PurchasePaymentController extends Controller
 {
@@ -42,7 +46,14 @@ class PurchasePaymentController extends Controller
     {
         return [
             'payment_method_types' => PaymentMethodType::all(),
-            'payment_destinations' => $this->getPaymentDestinations()
+            'payment_destinations' => $this->getPaymentDestinations(),
+            'accounts' => AccountMovement::get()->transform(function($row){
+                return[
+                    'description' => $row->code .' '.$row->description,
+                    'id'=> $row->id
+                ];
+
+            })
         ];
     }
 
@@ -430,4 +441,212 @@ class PurchasePaymentController extends Controller
             'message' => 'Pago eliminado con éxito'
         ];
     }
+
+    public function generateReverse(Request $request){
+
+        Log::info('generateReverse');
+
+        $id = $request->id;
+        $motivo = $request->reference;
+
+        $payment = PurchasePayment::find($id);
+        $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%PurchasePayment')->first();
+        $sequential = PurchasePayment::latest('id')->first();
+
+        if(isset($payment) && ($payment->multipay == 'NO' || isset($payment->multipay) == false)){
+
+            $newPayment = new PurchasePayment();
+            $newPayment->purchase_id = $payment->purchase_id;
+            $newPayment->date_of_payment = date('Y-m-d');
+            $newPayment->payment_method_type_id = $payment->payment_method_type_id;
+            $newPayment->has_card = $payment->has_card;
+            $newPayment->card_brand_id = $payment->card_brand_id;
+            $newPayment->reference = $motivo;
+            //$newPayment->change = $payment->change;
+            $newPayment->payment = $payment->payment * -1;
+            //$newPayment->payment_received = $payment->payment_received;
+            $newPayment->fee_id = $payment->fee_id;
+            $newPayment->postdated = $payment->postdated;
+            $newPayment->sequential = $sequential->sequential + 1;
+            $newPayment->save();
+
+            $newGlobalPayment = new GlobalPayment();
+            $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
+            $newGlobalPayment->destination_id = $globalPayment->destination_id;
+            $newGlobalPayment->destination_type = $globalPayment->destination_type;
+            $newGlobalPayment->payment_id = $newPayment->id;
+            $newGlobalPayment->payment_type = $globalPayment->payment_type;
+            $newGlobalPayment->user_id = $globalPayment->user_id;
+            $newGlobalPayment->save();
+
+            $this->createAccountingEntryReverse('PC'.$newPayment->id,$id);
+
+            return [
+                'success'=>true,
+                'message' => 'Reverso generado de forma exitosa!'
+            ];
+
+        }elseif(isset($payment) && $payment->multipay == 'SI'){
+
+            $multiPays = PurchasePayment::where('sequential',$payment->sequential)->get();
+            $paymentsIds = '';
+            foreach ($multiPays as $value) {
+                $paymentM = PurchasePayment::find($value->id);
+                $globalPayment = GlobalPayment::where('payment_id',$id)->first();
+                $sequential = PurchasePayment::latest('id')->first();
+
+                $newPayment = new PurchasePayment();
+                $newPayment->purchase_id = $paymentM->purchase_id;
+                $newPayment->date_of_payment = date('Y-m-d');
+                $newPayment->payment_method_type_id = $paymentM->payment_method_type_id;
+                $newPayment->has_card = $paymentM->has_card;
+                $newPayment->card_brand_id = $paymentM->card_brand_id;
+                $newPayment->reference = 'Reverso';
+                //$newPayment->change = $paymentM->change;
+                $newPayment->payment = $paymentM->payment * -1;
+                //$newPayment->payment_received = $paymentM->payment_received;
+                $newPayment->fee_id = $paymentM->fee_id;
+                $newPayment->postdated = $paymentM->postdated;
+                $newPayment->sequential = $sequential->sequential + 1;
+                $newPayment->multipay = 'SI';
+                $newPayment->save();
+
+                $paymentsIds .= 'PC'.$newPayment->id.';';
+
+                $newGlobalPayment = new GlobalPayment();
+                $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
+                $newGlobalPayment->destination_id = $globalPayment->destination_id;
+                $newGlobalPayment->destination_type = $globalPayment->destination_type;
+                $newGlobalPayment->payment_id = $newPayment->id;
+                $newGlobalPayment->payment_type = $globalPayment->payment_type;
+                $newGlobalPayment->user_id = $globalPayment->user_id;
+                $newGlobalPayment->save();
+            }
+
+            //$unp = new ToPayController();
+            $this->createAccountingEntryReverse($paymentsIds,$id);
+
+            return [
+                'success'=>true,
+                'message' => 'Reverso generado de forma exitosa!'
+            ];
+
+        }else{
+            Log::error('No se encontro un pago con el ID: '.$id);
+        }
+
+
+    }
+
+     /* Crear los asientos contables del REVERSO */
+    private function createAccountingEntryReverse($documents, $id){
+
+        Log::info('Generando asiento de reverso: PC'.$id);
+            try{
+                $idauth = auth()->user()->id;
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                $configuration = Configuration::first();
+                $accountrieEntryActual = AccountingEntries::where('document_id','PC'.$id)->first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+
+                $comment = 'Reverso '.$accountrieEntryActual->comment;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->fill($accountrieEntryActual->toArray());
+                $cabeceraC->id = null;
+                $cabeceraC->user_id = $idauth;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = date('y-m-d');
+                $cabeceraC->comment = $comment;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
+                $cabeceraC->total_haber = $accountrieEntryActual->total_debe;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = $documents;
+
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $detalleS = AccountingEntryItems::where('accounting_entrie_id',$accountrieEntryActual->id)->get();
+                foreach ($detalleS as $itemActual) {
+                    $itemNuevo = new AccountingEntryItems();
+                    $itemNuevo->fill($itemActual->toArray());
+                    $itemNuevo->id = null;
+                    $itemNuevo->accounting_entrie_id = $cabeceraC->id;
+                    $itemNuevo->debe = $itemActual->haber;
+                    $itemNuevo->haber = $itemActual->debe;
+                    $itemNuevo->save();
+                }
+
+            }catch(Exception $ex){
+
+                Log::error('Error al intentar generar el asiento contable');
+                Log::error($ex->getMessage());
+            }
+
+            /*
+        }else{
+            Log::info('tipo de documento no genera asiento contable de momento');
+        } */
+
+    }
+
+    public function generateExpenses(Request $request){
+
+        $id = $request->id;
+        $valor = $request->overPaymentValue;
+        $cuenta = $request->overPaymentAccount;
+
+        $entry = AccountingEntries::where('document_id','PC'.$id)->first();
+        if(isset($entry)){
+            $entry->total_debe += $valor;
+            $entry->total_haber += $valor;
+
+            $entryItems = AccountingEntryItems::where('accounting_entrie_id',$entry->id)->get();
+            foreach($entryItems as $item){
+                if($item->debe > 0){
+                    $item->debe += $valor;
+                    $item->save();
+                }
+            }
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $entryItems[0]->accounting_entrie_id;
+            $detalle->account_movement_id = $cuenta;
+            $detalle->seat_line = 3;
+            $detalle->haber = $valor;
+            $detalle->debe = 0;
+            $detalle->save();
+
+            return[
+                'success' => true,
+                'message' => 'Valor extra agregado al pago'
+            ];
+
+        }else{
+            return[
+                'success' => false,
+                'message' => 'No se pudo agregar el valor extra al pago'
+            ];
+        }
+    }
+
 }

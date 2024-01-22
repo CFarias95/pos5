@@ -43,7 +43,9 @@ use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\DocumentPayment;
+use Illuminate\Support\Str;
 
 use function PHPSTORM_META\type;
 
@@ -99,10 +101,10 @@ class UnpaidController extends Controller
         {
             $users = User::where('id', '!=', auth()->user()->id)->whereIn('type', ['admin', 'seller'])->get();
         }
-
-        $payment_method_types = PaymentMethodType::whereIn('id', ['05', '08', '09'])->get();
+        $payment_method_types = PaymentMethodType::where('is_cash',1)->get();
         $web_platforms = WebPlatform::all();
-        return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms');
+        $payment_destinations = $this->getPaymentDestinations();
+        return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms','payment_destinations');
     }
 
     public function records(Request $request)
@@ -291,7 +293,7 @@ class UnpaidController extends Controller
     }
 
     public function toPrint($external_id,$type,$format, $id, $index) {
-        
+
         if ($type=='sale') {
             $sale_note = SaleNote::where('external_id', $external_id)->first();
         } else {
@@ -617,5 +619,119 @@ class UnpaidController extends Controller
             'success' => true,
             'message' => 'Se ha registrado con éxito',
         ];
+    }
+
+    public function generateMultiPay(Request $request){
+        Log::info('Funcion para crear pago multiple');
+        Log::info('generateMultiPay' . json_encode($request));
+
+        $config = Configuration::first();
+        $documentIds = '';
+        $documentsSequentials = '';
+        $haber = [];
+        $sequential = DocumentPayment::latest('id')->first();
+
+        foreach ($request->unpaid as $value) {
+            //Log::info('DATA: ',$value);
+            $payment = new DocumentPayment();
+            $payment->document_id = $value['document_id'];
+            $payment->date_of_payment = $request->date_of_payment;
+            $payment->payment_method_type_id = $request->payment_method_type_id;
+            $payment->has_card = 0;
+            $payment->reference = $request->reference;
+            $payment->payment_received = 1;
+            $payment->payment = $value['amount'];
+            $payment->fee_id = $value['fee_id'];
+            $payment->sequential = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
+            $payment->multipay = 'SI';
+            $payment->save();
+
+            $document = Document::find($value['document_id']);
+            $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+
+            $documentIds .= 'CF'.$payment->id.';';
+            $customer = Person::find($value['customer_id']);
+            array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount'=>$value['amount']]);
+
+        }
+
+        $comment = 'Multipago '.$documentsSequentials;
+
+        $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
+        $cabeceraC = new AccountingEntries();
+        $cabeceraC->user_id = auth()->user()->id;
+        $cabeceraC->seat = $lista->seat + 1;
+        $cabeceraC->seat_general = $lista->seat + 1;
+        $cabeceraC->seat_date = date('y-m-d');
+        $cabeceraC->types_accounting_entrie_id = 1;
+        $cabeceraC->comment = $comment;
+        $cabeceraC->serie = null;
+        $cabeceraC->number = $lista->seat + 1;
+        $cabeceraC->total_debe = $request->payment;
+        $cabeceraC->total_haber = $request->payment;
+        $cabeceraC->revised1 = 0;
+        $cabeceraC->user_revised1 = 0;
+        $cabeceraC->revised2 = 0;
+        $cabeceraC->user_revised2 = 0;
+        $cabeceraC->currency_type_id = $config->currency_type_id;
+        $cabeceraC->doctype = 1;
+        $cabeceraC->is_client = true;
+        $cabeceraC->establishment = auth()->user()->establishment;
+        $cabeceraC->prefix = 'ASC';
+        $cabeceraC->external_id = Str::uuid()->toString();
+        $cabeceraC->document_id = $documentIds;
+
+        $cabeceraC->save();
+        $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+        $cabeceraC->save();
+
+        $detalle = new AccountingEntryItems();
+        $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+        $detalle->accounting_entrie_id = $cabeceraC->id;
+        $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$config->cta_charge;
+        $detalle->seat_line = 1;
+        $detalle->haber = 0;
+        $detalle->debe = $request->payment;
+        $detalle->save();
+
+        $line = 2;
+        foreach ($haber as $key => $value) {
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $value['account'];
+            $detalle->seat_line = $line;
+            $detalle->debe = 0;
+            $detalle->haber = $value['amount'] ;
+            $detalle->save();
+            $line += 1;
+        }
+        return[
+            'success' => true,
+            'message' => 'Multi pago generado exitosamente!'
+        ];
+
+    }
+
+    public function generateMultiPayReverse($id,$payments){
+
+        $accountEntry = AccountingEntries::where('document_id','like','%'.$id.';%')->first();
+        $accountEntryNes = new AccountingEntries();
+        $accountEntryNes->fill($accountEntry);
+        $accountEntryNes->id = null;
+        $accountEntryNes->comment = 'Reverso '.$accountEntry->comment;
+        $accountEntryNes->document_id = $payments;
+        $accountEntryNes->save();
+
+        $accountEntryItems = AccountingEntryItems::where('accounting_entrie_id',$accountEntry->id)->get();
+        foreach ($accountEntryItems as $value) {
+            $entriItem = new AccountingEntryItems();
+            $entriItem->fill($value);
+            $entriItem->id = null;
+            $entriItem->accounting_entrie_id = $accountEntryNes->id;
+            $entriItem->debe = $value->haber;
+            $entriItem->haber = $value->debe;
+            $entriItem->save();
+        }
     }
 }
