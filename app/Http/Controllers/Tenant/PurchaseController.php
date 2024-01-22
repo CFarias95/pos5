@@ -750,8 +750,8 @@ class PurchaseController extends Controller
 
                 $comment = 'Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
 
-                $total_debe = 0;
-                $total_haber = 0;
+                $total_debe = $document->total;
+                $total_haber = $document->total;
 
                 $cabeceraC = new AccountingEntries();
                 $cabeceraC->user_id = $document->user_id;
@@ -1436,7 +1436,7 @@ class PurchaseController extends Controller
 
         //$i = $conect[$index];
         $account_entry = AccountingEntries::where('document_id', 'C'.$document->id)->first();
-
+        Log::info('Account Entry - '.$account_entry);
         //$user_log = auth()->user();
 
         $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf, $account_entry);

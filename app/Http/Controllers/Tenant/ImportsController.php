@@ -604,8 +604,11 @@ class ImportsController extends Controller
 
     public function getRecords($request)
     {
+        //Log::info('Request - '.$request->document_type_id);
         $d_llegada = $request->d_llegada;
         $d_embarque = $request->d_embarque;
+
+        $num_import = $request->numeroImportacion;
 
         $date_of_issue = $request->date_of_issue;
 
@@ -629,8 +632,8 @@ class ImportsController extends Controller
         if ($fechaLlegada) {
             $records->where('fechaLlegada', 'like', '%' . $fechaLlegada . '%');
         }
-        if ($number) {
-            $records->where('numeroImportacion', 'like', '%' . $number. '%');
+        if ($num_import) {
+            $records->where('numeroImportacion', 'like', '%' . $num_import. '%');
         }
         if ($estado) {
             $records->where('estado', 'like', '%' . $estado . '%');

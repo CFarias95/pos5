@@ -9,6 +9,7 @@ use App\Models\Tenant\Invoice;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use App\Http\Controllers\FunctionController;
 
 /**
  * Class ToPay
@@ -31,7 +32,8 @@ class ToPay
         $date_end = $request['date_end'];
         $month_start = $request['month_start'];
         $month_end = $request['month_end'];
-        $supplier_id = isset($request['supplier_id']) ? (int)$request['supplier_id'] : 0;
+        $supplier_id = isset($request['supplier_id']) ? (array)$request['supplier_id'] : [0];
+        //Log::info('suppliers - '.json_encode($supplier_id));
         $user = isset($request['user']) ? (int)$request['user'] : 0;
         $importe = $request['importe']??null;
         $include_liquidated = $request['include_liquidated']??null;
@@ -42,6 +44,13 @@ class ToPay
 
         $d_start = null;
         $d_end = null;
+
+        /*if($supplier_id == 0)
+        {
+            $supplier_id = null;
+        }*/
+
+        //Log::info('suppliers - '.json_encode($supplier_id));
 
         /** @todo: Eliminar periodo, fechas y cambiar por
 
@@ -135,9 +144,13 @@ class ToPay
             }
         }
 
-        if ($supplier_id !== 0) {
-            $purchases->where('supplier_id', $supplier_id);
+        if(in_array(0, $supplier_id) == false)
+        {
+            $purchases->whereIn('supplier_id', $supplier_id);
         }
+        /*if ($supplier_id !== 0) {
+            $purchases->whereIn('supplier_id', $supplier_id);
+        }*/
 
         if($importe !== null){
             $array = explode(',',$importe);

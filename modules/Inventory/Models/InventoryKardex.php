@@ -304,7 +304,7 @@ class InventoryKardex extends ModelTenant
                 $data['doc_asoc'] = $movimiento;
                 $data['number'] = isset($inventory_kardexable->id) ? 'INV - '.$inventory_kardexable->id : 'N/A';
                 $data['cost'] = isset($inventory_kardexable->precio_perso)?$inventory_kardexable->precio_perso:'N/A';
-                $data['lot_code'] = $inventory_kardexable->lot_code;
+                $data['lot_code'] = isset($inventory_kardexable->lot_code) ? $inventory_kardexable->lot_code : 'N/A';
                 break;
 
             case $models[4]:

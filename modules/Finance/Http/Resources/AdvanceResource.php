@@ -24,6 +24,7 @@ class AdvanceResource extends JsonResource
             'valor' => $this->valor,
             'observation' => ($this->observation) ? $this->observation : '',
             'in_use'=> $this->in_use,
+            'created_at' => $this->created_at->format('Y-m-d H:i:s'),
         ];
     }
 }

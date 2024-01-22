@@ -1,5 +1,9 @@
 {
+<<<<<<< HEAD
     "/js/app.js": "/js/app.js?id=a6e9e9196f27310b3206",
+=======
+    "/js/app.js": "/js/app.js?id=61816a1c687f033a0b83",
+>>>>>>> 69c54fa14ad0284d3fd4621fd4d9fbe9384e5e74
     "/css/app.css": "/css/app.css?id=e5bebe2427fdad87f818",
     "/css/auth.css": "/css/auth.css?id=d33bdc227f840ea209e1",
     "/js/vendor.js": "/js/vendor.js?id=b05b8ba129b131165064",

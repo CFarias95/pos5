@@ -40,7 +40,7 @@
             $totalIVA0= $totalIVA0 + $item->total_taxes;
         }
     }
-    //Log::info('documents - '.$document->items);
+    Log::info('documents - '.$document->items);
     /*$modelo = $document->items->item_model;
     if($modelo != null)
     {
@@ -214,6 +214,7 @@
             <td class="text-center align-top"> {{ $row->getStringQty() }} </td>
             <td class="text-center align-top">{{ $item->unit_type_id }}</td>
             <td class="text-left">
+                @if($item->name != null) {{  $item->name }} / @endif 
                 {!!$row->getTemplateDescription() !!}
                 @if (!empty($item->presentation)) {!!$item->presentation->description!!} @endif
                 @if($row->attributes)
@@ -268,12 +269,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        {{-- @if($document->total_unaffected > 0)
+        @if($document->total_unaffected > 0 && !$document->total_taxed)
             <tr>
-                <td colspan="6" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
+                <td colspan="7" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
-        @endif --}}
+        @endif
         @if($document->total_exonerated > 0)
             <tr>
                 <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
@@ -282,10 +283,10 @@
         @endif
         <!-- JOINSOFTWARE -->
         @if($document->total_taxed > 0)
-            {{-- <tr>
-                <td colspan="6" class="text-right font-bold">Subtotal 0%:</td>
+            <tr>
+                <td colspan="7" class="text-right font-bold">Subtotal 0%:</td>
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
-            </tr> --}}
+            </tr>
             <tr>
                 <td colspan="7" class="text-right font-bold">Subtotal 12%:</td>
                 <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
@@ -298,17 +299,17 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        {{-- <tr>
-            <td colspan="6" class="text-right font-bold">IVA 0%:</td>
+        <tr>
+            <td colspan="7" class="text-right font-bold">IVA 0%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
-        </tr> --}}
+        </tr>
         <tr>
             <td colspan="7" class="text-right font-bold">IVA 12%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
         </tr>
         <tr>
-            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: </td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
 </table>

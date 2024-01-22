@@ -236,9 +236,12 @@ use Modules\Item\Models\ItemLotsGroup;
 
         public function store(TransferRequest $request)
         {
-            //Log::info('data'.$request->client_id);
+            /*Log::info('data'.$request->created_at);
+            $created_at = Carbon::parse($request->created_at);
+            Log::info('date11 - '.$created_at);*/
             $result = DB::connection('tenant')->transaction(function () use ($request) {
-
+                $created_at = Carbon::parse($request->created_at);
+                Log::info('date'.$created_at);
                 $row = InventoryTransfer::create([
                     'description' => $request->description,
                     'warehouse_id' => $request->warehouse_id,
@@ -246,10 +249,15 @@ use Modules\Item\Models\ItemLotsGroup;
                     'quantity' => count($request->items),
                     'client_id' => $request->client_id,
                 ]);
+                $row->created_at = $created_at;
+                $row->save();
+                
+
+                Log::info('ROW - '.$row);
 
                 foreach ($request->items as $it) {
 
-                    Log::info(json_encode($it));
+                    //Log::info(json_encode($it));
 
                     if($it['lots_enabled'] == true){
                         // si tiene Lotes se crea el kardex por lotes

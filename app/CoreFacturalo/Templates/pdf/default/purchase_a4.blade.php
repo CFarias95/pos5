@@ -3,6 +3,7 @@
     $supplier = $document->supplier;
     $payments = $document->payments;
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+    //Log::info('data - '.$account_entry);
 @endphp
 <html>
 <head>
@@ -109,9 +110,9 @@
     </tr>
     @endif
     <tr>
-        <td width="15%">Sequencial:</td>
+        <td width="15%">Documento:</td>
         <td width="45%">{{ $document->sequential_number }}</td>
-        <td width="25%">Código Interno</td>
+        <td width="25%">Código Sustento</td>
         <td width="15%">{{ $document->document_type_intern }}</td>
     </tr>
 </table>
@@ -285,55 +286,56 @@
         </td>
     </tr>
 </table>
-
-<table class="full-width mt-4">
-    <tr class="mt-4">
-        <td width="50%" class="font-bold">
-            <h4 >
-                <u>
-                    Detalle del Asiento:
-                </u>
-            </h4>
-        </td>
-        <br>
-        <td width="50%" class="font-bold">ASIENTO NRO - {{$account_entry['filename']}}</td>
-    </tr>
-</table>
-<table width="100%">
-    <thead>
-        <tr >
-            <th width="60%" class="border-box text-center p-2">
-                Cuenta
-            </th>
-            <th width="20%" class="border-box text-center p-1">
-                Debe
-            </th>
-            <th width="20%" class="border-box text-center p-1">
-                Haber
-            </th>
+@if(isset($account_entry))
+    <table class="full-width mt-4">
+        <tr class="mt-4">
+            <td width="50%" class="font-bold">
+                <h4 >
+                    <u>
+                        Detalle del Asiento:
+                    </u>
+                </h4>
+            </td>
+            <br>
+            <td width="50%" class="font-bold">ASIENTO NRO - {{$account_entry['filename']}}</td>
         </tr>
-    </thead>
-    <tbody class="font-sm">
-        @foreach($account_entry['items'] as $value)
-        <tr >
-            @if($value->debe>0)
-            <td class="border-box text-center p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
-            @else
-            <td class="border-box text-center p-1 pl-5 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
-            @endif
+    </table>
+    <table width="100%">
+        <thead>
+            <tr >
+                <th width="60%" class="border-box text-center p-2">
+                    Cuenta
+                </th>
+                <th width="20%" class="border-box text-center p-1">
+                    Debe
+                </th>
+                <th width="20%" class="border-box text-center p-1">
+                    Haber
+                </th>
+            </tr>
+        </thead>
+        <tbody class="font-sm">
+            @foreach($account_entry['items'] as $value)
+            <tr >
+                @if($value->debe>0)
+                <td class="border-box text-center p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+                @else
+                <td class="border-box text-center p-1 pl-5 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+                @endif
 
-            <td class="border-box text-center p-1">${{number_format($value->debe, 2, '.', ',')}} </td>
-            <td class="border-box text-center p-1">${{number_format($value->haber, 2, '.', ',')}} </td>
+                <td class="border-box text-center p-1">${{number_format($value->debe, 2, '.', ',')}} </td>
+                <td class="border-box text-center p-1">${{number_format($value->haber, 2, '.', ',')}} </td>
 
-        </tr>
-        @endforeach
-        <tr class="font-sm">
-            <td class="text-right p-1 font-sm font-bold">Totales: </td>
-            <td class="text-right p-1 font-bold">${{number_format($account_entry['total_debe'], 2, '.', ',')}}</td>
-            <td class="text-right p-1 font-bold">${{number_format($account_entry['total_haber'], 2, '.', ',')}}</td>
-        </tr>
-    </tbody>
-</table>
+            </tr>
+            @endforeach
+            <tr class="font-sm">
+                <td class="text-right p-1 font-sm font-bold">Totales: </td>
+                <td class="text-right p-1 font-bold">${{number_format($account_entry['total_debe'], 2, '.', ',')}}</td>
+                <td class="text-right p-1 font-bold">${{number_format($account_entry['total_haber'], 2, '.', ',')}}</td>
+            </tr>
+        </tbody>
+    </table>
+@endif
 <br>
 <br>
 <br>

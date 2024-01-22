@@ -11,7 +11,8 @@
     for ($i = 0; $i <= $index; $i++) {
         $valores += $data[$i]->payment;
     }
-    $num_comprobante = str_pad($index + 1, 8, '0', STR_PAD_LEFT);
+    Log::info('document - '.$document);
+    $num_comprobante = str_pad(($document->id), 8, '0', STR_PAD_LEFT);
 
 @endphp
 <html>

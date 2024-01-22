@@ -9,6 +9,7 @@ use App\CoreFacturalo\Template;
 use App\Models\Tenant\Company;
 use Mpdf\Mpdf;
 use Exception;
+use Illuminate\Support\Facades\Log;
 
 class DownloadController extends Controller
 {
@@ -72,6 +73,7 @@ class DownloadController extends Controller
         $model = "App\\Models\\Tenant\\".ucfirst($model);
 
         $document = $model::where('external_id', $external_id)->first();
+        //Log::info('Document - '.$document);
 
         if (!$document) {
             throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
