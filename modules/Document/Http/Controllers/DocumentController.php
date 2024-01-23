@@ -29,9 +29,10 @@ use Modules\Document\Helpers\ConsultCdr;
 use Modules\Item\Models\ItemLot;
 use Modules\Document\Http\Resources\ItemLotCollection;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\SaleNoteItem;
 use Illuminate\Database\Eloquent\Builder;
-
+use Illuminate\Support\Facades\Log;
 
 class DocumentController extends Controller
 {
@@ -422,5 +423,4 @@ class DocumentController extends Controller
             'message' => 'Se habilitó el comprobante para enviarlo por resumen'
         ];
     }
-
 }

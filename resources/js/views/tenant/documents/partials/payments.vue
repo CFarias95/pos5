@@ -22,7 +22,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, index) in records" :key="index">
+                                <tr v-for="(row, index) in records" :key="index"   :class="{ 'text-danger border-left border-danger': (row.payment < 0), }">
                                     <template v-if="row.id">
                                         <td>PAGO-{{ row.id }}</td>
                                         <td>{{ row.date_of_payment }}</td>
@@ -85,6 +85,10 @@
                                             <template v-if="permissions.delete_payment">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                     @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                                <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                                    @click.prevent="clickReverse(row)">Reversar</button>
+                                                    <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                                                    @click.prevent="clickExpenses(row)">Gastos</button>
                                             </template>
                                         </td>
                                     </template>
@@ -337,6 +341,53 @@
                     </template>
                 </el-dialog>
             </template>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showReverse" title="Generar el reverso del pago" append-to-body
+                    align-center>
+                    <el-form>
+                        <el-form-item label="Pago a reversar">
+                            <el-input v-model="formSubmit.id" autocomplete="off" readonly />
+                        </el-form-item>
+                        <el-form-item label="Motivo">
+                            <el-input v-model="formSubmit.reference" autocomplete="off" />
+                        </el-form-item>
+                    </el-form>
+                    <template #footer>
+                        <span class="dialog-footer">
+                            <el-button type="danger" @click="cancelReverse()">Cancel</el-button>
+                            <el-button type="primary" @click="generateReverse()">
+                                Generar
+                            </el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+            </template>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showExpense" title="Generar gasto del pago" append-to-body
+                    align-center>
+                    <el-form>
+                        <el-form-item label="Gasto al pago">
+                            <el-input v-model="formSubmit.id" autocomplete="off" readonly />
+                        </el-form-item>
+                        <el-form-item label="Valor extra">
+                            <el-input v-model="formSubmit.overPaymentValue" autocomplete="off" />
+                        </el-form-item>
+                        <el-form-item label="Cuenta Contable">
+                            <el-select v-model="formSubmit.overPaymentAccount" placeholder="Seleccione una cuenta contable" filterable clearable>
+                                <el-option v-for="account in accounts" :key="account.id" :label="account.description" :value="account.id" />
+                            </el-select>
+                        </el-form-item>
+                    </el-form>
+                    <template #footer>
+                        <span class="dialog-footer">
+                            <el-button type="danger" @click="cancelExpenses()">Cancel</el-button>
+                            <el-button type="primary" @click="generateExpenses()">
+                                Generar
+                            </el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+            </template>
         </div>
 
         <dialog-link-payment :documentPaymentId="documentPayment.id" :currencyTypeId="document.currency_type_id"
@@ -395,6 +446,8 @@ export default {
             advanceOverPayment: false,
             accounts:[],
             indexSelected:null,
+            showReverse:false,
+            showExpense: false,
             formSubmit: {
                 id: null,
                 document_id: null,
@@ -641,7 +694,7 @@ export default {
             this.formSubmit.temp_path = this.records[index].temp_path
             this.formSubmit.payment = this.records[index].payment
             this.formSubmit.payment_received = this.records[index].payment_received
-            this.formSubmit.fee_i = this.documentFeeId
+            this.formSubmit.fee_id = this.documentFeeId
             this.formSubmit.date_of_due = moment().format('YYYY-MM-DD')
             this.formSubmit.postdated = this.records[index].postdated
 
@@ -758,6 +811,50 @@ export default {
                 // this.initDocumentTypes()
             }
             )
+        },
+        clickReverse(row) {
+            console.log('ROW enviado',row)
+            this.showReverse = true
+            this.formSubmit.id = row.id
+            this.formSubmit.reference = row.reference
+
+        },
+        clickExpenses(row){
+
+            console.log('ROW Expanse',row)
+            this.showExpense = true
+            this.formSubmit.id = row.id
+            this.formSubmit.overPaymentValue = 0
+
+        },
+        cancelExpenses(){
+            this.showExpense = false
+            this.formSubmit.id = null
+            this.formSubmit.reference = null
+        },
+        generateExpenses(){
+
+            this.$http.post(`/${this.resource}/expenses`,this.formSubmit ).then(() => {
+                this.showExpense = false
+                this.getData()
+                this.$eventHub.$emit('reloadData')
+            }
+            )
+
+        },
+        generateReverse(){
+
+            this.$http.post(`/${this.resource}/reverse`,this.formSubmit ).then(() => {
+                this.showReverse = false
+                this.getData()
+                this.$eventHub.$emit('reloadData')
+            }
+            )
+        },
+        cancelReverse(){
+            this.showReverse = false
+            this.formSubmit.id = null
+            this.formSubmit.reference = null
         },
         clickDownloadReport(id) {
             window.open(`/${this.resource}/report/${this.documentId}`, '_blank');

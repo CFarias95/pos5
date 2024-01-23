@@ -19,7 +19,7 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr v-for="(row, index) in records" :key="index">
+                                <tr v-for="(row, index) in records" :key="index" :class="{ 'text-danger border-left border-danger': (row.payment < 0), }">
                                     <template v-if="row.id">
                                         <td>PAGO-{{ row.id }}</td>
                                         <td>{{ row.date_of_payment }}</td>
@@ -44,6 +44,10 @@
                                         <td class="series-table-actions text-right">
                                             <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
                                                 @click.prevent="clickDelete(row.id)">Eliminar</button>
+                                                <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-info"
+                                                    @click.prevent="clickReverse(row)">Reversar</button>
+                                                <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
+                                                    @click.prevent="clickExpenses(row)">Gastos</button>
                                             <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                         </td>
                                     </template>
@@ -213,6 +217,53 @@
                     <el-button type="primary" icon="el-icon-plus" @click="clickAddRow">Nuevo</el-button>
                 </div>
             </div>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showReverse" title="Generar el reverso del pago" append-to-body
+                    align-center>
+                    <el-form>
+                        <el-form-item label="Pago a reversar">
+                            <el-input v-model="formSubmit.id" autocomplete="off" readonly />
+                        </el-form-item>
+                        <el-form-item label="Motivo">
+                            <el-input v-model="formSubmit.reference" autocomplete="off" />
+                        </el-form-item>
+                    </el-form>
+                    <template #footer>
+                        <span class="dialog-footer">
+                            <el-button type="danger" @click="cancelReverse()">Cancel</el-button>
+                            <el-button type="primary" @click="generateReverse()">
+                                Generar
+                            </el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+            </template>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showExpense" title="Generar gasto del pago" append-to-body
+                    align-center>
+                    <el-form>
+                        <el-form-item label="Gasto al pago">
+                            <el-input v-model="formSubmit.id" autocomplete="off" readonly />
+                        </el-form-item>
+                        <el-form-item label="Valor extra">
+                            <el-input v-model="formSubmit.overPaymentValue" autocomplete="off" />
+                        </el-form-item>
+                        <el-form-item label="Cuenta Contable">
+                            <el-select v-model="formSubmit.overPaymentAccount" placeholder="Seleccione una cuenta contable" filterable clearable>
+                                <el-option v-for="account in accounts" :key="account.id" :label="account.description" :value="account.id" />
+                            </el-select>
+                        </el-form-item>
+                    </el-form>
+                    <template #footer>
+                        <span class="dialog-footer">
+                            <el-button type="danger" @click="cancelExpenses()">Cancel</el-button>
+                            <el-button type="primary" @click="generateExpenses()">
+                                Generar
+                            </el-button>
+                        </span>
+                    </template>
+                </el-dialog>
+            </template>
         </div>
     </el-dialog>
 </template>
@@ -241,8 +292,30 @@ export default {
             purchase: {},
             advances: [],
             retentions: [],
+            accounts: [],
             index: null,
             credits: [],
+            showReverse:false,
+            showExpense: false,
+            formSubmit: {
+                id: null,
+                document_id: null,
+                date_of_payment: null,
+                payment_method_type_id: null,
+                payment_destination_id: null,
+                reference: null,
+                filename: null,
+                temp_path: null,
+                payment: null,
+                payment_received: null,
+                fee_id: this.documentFeeId,
+                date_of_due: null,
+                postdated: null,
+                overPayment: false,
+                overPaymentValue: 0,
+                overPaymentAdvance: false,
+                overPaymentAccount: null,
+            },
         }
     },
     async created() {
@@ -251,6 +324,7 @@ export default {
             .then(response => {
                 this.payment_destinations = response.data.payment_destinations
                 this.payment_method_types = response.data.payment_method_types;
+                this.accounts = response.data.accounts
             })
     },
     methods: {
@@ -545,20 +619,19 @@ export default {
                 return;
             }
 
-            let form = {
-                id: this.records[index].id,
-                purchase_id: this.purchaseId,
-                date_of_payment: this.records[index].date_of_payment,
-                payment_method_type_id: this.records[index].payment_method_type_id,
-                payment_destination_id: this.records[index].payment_destination_id,
-                reference: this.records[index].reference,
-                filename: this.records[index].filename,
-                temp_path: this.records[index].temp_path,
-                payment: this.records[index].payment,
-                fee_id: this.documentFeeId,
-            }
+            this.formSubmit.id= this.records[index].id,
+            this.formSubmit.purchase_id= this.purchaseId,
+            this.formSubmit.date_of_payment= this.records[index].date_of_payment,
+            this.formSubmit.payment_method_type_id= this.records[index].payment_method_type_id,
+            this.formSubmit.payment_destination_id= this.records[index].payment_destination_id,
+            this.formSubmit.reference=this.records[index].reference,
+            this.formSubmit.filename= this.records[index].filename,
+            this.formSubmit.temp_path= this.records[index].temp_path,
+            this.formSubmit.payment= this.records[index].payment,
+            this.formSubmit.fee_id= this.documentFeeId,
 
-            this.$http.post(`/${this.resource}`, form)
+
+            this.$http.post(`/${this.resource}`, this.formSubmit)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message);
@@ -588,11 +661,52 @@ export default {
             }
             )
         },
-
         clickPrint(format, index) {
             this.index = index;
             window.open(`to-pay/print/${format}/${this.purchaseId}/${this.index}`, '_blank');
-        }
+        },
+        clickReverse(row) {
+            console.log('ROW enviado',row)
+            this.showReverse = true
+            this.formSubmit.id = row.id
+            this.formSubmit.reference = row.reference
+        },
+        generateReverse(){
+
+            this.$http.post(`/${this.resource}/reverse`,this.formSubmit ).then(() => {
+                this.showReverse = false
+                this.getData()
+                this.$eventHub.$emit('reloadData')
+            })
+        },
+        cancelReverse(){
+            this.showReverse = false
+            this.formSubmit.id = null
+            this.formSubmit.reference = null
+        },
+        clickExpenses(row){
+
+            console.log('ROW Expanse',row)
+            this.showExpense = true
+            this.formSubmit.id = row.id
+            this.formSubmit.overPaymentValue = 0
+
+        },
+        cancelExpenses(){
+            this.showExpense = false
+            this.formSubmit.id = null
+            this.formSubmit.reference = null
+        },
+        generateExpenses(){
+
+            this.$http.post(`/${this.resource}/expenses`,this.formSubmit ).then(() => {
+                this.showExpense = false
+                this.getData()
+                this.$eventHub.$emit('reloadData')
+            }
+            )
+
+        },
     }
 }
 </script>

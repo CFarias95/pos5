@@ -455,7 +455,8 @@ if ($hostname) {
             Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
             Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
             Route::get('document_payments/report/{start}/{end}/{report}', 'Tenant\DocumentPaymentController@report');
-
+            Route::post('document_payments/reverse', 'Tenant\DocumentPaymentController@generateReverse');
+            Route::post('document_payments/expenses', 'Tenant\DocumentPaymentController@generateExpenses');
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
             Route::get('documents/check_server/{document}', 'Tenant\DocumentController@checkServer');
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');
@@ -479,6 +480,7 @@ if ($hostname) {
             Route::post('documents/retention/upload', 'Tenant\DocumentController@retentionUpload');
 
             Route::get('documents/advance/{id}/{documentId}', 'Tenant\DocumentController@searchAdvancesByIdCustomer');
+
 
             //Contingencies
             Route::get('contingencies', 'Tenant\ContingencyController@index')->name('tenant.contingencies.index')->middleware('redirect.level', 'tenant.internal.mode');
