@@ -193,11 +193,11 @@
                                             Exportar PDF
                                         </el-button>
 
-                                        <el-button v-if="records.length > 0" class="submit" type="warning"
+                                        <!-- <el-button v-if="records.length > 0" class="submit" type="warning"
                                             @click.prevent="clickMultiPay()">
                                             <i class="fa fa-check-square-o"></i>
                                             Generar Pago Multiple
-                                        </el-button>
+                                        </el-button> -->
 
                                     </div>
                                     <div class="col-md-1 mt-5 text-right"></div>
