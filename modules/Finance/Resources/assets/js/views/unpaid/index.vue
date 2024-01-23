@@ -757,7 +757,7 @@ export default {
                 date_of_payment: moment().format('YYYY-MM-DD'),
                 payment : 0,
                 payment_method_type_id : '01',
-                payment_destination_id : 'cash',
+                payment_destination_id : null,
                 reference : 'N/A',
             },
         };
@@ -1058,7 +1058,7 @@ export default {
                 date_of_payment: moment().format('YYYY-MM-DD'),
                 payment : 0,
                 payment_method_type_id : '01',
-                payment_destination_id : 'cash',
+                payment_destination_id : null,
                 reference : 'N/A',
             }
         },
