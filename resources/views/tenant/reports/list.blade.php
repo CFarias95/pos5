@@ -69,16 +69,15 @@
 
                         {{-- Actividades del sistema --}}
                         <li>
-                            <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
-                                Actividades del sistema
+                            <a href="#">
+                                Reporte ATS
                             </a>
                         </li>
                         <li>
                             <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
-                                Reporte ATS
+                                Actividades del sistema
                             </a>
                         </li>
-
                         <ul id="system_activity_logs_id" class="collapse">
                             <li>
                                 <a href="{{route('tenant.system_activity_logs.generals.index')}}">
