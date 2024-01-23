@@ -622,6 +622,7 @@ class UnpaidController extends Controller
     }
 
     public function generateMultiPay(Request $request){
+
         Log::info('Funcion para crear pago multiple');
         Log::info('generateMultiPay' . json_encode($request));
 
@@ -645,6 +646,19 @@ class UnpaidController extends Controller
             $payment->sequential = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
             $payment->multipay = 'SI';
             $payment->save();
+
+            $this->createGlobalPayment($payment, $request->all());
+
+            /*
+            $newGlobalPayment = new GlobalPayment();
+            $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
+            $newGlobalPayment->destination_id = $globalPayment->destination_id;
+            $newGlobalPayment->destination_type = $globalPayment->destination_type;
+            $newGlobalPayment->payment_id = $payment->id;
+            $newGlobalPayment->payment_type = 'App\Models\Tenant\DocumentPayment';
+            $newGlobalPayment->user_id = auth()->user()->id;
+            $newGlobalPayment->save();
+            */
 
             $document = Document::find($value['document_id']);
             $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';

@@ -1003,7 +1003,6 @@ class DocumentPaymentController extends Controller
                 $paymentM = DocumentPayment::find($value->id);
                 $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
 
-
                 $newPayment = new DocumentPayment();
                 $newPayment->document_id = $paymentM->document_id;
                 $newPayment->date_of_payment = date('Y-m-d');
