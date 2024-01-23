@@ -44,6 +44,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\DocumentPayment;
 use Illuminate\Support\Str;
 
@@ -104,7 +105,13 @@ class UnpaidController extends Controller
         $payment_method_types = PaymentMethodType::where('is_cash',1)->get();
         $web_platforms = WebPlatform::all();
         $payment_destinations = $this->getPaymentDestinations();
-        return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms','payment_destinations');
+        $accounts = AccountMovement::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'description' => $row->code.'-'.$row->description,
+            ];
+        });
+        return compact('accounts','customers', 'establishments', 'users', 'payment_method_types','web_platforms','payment_destinations');
     }
 
     public function records(Request $request)
@@ -631,6 +638,8 @@ class UnpaidController extends Controller
         $documentsSequentials = '';
         $haber = [];
         $sequential = DocumentPayment::latest('id')->first();
+        $debeAdicional = 0;
+        $haberAdicional = 0;
 
         foreach ($request->unpaid as $value) {
             //Log::info('DATA: ',$value);
@@ -650,17 +659,6 @@ class UnpaidController extends Controller
             $row['payment_destination_id'] = $request->payment_destination_id;
             $this->createGlobalPayment($payment, $row);
 
-            /*
-            $newGlobalPayment = new GlobalPayment();
-            $newGlobalPayment->soap_type_id = $globalPayment->soap_type_id;
-            $newGlobalPayment->destination_id = $globalPayment->destination_id;
-            $newGlobalPayment->destination_type = $globalPayment->destination_type;
-            $newGlobalPayment->payment_id = $payment->id;
-            $newGlobalPayment->payment_type = 'App\Models\Tenant\DocumentPayment';
-            $newGlobalPayment->user_id = auth()->user()->id;
-            $newGlobalPayment->save();
-            */
-
             $document = Document::find($value['document_id']);
             $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
 
@@ -672,18 +670,23 @@ class UnpaidController extends Controller
 
         $comment = 'Multipago '.$documentsSequentials;
 
+        foreach ($request->extras as $value) {
+            $debeAdicional += floatVal($value['debe']);
+            $haberAdicional += floatVal($value['haber']);
+        }
+
         $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
         $cabeceraC = new AccountingEntries();
         $cabeceraC->user_id = auth()->user()->id;
         $cabeceraC->seat = $lista->seat + 1;
         $cabeceraC->seat_general = $lista->seat + 1;
-        $cabeceraC->seat_date = date('y-m-d');
+        $cabeceraC->seat_date = $request->date_of_payment;
         $cabeceraC->types_accounting_entrie_id = 1;
         $cabeceraC->comment = $comment;
         $cabeceraC->serie = null;
         $cabeceraC->number = $lista->seat + 1;
-        $cabeceraC->total_debe = $request->payment;
-        $cabeceraC->total_haber = $request->payment;
+        $cabeceraC->total_debe = $request->payment + $debeAdicional;
+        $cabeceraC->total_haber = $request->payment + $haberAdicional;
         $cabeceraC->revised1 = 0;
         $cabeceraC->user_revised1 = 0;
         $cabeceraC->revised2 = 0;
@@ -706,7 +709,7 @@ class UnpaidController extends Controller
         $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$config->cta_charge;
         $detalle->seat_line = 1;
         $detalle->haber = 0;
-        $detalle->debe = $request->payment;
+        $detalle->debe = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
         $detalle->save();
 
         $line = 2;
@@ -718,6 +721,17 @@ class UnpaidController extends Controller
             $detalle->seat_line = $line;
             $detalle->debe = 0;
             $detalle->haber = $value['amount'] ;
+            $detalle->save();
+            $line += 1;
+        }
+
+        foreach ($request->extras as $value) {
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $value['account_id'];
+            $detalle->seat_line = $line;
+            $detalle->debe = floatVal($value['debe']);
+            $detalle->haber = floatVal($value['haber']);
             $detalle->save();
             $line += 1;
         }
@@ -737,6 +751,10 @@ class UnpaidController extends Controller
         $accountEntryNes->comment = 'Reverso '.$accountEntry->comment;
         $accountEntryNes->document_id = $payments;
         $accountEntryNes->save();
+
+        $accountEntryNes->filename = 'ASC-'.$accountEntryNes->id.'-'. date('Ymd');
+        $accountEntryNes->save();
+
 
         $accountEntryItems = AccountingEntryItems::where('accounting_entrie_id',$accountEntry->id)->get();
         foreach ($accountEntryItems as $value) {

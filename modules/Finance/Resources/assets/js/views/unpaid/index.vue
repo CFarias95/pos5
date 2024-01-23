@@ -644,6 +644,43 @@
                     <el-form-item label="Valor">
                         <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment" readonly></el-input>
                     </el-form-item>
+                    <el-form-item label="Extras">
+                        <el-button @click="addExtra()">
+                            <i class="fa fa-plus-circle d-block"></i>
+                        </el-button>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Cuenta</th>
+                                    <th>Debe</th>
+                                    <th>Haber</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in formMultiPay.extras" :key="index" >
+                                    <td>
+                                        <el-select v-model="row.account_id" placeholder="Seleccione una cuenta contable" filterable clearable>
+                                            <el-option v-for="account in accounts" :key="account.id" :label="account.description" :value="account.id" />
+                                        </el-select>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.debe" type="number" :disabled="row.haber > 0" :step="0.01" :min="0" :max="999999999999999999999">
+                                        </el-input>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.haber" type="number" :disabled="row.debe > 0" :step="0.01" :min="0" :max="999999999999999999999">
+                                        </el-input>
+                                    </td>
+                                    <td>
+                                        <el-button @click="deleteExtra(index)">
+                                            <i class="fa fa-trash d-block"></i>
+                                        </el-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </el-form-item>
                     <el-form-item label="Cuotas a liquidar">
                         <table class="table">
                             <thead>
@@ -673,6 +710,7 @@
                             </tbody>
                         </table>
                     </el-form-item>
+
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -710,6 +748,7 @@ export default {
             resource: "finances/unpaid",
             form: {},
             customers: [],
+            accounts:[],
             recordId: null,
             amountFeeRow: 0,
             customerId: null,
@@ -754,6 +793,7 @@ export default {
             },
             formMultiPay: {
                 unpaid: [],
+                extras: [],
                 date_of_payment: moment().format('YYYY-MM-DD'),
                 payment : 0,
                 payment_method_type_id : '01',
@@ -901,7 +941,7 @@ export default {
                 this.users = response.data.users;
                 this.payment_method_types = response.data.payment_method_types;
                 this.payment_destinations = response.data.payment_destinations;
-
+                this.accounts = response.data.accounts;
                 this.web_platforms = response.data.web_platforms;
             });
         },
@@ -996,12 +1036,6 @@ export default {
             // if (this.form.customer_id) {
 
             this.loadUnpaid();
-            /*this.records = _.filter(this.records_base, {
-                  customer_id: this.selected_customer
-                  });*/
-            // } else {
-            //     this.records = []
-            // }
         },
         changeUser() {
             this.loadUnpaid();
@@ -1055,6 +1089,7 @@ export default {
 
             this.formMultiPay= {
                 unpaid: [],
+                extras:[],
                 date_of_payment: moment().format('YYYY-MM-DD'),
                 payment : 0,
                 payment_method_type_id : '01',
@@ -1107,6 +1142,20 @@ export default {
             this.showMultiPay = false;
             this.initFormMultiPay()
 
+        },
+
+        addExtra(){
+
+            this.formMultiPay.extras.push({
+                account_id:null,
+                debe:0,
+                haber:0,
+            });
+
+        },
+
+        deleteExtra(index){
+            this.formMultiPay.extras.splice(index, 1);
         }
     },
 };
