@@ -193,11 +193,11 @@
                                             Exportar PDF
                                         </el-button>
 
-                                        <!-- <el-button v-if="records.length > 0" class="submit" type="warning"
+                                        <el-button v-if="records.length > 0" class="submit" type="warning"
                                             @click.prevent="clickMultiPay()">
                                             <i class="fa fa-check-square-o"></i>
                                             Generar Pago Multiple
-                                        </el-button> -->
+                                        </el-button>
 
                                     </div>
                                     <div class="col-md-1 mt-5 text-right"></div>
@@ -1050,13 +1050,14 @@ export default {
         },
         initFormMultiPay() {
 
-            this.formMultiPay.unpaid = [];
-            this.formMultiPay.date_of_payment = moment().format('YYYY-MM-DD');
-            this.formMultiPay.payment = 0;
-            this.formMultiPay.payment_method_type_id = '01';
-            this.formMultiPay.payment_destination_id = 'cash';
-            this.formMultiPay.reference = 'N/A';
-
+            this.formMultiPay= {
+                unpaid: [],
+                date_of_payment: moment().format('YYYY-MM-DD'),
+                payment : 0,
+                payment_method_type_id : '01',
+                payment_destination_id : 'cash',
+                reference : 'N/A',
+            }
         },
         clickMultiPay() {
             console.log('clickMultiPay show dialog')
@@ -1083,7 +1084,7 @@ export default {
 
             this.showMultiPay = false;
             this.loadUnpaid();
-            this.initFormMultiPay();
+            this.initFormMultiPay()
         },
         async generateMultiPay() {
             this.loading = true;
@@ -1101,7 +1102,7 @@ export default {
             this.loadUnpaid();
             this.loading = false;
             this.showMultiPay = false;
-            this.initFormMultiPay();
+            this.initFormMultiPay()
 
         }
     },
