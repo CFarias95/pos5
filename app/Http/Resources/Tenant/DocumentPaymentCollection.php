@@ -39,6 +39,7 @@ class DocumentPaymentCollection extends ResourceCollection
                 'payment_received' => $row->payment_received,
                 'payment_received_description' => $row->getPaymentReceivedDescription(),
                 'postdated' => ($row->postdated)?$row->postdated->format('d/m/Y'):'Sin Postfechar',
+                'multi_pay' => ($row->multipay)?$row->multipay:'NO',
             ];
         });
     }

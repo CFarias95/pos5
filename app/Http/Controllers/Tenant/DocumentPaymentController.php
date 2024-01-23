@@ -806,10 +806,12 @@ class DocumentPaymentController extends Controller
         $item->delete();
 
         if($multiPAy == 'SI'){
-            $item = DocumentPayment::where('sequential',$sequential);
+
+            $item = DocumentPayment::where('sequential',$sequential)->get();
             foreach ($item as $value) {
                 $value->delete();
             }
+
 
             $asientos = AccountingEntries::where('document_id','like','%CF'.$id.';%')->get();
             foreach($asientos as $ass){
@@ -829,7 +831,6 @@ class DocumentPaymentController extends Controller
             }
 
         }
-
         return [
             'success' => true,
             'message' => 'Pago eliminado con éxito'
@@ -915,8 +916,8 @@ class DocumentPaymentController extends Controller
         $valor = $request->overPaymentValue;
         $cuenta = $request->overPaymentAccount;
 
-        $entry = AccountingEntries::where('document_id','CF'.$id)->first();
-        if(isset($entry)){
+        $entry = AccountingEntries::where('document_id','CF'.$id)->orWhere('document_id','like','%CF'.$id.';%')->first();
+        if(isset($entry) && $entry->count() > 0){
             $entry->total_debe += $valor;
             $entry->total_haber += $valor;
 
@@ -948,6 +949,7 @@ class DocumentPaymentController extends Controller
             ];
         }
     }
+
     public function generateReverse(Request $request){
 
         Log::info('generateReverse');
@@ -996,10 +998,11 @@ class DocumentPaymentController extends Controller
 
             $multiPays = DocumentPayment::where('sequential',$payment->sequential)->get();
             $paymentsIds = '';
+            $sequential = DocumentPayment::latest('id')->first();
             foreach ($multiPays as $value) {
                 $paymentM = DocumentPayment::find($value->id);
                 $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
-                $sequential = DocumentPayment::latest('id')->first();
+
 
                 $newPayment = new DocumentPayment();
                 $newPayment->document_id = $paymentM->document_id;

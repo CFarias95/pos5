@@ -24,7 +24,7 @@
                             <tbody>
                                 <tr v-for="(row, index) in records" :key="index"   :class="{ 'text-danger border-left border-danger': (row.payment < 0), }">
                                     <template v-if="row.id">
-                                        <td>PAGO-{{ row.id }}</td>
+                                        <td>{{ (row.multi_pay && row.multipay == 'SI')?'MULTIPAGO':'PAGO'}}-{{ row.id }}</td>
                                         <td>{{ row.date_of_payment }}</td>
                                         <td>{{ row.payment_method_type_description }}</td>
                                         <td>{{ row.destination_description }}</td>
@@ -739,8 +739,6 @@ export default {
                 let message = 'El monto maximo del anticipo es de ' + maxAmount
                 this.$message.warning(message)
             }
-
-
         },
         changePaymentMethodType(index) {
 

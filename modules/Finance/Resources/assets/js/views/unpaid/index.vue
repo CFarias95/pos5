@@ -766,6 +766,9 @@ export default {
         this.$eventHub.$on("reloadDataUnpaid", () => {
             this.loadUnpaid();
         });
+        this.$eventHub.$on("reloadData", () => {
+            this.loadUnpaid();
+        });
 
         await this.initForm();
         await this.filter();
