@@ -647,7 +647,8 @@ class UnpaidController extends Controller
             $payment->multipay = 'SI';
             $payment->save();
 
-            $this->createGlobalPayment($payment, $request->all());
+            $row['payment_destination_id'] = $request->payment_destination_id;
+            $this->createGlobalPayment($payment, $row);
 
             /*
             $newGlobalPayment = new GlobalPayment();
