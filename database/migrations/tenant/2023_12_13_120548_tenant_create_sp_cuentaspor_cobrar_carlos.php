@@ -57,7 +57,7 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
             JOIN users ON users.id = d.user_id
             LEFT JOIN notes AS cn ON  cn.affected_document_id = d.id
             LEFT JOIN documents AS dcn ON dcn.id = cn.document_id
-            LEFT JOIN document_payments AS dpf ON dpf.fee_id = df.id
+            LEFT JOIN document_payments AS dpf ON dpf.fee_id = df.id AND dpf.document_id = d.id
             JOIN invoices AS inv ON inv.document_id = d.id
             WHERE (d.establishment_id = establecimiento OR 0=establecimiento)
             AND (d.customer_id = customer OR 0 = customer)

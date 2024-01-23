@@ -717,7 +717,7 @@ class UnpaidController extends Controller
 
         $accountEntry = AccountingEntries::where('document_id','like','%'.$id.';%')->first();
         $accountEntryNes = new AccountingEntries();
-        $accountEntryNes->fill($accountEntry);
+        $accountEntryNes->fill($accountEntry->toArray());
         $accountEntryNes->id = null;
         $accountEntryNes->comment = 'Reverso '.$accountEntry->comment;
         $accountEntryNes->document_id = $payments;
@@ -726,7 +726,7 @@ class UnpaidController extends Controller
         $accountEntryItems = AccountingEntryItems::where('accounting_entrie_id',$accountEntry->id)->get();
         foreach ($accountEntryItems as $value) {
             $entriItem = new AccountingEntryItems();
-            $entriItem->fill($value);
+            $entriItem->fill($value->toArray());
             $entriItem->id = null;
             $entriItem->accounting_entrie_id = $accountEntryNes->id;
             $entriItem->debe = $value->haber;
