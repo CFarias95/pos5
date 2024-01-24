@@ -4,7 +4,7 @@ namespace Modules\Item\Models;
 
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
-
+use Modules\Inventory\Models\Warehouse;
 
 /**
  * Modules\Item\Models\ItemLotsGroup
@@ -25,7 +25,8 @@ class ItemLotsGroup extends ModelTenant
         'quantity',
         'date_of_due',
         'item_id',
-        'old_quantity'
+        'old_quantity',
+        'warehouse_id'
     ];
 
     public function item()
@@ -126,6 +127,11 @@ class ItemLotsGroup extends ModelTenant
             'checked'     => false,
             'compromise_quantity' => 0
         ];
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

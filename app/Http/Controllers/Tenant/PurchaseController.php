@@ -567,19 +567,14 @@ class PurchaseController extends Controller
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
-                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])->where('code',$row['lot_code'])->first();
-                            if(isset($validatLote) && $validatLote != ''){
-                                if($validatLote->date_of_due != $row['date_of_due']){
-                                    $doc->delete();
-                                    return [
-                                        'success' => false,
-                                        'message' => 'Ya existe un lote: '.$row['lot_code'].' pero las fecha ingresada no coinciden '.$validatLote->date_of_due.'/'.$row['date_of_due']
-                                    ];
+                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])
+                            ->where('code',$row['lot_code'])
+                            ->where('warehouse_id',$row['warehouse_id'])
+                            ->first();
 
-                                }else{
-                                    $validatLote->quantity = $validatLote->quantity + ($row['quantity'] * $presentation_quantity);
-                                    $validatLote->save();
-                                }
+                            if(isset($validatLote) && $validatLote != ''){
+                                $validatLote->quantity = $validatLote->quantity + ($row['quantity'] * $presentation_quantity);
+                                $validatLote->save();
 
                             }else{
                                 $item_lots_group = ItemLotsGroup::create([
@@ -587,6 +582,7 @@ class PurchaseController extends Controller
                                     'quantity' => $row['quantity'] * $presentation_quantity,
                                     // 'quantity' => $row['quantity'],
                                     'date_of_due' => $row['date_of_due'],
+                                    'warehouse_id' => $row['warehouse_id'],
                                     'item_id' => $row['item_id']
                                 ]);
 
