@@ -19,6 +19,8 @@ class PurchasePayment extends ModelTenant
         'reference',
         'payment',
         'fee_id',
+        'multipay',
+        'sequential',
     ];
 
     protected $casts = [

@@ -138,6 +138,8 @@ class PurchasePaymentController extends Controller
 
             foreach ($fee as $cuotas) {
 
+                $sequential = PurchasePayment::latest('id')->first();
+
                 $pago = PurchasePayment::where('fee_id', $cuotas->id)->get();
                 $pagado = $pago->sum('payment');
                 //Log::info("fee pago:" . json_encode($pago));
@@ -147,12 +149,13 @@ class PurchasePaymentController extends Controller
                 if (isset($fee_id) && $cuotaid == $fee_id) {
                     if ($valorPagar > 0 && $valorPagar >= $valorCuota) {
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($sequential ,$id, $request, $valorCuota, $cuotaid) {
 
                             $record = PurchasePayment::firstOrNew(['id' => $id]);
                             $record->fill($request->all());
                             $record->payment = $valorCuota;
                             $record->fee_id = $cuotaid;
+                            $record->sequential = $sequential->sequential +1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -164,7 +167,7 @@ class PurchasePaymentController extends Controller
                         $valorPagar = $valorPagar - $valorCuota;
                     } else if ($valorPagar > 0 && $valorPagar < $valorCuota) {
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorPagar, $cuotaid) {
 
                             unset($request->id);
                             //$request->payment = $valorPagar;
@@ -172,6 +175,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorPagar;
                             $record->fee_id = $cuotaid;
+                            $record->sequential = $sequential->sequential + 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -185,12 +189,13 @@ class PurchasePaymentController extends Controller
                 } else if (isset($fee_id) == false) {
                     if ($valorPagar > 0 && $valorPagar >= $valorCuota) {
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorCuota, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorCuota, $cuotaid) {
 
                             $record = PurchasePayment::firstOrNew(['id' => $id]);
                             $record->fill($request->all());
                             $record->payment = $valorCuota;
                             $record->fee_id = $cuotaid;
+                            $record->sequential = $sequential->sequential + 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -202,7 +207,7 @@ class PurchasePaymentController extends Controller
                         $valorPagar = $valorPagar - $valorCuota;
                     } else if ($valorPagar > 0 && $valorPagar < $valorCuota) {
 
-                        $data = DB::connection('tenant')->transaction(function () use ($id, $request, $valorPagar, $cuotaid) {
+                        $data = DB::connection('tenant')->transaction(function () use ($sequential, $id, $request, $valorPagar, $cuotaid) {
 
                             unset($request->id);
                             //$request->payment = $valorPagar;
@@ -210,6 +215,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorPagar;
                             $record->fee_id = $cuotaid;
+                            $record->sequential = $sequential->sequential + 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -224,9 +230,10 @@ class PurchasePaymentController extends Controller
             }
         } else {
             $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
-
+                $sequential = PurchasePayment::latest('id')->first();
                 $record = PurchasePayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
+                $record->sequential = $sequential->sequential + 1;
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'purchases');
@@ -325,8 +332,8 @@ class PurchasePaymentController extends Controller
 
                 $customer = Person::find($cabeceraC->person_id);
                 $ceuntaC = PaymentMethodType::find($payment->payment_method_type_id);
-                $detalle = new AccountingEntryItems();
 
+                $detalle = new AccountingEntryItems();
                 $detalle->accounting_entrie_id = $cabeceraC->id;
                 $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
                 $detalle->seat_line = 1;
@@ -430,10 +437,30 @@ class PurchasePaymentController extends Controller
 
         }
 
+        $sequential = $item->sequential;
+        $multiPAy = $item->multipay;
+
         $item->delete();
-        $asientos = AccountingEntries::where('document_id', 'PC' . $id)->get();
-        foreach ($asientos as $ass) {
-            $ass->delete();
+
+        if($multiPAy == 'SI'){
+
+            Log::info('BORRANDO PAGO CON MULTIPAGO');
+            $item = PurchasePayment::where('sequential',$sequential)->get();
+            foreach ($item as $value) {
+                $value->delete();
+            }
+
+            $asientos = AccountingEntries::where('document_id','like','%PC'.$id.';%')->get();
+            foreach($asientos as $ass){
+                $ass->delete();
+            }
+
+        }else{
+
+            $asientos = AccountingEntries::where('document_id', 'PC' . $id)->get();
+            foreach ($asientos as $ass) {
+                $ass->delete();
+            }
         }
 
         return [
@@ -444,7 +471,7 @@ class PurchasePaymentController extends Controller
 
     public function generateReverse(Request $request){
 
-        Log::info('generateReverse');
+        Log::info('generateReverse PURCHACE PAYMENT');
 
         $id = $request->id;
         $motivo = $request->reference;
@@ -453,8 +480,8 @@ class PurchasePaymentController extends Controller
         $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%PurchasePayment')->first();
         $sequential = PurchasePayment::latest('id')->first();
 
-        if(isset($payment) && ($payment->multipay == 'NO' || isset($payment->multipay) == false)){
-
+        if(isset($payment) && $payment->multipay == 'NO'){
+            Log::info('Sin MULTIPAGO');
             $newPayment = new PurchasePayment();
             $newPayment->purchase_id = $payment->purchase_id;
             $newPayment->date_of_payment = date('Y-m-d');
@@ -488,12 +515,15 @@ class PurchasePaymentController extends Controller
 
         }elseif(isset($payment) && $payment->multipay == 'SI'){
 
+            Log::info('Sin MULTIPAGO');
             $multiPays = PurchasePayment::where('sequential',$payment->sequential)->get();
             $paymentsIds = '';
+            $sequential = PurchasePayment::latest('id')->first();
+
             foreach ($multiPays as $value) {
                 $paymentM = PurchasePayment::find($value->id);
                 $globalPayment = GlobalPayment::where('payment_id',$id)->first();
-                $sequential = PurchasePayment::latest('id')->first();
+
 
                 $newPayment = new PurchasePayment();
                 $newPayment->purchase_id = $paymentM->purchase_id;
@@ -501,7 +531,7 @@ class PurchasePaymentController extends Controller
                 $newPayment->payment_method_type_id = $paymentM->payment_method_type_id;
                 $newPayment->has_card = $paymentM->has_card;
                 $newPayment->card_brand_id = $paymentM->card_brand_id;
-                $newPayment->reference = 'Reverso';
+                $newPayment->reference = $motivo;
                 //$newPayment->change = $paymentM->change;
                 $newPayment->payment = $paymentM->payment * -1;
                 //$newPayment->payment_received = $paymentM->payment_received;
@@ -547,7 +577,7 @@ class PurchasePaymentController extends Controller
                 $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
                 $ultimo = AccountingEntries::latest('id')->first();
                 $configuration = Configuration::first();
-                $accountrieEntryActual = AccountingEntries::where('document_id','PC'.$id)->first();
+                $accountrieEntryActual = AccountingEntries::where('document_id','PC'.$id)->orWhere('document_id','like','%PC'.$id.';%')->first();
                 if (empty($lista)) {
                     $seat = 1;
                 } else {
@@ -615,15 +645,15 @@ class PurchasePaymentController extends Controller
         $valor = $request->overPaymentValue;
         $cuenta = $request->overPaymentAccount;
 
-        $entry = AccountingEntries::where('document_id','PC'.$id)->first();
+        $entry = AccountingEntries::where('document_id','PC'.$id)->orWhere('document_id','like','%PC'.$id.';%')->first();
         if(isset($entry)){
             $entry->total_debe += $valor;
             $entry->total_haber += $valor;
 
             $entryItems = AccountingEntryItems::where('accounting_entrie_id',$entry->id)->get();
             foreach($entryItems as $item){
-                if($item->debe > 0){
-                    $item->debe += $valor;
+                if($item->haber > 0){
+                    $item->haber += $valor;
                     $item->save();
                 }
             }
@@ -632,8 +662,8 @@ class PurchasePaymentController extends Controller
             $detalle->accounting_entrie_id = $entryItems[0]->accounting_entrie_id;
             $detalle->account_movement_id = $cuenta;
             $detalle->seat_line = 3;
-            $detalle->haber = $valor;
-            $detalle->debe = 0;
+            $detalle->debe = $valor;
+            $detalle->haber = 0;
             $detalle->save();
 
             return[

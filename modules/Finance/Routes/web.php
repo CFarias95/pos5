@@ -86,6 +86,8 @@ if($hostname) {
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'ToPayController@PosDatedShow');
                     Route::post('/posdated', 'ToPayController@PosDatedUpdate');
+
+                    Route::post('/multipay','ToPayController@generateMultiPay');
                 });
 
                 Route::prefix('income')->group(function () {
@@ -100,7 +102,6 @@ if($hostname) {
                     Route::post('', 'IncomeController@store');
                     Route::get('record/{record}', 'IncomeController@record');
                     Route::get('voided/{record}', 'IncomeController@voided');
-
                     Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
 
 

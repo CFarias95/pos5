@@ -34,9 +34,15 @@ use Mpdf\Mpdf;
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
 use App\Http\Requests\Tenant\PosDatedRequest;
 use App\Models\Tenant\AccountingEntries;
+use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\AccountMovement;
+use App\Models\Tenant\Configuration as TenantConfiguration;
+use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\PurchasePayment;
+use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class ToPayController extends Controller
 {
@@ -96,8 +102,17 @@ class ToPayController extends Controller
                 ];
             }
         );
+        $payment_method_types = PaymentMethodType::where('is_cash',1)->get();
 
-        return compact('suppliers', 'establishments', 'users');
+        $payment_destinations = $this->getPaymentDestinations();
+        $accounts = AccountMovement::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'description' => $row->code.'-'.$row->description,
+            ];
+        });
+
+        return compact('suppliers', 'establishments', 'users', 'accounts', 'payment_destinations', 'payment_method_types');
     }
 
 
@@ -115,8 +130,86 @@ class ToPayController extends Controller
         }
 
         return [
-            'records' => ToPay::getToPay($data)
+            //'records' => ToPay::getToPay($data)
+            'records' => $this->getRecordsBySP($request)
         ];
+    }
+
+    public function getRecordsBySP(Request $request){
+
+        $external = $request['external'] ?? 'NO';
+        $establishment_id = $request['establishment_id'] ?? 0;
+        $period = $request['period'] ?? 0;
+        $date_start = $request['date_start'] ?? 0;
+        $date_end = $request['date_end'] ?? 0;
+        $month_start = $request['month_start'] ?? 0;
+        $month_end = $request['month_end'] ?? 0;
+        $customer_id = $request['supplier_id'] ?? [0];
+        $user_id = $request['user_id'] ?? 0;
+        $importe = $request['importe'] ?? 0;
+        $include_liquidated = $request['include_liquidated'] ?? 0;
+        $tipo = 0;
+        $d_start = null;
+        $d_end = null;
+
+
+        switch ($period) {
+            case 'month':
+                $tipo = 1;
+                $d_start = Carbon::parse($month_start . '-01')->format('Y/m/d');
+                $d_end = Carbon::parse($month_start . '-01')->endOfMonth()->format('Y/m/d');
+                break;
+            case 'between_months':
+                $tipo = 1;
+                $d_start = Carbon::parse($month_start . '-01')->format('Y/m/d');
+                $d_end = Carbon::parse($month_end . '-01')->endOfMonth()->format('Y/m/d');
+                break;
+            case 'date':
+                $tipo = 1;
+                $d_start = Carbon::parse($date_start)->format('Y/m/d');
+                $d_end = $date_start;
+                break;
+            case 'between_dates':
+                $tipo = 1;
+                $d_start = Carbon::parse($date_start)->format('Y/m/d');
+                $d_end = Carbon::parse($date_end)->format('Y/m/d');
+                break;
+            case 'expired':
+                $tipo = 2;
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+            case 'posdated':
+                $tipo = 3;
+                $d_start = $date_start;
+                $d_end = $date_end;
+                break;
+        }
+
+        if($include_liquidated === 'true'){
+
+            $include_liquidated = 1;
+
+        }elseif($include_liquidated === true){
+
+            $include_liquidated = 1;
+
+        }else{
+            $include_liquidated = 0;
+        }
+
+        if($external == 'SI'){
+            $person = User::where('number',$user_id)->first();
+            if(isset($person) == false){
+                return;
+            }
+            $user_id = $person->id;
+        }
+        Log::info('ToPayController '. $include_liquidated);
+        $data = DB::connection('tenant')->select('CALL SP_CuentarPorPagar(?,?,?,?,?,?,?,?)',[$establishment_id,json_encode($customer_id),$user_id,$importe,$include_liquidated,$tipo,$d_start,$d_end]);
+
+        return $data;
+
     }
 
     /**
@@ -301,5 +394,123 @@ class ToPayController extends Controller
             'success' => true,
             'message' => 'Se ha registrado con éxito',
         ];
+    }
+
+    public function generateMultiPay(Request $request){
+
+        Log::info('Funcion para crear pago multiple To Pay');
+        Log::info('generateMultiPay' . json_encode($request));
+
+        $config = TenantConfiguration::first();
+        $documentIds = '';
+        $documentsSequentials = '';
+        $haber = [];
+        $sequential = PurchasePayment::latest('id')->first();
+        $debeAdicional = 0;
+        $haberAdicional = 0;
+
+        foreach ($request->unpaid as $value) {
+            Log::info('DATA: ',$value);
+            $payment = new PurchasePayment();
+            $payment->purchase_id = $value['document_id'];
+            $payment->date_of_payment = $request->date_of_payment;
+            $payment->payment_method_type_id = $request->payment_method_type_id;
+            $payment->has_card = 0;
+            $payment->reference = $request->reference;
+            //$payment->payment_received = 1;
+            $payment->payment = $value['amount'];
+            $payment->fee_id = $value['fee_id'];
+            $payment->sequential = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
+            $payment->multipay = 'SI';
+            $payment->save();
+
+            $row['payment_destination_id'] = $request->payment_destination_id;
+            $this->createGlobalPayment($payment, $row);
+
+            $document = Purchase::find($value['document_id']);
+            $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+
+            $documentIds .= 'PC'.$payment->id.';';
+            $customer = Person::find($value['customer_id']);
+            //Log::info($customer);
+            Log::info($config);
+            array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount']]);
+
+        }
+
+        $comment = 'Multipago '.$documentsSequentials;
+
+        foreach ($request->extras as $value) {
+            $debeAdicional += floatVal($value['debe']);
+            $haberAdicional += floatVal($value['haber']);
+        }
+
+        $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
+        $cabeceraC = new AccountingEntries();
+        $cabeceraC->user_id = auth()->user()->id;
+        $cabeceraC->seat = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+        $cabeceraC->seat_general = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+        $cabeceraC->seat_date = $request->date_of_payment;
+        $cabeceraC->types_accounting_entrie_id = 1;
+        $cabeceraC->comment = $comment;
+        $cabeceraC->serie = null;
+        $cabeceraC->number = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+        $cabeceraC->total_debe = $request->payment + $debeAdicional;
+        $cabeceraC->total_haber = $request->payment + $haberAdicional;
+        $cabeceraC->revised1 = 0;
+        $cabeceraC->user_revised1 = 0;
+        $cabeceraC->revised2 = 0;
+        $cabeceraC->user_revised2 = 0;
+        $cabeceraC->currency_type_id = $config->currency_type_id;
+        $cabeceraC->doctype = 1;
+        $cabeceraC->is_client = true;
+        $cabeceraC->establishment = auth()->user()->establishment;
+        $cabeceraC->prefix = 'ASC';
+        $cabeceraC->external_id = Str::uuid()->toString();
+        $cabeceraC->document_id = $documentIds;
+
+        $cabeceraC->save();
+        $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+        $cabeceraC->save();
+
+        $detalle = new AccountingEntryItems();
+        $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+        $detalle->accounting_entrie_id = $cabeceraC->id;
+        $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$config->cta_paymnets;
+        $detalle->seat_line = 1;
+        $detalle->debe = 0;
+        $detalle->haber = $request->payment + floatVal($debeAdicional) - floatVal($haberAdicional);
+        $detalle->save();
+
+        $line = 2;
+        foreach ($haber as $key => $value) {
+
+            Log::info('DATA DE HABER : '.json_encode($value));
+
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $value['account'];
+            $detalle->seat_line = $line;
+            $detalle->haber = 0;
+            $detalle->debe = $value['amount'] ;
+            $detalle->save();
+            $line += 1;
+        }
+
+        foreach ($request->extras as $value) {
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $value['account_id'];
+            $detalle->seat_line = $line;
+            $detalle->debe = floatVal($value['debe']);
+            $detalle->haber = floatVal($value['haber']);
+            $detalle->save();
+            $line += 1;
+        }
+        return[
+            'success' => true,
+            'message' => 'Multi pago generado exitosamente!'
+        ];
+
     }
 }
