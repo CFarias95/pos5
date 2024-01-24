@@ -209,7 +209,7 @@ class InventoryController extends Controller
 	public function store_transaction(InventoryRequest $request)
 	{
 		$result = DB::connection('tenant')->transaction(function () use ($request) {
-			// dd($request->all());
+			 //dd($request->all());
 			$type = $request->input('type');
 			$item_id = $request->input('item_id');
 			$warehouse_id = $request->input('warehouse_id');
@@ -267,7 +267,10 @@ class InventoryController extends Controller
 
 			if ($type == 'input') {
 
-                $validar = ItemLotsGroup::where('item_id',$item_id)->where('code',$lot_code)->first();
+                /*$validar = ItemLotsGroup::where('item_id',$request->item_id)
+                ->where('code',$request->lot_code)
+                ->where('warehouse_id',$request->warehouse_id)
+                ->first();*/
 
 				foreach ($lots as $lot) {
 
@@ -282,10 +285,18 @@ class InventoryController extends Controller
 				}
 
 				if ($lots_enabled) {
+                    $presentation_quantity = (isset($inventory->item->presentation->quantity_unit)) ? $inventory->item->presentation->quantity_unit : 1;
+                    $validar = ItemLotsGroup::where('item_id',$request->item_id)
+                    ->where('code',$request->lot_code)
+                    ->where('warehouse_id',$request->warehouse_id)
+                    ->first();
 
-                    $validar = ItemLotsGroup::where('item_id',$item_id)->where('code',$lot_code)->first();
                     if(isset($validar) && $validar != ''){
-                        if($validar->date_of_due != $request->date_of_due){
+
+                        $validar->quantity = $validar->quantity + ($request->quantity * $presentation_quantity);
+                        $validar->save();
+
+                       /* if($validar->date_of_due != $request->date_of_due){
                             $inventory->delete();
                             return  [
                                 'success' => false,
@@ -297,13 +308,15 @@ class InventoryController extends Controller
 
                             $validar->quantity = $validar->quantity + $quantity;
                             $validar->save();
-                        }
+                        }*/
                     }else{
+
                         ItemLotsGroup::create([
-                            'code'         => $lot_code,
-                            'quantity'     => $quantity,
-                            'date_of_due'  => $request->date_of_due,
-                            'item_id'      => $item_id
+                            'code' => $request->lot_code,
+                            'quantity' => $request->quantity * $presentation_quantity,
+                            'date_of_due' =>$request->date_of_due,
+                            'warehouse_id' => $request->warehouse_id,
+                            'item_id' => $request->item_id
                         ]);
                     }
 
