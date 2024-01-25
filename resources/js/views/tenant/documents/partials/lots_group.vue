@@ -20,7 +20,7 @@
                 </div>
             </div>
             <div class="row">
-                <div class="col-lg-5 col-md-5 col-sm-12 pb-2">
+                <div class="col-lg-5 col-md-6 col-sm-12 pb-2">
                     <el-input placeholder="Buscar código ..."
                         v-model="search"
                         style="width: 100%;"
@@ -36,7 +36,7 @@
                                 <!--<th>Seleccionado</th>-->
                                 <th width="145">Comprometer</th>
                                 <th>codigo</th>
-                                <th>Cantidad</th>
+                                <th width="100" >Cantidad</th>
                                 <th>Fecha vencimiento  <el-button icon="el-icon-d-caret" @click="orderData()" plain></el-button> </th>
                             </tr>
                         </thead>
@@ -90,14 +90,14 @@ export default {
         };
     },
     async created() {
-      
+
     },
     computed: {
         lotsGroupOrdered() {
             return _.orderBy(this.lots_group_, 'date_of_due', this.orderT)
         },
         quantityCompleted(){
-            return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity 
+            return this.lots_group_.filter(x => x.checked == true).reduce((accum,item) => accum + Number(item.quantity), 0) >= this.quantity
         },
         toAttend() {
             return this.quantity - this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
@@ -142,7 +142,7 @@ export default {
         },
 
         async submit() {
-            
+
             //validar cantidad comprometida igual a cantidad pedida
             let compromise_quantity = this.lots_group_.filter(x => x.compromise_quantity > 0).reduce((accum,item) => accum + Number(item.compromise_quantity), 0)
             if (compromise_quantity != this.quantity) {
@@ -161,6 +161,7 @@ export default {
                     code: item.code,
                     compromise_quantity: item.compromise_quantity,
                     date_of_due: item.date_of_due,
+                    warehouse_id: item.warehouse_id,
                 }
             })
 

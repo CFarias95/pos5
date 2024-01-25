@@ -369,6 +369,7 @@ class DispatchController extends Controller
                                 'code' => $lot->code,
                                 'quantity' => $lot->quantity,
                                 'date_of_due' => $lot->date_of_due,
+                                'warehouse_id' => $lot->warehouse_id,
                                 'checked'  => false
                             ];
                         }),
@@ -636,6 +637,7 @@ class DispatchController extends Controller
                         'id'          => $row->id,
                         'code'        => $row->code,
                         'quantity'    => $row->quantity,
+                        'warehouse_id' => $row->warehouse_id,
                         'date_of_due' => $row->date_of_due,
                         'checked'     => false
                     ];

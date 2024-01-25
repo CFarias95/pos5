@@ -1070,6 +1070,7 @@ class Item extends ModelTenant
                     'code'        => $lots_group->code,
                     'quantity'    => $lots_group->quantity,
                     'date_of_due' => $lots_group->date_of_due,
+                    'warehouse_id' => $lots_group->warehouse_id,
                     'checked'     => false,
                     'compromise_quantity' => 0
                 ];
