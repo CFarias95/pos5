@@ -333,7 +333,12 @@ class InventoryController extends Controller
 				}
 
 				if (isset($request->IdLoteSelected)) {
-					$lot = ItemLotsGroup::find($request->IdLoteSelected);
+
+					//$lot = ItemLotsGroup::find($request->IdLoteSelected);
+                   $lot= ItemLotsGroup::where('item_id',$request->item_id)
+                ->where('code',$request->lot_code)
+                ->where('warehouse_id',$request->warehouse_id)
+                ->first();
 					$lot->quantity = ($lot->quantity - $quantity);
 					$lot->save();
 				}
