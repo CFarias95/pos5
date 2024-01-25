@@ -709,7 +709,7 @@ class UnpaidController extends Controller
         $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$config->cta_charge;
         $detalle->seat_line = 1;
         $detalle->haber = 0;
-        $detalle->debe = $request->payment + floatVal($debeAdicional) -  floatVal($haberAdicional);
+        $detalle->debe = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
         $detalle->save();
 
         $line = 2;
