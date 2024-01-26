@@ -36,6 +36,7 @@ class DocumentPayment extends ModelTenant
         'date_of_payment' => 'date',
         'payment_received' => 'bool',
         'postdated' => 'date',
+        'payment' => 'float',
     ];
 
     public function payment_method_type()

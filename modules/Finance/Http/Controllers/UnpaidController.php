@@ -46,6 +46,7 @@ use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\SaleNotePayment;
 use Illuminate\Support\Str;
 
 use function PHPSTORM_META\type;
@@ -299,71 +300,92 @@ class UnpaidController extends Controller
 
     }
 
-    public function toPrint($external_id,$type,$format, $id, $index) {
+    public function toPrint($paymentId,$type,$format) {
+
+        $payments = null;
+        $seat_account = null;
+        $filename = null;
 
         if ($type=='sale') {
-            $sale_note = SaleNote::where('external_id', $external_id)->first();
+            $payment = SaleNotePayment::find($paymentId);
+            $filename = $payment->sale_note->filename;
+
         } else {
-            $sale_note = Document::where('external_id', $external_id)->first();
+            $payment = DocumentPayment::where('id',$paymentId)->get();
+            $seat_account = AccountingEntries::where('document_id','CF'.$paymentId)->orWhere('document_id','like','%CF'.$paymentId.';%')->first();
+
+            if($payment[0]->multipay == 'SI'){
+
+                $sequential = $payment[0]->sequential;
+                $filename = 'MULTIPAGO-'.$sequential;
+                $payments = DocumentPayment::where('sequential',$sequential)->get();
+                $payments->transform(function($row){
+                    $fee = DocumentFee::find($row->fee_id);
+                    return[
+                        'document_serie' => $row->document->series,
+                        'document_number' => $row->document->number,
+                        'document_fee' => $fee->number,
+                        'client_number' => $row->document->customer->number,
+                        'client_name' => $row->document->customer->name,
+                        'establishment' =>$row->document->establishment->code,
+                        'comment' => $row->document->additional_information[0],
+                        'payment' => $row->payment,
+                        'to_pay' => $fee->amount - $row->payment,
+                        'sequential' => $row->sequential,
+                    ];
+                });
+
+            }else{
+
+                $payments = $payment->transform(function($row) use($filename){
+                    $fee = DocumentFee::find($row->fee_id);
+                    $filename = $row->document->filename;
+                    return[
+                        'document_serie' => $row->document->series,
+                        'document_number' => $row->document->number,
+                        'document_fee' => $fee->number,
+                        'client_number' => $row->document->customer->number,
+                        'client_name' => $row->document->customer->name,
+                        'establishment' =>$row->document->establishment->code,
+                        'comment' => $row->document->additional_information[0],
+                        'payment' => $row->payment,
+                        'to_pay' => $fee->amount - $row->payment,
+                        'sequential' => $row->sequential,
+                    ];
+                });
+            }
         }
 
-        if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
+        if (!$payments) throw new Exception("No se pudo recuperar el documento asociado al pago : ".$paymentId);
 
-        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index);
-
+        //$this->reloadPDF1($payments, $seat_account, $format, $document->filename);
+        $this->createPdf1($payments,$seat_account,$format, $filename);
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
 
-        file_put_contents($temp, $this->getStorage($sale_note->filename, 'unpaid'));
+        file_put_contents($temp, $this->getStorage($filename, 'unpaid'));
 
-        /*
-        $headers = [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
-        ];
-        */
-
-        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
+        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($filename));
     }
 
-    private function reloadPDF1($sale_note, $format, $filename, $id, $index) {
-        $this->createPdf1($sale_note, $format, $filename, $id, $index);
+    private function reloadPDF1($payments, $format, $filename, $id, $index) {
+        $this->createPdf1($payments, $format, $filename, $id, $index);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index = 0) {
+    public function createPdf1($payments = null, $seat, $format_pdf = null, $filename = null) {
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
 
-        $this->company = ($this->company != null) ? $this->company : Company::active();
-        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+        $company = ($this->company != null) ? $this->company : Company::active();
+        $configuration = Configuration::first();
 
-        $this->configuration = Configuration::first();
-        // $configuration = $this->configuration->formats;
-        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
-
-
-        //$docs = Document::where('customer_id', $this->document->customer_id)->where('external_id', $this->document->external_id)->first();
-
-        $docs = $this->document;
-
-        Log::info('Document ID: '.$docs);
-        Log::info('FEE ID: '.$id);
-        Log::info('documents - '.$docs);
-        $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
-        //Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
-
-        $i = $conect[$index];
-        //Log::info('i - '.json_encode($i));
-        $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
-
+        $base_template = 'default';
         $user_log = auth()->user();
+        $establishment = Establishment::find(auth()->user()->establishment_id);
 
-        //Log::info('info1'.json_encode($account_entry));
-        //Log::info('index1'.$id);
-
-        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index, $user_log);
+        $html = $template->pdf1($base_template, "unpaid", $company, $payments, $establishment, $format_pdf,$seat,$user_log);
 
         /* cuentas por cobrar formato a4 */
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {
@@ -468,7 +490,9 @@ class UnpaidController extends Controller
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-        $this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
+        $this->uploadStorage($filename, $pdf->output('', 'S'), 'unpaid');
+
+        //$this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
     }
 
     public function uploadFile1($filename, $file_content, $file_type, $account_entry)

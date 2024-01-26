@@ -15,15 +15,11 @@ class Template
         return self::render($path_template, $company, $document, $account_entry);
     }
 
-    public function pdf1($base_template, $template, $company, $document, $format_pdf, $id, $account_entry, $index, $user_log)
+    public function pdf1($base_template, $template, $company, $document, $establishment, $format_pdf, $account_entry, $user_log)
     {
-        if($template === 'credit' || $template === 'debit') {
-            $template = 'note';
-        }
-
         $path_template =  $this->validate_template($base_template, $template, $format_pdf);
         // Log::info($document);
-        return self::render1($path_template, $company, $document, $id, $account_entry, $index, $user_log);
+        return self::render1($path_template, $company, $document, $establishment,$account_entry, $user_log);
     }
 
     public function pdf2($base_template, $template, $company, $document, $format_pdf, $id, $index, $account_entry)
@@ -67,11 +63,11 @@ class Template
         return view($view, compact('company', 'document', 'account_entry'))->render();
     }
 
-    private function render1($view, $company, $document, $id, $account_entry, $index, $user_log)
+    private function render1($view, $company, $document, $establishment, $account_entry, $user_log)
     {
         view()->addLocation(__DIR__.'/Templates');
 
-        return view($view, compact('company', 'document', 'id', 'account_entry', 'index', 'user_log'))->render();
+        return view($view, compact('company', 'document','establishment', 'account_entry','user_log'))->render();
     }
 
     private function render3($view, $company, $document, $id, $index, $account_entry)
@@ -162,9 +158,9 @@ class Template
         return view('pdf.'.$base_template.'.partials.footer_dispatch', compact('document'))->render();
     }
 
-        
+
     /**
-     * 
+     *
      * Renderizar pdf por nombre sin considerar formato
      *
      * @param  string $base_template
@@ -179,9 +175,9 @@ class Template
         return self::render($path_template, $company, $document);
     }
 
-    
+
     /**
-     * 
+     *
      * Validar si existe el template
      *
      * @param  string $base_template

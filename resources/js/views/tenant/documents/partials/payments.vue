@@ -73,14 +73,12 @@
                                             </template>
 
                                         </td>
-                                        <template v-if="external">
-                                            <td class="series-table-actions text-center">
-                                                <button type="button"
-                                                    class="btn waves-effect waves-light btn-xs btn-primary"
-                                                    @click.prevent="clickOptionsPrint(index, row.id)"><i
-                                                        class="fas fa-file-upload"></i></button>
-                                            </td>
-                                        </template>
+                                        <td class="series-table-actions text-center">
+                                            <button type="button"
+                                                class="btn waves-effect waves-light btn-xs btn-primary"
+                                                @click.prevent="clickOptionsPrint(row.id)"><i
+                                                    class="fas fa-file-upload"></i></button>
+                                        </td>
                                         <td class="series-table-actions text-right">
                                             <template v-if="permissions.delete_payment">
                                                 <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
@@ -395,9 +393,9 @@
             :showDialog.sync="showDialogLink" :documentPayment="documentPayment">
         </dialog-link-payment>
 
-        <document-options :recordId="this.documentId" :showDialogOptions.sync="showDialogOptions"
-            :showClose="showDialogClose" :type="this.type" :configuration="this.configuration" :id="this.index"
-            :monto="this.monto" :index="this.documentFeeId"></document-options>
+        <document-options :recordId="this.payment_id" :showDialogOptions.sync="showDialogOptions"
+            :showClose="showDialogClose" :type="this.type" :configuration="this.configuration"
+            :monto="this.monto" ></document-options>
 
     </el-dialog>
 </template>
@@ -448,6 +446,7 @@ export default {
             indexSelected:null,
             showReverse:false,
             showExpense: false,
+            payment_id : null,
             formSubmit: {
                 id: null,
                 document_id: null,
@@ -860,10 +859,12 @@ export default {
         clickPrint(external_id) {
             window.open(`/finances/unpaid/print/${external_id}/document`, '_blank');
         },
-        clickOptionsPrint(key, row_id) {
+        clickOptionsPrint(row_id) {
             //this.monto = this.records[key].payment
-            this.index = key
-            this.index_id = row_id
+            console.log('Paymnet a imprimir: ',row_id)
+            this.payment_id = row_id
+            //this.index = key
+            //this.index_id = row_id
             this.showDialogOptions = true
             this.showDialogClose = true
         },
