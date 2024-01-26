@@ -177,12 +177,15 @@ export default {
             } else {
                 this.resource_document='documents'
             }
+            this.loading = false
+            /*
             await this.$http.get(`/${this.resource_document}/record/${this.recordId}`).then(response => {
                 this.form = response.data.data;
                 this.titleDialog = 'Comprobante de documento por cobrar: ' + this.form.number;
             }).finally(() => {
                 this.loading = false
             });
+            */
         },
         clickPrint(format) {
             window.open(`${this.resource}/print/${this.recordId}/${this.type}/${format}`, '_blank');
