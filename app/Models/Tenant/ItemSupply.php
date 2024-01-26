@@ -31,6 +31,7 @@
             'individual_item_id',
             'quantity',
             'modifiable',
+            'rounded_up',
             'percentage_decimal',
             'cost_per_unit',
             'cost_total',
@@ -107,6 +108,25 @@
         /**
          * @return int
          */
+        public function getRoundedUp()
+        {
+            return (bool)$this->rounded_up;
+        }
+
+        /**
+         * @param int $rounced_up
+         *
+         * @return
+         */
+        public function setRoundedUp($rounded_up)
+        {
+            $this->rounded_up = (bool)$rounded_up;
+            return $this;
+        }
+
+        /**
+         * @return int
+         */
         public function getPercentage()
         {
             return (float)$this->percentage_decimal;
@@ -168,6 +188,7 @@
             $data['item'] = $this->item;
             //$data['cost'] = $this->individual_item->purchase_unit_price;
             $data['modificable'] = ($this->modifiable)?$this->modifiable:0;
+            $data['rounded_up'] = ($this->rounded_up)?$this->rounded_up:0;
             $data['individual_item'] = $this->individual_item;
             $data['individual_item']['lots_group'] = $this->individual_item->lots_group;
             return $data;

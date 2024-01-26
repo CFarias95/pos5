@@ -5,6 +5,7 @@
                append-to-body
                width="30%"
                @open="create"
+               style="background-color: rgb(14 14 14 / 64%);"
                @close="closeUnpaid">
         <!--
         <Keypress
@@ -74,7 +75,7 @@
 import {mapState, mapActions} from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type', 'id', 'index'],
+    props: ['showDialogOptions', 'recordId', 'showClose', 'isUpdate', 'configuration', 'type'],
     components: {
     },
     data() {
@@ -184,7 +185,7 @@ export default {
             });
         },
         clickPrint(format) {
-            window.open(`${this.resource}/print/${this.form.external_id}/${this.type}/${format}/${this.index}/${this.id}`, '_blank');
+            window.open(`${this.resource}/print/${this.recordId}/${this.type}/${format}`, '_blank');
         },
         clickCloseUnpaid() {
             this.$emit('update:showDialogOptions', false)

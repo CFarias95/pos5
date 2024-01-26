@@ -260,10 +260,12 @@
                                                 </tr>
                                             </thead>
                                             <tbody>
-                                                <template v-for="(row, index) in records">
-                                                    <tr v-if="row.total_to_pay > 0" :key="index">
+                                                <template>
+                                                    <tr v-for="(row, index) in records" :class="{
+                                                        'bg-success text-white': row.total_to_pay <= 0,
+                                                        }" :key="index">
                                                         <td>
-                                                            <el-switch v-model="row.selected"></el-switch>
+                                                            <el-switch v-if="row.total_to_pay > 0" v-model="row.selected"></el-switch>
                                                         </td>
                                                         <td>
                                                             {{ customIndex(index) }}
@@ -434,163 +436,6 @@
                                                             </template>
                                                         </td>
                                                     </tr>
-                                                    <tr v-if="row.total_to_pay <= 0" :class="{
-                              'bg-success text-white': row.total_to_pay <= 0,
-                            }" :key="index">
-                                                        <td>
-                                                            <el-switch v-model="row.selected"></el-switch>
-                                                        </td>
-                                                        <td>
-                                                            {{ customIndex(index) }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.date_of_issue }}
-                                                        </td>
-                                                        <td>
-                                                            {{
-                                                            row.date_of_due
-                                                            ? row.date_of_due
-                                                            : "No tiene fecha de vencimiento."
-                                                            }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.f_posdated ? row.f_posdated : "" }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.posdated }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.number_full }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.customer_name }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.username }}
-                                                        </td>
-
-                                                        <td>
-                                                            {{ "Liquidado" }}
-                                                        </td>
-                                                        <td>
-                                                            <el-popover placement="right" width="200" trigger="click">
-                                                                <strong>Penalidad: {{ row.arrears }}</strong>
-                                                                <el-button slot="reference">
-                                                                    <i class="fa fa-eye"></i>
-                                                                </el-button>
-                                                            </el-popover>
-                                                        </td>
-                                                        <td>
-                                                            <template>
-                                                                <el-popover placement="right" width="400" trigger="click">
-                                                                    <el-table :data="row.guides">
-                                                                        <el-table-column width="120"
-                                                                            property="date_of_issue"
-                                                                            label="Fecha Emisión"></el-table-column>
-                                                                        <el-table-column width="100" property="number"
-                                                                            label="Número"></el-table-column>
-                                                                        <el-table-column width="100"
-                                                                            property="date_of_shipping"
-                                                                            label="Fecha Envío"></el-table-column>
-                                                                        <el-table-column fixed="right" label="Descargas"
-                                                                            width="120">
-                                                                            <template slot-scope="scope">
-                                                                                <button type="button"
-                                                                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                                                                    @click.prevent="
-                                            clickDownloadDispatch(
-                                              scope.row.download_external_xml
-                                            )
-                                          ">
-                                                                                    XML
-                                                                                </button>
-                                                                                <button type="button"
-                                                                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                                                                    @click.prevent="
-                                            clickDownloadDispatch(
-                                              scope.row.download_external_pdf
-                                            )
-                                          ">
-                                                                                    PDF
-                                                                                </button>
-                                                                                <button type="button"
-                                                                                    class="btn waves-effect waves-light btn-xs btn-info"
-                                                                                    @click.prevent="
-                                            clickDownloadDispatch(
-                                              scope.row.download_external_cdr
-                                            )
-                                          ">
-                                                                                    CDR
-                                                                                </button>
-                                                                            </template>
-                                                                        </el-table-column>
-                                                                    </el-table>
-                                                                    <el-button slot="reference"
-                                                                        icon="el-icon-view"></el-button>
-                                                                </el-popover>
-                                                            </template>
-                                                        </td>
-
-                                                        <td v-if="columns.web_platforms.visible">
-                                                            <template v-for="(platform, i) in row.web_platforms"
-                                                                v-if="row.web_platforms !== undefined">
-                                                                <label class="d-block">{{ platform.name }}</label>
-                                                            </template>
-                                                        </td>
-                                                        <td v-if="columns.purchase_order.visible">
-                                                            {{ row.purchase_order }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.currency_type_id }}
-                                                        </td>
-                                                        <td>
-                                                            {{ row.multipay }}
-                                                        </td>
-                                                        <td class="text-right text-danger">
-                                                            {{ (row.total_to_pay <= 0)? 0 : row.total_to_pay }}
-                                                        </td>
-                                                        <td class="text-center">
-                                                            <template v-if="row.type == 'document'">
-                                                                {{ row.total_credit_notes }}
-                                                            </template>
-                                                            <template v-else> - </template>
-                                                        </td>
-                                                        <td class="text-right">
-                                                            {{ row.total }}
-                                                        </td>
-                                                        <td class="text-right">
-                                                            <template v-if="row.type === 'document'">
-                                                                <button type="button" style="min-width: 41px"
-                                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                                    @click.prevent="
-                                    clickDocumentPayment(
-                                      row.fee_id,
-                                      row.id,
-                                      row.customer_id
-                                    )
-                                  ">
-                                                                    Pagos
-                                                                </button>
-                                                            </template>
-                                                            <template v-else>
-                                                                <button type="button" style="min-width: 41px"
-                                                                    class="btn waves-effect waves-light btn-xs btn-info m-1__2"
-                                                                    @click.prevent="clickSaleNotePayment(row.id)">
-                                                                    Pagos
-                                                                </button>
-                                                            </template>
-                                                            <template>
-                                                                <button type="button" style="min-width: 41px"
-                                                                    v-if="row.total_to_pay > 0"
-                                                                    class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
-                                                                    @click.prevent="
-                                    clickPosFechado(row.fee_id, row.id, row.customer_id)
-                                  ">
-                                                                    POSfechar
-                                                                </button>
-                                                            </template>
-                                                        </td>
-                                                    </tr>
                                                 </template>
                                             </tbody>
                                         </table>
@@ -625,24 +470,67 @@
                             format="dd/MM/yyyy" value-format="yyyy-MM-dd"></el-date-picker>
                     </el-form-item>
                     <el-form-item label="Forma de pago">
-                        <el-select v-model="formMultiPay.payment_method_type_id" :rules="[{ required: true, message: 'La forma de pago es obligatoria' }]" >
+                        <el-select v-model="formMultiPay.payment_method_type_id"
+                            :rules="[{ required: true, message: 'La forma de pago es obligatoria' }]">
                             <el-option v-for="option in payment_method_types" v-show="option.id != '09'" :key="option.id"
                                 :value="option.id" :label="option.description"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Referencia">
                         <el-input v-model="formMultiPay.reference"
-                        :rules="[{ required: true, message: 'La referencia es obligatoria' }]"></el-input>
+                            :rules="[{ required: true, message: 'La referencia es obligatoria' }]"></el-input>
 
                     </el-form-item>
                     <el-form-item label="Destino">
-                        <el-select v-model="formMultiPay.payment_destination_id" filterable :rules="[{ required: true, message: 'Destino es obligatorio' }]" >
+                        <el-select v-model="formMultiPay.payment_destination_id" filterable
+                            :rules="[{ required: true, message: 'Destino es obligatorio' }]">
                             <el-option v-for="option in payment_destinations" :key="option.id" :value="option.id"
                                 :label="option.description"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Valor">
                         <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment" readonly></el-input>
+                    </el-form-item>
+                    <el-form-item label="Extras">
+                        <el-button @click="addExtra()">
+                            <i class="fa fa-plus-circle d-block"></i>
+                        </el-button>
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Cuenta</th>
+                                    <th>Debe</th>
+                                    <th>Haber</th>
+                                    <th></th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr v-for="(row, index) in formMultiPay.extras" :key="index">
+                                    <td>
+                                        <el-select v-model="row.account_id" placeholder="Seleccione una cuenta contable"
+                                            filterable clearable>
+                                            <el-option v-for="account in accounts" :key="account.id"
+                                                :label="account.description" :value="account.id" />
+                                        </el-select>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.debe" type="number" :disabled="row.haber > 0" :step="0.01"
+                                            :min="0" :max="999999999999999999999">
+                                        </el-input>
+                                    </td>
+                                    <td>
+                                        <el-input v-model="row.haber" type="number" :disabled="row.debe > 0" :step="0.01"
+                                            :min="0" :max="999999999999999999999">
+                                        </el-input>
+                                    </td>
+                                    <td>
+                                        <el-button @click="deleteExtra(index)">
+                                            <i class="fa fa-trash d-block"></i>
+                                        </el-button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </el-form-item>
                     <el-form-item label="Cuotas a liquidar">
                         <table class="table">
@@ -673,6 +561,7 @@
                             </tbody>
                         </table>
                     </el-form-item>
+
                 </el-form>
                 <template #footer>
                     <span class="dialog-footer">
@@ -710,6 +599,7 @@ export default {
             resource: "finances/unpaid",
             form: {},
             customers: [],
+            accounts: [],
             recordId: null,
             amountFeeRow: 0,
             customerId: null,
@@ -754,11 +644,12 @@ export default {
             },
             formMultiPay: {
                 unpaid: [],
+                extras: [],
                 date_of_payment: moment().format('YYYY-MM-DD'),
-                payment : 0,
-                payment_method_type_id : '01',
-                payment_destination_id : 'cash',
-                reference : 'N/A',
+                payment: 0,
+                payment_method_type_id: '01',
+                payment_destination_id: null,
+                reference: 'N/A',
             },
         };
     },
@@ -901,7 +792,7 @@ export default {
                 this.users = response.data.users;
                 this.payment_method_types = response.data.payment_method_types;
                 this.payment_destinations = response.data.payment_destinations;
-
+                this.accounts = response.data.accounts;
                 this.web_platforms = response.data.web_platforms;
             });
         },
@@ -996,12 +887,6 @@ export default {
             // if (this.form.customer_id) {
 
             this.loadUnpaid();
-            /*this.records = _.filter(this.records_base, {
-                  customer_id: this.selected_customer
-                  });*/
-            // } else {
-            //     this.records = []
-            // }
         },
         changeUser() {
             this.loadUnpaid();
@@ -1053,13 +938,14 @@ export default {
         },
         initFormMultiPay() {
 
-            this.formMultiPay= {
+            this.formMultiPay = {
                 unpaid: [],
+                extras: [],
                 date_of_payment: moment().format('YYYY-MM-DD'),
-                payment : 0,
-                payment_method_type_id : '01',
-                payment_destination_id : 'cash',
-                reference : 'N/A',
+                payment: 0,
+                payment_method_type_id: '01',
+                payment_destination_id: null,
+                reference: 'N/A',
             }
         },
         clickMultiPay() {
@@ -1107,6 +993,19 @@ export default {
             this.showMultiPay = false;
             this.initFormMultiPay()
 
+        },
+
+        addExtra() {
+
+            this.formMultiPay.extras.push({
+                account_id: null,
+                debe: 0,
+                haber: 0,
+            });
+
+        },
+        deleteExtra(index) {
+            this.formMultiPay.extras.splice(index, 1);
         }
     },
 };

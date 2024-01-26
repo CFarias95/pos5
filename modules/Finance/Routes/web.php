@@ -54,7 +54,7 @@ if($hostname) {
                     Route::get('/unpaidall', 'UnpaidController@unpaidall')->name('unpaidall');
                     Route::get('/report-payment-method-days', 'UnpaidController@reportPaymentMethodDays');
                     Route::get('/pdf', 'UnpaidController@pdf');
-                    Route::get('/print/{document_id}/{type}/{format}/{id}/{index}', 'UnpaidController@toPrint');
+                    Route::get('/print/{document_id}/{type}/{format}', 'UnpaidController@toPrint');
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'UnpaidController@PosDatedShow');
                     Route::post('/posdated', 'UnpaidController@PosDatedUpdate');
@@ -82,10 +82,12 @@ if($hostname) {
                     Route::get('/to-pay', 'ToPayController@toPay');
                     Route::get('/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
                     Route::get('/pdf', 'ToPayController@pdf');
-                    Route::get('/print/{format}/{id}/{index}','ToPayController@toPrint');
+                    Route::get('/print/{format}/{id}','ToPayController@toPrint');
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'ToPayController@PosDatedShow');
                     Route::post('/posdated', 'ToPayController@PosDatedUpdate');
+
+                    Route::post('/multipay','ToPayController@generateMultiPay');
                 });
 
                 Route::prefix('income')->group(function () {
@@ -100,7 +102,6 @@ if($hostname) {
                     Route::post('', 'IncomeController@store');
                     Route::get('record/{record}', 'IncomeController@record');
                     Route::get('voided/{record}', 'IncomeController@voided');
-
                     Route::get('print/{external_id}/{format?}', 'IncomeController@toPrint');
 
 

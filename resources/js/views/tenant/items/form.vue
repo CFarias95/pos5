@@ -1409,18 +1409,13 @@
                       @change="changeItem"
                       @focus="focusSelectItem"
                     >
-                    <el-tooltip
-                        v-for="item in items"
-                        :key="item.id"
-                        placement="left"
-                    >
+                      <el-tooltip v-for="item in items" :key="item.id" placement="left">
                         <div slot="content" v-html="ItemSlotTooltipView(item)"></div>
                         <el-option
                           :label="ItemOptionDescriptionView(item)"
                           :value="item.id"
                         ></el-option>
-
-                    </el-tooltip>
+                      </el-tooltip>
                     </el-select>
                   </el-input>
                 </template>
@@ -1484,6 +1479,7 @@
                       <th>Cantidad</th>
                       <th>Unidades de medida</th>
                       <th>Modificable?</th>
+                      <th>Se redondea?</th>
                       <th>Costo Individual</th>
                       <th>Costo Total</th>
                       <th>Borrar</th>
@@ -1496,9 +1492,11 @@
                       <!--                                        <td>{{ row.item_id }}</td>-->
                       <td>
                         {{
-                          (row.name || row.description )
-                            ? row.name + ' / '+ row.description
-                            : row.individual_item.name + ' / '+ row.individual_item.description
+                          row.name || row.description
+                            ? row.name + " / " + row.description
+                            : row.individual_item.name +
+                              " / " +
+                              row.individual_item.description
                         }}
                       </td>
                       <!-- <td>{{ row.description }}</td> -->
@@ -1533,6 +1531,13 @@
                         <el-checkbox
                           v-model="row.modifiable"
                           :checked="row.modifiable > 0"
+                          >Si</el-checkbox
+                        >
+                      </td>
+                      <td>
+                        <el-checkbox
+                          v-model="row.rounded_up"
+                          :checked="row.rounded_up > 0"
                           >Si</el-checkbox
                         >
                       </td>
@@ -1829,7 +1834,7 @@ export default {
       form_brand: { add: false, name: null, id: null },
       warehouses: [],
       items: [],
-      item_selected:[],
+      item_selected: [],
       loading_submit: false,
       showPercentagePerception: false,
       has_percentage_perception: false,
@@ -2009,7 +2014,7 @@ export default {
       } else {
         this.noSaveForm = false;
       }
-      this.porcentajeT = _.round(total,6);
+      this.porcentajeT = _.round(total, 6);
     },
     clickCancelRate(index) {
       this.form.item_rate.splice(index, 1);
@@ -2287,12 +2292,11 @@ export default {
             //         return w;
             //     });
             // }
-        });
+          });
         this.calcularCantidad();
       }
 
       this.setDataToItemWarehousePrices();
-
     },
     setDataToItemWarehousePrices() {
       this.warehouses.forEach((warehouse) => {
@@ -2545,13 +2549,16 @@ export default {
       this.item_selected = _.find(this.items, { id: this.item_suplly });
       this.item_suplly = this.item_selected.id;
       console.log("item suppli pos: ", this.item_suplly);
-      console.log("item selected: ",this.item_selected)
+      console.log("item selected: ", this.item_selected);
       //this.item_suplly.percentage_decimal = 0
       //this.clickAddSupply();
     },
     focusSelectItem() {
       this.$refs.selectSearchNormal.$el.getElementsByTagName("input")[0].focus();
-      console.log('Focus selected item: ',this.$refs.selectSearchNormal.$el.getElementsByTagName("input")[0].focus())
+      console.log(
+        "Focus selected item: ",
+        this.$refs.selectSearchNormal.$el.getElementsByTagName("input")[0].focus()
+      );
     },
     ItemSlotTooltipView(item) {
       return ItemSlotTooltip(item);
@@ -2579,7 +2586,7 @@ export default {
         tipo: item.unit_type_id,
       }),
         //item.total_producir = this.form.supplies.total_producir
-    this.form.supplies.push(item);
+        this.form.supplies.push(item);
       this.calcularCantidad();
       //this.changeItem()
     },

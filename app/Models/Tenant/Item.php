@@ -1195,7 +1195,7 @@ class Item extends ModelTenant
             $igv = 1;
         }
         $itemSupply = $this->supplies;
-        Log::info('supplies - '.json_encode($itemSupply));
+        //Log::info('supplies - '.json_encode($itemSupply));
         if (!empty($itemSupply)) {
             $itemSupply = $itemSupply->transform(function (ItemSupply $row) {
                 $data = $row->getCollectionData();

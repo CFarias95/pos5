@@ -241,7 +241,7 @@ use Modules\Item\Models\ItemLotsGroup;
             Log::info('date11 - '.$created_at);*/
             $result = DB::connection('tenant')->transaction(function () use ($request) {
                 $created_at = Carbon::parse($request->created_at);
-                Log::info('date'.$created_at);
+                //Log::info('date'.$created_at);
                 $row = InventoryTransfer::create([
                     'description' => $request->description,
                     'warehouse_id' => $request->warehouse_id,
@@ -253,11 +253,11 @@ use Modules\Item\Models\ItemLotsGroup;
                 $row->save();
 
 
-                Log::info('ROW - '.$row);
+                //Log::info('ROW - '.$row);
 
                 foreach ($request->items as $it) {
 
-                    //Log::info(json_encode($it));
+                    //Log::info('it - '.json_encode($it));
 
                     if($it['lots_enabled'] == true){
                         // si tiene Lotes se crea el kardex por lotes
@@ -275,6 +275,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 $inventory->quantity = $value['compromise_quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->lot_code = $value['code'];
+                                //Log::info('Inventory antes de guardar');
                                 $inventory->save();
 
                                 //lotes origen

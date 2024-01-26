@@ -44,7 +44,9 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
+use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\DocumentPayment;
+use App\Models\Tenant\SaleNotePayment;
 use Illuminate\Support\Str;
 
 use function PHPSTORM_META\type;
@@ -104,7 +106,13 @@ class UnpaidController extends Controller
         $payment_method_types = PaymentMethodType::where('is_cash',1)->get();
         $web_platforms = WebPlatform::all();
         $payment_destinations = $this->getPaymentDestinations();
-        return compact('customers', 'establishments', 'users', 'payment_method_types','web_platforms','payment_destinations');
+        $accounts = AccountMovement::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'description' => $row->code.'-'.$row->description,
+            ];
+        });
+        return compact('accounts','customers', 'establishments', 'users', 'payment_method_types','web_platforms','payment_destinations');
     }
 
     public function records(Request $request)
@@ -292,69 +300,92 @@ class UnpaidController extends Controller
 
     }
 
-    public function toPrint($external_id,$type,$format, $id, $index) {
+    public function toPrint($paymentId,$type,$format) {
+
+        $payments = null;
+        $seat_account = null;
+        $filename = null;
 
         if ($type=='sale') {
-            $sale_note = SaleNote::where('external_id', $external_id)->first();
+            $payment = SaleNotePayment::find($paymentId);
+            $filename = $payment->sale_note->filename;
+
         } else {
-            $sale_note = Document::where('external_id', $external_id)->first();
+            $payment = DocumentPayment::where('id',$paymentId)->get();
+            $seat_account = AccountingEntries::where('document_id','CF'.$paymentId)->orWhere('document_id','like','%CF'.$paymentId.';%')->first();
+
+            if($payment[0]->multipay == 'SI'){
+
+                $sequential = $payment[0]->sequential;
+                $filename = 'MULTIPAGO-'.$sequential;
+                $payments = DocumentPayment::where('sequential',$sequential)->get();
+                $payments->transform(function($row){
+                    $fee = DocumentFee::find($row->fee_id);
+                    return[
+                        'document_serie' => $row->document->series,
+                        'document_number' => $row->document->number,
+                        'document_fee' => $fee->number,
+                        'client_number' => $row->document->customer->number,
+                        'client_name' => $row->document->customer->name,
+                        'establishment' =>$row->document->establishment->code,
+                        'comment' => $row->document->additional_information[0],
+                        'payment' => $row->payment,
+                        'to_pay' => $fee->amount - $row->payment,
+                        'sequential' => $row->sequential,
+                    ];
+                });
+
+            }else{
+
+                $payments = $payment->transform(function($row) use($filename){
+                    $fee = DocumentFee::find($row->fee_id);
+                    $filename = $row->document->filename;
+                    return[
+                        'document_serie' => $row->document->series,
+                        'document_number' => $row->document->number,
+                        'document_fee' => $fee->number,
+                        'client_number' => $row->document->customer->number,
+                        'client_name' => $row->document->customer->name,
+                        'establishment' =>$row->document->establishment->code,
+                        'comment' => $row->document->additional_information[0],
+                        'payment' => $row->payment,
+                        'to_pay' => $fee->amount - $row->payment,
+                        'sequential' => $row->sequential,
+                    ];
+                });
+            }
         }
 
-        if (!$sale_note) throw new Exception("El código {$external_id} es inválido, no se encontro la nota de venta relacionada");
+        if (!$payments) throw new Exception("No se pudo recuperar el documento asociado al pago : ".$paymentId);
 
-        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index);
-
+        //$this->reloadPDF1($payments, $seat_account, $format, $document->filename);
+        $this->createPdf1($payments,$seat_account,$format, $filename);
         $temp = tempnam(sys_get_temp_dir(), 'unpaid');
 
 
-        file_put_contents($temp, $this->getStorage($sale_note->filename, 'unpaid'));
+        file_put_contents($temp, $this->getStorage($filename, 'unpaid'));
 
-        /*
-        $headers = [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
-        ];
-        */
-
-        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
+        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($filename));
     }
 
-    private function reloadPDF1($sale_note, $format, $filename, $id, $index) {
-        $this->createPdf1($sale_note, $format, $filename, $id, $index);
+    private function reloadPDF1($payments, $format, $filename, $id, $index) {
+        $this->createPdf1($payments, $format, $filename, $id, $index);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index = 0) {
+    public function createPdf1($payments = null, $seat, $format_pdf = null, $filename = null) {
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
 
-        $this->company = ($this->company != null) ? $this->company : Company::active();
-        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+        $company = ($this->company != null) ? $this->company : Company::active();
+        $configuration = Configuration::first();
 
-        $this->configuration = Configuration::first();
-        // $configuration = $this->configuration->formats;
-        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
+        $base_template = 'default';
+        $user_log = User::find($seat[0]->user_id);//auth()->user();
+        $establishment = Establishment::find(auth()->user()->establishment_id);
 
-
-        //$docs = Document::where('customer_id', $this->document->customer_id)->where('external_id', $this->document->external_id)->first();
-
-        $docs = $this->document;
-
-        Log::info('Document ID: '.$docs->id);
-        Log::info('FEE ID: '.$id);
-        $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
-        Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
-
-        $i = $conect[$index];
-        $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
-
-        $user_log = auth()->user();
-
-        //Log::info('info1'.json_encode($account_entry));
-        //Log::info('index1'.$id);
-
-        $html = $template->pdf1($base_template, "unpaid", $this->company, $this->document, $format_pdf, $id, $account_entry, $index, $user_log);
+        $html = $template->pdf1($base_template, "unpaid", $company, $payments, $establishment, $format_pdf,$seat,$user_log);
 
         /* cuentas por cobrar formato a4 */
         if (($format_pdf === 'ticket') OR ($format_pdf === 'ticket_58')OR ($format_pdf=='ticket_50')) {
@@ -459,7 +490,9 @@ class UnpaidController extends Controller
         $pdf->WriteHTML($stylesheet, HTMLParserMode::HEADER_CSS);
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
-        $this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
+        $this->uploadStorage($filename, $pdf->output('', 'S'), 'unpaid');
+
+        //$this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'unpaid', $id);
     }
 
     public function uploadFile1($filename, $file_content, $file_type, $account_entry)
@@ -622,6 +655,7 @@ class UnpaidController extends Controller
     }
 
     public function generateMultiPay(Request $request){
+
         Log::info('Funcion para crear pago multiple');
         Log::info('generateMultiPay' . json_encode($request));
 
@@ -630,6 +664,8 @@ class UnpaidController extends Controller
         $documentsSequentials = '';
         $haber = [];
         $sequential = DocumentPayment::latest('id')->first();
+        $debeAdicional = 0;
+        $haberAdicional = 0;
 
         foreach ($request->unpaid as $value) {
             //Log::info('DATA: ',$value);
@@ -646,6 +682,9 @@ class UnpaidController extends Controller
             $payment->multipay = 'SI';
             $payment->save();
 
+            $row['payment_destination_id'] = $request->payment_destination_id;
+            $this->createGlobalPayment($payment, $row);
+
             $document = Document::find($value['document_id']);
             $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
 
@@ -657,18 +696,23 @@ class UnpaidController extends Controller
 
         $comment = 'Multipago '.$documentsSequentials;
 
+        foreach ($request->extras as $value) {
+            $debeAdicional += floatVal($value['debe']);
+            $haberAdicional += floatVal($value['haber']);
+        }
+
         $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
         $cabeceraC = new AccountingEntries();
         $cabeceraC->user_id = auth()->user()->id;
         $cabeceraC->seat = $lista->seat + 1;
         $cabeceraC->seat_general = $lista->seat + 1;
-        $cabeceraC->seat_date = date('y-m-d');
+        $cabeceraC->seat_date = $request->date_of_payment;
         $cabeceraC->types_accounting_entrie_id = 1;
         $cabeceraC->comment = $comment;
         $cabeceraC->serie = null;
         $cabeceraC->number = $lista->seat + 1;
-        $cabeceraC->total_debe = $request->payment;
-        $cabeceraC->total_haber = $request->payment;
+        $cabeceraC->total_debe = $request->payment + $debeAdicional;
+        $cabeceraC->total_haber = $request->payment + $haberAdicional;
         $cabeceraC->revised1 = 0;
         $cabeceraC->user_revised1 = 0;
         $cabeceraC->revised2 = 0;
@@ -691,7 +735,7 @@ class UnpaidController extends Controller
         $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$config->cta_charge;
         $detalle->seat_line = 1;
         $detalle->haber = 0;
-        $detalle->debe = $request->payment;
+        $detalle->debe = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
         $detalle->save();
 
         $line = 2;
@@ -703,6 +747,17 @@ class UnpaidController extends Controller
             $detalle->seat_line = $line;
             $detalle->debe = 0;
             $detalle->haber = $value['amount'] ;
+            $detalle->save();
+            $line += 1;
+        }
+
+        foreach ($request->extras as $value) {
+            $detalle = new AccountingEntryItems();
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = $value['account_id'];
+            $detalle->seat_line = $line;
+            $detalle->debe = floatVal($value['debe']);
+            $detalle->haber = floatVal($value['haber']);
             $detalle->save();
             $line += 1;
         }
@@ -722,6 +777,10 @@ class UnpaidController extends Controller
         $accountEntryNes->comment = 'Reverso '.$accountEntry->comment;
         $accountEntryNes->document_id = $payments;
         $accountEntryNes->save();
+
+        $accountEntryNes->filename = 'ASC-'.$accountEntryNes->id.'-'. date('Ymd');
+        $accountEntryNes->save();
+
 
         $accountEntryItems = AccountingEntryItems::where('accounting_entrie_id',$accountEntry->id)->get();
         foreach ($accountEntryItems as $value) {

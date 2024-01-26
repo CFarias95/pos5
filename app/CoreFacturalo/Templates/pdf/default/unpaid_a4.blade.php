@@ -1,18 +1,14 @@
 @php
-    $establishment = $document->establishment;
-    $payments = $document->payments;
-    $left =  ($document->series) ? $document->series : $document->prefix;
-    $tittle = $left.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
+
+    //$left =  ($document->series) ? $document->series : $document->prefix;
+    //$tittle = $left.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
-    $total_payment = $document->payments->sum('payment');
-    $balance = ($document->total - $total_payment) - $document->payments->sum('change');
+    //$total_payment = $document->payments->sum('payment');
+    //$balance = ($document->total - $total_payment) - $document->payments->sum('change');
     //dd($tittle_unpaid);
-    $data = $payments;
-    //Log::info('document'.$document);
-    //Log::info('payments'.$payments);
-    //Log::info('index'.$index);
-    //Log::info('id'.$id);
-    $valores = null;
+    //$data = $payments;
+    //$valores = null;
+    /*
     for($i = 0 ; $i <= $index ; $i++)
     {
         $valores += $data[$i]->payment;
@@ -25,10 +21,12 @@
         $referencia = 'AT'.$data[$index]->advances->id;
     }
 
-    $num_comprobante = str_pad(($document->id), 8, '0', STR_PAD_LEFT);
+    $num_comprobante = str_pad(($document->payments[$index]->id), 8, '0', STR_PAD_LEFT);
     //Log::info('datos'.json_encode($account_entry))
     //Log::info('index'.$index);
-    //Log::info('document - '.$document);
+    Log::info('document - '.$document->payments[$index]->id)
+    */
+    Log::info($document);
 @endphp
 <html>
 <head>
@@ -76,174 +74,42 @@
         </td>
         <td width="30%" class="border-box py-4 px-2 text-center">
             <h5 class="text-center">CUENTAS POR COBRAR</h5>
-            <h3 class="text-center">{{ $num_comprobante }}</h3>
+            <h3 class="text-center">{{ $document[0]['sequential'] }}</h3>
         </td>
     </tr>
 </table>
-<table class="full-width mt-5">
-    <tr>
-        <td width="15%">Cliente:</td>
-        <td width="45%">{{ $document->customer->name }}</td>
-        <td width="25%">Fecha de emisión:</td>
-        {{-- <td width="15%">{{ $document->date_of_issue->format('Y-m-d') }}</td> --}}
-        @if($payments->count())
-
-                @php
-                    $payment = 0;
-                @endphp
-                <td width="15%">{{ $data[$index]->date_of_payment->format('Y-m-d') }}</td>
-                @foreach($payments as $row)
-
-                    @php
-                        $payment += (float) $row->payment;
-                    @endphp
-                @endforeach
-        @endif
-    </tr>
-    <tr>
-        <td width="30%">Documento por cobrar:</td>
-        <td width="45%"> {{ $tittle }}</td>
-    </tr>
-</table>
-
-
+<br>
+<br>
 <table class="full-width">
     <thead class="">
     <tr class="bg-grey">
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
-        <th class="border-top-bottom text-right py-2" width="12%">PENDIENTE PAGAR</th>
+        <th class="border-top-bottom text-left p-1">#</th>
+        <th class="border-top-bottom text-left p-2">SERIE</th>
+        <th class="border-top-bottom text-left p-2">NÚMERO</th>
+        <th class="border-top-bottom text-left p-2">CUOTA</th>
+        <th class="border-top-bottom text-left p-3">CLIENTE</th>
+        <th class="border-top-bottom text-left p-2">CI</th>
+        <th class="border-top-bottom text-left p-3">COMENTARIO</th>
+        <th class="border-top-bottom text-left p-2">PAGADO</th>
+        <th class="border-top-bottom text-left p-2">PENDIENTE</th>
     </tr>
     </thead>
     <tbody>
-    @foreach($document->items as $row)
+    @foreach($document as $key => $row)
         <tr>
-            <td class="text-center align-top">
-                @if(((int)$row->quantity != $row->quantity))
-                    {{ $row->quantity }}
-                @else
-                    {{ number_format($row->quantity, 0) }}
-                @endif
-            </td>
-            <td class="text-center align-top">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left align-top">
-                @if($row->name_product_pdf)
-                    {!!$row->name_product_pdf!!}
-                @else
-                    {!!$row->item->description!!}
-                @endif
-
-                @if($row->total_isc > 0)
-                    <br/><span style="font-size: 9px">ISC : {{ $row->total_isc }} ({{ $row->percentage_isc }}%)</span>
-                @endif
-
-                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
-
-                @if($row->total_plastic_bag_taxes > 0)
-                    <br/><span style="font-size: 9px">ICBPER : {{ $row->total_plastic_bag_taxes }}</span>
-                @endif
-
-                @if($row->attributes)
-                    @foreach($row->attributes as $attr)
-                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
-                    @endforeach
-                @endif
-                @if($row->discounts)
-                    @foreach($row->discounts as $dtos)
-                        <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
-                    @endforeach
-                @endif
-
-                @if($row->charges)
-                    @foreach($row->charges as $charge)
-                        <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
-                    @endforeach
-                @endif
-
-                @if($row->item->is_set == 1)
-                <br>
-                @inject('itemSet', 'App\Services\ItemSetService')
-                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
-                        {{$item}}<br>
-                    @endforeach
-                @endif
-
-                @if($document->has_prepayment)
-                    <br>
-                    *** Pago Anticipado ***
-                @endif
-            </td>
-            <td class="text-right align-top">{{ number_format($row->total, 2) }}</td>
-            <td class="text-right align-top">{{ $document->currency_type->symbol }} {{ number_format( $row->total - $valores, 2) }}</td>
+            <td class="text-left ">{{ $key }}</td>
+            <td class="text-left ">{{ $row['document_serie'] }}</td>
+            <td class="text-left ">{{ $row['document_number']}}</td>
+            <td class="text-left ">{{ $row['document_fee']}}</td>
+            <td class="text-left ">{{ $row['client_name'] }}</td>
+            <td class="text-left ">{{ $row['client_number'] }}</td>
+            <td class="text-left ">{{ $row['comment'] }}</td>
+            <td class="text-left ">{{ $row['payment'] }}</td>
+            <td class="text-left ">{{ $row['to_pay'] }}</td>
         </tr>
-
     @endforeach
-
-
-
-    @if ($document->prepayments)
-        @foreach($document->prepayments as $p)
-        <tr>
-            <td class="text-center align-top">1</td>
-            <td class="text-center align-top">NIU</td>
-            <td class="text-left align-top">
-                ANTICIPO: {{($p->document_type_id == '02')? 'FACTURA':'BOLETA'}} NRO. {{$p->number}}
-            </td>
-            <td class="text-center align-top"></td>
-            <td class="text-center align-top"></td>
-            <td class="text-center align-top"></td>
-            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-            <td class="text-right align-top">0</td>
-            <td class="text-right align-top">-{{ number_format($p->total, 2) }}</td>
-        </tr>
-        <tr>
-            <td colspan="9" class="border-bottom"></td>
-        </tr>
-        @endforeach
-    @endif
     </tbody>
 </table>
-
-
-@if($document->payment_method_type_id && $payments->count() == 0)
-    <table class="full-width">
-        <tr>
-            <td>
-                <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
-            </td>
-        </tr>
-    </table>
-@endif
-
-@if($payments->count())
-
-<table class="full-width">
-    <tr>
-        <td>
-            <strong>
-                PAGOS:
-            </strong>
-        </td>
-    </tr>
-    <tr>
-        <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} - {{ $data[$index]->payment_method_type->description }} - {{ $referencia != '' ? $referencia:$data[$index]->reference }} - ${{number_format($account_entry['total_debe'], 2, '.', ',')}}</td>
-    </tr>
-    @php
-        $payment = 0;
-    @endphp
-    @foreach($payments as $row)
-        @php
-            $payment += (float) $row->payment;
-        @endphp
-    @endforeach
-    </tr>
-     
-</table>
-@endif
-
-
 
 <table class="full-width mt-4">
     <tr class="mt-4">
@@ -261,7 +127,7 @@
 <table width="100%">
     <thead>
         <tr >
-            <th width="60%" class="border-box text-center p-2">
+            <th width="60%" class="border-box text-left p-2">
                 Cuenta
             </th>
             <th width="20%" class="border-box text-center p-1">
@@ -276,9 +142,9 @@
         @foreach($account_entry['items'] as $value)
         <tr >
             @if($value->debe>0)
-            <td class="border-box text-center p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+            <td class="border-box text-left p-1 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
             @else
-            <td class="border-box text-center p-1 pl-5 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
+            <td class="border-box text-left p-1 pl-5 font-sm">{{$value->account_movement->code}} {{$value->account_movement->description}} </td>
             @endif
 
             <td class="border-box text-center p-1">${{number_format($value->debe, 2, '.', ',')}} </td>
@@ -306,36 +172,36 @@
         <tr class="font-sm">
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Elaborado por: 
+                    Elaborado por:
                 </b>
                 {{$user_log->name}}
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
                 {{$user_log->number}}
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Aprobado por: 
+                    Aprobado por:
                 </b>
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Revisado por: 
+                    Revisado por:
                 </b>
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
-                
+
             </td>
          </tr>
     </tbody>

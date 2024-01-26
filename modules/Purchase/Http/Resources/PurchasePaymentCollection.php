@@ -24,6 +24,8 @@ class PurchasePaymentCollection extends ResourceCollection
                 'filename' => ($row->payment_file) ? $row->payment_file->filename:null,
                 'payment' => $row->payment,
                 'fee_id' =>$row->fee_id,
+                'multi_pay' => $row->multipay,
+                'sequential' => $row->sequential,
             ];
         });
     }

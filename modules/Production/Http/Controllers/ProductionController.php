@@ -37,6 +37,8 @@ use Modules\Production\Models\StateTypeProduction;
 use Illuminate\Support\Str;
 use Maatwebsite\Excel\Excel;
 use App\Models\Tenant\ItemWarehouse;
+use Modules\Inventory\Http\Controllers\TransferController;
+use Modules\Inventory\Http\Requests\TransferRequest;
 
 class ProductionController extends Controller
 {
@@ -179,7 +181,7 @@ class ProductionController extends Controller
             $production->save();
 
             $items_supplies = $request->supplies;
-            Log::info("SUPLIES: " . json_encode($items_supplies));
+            //Log::info("SUPLIES: " . json_encode($items_supplies));
 
             try {
                 foreach ($items_supplies as $item) {
@@ -190,7 +192,7 @@ class ProductionController extends Controller
                     $qty = $item['quantityD'] ?? 0;
                     $production_supply->production_name = $production->name;
                     $production_supply->production_id = $production_id;
-                    $production_supply->item_supply_name = isset($item['individual_item']) ? $item['individual_item']['name'] .' / '. $item['individual_item']['description']  : $item['description'];
+                    $production_supply->item_supply_name = isset($item['individual_item']) ? $item['individual_item']['name'] . ' / ' . $item['individual_item']['description']  : $item['description'];
                     $production_supply->item_supply_id = $item['id'];
                     $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
                     $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
@@ -567,6 +569,7 @@ class ProductionController extends Controller
             $old_state_type_id = $production->state_type_id;
             $quantity = $request->input('quantity');
             $warehouse_id = $request->input('warehouse_id');
+            //Log::info('$request->supplies - '.json_encode($request->supplies));
             $production->fill($request->all());
             $production->warehouse_id = $warehouse_id;
             $production->quantity = $quantity;
@@ -575,9 +578,11 @@ class ProductionController extends Controller
             $production->user_id = auth()->user()->id;
             $production->soap_type_id = $this->getCompanySoapTypeId();
             $items_supplies = $request->supplies;
+            //Log::info('tiem_supplies - '.json_encode($items_supplies));
             $costoT = 0;
-
-            //Log::info("SUPLIES: ".json_encode($items_supplies));
+            Log::info("SUPLIES: ".json_encode($items_supplies));
+            Log::info('item - '.json_encode($items_supplies[0]['checked']));
+            Log::info('item - '.getType($items_supplies[0]['checked']));
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
@@ -595,6 +600,7 @@ class ProductionController extends Controller
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
                         $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
+                        $production_supply->checked = $item['checked'];
 
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
@@ -645,6 +651,7 @@ class ProductionController extends Controller
                     foreach ($totalSupply as $supp) {
                         $costoT += ($supp->quantity * $supp->cost_per_unit);
                     }
+                    //Log::info('Pasa el foreach de costoT');
                     $production->cost_supplies = $costoT;
                     $production->save();
 
@@ -660,7 +667,7 @@ class ProductionController extends Controller
                     $costoT = $totalA + $totalN;
                     $costoT = round($costoT / $stockT, 4);
 
-                    Log::info("ACTUAL ".$costoA.'-'.$stockA.' NUEVO: '.$costoT."-".$stockT);
+                    Log::info("ACTUAL " . $costoA . '-' . $stockA . ' NUEVO: ' . $costoT . "-" . $stockT);
                     $item->purchase_mean_cost = $costoT;
                     $item->save();
                 } catch (Exception $ex2) {
@@ -688,6 +695,7 @@ class ProductionController extends Controller
 
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item);
                     $this->inventoryImperfectProduct($production, $inventory_transaction_item_imperfect);
+                    $this->tranferSamples($request->samples, $request->destination_warehouse_id, $warehouse_id, $production);
                     $this->createAccountingEntry($production->id);
                 }
                 if ($old_state_type_id == '03' && $new_state_type_id == '04' && !$informative) {
@@ -697,7 +705,6 @@ class ProductionController extends Controller
                     $inventory_transaction_item2 = InventoryTransaction::findOrFail(103);
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
                 }
-
             } catch (Exception $ex) {
                 Log::error("Error UPDATE PRODUCTION: " . $ex->getMessage());
                 $production->state_type_id = '01';
@@ -716,6 +723,86 @@ class ProductionController extends Controller
         });
 
         return $result;
+    }
+
+    public function tranferSamples($samples, $destination_warehouse_id, $warehouse_id, $production)
+    {
+        //Log::info('Entra a transfersamples');
+        //Log::info('$samples - '.$samples);
+        //Log::info('$destination_warehouse_id - '.$destination_warehouse_id);
+        if (isset($samples) && $samples > 0 && isset($destination_warehouse_id) && $destination_warehouse_id != null) {
+            //Log::info('Entra al if transfersamples');
+            $description = "Traslado de Muestras";
+            $client_id = null;
+            $created_at = Carbon::now();
+            $warehouse_id = $warehouse_id;
+            $warehouse_destination_id = $destination_warehouse_id;
+            $compromise_quantity = $samples;
+            $transfers = new TransferController();
+            $transferRequest = new TransferRequest();
+
+            $items = [];
+            //Log::info('Production item before loop: ' . json_encode($production->item));
+            //Log::info('$production - ' . $production);
+
+            if (isset($production->item)) {
+                if (is_array($production->item)) {
+                    //Log::error('Production item is an array');
+                    foreach ($production->item as $item) {
+                        $item_data = [
+                            $lots = [
+                                [
+                                    'id' => $item['id'],
+                                    'compromise_quantity' => $samples,
+                                    'code' => $production->lot_code,
+                                    'checked' => true,
+                                ]
+                            ],
+                            'id' => $item['id'],
+                            'lots_enabled' => $item['lots_enabled'],
+                            'lots' => $lots,
+                        ];
+                        $items[] = $item_data;
+                    }
+                } elseif (is_object($production->item)) {
+                    //Log::info('Production item is an object');
+                    $lots = [
+                        [
+                            'id' => $production->item->id,
+                            'compromise_quantity' => $samples,
+                            'code' => $production->lot_code,
+                            'checked' => true,
+                        ]
+                    ];
+                    $item_data = [
+                        'id' => $production->item->id,
+                        'lots_enabled' => $production->item->lots_enabled,
+                        'lots' => $lots,
+                    ];
+                    $items[] = $item_data;
+                } else {
+                    Log::error('Production item is neither an array nor an object');
+                }
+            } else {
+                Log::error('Production item is not set');
+            }
+
+            //Log::info('fin transfersSamples');
+
+
+            //$request = new Request();
+            $transferRequest['description'] = $description;
+            $transferRequest['warehouse_id'] = $warehouse_id;
+            $transferRequest['warehouse_destination_id'] = $warehouse_destination_id;
+            $transferRequest['items'] = $items;
+            $transferRequest['client_id'] = $client_id;
+            $transferRequest['created_at'] = $created_at->toDateTimeString();
+            $transferRequest['quantity'] = $compromise_quantity;
+
+            return $transfers->store($transferRequest);
+        }
+        //Log::info('Sale de transfersamples');
+
     }
 
     public function inventoryImperfectProduct($production, $inventory_transaction_item)
@@ -782,7 +869,7 @@ class ProductionController extends Controller
                         $lots_group = $item["lots_group"];
 
                         //VALIDAR CANTIDADES EN LOSTES PRIMERO
-                         /*foreach ($lots_group as $lots) {
+                        /*foreach ($lots_group as $lots) {
                             if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
                                 $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
 
@@ -801,7 +888,7 @@ class ProductionController extends Controller
 
                         foreach ($lots_group as $lots) {
 
-                            if(isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0){
+                            if (isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0) {
                                 $qty = floatval($lots["compromise_quantity"]) ?? 0;
                                 //PRIMERO INTENTA REALIZAR EL INGRESO O SALIDA DEL STOCK
                                 $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
@@ -823,7 +910,7 @@ class ProductionController extends Controller
                                 $inventory_it->save();
                             }
                         }
-                    }else{
+                    } else {
 
                         $qty = $item['quantity'] ?? 0;
                         $inventory_it = new Inventory();
@@ -840,6 +927,14 @@ class ProductionController extends Controller
         } catch (\Throwable $th) {
             throw $th;
         }
+    }
+
+    public function getProductionCount($date)
+    {
+        $count = Production::whereDate('created_at', $date)->count();
+
+        // Incrementar el contador para la próxima producción
+        return response()->json(['count' => $count + 1]);
     }
 
     public function updateOld(ProductionRequest $request, $id)
@@ -954,7 +1049,7 @@ class ProductionController extends Controller
         $state_types_prod = StateTypeProduction::get();
         $state_type_descr = StateTypeProduction::find('01');
         $item_warehouses = ItemWarehouse::get();
-        
+        //Log::info('items111 - '.self::optionsItemProduction(),);
         return [
             'items' => self::optionsItemProduction(),
             'warehouses' => $this->optionsWarehouse(),
@@ -988,18 +1083,37 @@ class ProductionController extends Controller
                     foreach ($lots_group as $lot) {
                         $lot["item_supply_id"] = $value["id"];
                     }
-                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["name"].'/'.$value["individual_item"]["description"] : $value["individual_item"]["name"];
+                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["name"] . '/' . $value["individual_item"]["description"] : $value["individual_item"]["name"];
+                    /*$unit_quantity = $value['quantity'];
+                    if ($value['rounded_up'] > 0) {
+                        $truncated_number = bcdiv($value['quantity'], 1, 3);
+                        $last_digit = substr($truncated_number, -1);
+
+                        $truncated_number = substr($truncated_number, 0, -1); // Remueve el último dígito para redondeo
+                        if ($last_digit <= 2) {
+                            $rounded_number = $truncated_number . '0'; // Convierte a '0'
+                        } elseif ($last_digit >= 3 && $last_digit <= 7) {
+                            $rounded_number = $truncated_number . '5'; // Convierte a '5'
+                        } elseif ($last_digit >= 8) {
+                            $rounded_number = bcadd($truncated_number, '0.01', 2); // Incrementa en '0.01'
+                        }
+                        $value['quantity'] = $rounded_number;
+                    }*/
+
+                    //Log::info('new value - ' .$value['quantity']);
+                    //Log::info('old value - ' .$unit_quantity);
                     $transformed_supply = [
                         'id' => $value["id"],
                         'individual_item_id' => $value["individual_item_id"],
                         'description' => $descriotion,
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
-                        'quantity_per_unit' => $value["quantity"],
+                        'quantity_per_unit' => $value['quantity'],
                         'cost_per_unit' => (isset($value["cost_per_unit"]) && $value["cost_per_unit"] > 0) ? $value["cost_per_unit"] : $value["individual_item"]["purchase_mean_cost"],
                         'lots_enabled' => $value["individual_item"]["lots_enabled"],
                         'warehouse' => $value["individual_item"]["warehouse_id"],
                         'modificable' => $value["modificable"],
+                        'rounded_up' => $value["rounded_up"],
                         'lots_group' => $lots_group,
                     ];
                     $transformed_supplies[] = $transformed_supply;
@@ -1048,6 +1162,7 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production_supplies = ProductionSupply::where('production_id', $production->id)->with('itemSupply.individual_item')->get();
+        Log::info('prod_supp - '.$production_supplies);
         $warehouse_id = $production->warehouse_id;
         $data = $production->getCollectionData();
         $data['item_id'] = $production->item_id;
@@ -1057,6 +1172,7 @@ class ProductionController extends Controller
         $transformed_supplies = [];
         //Log::info("production_supplies".json_encode($production_supplies));
         foreach ($production_supplies as $supply) {
+            $checked = $supply->checked;
             $item_supply_id = $supply->item_supply_id;
             //por cada insumo que se fabricó voy a obtener los lotes que se utilizó
             //para ello obtengo la producción y el id del insumo que se utilizó en esa producción
@@ -1083,6 +1199,7 @@ class ProductionController extends Controller
                 'description' => $supply->item_supply_name ?? '',
                 'item_id' => $supply->itemSupply->individual_item->id,
                 'quantityD' => $supply->quantity,
+                'checked' => $checked,
                 'quantity' => $supply->quantity,
                 'unit_type' => $supply->itemSupply->individual_item->unit_type->description,
                 'quantity_per_unit' => $supply->quantity,

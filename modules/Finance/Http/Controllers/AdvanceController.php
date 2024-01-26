@@ -137,7 +137,7 @@ class AdvanceController extends Controller
                     'name' => $row->name,
                     'type' =>$row->type,
                 ];
-            }); 
+            });
         }
 
         return compact('clients');
@@ -181,18 +181,19 @@ class AdvanceController extends Controller
         //$created_at = $request->created_at;
 
         $advance->fill($data);
-        
+
         $advance->created_at = $created_at;
-        
+
         $advance->save();
 
 
         $msg = '';
         $msg = ($id) ? 'Anticipo editado con éxito' : 'Anticipo registrado con éxito';
 
-        if(!$id && $request->input('generate_account') != 0 ){
+        if(!$id ){ //&& $request->input('generate_account') != 0 ){
             $this->createAccountingEntry($advance->id);
         }
+
         return [
             'success' => true,
             'message' => $msg,
