@@ -82,7 +82,7 @@ if($hostname) {
                     Route::get('/to-pay', 'ToPayController@toPay');
                     Route::get('/report-payment-method-days', 'ToPayController@reportPaymentMethodDays');
                     Route::get('/pdf', 'ToPayController@pdf');
-                    Route::get('/print/{format}/{id}/{index}','ToPayController@toPrint');
+                    Route::get('/print/{format}/{id}','ToPayController@toPrint');
                     //agregado 19-10-23
                     Route::get('/posdated/{document_id}/{fee_id}', 'ToPayController@PosDatedShow');
                     Route::post('/posdated', 'ToPayController@PosDatedUpdate');

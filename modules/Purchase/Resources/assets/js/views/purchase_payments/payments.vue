@@ -36,7 +36,7 @@
                                         <td class="text-right">{{ row.payment }}</td>
                                         <td class="text-center">
                                             <button class="btn btn-lg btn-info waves-effect waves-light" type="button"
-                                                @click="clickPrint('a4', index)">
+                                                @click="clickPrint('a4', row.id)">
                                                 <i class="fa fa-file-alt"></i>
                                             </button>
                                             <p>A4</p>
@@ -663,7 +663,7 @@ export default {
         },
         clickPrint(format, index) {
             this.index = index;
-            window.open(`to-pay/print/${format}/${this.purchaseId}/${this.index}`, '_blank');
+            window.open(`to-pay/print/${format}/${this.index}`, '_blank');
         },
         clickReverse(row) {
             console.log('ROW enviado',row)

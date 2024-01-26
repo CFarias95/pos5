@@ -273,57 +273,80 @@ class ToPayController extends Controller
         return $pdf->download($filename . '.pdf');
     }
 
-    public function toPrint($format, $id, $index)
+    public function toPrint($format, $id)
     {
 
-        $sale_note = Purchase::find($id);
+        $purchase_payment = PurchasePayment::where('id', $id)->get();
+        $account_entry = AccountingEntries::where('document_id', 'PC'.$id)->orWhere('document_id','like','%PC'.$id.';%')->get();
+        $filename = null;
+        $payments = null;
 
-        //Log::info('datos'.$sale_note);
+        if($purchase_payment[0]->multipay == 'SI'){
 
-        $purchase_payment = PurchasePayment::where('purchase_id', $sale_note->id)->first();
+            $sequential = $purchase_payment[0]->sequential;
+            $filename = 'MULTIPAGO-'.$sequential;
+            $payments = PurchasePayment::where('sequential',$sequential)->get();
+            $payments->transform(function($row){
+                $fee = PurchaseFee::find($row->fee_id);
+                return[
+                    'document_serie' => $row->purchase->series,
+                    'document_number' => $row->purchase->number,
+                    'document_fee' => $fee->number,
+                    'client_number' => $row->purchase->supplier->number,
+                    'client_name' => $row->purchase->supplier->name,
+                    'establishment' =>$row->purchase->establishment->code,
+                    'comment' => $row->purchase->observation,
+                    'payment' => $row->payment,
+                    'to_pay' => $fee->amount - $row->payment,
+                    'sequential' => $row->sequential,
+                ];
+            });
 
-        $account_entry = AccountingEntries::where('document_id', 'PC'.$purchase_payment->id)->get();
+        }else{
 
-        //Log::info('datos'.$account_entry);
+            $payments = $purchase_payment->transform(function($row) use($filename){
+                $fee = PurchaseFee::find($row->fee_id);
+                $filename = $row->purchase->filename;
+                return[
+                    'document_serie' => $row->purchase->series,
+                    'document_number' => $row->purchase->number,
+                    'document_fee' => $fee->number,
+                    'client_number' => $row->purchase->supplier->number,
+                    'client_name' => $row->purchase->supplier->name,
+                    'establishment' =>$row->purchase->establishment->code,
+                    'comment' => $row->purchase->observation,
+                    'payment' => $row->payment,
+                    'to_pay' => $fee->amount - $row->payment,
+                    'sequential' => $row->sequential,
+                ];
+            });
+        }
 
-        //if (!$sale_note) throw new Exception("El código {$id} es inválido, no se encontro la nota de venta relacionada");
-        $this->reloadPDF1($sale_note, $format, $sale_note->filename, $id, $index, $account_entry);
+        $this->reloadPDF1($payments, $format, $filename, $account_entry);
         $temp = tempnam(sys_get_temp_dir(), 'to-pay');
-
-
-        file_put_contents($temp, $this->getStorage($sale_note->filename, 'to-pay'));
-
-        /*
-        $headers = [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$sale_note->filename.'"'
-        ];
-        */
-
-        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($sale_note->filename));
+        file_put_contents($temp, $this->getStorage($filename, 'to-pay'));
+        return response()->file($temp, GeneralPdfHelper::pdfResponseFileHeaders($filename));
     }
 
-    private function reloadPDF1($sale_note, $format, $filename, $id, $index, $account_entry)
+    private function reloadPDF1($payment, $format, $filename, $account_entry)
     {
-        $this->createPdf1($sale_note, $format, $filename, $id, $index, $account_entry);
+        $this->createPdf1($payment, $format, $filename, $account_entry);
     }
 
-    public function createPdf1($sale_note = null, $format_pdf = null, $filename = null, $id, $index, $account_entry = null)
+    public function createPdf1($payments = null, $format_pdf = null, $filename = null, $account_entry = null)
     {
 
         ini_set("pcre.backtrack_limit", "5000000");
         $template = new Template();
         $pdf = new Mpdf();
 
-        $this->company = ($this->company != null) ? $this->company : Company::active();
-        $this->document = ($sale_note != null) ? $sale_note : $this->sale_note;
+        $company = ($this->company != null) ? $this->company : Company::active();
+        $configuration = Configuration::first();
+        $establishment = Establishment::find(auth()->user()->establishment_id);
+        $user = User::find($account_entry[0]->user_id);
+        $base_template = 'default';
+        $html = $template->pdf2($base_template, "to-pay", $company, $payments, $format_pdf, $account_entry, $establishment, $user);
 
-        $this->configuration = Configuration::first();
-        // $configuration = $this->configuration->formats;
-        $base_template = Establishment::find($this->document->establishment_id)->template_pdf;
-        $payments = PurchasePayment::where('purchase_id', $id)->get();
-        $this->document->payments = $payments;
-        $html = $template->pdf2($base_template, "to-pay", $this->company, $this->document, $format_pdf, $id, $index, $account_entry);
 
         /* cuentas por pagar formato a4 */
         $pdf_font_regular = config('tenant.pdf_name_regular');
@@ -365,7 +388,8 @@ class ToPayController extends Controller
         $pdf->WriteHTML($html, HTMLParserMode::HTML_BODY);
 
 
-        $this->uploadFile1($this->document->filename, $pdf->output('', 'S'), 'to-pay', $id);
+        $this->uploadStorage($filename, $pdf->output('', 'S'), 'to-pay');
+        //$this->uploadFile1($filename, , , $id);
     }
 
     public function uploadFile1($filename, $file_content, $file_type)
