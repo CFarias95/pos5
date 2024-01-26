@@ -672,7 +672,7 @@
                   <th class="text-center">Almacen</th>
                   <th>Stock</th>
                   <th>Diferencia</th>
-                  <!-- <th>Revisado</th> -->
+                  <th></th>
                 </tr>
               </thead>
               <tbody>
@@ -729,9 +729,15 @@
                   </th>
                   <th>{{ row.stock }}</th>
                   <th>{{ row.difference }}</th>
-                  <!-- <th>
-                    <el-checkbox v-model="row.checked" label="Revisado?" size="large" />
-                  </th> -->
+                  <th>
+                    <el-checkbox
+                      v-model="row.checked"
+                      label="Revisado?"
+                      size="large"
+                      :checked="row.checked > 0"
+                      name="checked"
+                    />
+                  </th>
                 </tr>
               </tbody>
             </table>
@@ -1040,6 +1046,7 @@ export default {
 
       this.loading_submit = true;
       this.form.supplies = this.supplies;
+      console.log("this.supplies", this.supplies);
       // Si no existe un ID, estás creando un nuevo registro
       console.log("submit production", this.form);
 

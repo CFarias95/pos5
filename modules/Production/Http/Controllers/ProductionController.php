@@ -569,7 +569,7 @@ class ProductionController extends Controller
             $old_state_type_id = $production->state_type_id;
             $quantity = $request->input('quantity');
             $warehouse_id = $request->input('warehouse_id');
-            //Log::info('prod - '.$production);
+            //Log::info('$request->supplies - '.json_encode($request->supplies));
             $production->fill($request->all());
             $production->warehouse_id = $warehouse_id;
             $production->quantity = $quantity;
@@ -580,7 +580,9 @@ class ProductionController extends Controller
             $items_supplies = $request->supplies;
             //Log::info('tiem_supplies - '.json_encode($items_supplies));
             $costoT = 0;
-            //Log::info("SUPLIES: ".json_encode($items_supplies));
+            Log::info("SUPLIES: ".json_encode($items_supplies));
+            Log::info('item - '.json_encode($items_supplies[0]['checked']));
+            Log::info('item - '.getType($items_supplies[0]['checked']));
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
@@ -598,6 +600,7 @@ class ProductionController extends Controller
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
                         $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
+                        $production_supply->checked = $item['checked'];
 
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
@@ -1159,6 +1162,7 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production_supplies = ProductionSupply::where('production_id', $production->id)->with('itemSupply.individual_item')->get();
+        Log::info('prod_supp - '.$production_supplies);
         $warehouse_id = $production->warehouse_id;
         $data = $production->getCollectionData();
         $data['item_id'] = $production->item_id;
@@ -1168,6 +1172,7 @@ class ProductionController extends Controller
         $transformed_supplies = [];
         //Log::info("production_supplies".json_encode($production_supplies));
         foreach ($production_supplies as $supply) {
+            $checked = $supply->checked;
             $item_supply_id = $supply->item_supply_id;
             //por cada insumo que se fabricó voy a obtener los lotes que se utilizó
             //para ello obtengo la producción y el id del insumo que se utilizó en esa producción
@@ -1194,6 +1199,7 @@ class ProductionController extends Controller
                 'description' => $supply->item_supply_name ?? '',
                 'item_id' => $supply->itemSupply->individual_item->id,
                 'quantityD' => $supply->quantity,
+                'checked' => $checked,
                 'quantity' => $supply->quantity,
                 'unit_type' => $supply->itemSupply->individual_item->unit_type->description,
                 'quantity_per_unit' => $supply->quantity,
