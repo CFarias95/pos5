@@ -711,8 +711,8 @@ class UnpaidController extends Controller
         $cabeceraC->comment = $comment;
         $cabeceraC->serie = null;
         $cabeceraC->number = $lista->seat + 1;
-        $cabeceraC->total_debe = $request->payment + $debeAdicional;
-        $cabeceraC->total_haber = $request->payment + $haberAdicional;
+        $cabeceraC->total_debe = $request->payment + $debeAdicional + $haberAdicional;
+        $cabeceraC->total_haber = $request->payment + $debeAdicional + $haberAdicional;
         $cabeceraC->revised1 = 0;
         $cabeceraC->user_revised1 = 0;
         $cabeceraC->revised2 = 0;
