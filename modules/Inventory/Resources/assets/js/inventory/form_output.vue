@@ -346,7 +346,7 @@ export default {
       }
       this.loading_submit = true;
       this.form.type = this.type;
-      // console.log(this.form)
+
       await this.$http
         .post(`/${this.resource}/transaction`, this.form)
         .then((response) => {
@@ -387,6 +387,7 @@ export default {
     },
     addRowLotGroup(id) {
       this.form.lot_code = id;
+      this.form.IdLoteSelected=true;
     },
     async clickSelectLots() {
       this.showDialogSelectLots = true;

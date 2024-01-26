@@ -209,7 +209,7 @@ class InventoryController extends Controller
 	public function store_transaction(InventoryRequest $request)
 	{
 		$result = DB::connection('tenant')->transaction(function () use ($request) {
-			 //dd($request->all());
+			 //dd($request->input());
 			$type = $request->input('type');
 			$item_id = $request->input('item_id');
 			$warehouse_id = $request->input('warehouse_id');
@@ -266,12 +266,6 @@ class InventoryController extends Controller
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;
 
 			if ($type == 'input') {
-
-                /*$validar = ItemLotsGroup::where('item_id',$request->item_id)
-                ->where('code',$request->lot_code)
-                ->where('warehouse_id',$request->warehouse_id)
-                ->first();*/
-
 				foreach ($lots as $lot) {
 
 					$inventory->lots()->create([
@@ -296,19 +290,6 @@ class InventoryController extends Controller
                         $validar->quantity = $validar->quantity + ($request->quantity * $presentation_quantity);
                         $validar->save();
 
-                       /* if($validar->date_of_due != $request->date_of_due){
-                            $inventory->delete();
-                            return  [
-                                'success' => false,
-                                'message' => 'Ya existe un lote con el código '.$lot_code.' pero la fecha de vencimiento ingresada no coincide'.$validar->date_of_due.' / '.$request->date_of_due,
-                                'id' => null,
-                                'email' => 'carlos.farias@joinec.net'
-                            ];
-                        }else{
-
-                            $validar->quantity = $validar->quantity + $quantity;
-                            $validar->save();
-                        }*/
                     }else{
 
                         ItemLotsGroup::create([
@@ -322,6 +303,7 @@ class InventoryController extends Controller
 
 				}
 			} else {
+
 				foreach ($lots as $lot) {
 					if ($lot['has_sale']) {
 						$item_lot = ItemLot::findOrFail($lot['id']);
@@ -331,17 +313,28 @@ class InventoryController extends Controller
 						$item_lot->save();
 					}
 				}
+                //
+                if (isset($request->IdLoteSelected)) {
 
-				if (isset($request->IdLoteSelected)) {
+                    foreach ($request->lots_group as $key => $value) {
 
-					//$lot = ItemLotsGroup::find($request->IdLoteSelected);
-                   $lot= ItemLotsGroup::where('item_id',$request->item_id)
-                ->where('code',$request->lot_code)
-                ->where('warehouse_id',$request->warehouse_id)
-                ->first();
-					$lot->quantity = ($lot->quantity - $quantity);
-					$lot->save();
-				}
+                        if ($value['checked'] == true) {
+
+                            $validar = ItemLotsGroup::where('item_id', $request->item_id)
+                                ->where('code', $request->lot_code)
+                                ->where('warehouse_id', $request->warehouse_id)
+                                ->first();
+
+                            if (isset($validar) && $validar != '') {
+
+                                $validar->quantity = $validar->quantity -$request->quantity ;
+                                $validar->save();
+                            }
+                        }
+                    }
+}
+
+                //
 			}
 
             $this->createAccountingEntryTransactions($inventory,$inventory_transaction, $totalA, $stockA, $item);

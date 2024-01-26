@@ -241,11 +241,12 @@
     </div>
 
     <output-lots-form
-      :lots="form_add.lots"
+      :lots="form_add.lots_group_aux"
       :showDialog.sync="showDialogLotsOutput"
       :quantity="form_add.quantity"
       @addRowOutputLot="addRowOutputLot"
     ></output-lots-form>
+
     <output-series-form
       :lots="form_add.lots"
       :showDialog.sync="showDialogSeriesOutput"
@@ -349,6 +350,7 @@ export default {
         barcode: null,
         lots: [],
         lots_group: [],
+        lots_group_aux: [],
         lots_enabled: false,
         series_enabled: false,
         input_search: null,
@@ -526,6 +528,7 @@ export default {
       this.initFormAdd();
     },
     clickLotcodeOutput() {
+        this.form_add.lots_group_aux=this.form_add.lots_group.filter(obj => obj.warehouse_id==this.form.warehouse_id);
       this.showDialogLotsOutput = true;
     },
     clickSeriesOutput() {

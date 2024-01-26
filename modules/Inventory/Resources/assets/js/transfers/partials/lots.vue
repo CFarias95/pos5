@@ -15,7 +15,7 @@
                                 <th>Serie</th>
                                 <th>Fecha</th>
                                 <th>Cant. Actual</th>
-                                <th>Cant. Mover</th>
+                                <th width="180">Cant. Mover</th>
 
                             </tr>
                         </thead>

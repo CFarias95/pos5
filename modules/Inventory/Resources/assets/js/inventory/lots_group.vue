@@ -77,6 +77,7 @@ export default {
     },
     methods: {
         changeSelect(index, id, quantity_lot) {
+            this.lots_group[index].checked = true;
             this.idSelected = id;
 
             /*if (this.quantity > quantity_lot) {
