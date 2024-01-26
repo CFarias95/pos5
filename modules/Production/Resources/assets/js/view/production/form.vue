@@ -12,7 +12,12 @@
             <div class="col-lg-9">
               <div class="row">
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.item_id }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.item_id,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label">Producto </label>
                     <el-select
                       v-model="form.item_id"
@@ -37,7 +42,12 @@
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.warehouse_id }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.warehouse_id,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label">Almacén</label>
                     <el-select
                       :disabled="!isCreating"
@@ -59,7 +69,12 @@
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.quantity }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.quantity,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label">Cantidad</label>
                     <el-input-number
                       v-model="form.quantity"
@@ -79,7 +94,9 @@
 
                 <div class="col-sm-12 col-md-3 col-lg-3">
                   <div
-                    :class="{ 'has-danger': errors.inventory_transaction_id }"
+                    :class="{
+                      'has-danger': errors.inventory_transaction_id,
+                    }"
                     class="form-group"
                   >
                     <label class="control-label">Motivo traslado</label>
@@ -103,7 +120,12 @@
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.comment }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.comment,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label">Comentario</label>
                     <el-input v-model="form.comment"></el-input>
                     <small
@@ -115,7 +137,9 @@
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3">
                   <div
-                    :class="{ 'has-danger': errors.production_order }"
+                    :class="{
+                      'has-danger': errors.production_order,
+                    }"
                     class="form-group"
                   >
                     <label class="control-label">Orden de producción</label>
@@ -134,7 +158,12 @@
                   </div>
                 </div>
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.machine_id }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.machine_id,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label"> Maquina </label>
                     <el-select
                       :disabled="!isCreating"
@@ -164,7 +193,12 @@
                 </div>
 
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.lot_code }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.lot_code,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label"> Lote </label>
                     <input
                       v-model="form.lot_code"
@@ -200,8 +234,13 @@
                 </div>
 
                 <div class="col-sm-12 col-md-3 col-lg-3">
-                  <div :class="{ 'has-danger': errors.imperfect }" class="form-group">
-                    <label class="control-label"> Defectuosos </label>
+                  <div
+                    :class="{
+                      'has-danger': errors.imperfect,
+                    }"
+                    class="form-group"
+                  >
+                    <label class="control-label"> Merma </label>
 
                     <el-input-number
                       v-model="form.imperfect"
@@ -218,9 +257,54 @@
                   </div>
                 </div>
 
+                <div class="col-sm-12 col-md-6 col-lg-6">
+                  <div class="bordered-container">
+                    <div :class="{ 'has-danger': errors.samples }" class="form-group">
+                      <label class="control-label"> Muestras </label>
+                      <el-input-number
+                        v-model="form.samples"
+                        :controls="false"
+                        :min="0"
+                        :precision="precision"
+                        @change="quantityControl"
+                      ></el-input-number>
+                      <small
+                        v-if="errors.samples"
+                        class="form-control-feedback"
+                        v-text="errors.samples[0]"
+                      ></small>
+                    </div>
+                    <div
+                      :class="{ 'has-danger': errors.destination_warehouse_id }"
+                      class="form-group"
+                    >
+                      <label class="control-label">Bodega Destino</label>
+                      <el-select
+                        v-model="form.destination_warehouse_id"
+                        filterable
+                        @change="sameWarehouse"
+                      >
+                        <el-option
+                          v-for="option in warehouses"
+                          :key="option.id"
+                          :label="option.description"
+                          :value="option.id"
+                        ></el-option>
+                      </el-select>
+                      <small
+                        v-if="errors.destination_warehouse_id"
+                        class="form-control-feedback"
+                        v-text="errors.destination_warehouse_id[0]"
+                      ></small>
+                    </div>
+                  </div>
+                </div>
+
                 <div class="col-sm-12 col-md-3 col-lg-3">
                   <div
-                    :class="{ 'has-danger': errors.item_extra_data }"
+                    :class="{
+                      'has-danger': errors.item_extra_data,
+                    }"
                     class="form-group"
                   >
                     <label class="control-label"> Color </label>
@@ -259,7 +343,9 @@
                   <div class="row">
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.date_start }"
+                        :class="{
+                          'has-danger': errors.date_start,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label"> Fecha de inicio </label>
@@ -279,7 +365,9 @@
                     </div>
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.time_start }"
+                        :class="{
+                          'has-danger': errors.time_start,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label">Hora de Inicio</label>
@@ -302,7 +390,12 @@
                 <div class="col-sm-12 col-md-4">
                   <div class="row">
                     <div class="col-6">
-                      <div :class="{ 'has-danger': errors.date_end }" class="form-group">
+                      <div
+                        :class="{
+                          'has-danger': errors.date_end,
+                        }"
+                        class="form-group"
+                      >
                         <label class="control-label"> Fecha de Finalización </label>
                         <el-date-picker
                           v-model="form.date_end"
@@ -319,7 +412,12 @@
                       </div>
                     </div>
                     <div class="col-6">
-                      <div :class="{ 'has-danger': errors.time_end }" class="form-group">
+                      <div
+                        :class="{
+                          'has-danger': errors.time_end,
+                        }"
+                        class="form-group"
+                      >
                         <label class="control-label">Hora de finalización</label>
                         <el-time-picker
                           v-model="form.time_end"
@@ -338,7 +436,9 @@
                 </div>
                 <div class="col-sm-12 col-md-4">
                   <div
-                    :class="{ 'has-danger': errors.production_collaborator }"
+                    :class="{
+                      'has-danger': errors.production_collaborator,
+                    }"
                     class="form-group"
                   >
                     <label class="control-label">Colaborador de producción</label>
@@ -362,7 +462,9 @@
                   <div class="row">
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.mix_date_start }"
+                        :class="{
+                          'has-danger': errors.mix_date_start,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label"> Fecha de inicio </label>
@@ -382,7 +484,9 @@
                     </div>
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.mix_time_start }"
+                        :class="{
+                          'has-danger': errors.mix_time_start,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label">Hora de Inicio</label>
@@ -406,7 +510,9 @@
                   <div class="row">
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.mix_date_end }"
+                        :class="{
+                          'has-danger': errors.mix_date_end,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label"> Fecha de Finalización </label>
@@ -426,7 +532,9 @@
                     </div>
                     <div class="col-6">
                       <div
-                        :class="{ 'has-danger': errors.mix_time_end }"
+                        :class="{
+                          'has-danger': errors.mix_time_end,
+                        }"
                         class="form-group"
                       >
                         <label class="control-label">Hora de finalización</label>
@@ -447,7 +555,9 @@
                 </div>
                 <div class="col-sm-12 col-md-4">
                   <div
-                    :class="{ 'has-danger': errors.mix_collaborator }"
+                    :class="{
+                      'has-danger': errors.mix_collaborator,
+                    }"
                     class="form-group"
                   >
                     <label class="control-label">Colaborador de Mezcla</label>
@@ -471,7 +581,12 @@
                       <i class="fa fa-info-circle"></i>
                     </el-tooltip>
                   </label>
-                  <div class="form-group" :class="{ 'has-danger': errors.informative }">
+                  <div
+                    class="form-group"
+                    :class="{
+                      'has-danger': errors.informative,
+                    }"
+                  >
                     <el-switch
                       v-model="form.informative"
                       active-text="Si"
@@ -487,7 +602,12 @@
                 </div>
 
                 <div class="col-sm-12 col-md-9" v-if="form.informative">
-                  <div :class="{ 'has-danger': errors.proccess_type }" class="form-group">
+                  <div
+                    :class="{
+                      'has-danger': errors.proccess_type,
+                    }"
+                    class="form-group"
+                  >
                     <label class="control-label"> Tipo de proceso </label>
                     <el-input v-model="form.proccess_type"></el-input>
                     <small
@@ -552,6 +672,7 @@
                   <th class="text-center">Almacen</th>
                   <th>Stock</th>
                   <th>Diferencia</th>
+                  <!-- <th>Revisado</th> -->
                 </tr>
               </thead>
               <tbody>
@@ -608,6 +729,9 @@
                   </th>
                   <th>{{ row.stock }}</th>
                   <th>{{ row.difference }}</th>
+                  <!-- <th>
+                    <el-checkbox v-model="row.checked" label="Revisado?" size="large" />
+                  </th> -->
                 </tr>
               </tbody>
             </table>
@@ -619,12 +743,22 @@
     <lots-group
       :lots_group="selectSupply.lots_group"
       :quantity="selectSupply.quantity"
+      :producto="selectSupply.product"
       :showDialog.sync="showDialogLots"
       @addRowLotGroup="addRowLotGroup"
     >
     </lots-group>
   </div>
 </template>
+
+<style>
+.bordered-container {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  margin: 10px 0;
+}
+</style>
 
 <script>
 import LotsGroup from "./lots_group.vue";
@@ -661,11 +795,14 @@ export default {
         item_extra_data: {
           color: null,
         },
+        samples: 0,
+        destination_warehouse_id: null,
       },
       selectSupply: {
         supply_id: null,
         lots_group: [],
         quantity: 0,
+        product: null,
       },
       loading_search: false,
       warehouses: [],
@@ -709,6 +846,25 @@ export default {
   },
 
   methods: {
+    sameWarehouse() {
+      if (this.form.warehouse_id == this.form.destination_warehouse_id) {
+        this.form.destination_warehouse_id = null;
+        return this.$message.error("Las bodegas no pueden ser las mismas");
+      }
+    },
+    quantityControl() {
+      let sum_quantities = this.form.samples + this.form.imperfect;
+      //console.log("sum", sum_quantities);
+      //console.log("quantity", this.form.quantity);
+      if (
+        this.form.quantity < this.form.samples ||
+        this.form.quantity < this.form.imperfect ||
+        this.form.quantity < sum_quantities
+      ) {
+        //console.log("samples - ", this.form.samples);
+        return this.$message.error("La Merma o Muestra no deben ser mayor a la candida!");
+      }
+    },
     addRowLotGroup(id) {
       let IdLoteSelected = id;
       const index = this.supplies.findIndex(
@@ -720,11 +876,12 @@ export default {
       }
     },
     clickLotGroup(row) {
-      //console.log("row", row)
+      //console.log("row", row);
       let donwloadQuantity = row.quantityD;
       this.selectSupply.supply_id = row.individual_item_id;
       this.selectSupply.lots_group = row.lots_group;
       this.selectSupply.quantity = _.round(donwloadQuantity, 4);
+      this.selectSupply.product = row.description;
       this.showDialogLots = true;
     },
     deleteStatus(id) {
@@ -760,6 +917,8 @@ export default {
         await this.$http.get(`/${this.resource}/record/${this.id}`).then((response) => {
           this.title = "Editar producto fabricado";
           this.form = response.data;
+          //this.form.samples = 0;
+          //this.form.destination_warehouse_id = null;
           //console.log("DATA: ",response.data)
 
           let currentStatus = this.form.records_id;
@@ -810,6 +969,8 @@ export default {
         item_extra_data: {
           color: null,
         },
+        samples: 0,
+        destination_warehouse_id: null,
       };
       this.supplies = {};
       await this.isUpdate();
@@ -819,28 +980,46 @@ export default {
         let data = response.data;
         this.warehouses = data.warehouses;
         this.items = data.items;
-        //console.log('itemsss', this.items)
+        console.log("itemsss", this.items);
         this.machines = data.machines;
         this.records = response.data.state_types_prod;
         this.item_warehouses = response.data.item_warehouses;
-        //console.log("itemwarehouses", this.item_warehouses);
+        //console.log("itemwarehouses", this.records);
       });
     },
     //JOINSOFTWARE
     handleChange(value) {
       if (value > 0) {
-        this.quantityD = value;
         this.supplies.forEach((row) => {
-          if (value > 0) {
-            row.quantityD = _.round(value * row.quantity, 4);
+          if (row.rounded_up) {
+            let baseQuantity = _.round(value * row.quantity, 4);
+            let truncatedNumber = Math.floor(baseQuantity * 1000) / 1000;
+            let thirdDecimal = Math.floor(baseQuantity * 1000) % 10;
+            let roundedQuantity;
+
+            if (thirdDecimal <= 2) {
+              roundedQuantity = Math.floor(truncatedNumber * 100) / 100;
+            } else if (thirdDecimal >= 3 && thirdDecimal <= 7) {
+              let secondDecimal = Math.floor(baseQuantity * 100) % 10;
+              if (secondDecimal === 9 && thirdDecimal >= 3 && thirdDecimal <= 7) {
+                roundedQuantity = Math.floor(truncatedNumber) + 0.01;
+              } else {
+                roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
+              }
+            } else if (thirdDecimal >= 8) {
+              roundedQuantity = Math.ceil(truncatedNumber * 100) / 100;
+            }
+
+            row.quantityD = parseFloat(roundedQuantity.toFixed(3));
           } else {
-            row.quantityD = _.round(row.quantity, 4);
+            row.quantityD = _.round(value * row.quantity, 4);
           }
         });
       } else {
         return this.$message.error("La cantidad debe ser mayor a 0");
       }
     },
+
     async searchRemoteItems(search) {
       this.loading_search = true;
       this.items = [];
@@ -848,6 +1027,7 @@ export default {
         .post(`/${this.resource}/search_items`, { search: search })
         .then((response) => {
           this.items = response.data.items;
+          //console.log("entro searchRemoteItems");
         });
       this.loading_search = false;
     },
@@ -885,10 +1065,21 @@ export default {
         // Si existe un ID, estás actualizando un registro existente
         //VALIDAMOS SI YA SE LE ASIGNO UN LOTE Y SI VA A ESTADO FINALIZADO
         if (this.form.records_id == "03" && this.form.lot_code == null) {
-          let loteSugerido =
-            this.form.item_id + this.form.date_end + this.form.production_order;
+          let dateEnd = moment(this.form.date_end);
+          let formattedDate = dateEnd.format("YYYY-MM-DD");
+
+          /*let loteSugerido = "CCA-" + formattedDate + "-SL " + this.form.production_order;
           alert("Se asignar de forma automática el lote : " + loteSugerido);
+          this.form.lot_code = loteSugerido;*/
+
+          let response = await this.$http.get(
+            `/${this.resource}/production-counter/${formattedDate}`
+          );
+          let loteSugerido = `CCA-${dateEnd.format("DDMMYYYY")}-SL ${
+            response.data.count
+          }`;
           this.form.lot_code = loteSugerido;
+          alert(`Se asignará de forma automática el lote: ${loteSugerido}`);
         }
         await this.$http
           .put(`/${this.resource}/update/${this.form.id}`, this.form)
@@ -915,10 +1106,11 @@ export default {
 
     changeItem() {
       let item = _.find(this.items, { id: this.form.item_id });
+      console.log("item", item);
       this.form.item_extra_data = {};
       this.form.item_extra_data.color = null;
       this.item = item;
-      //console.log("changeIte: ",item )
+      console.log("changeIte: ", this.item);
       this.form.warehouse_id = item.lugar_produccion
         ? item.lugar_produccion
         : item.warehouse_id;
@@ -931,7 +1123,7 @@ export default {
       });
 
       this.supplies = item.supplies;
-      //console.log("itemssupplui", this.supplies);
+      console.log("itemssupplui", this.supplies);
     },
 
     warehouse_stock(index) {

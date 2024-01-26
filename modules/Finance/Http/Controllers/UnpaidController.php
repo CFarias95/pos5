@@ -348,12 +348,14 @@ class UnpaidController extends Controller
 
         $docs = $this->document;
 
-        Log::info('Document ID: '.$docs->id);
+        Log::info('Document ID: '.$docs);
         Log::info('FEE ID: '.$id);
+        Log::info('documents - '.$docs);
         $conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
-        Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
+        //Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
 
         $i = $conect[$index];
+        //Log::info('i - '.json_encode($i));
         $account_entry = AccountingEntries::where('document_id', 'CF'.$i->id)->first();
 
         $user_log = auth()->user();

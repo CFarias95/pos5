@@ -404,7 +404,7 @@ class ItemController extends Controller
                 'item_id' => $item->id
             ])->first();
         }
-
+        Log::info('item - '.json_encode($item));
         $item->fill($request->all());
 
         $temp_path = $request->input('temp_path');

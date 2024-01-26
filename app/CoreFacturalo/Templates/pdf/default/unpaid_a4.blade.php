@@ -25,10 +25,10 @@
         $referencia = 'AT'.$data[$index]->advances->id;
     }
 
-    $num_comprobante = str_pad(($document->id), 8, '0', STR_PAD_LEFT);
+    $num_comprobante = str_pad(($document->payments[$index]->id), 8, '0', STR_PAD_LEFT);
     //Log::info('datos'.json_encode($account_entry))
     //Log::info('index'.$index);
-    //Log::info('document - '.$document);
+    Log::info('document - '.$document->payments[$index]->id);
 @endphp
 <html>
 <head>

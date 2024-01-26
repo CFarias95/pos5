@@ -132,7 +132,9 @@ $fechaCaducidad = date_add($date, date_interval_create_from_date_string($records
             <br>
             <label><strong>F. Vencimiento:</strong> {{date_format($fechaCaducidad, "Y-m-d")}}</label>
             <br>
-            <label><strong>BPM:</strong>{{$bpm}}</label>
+            @if (isset($bpm))
+                <label><strong>BPM:</strong>{{$bpm}}</label>
+            @endif
             <br>
         </div>
         <div>

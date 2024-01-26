@@ -16,6 +16,10 @@
             >Si al seleccionar lotes la cantidad es mayor, el último lote quedara con la
             diferencia.
           </span>
+          <br />
+          <span
+            ><strong>Producto Seleccionado: {{ producto }}</strong></span
+          >
         </div>
         <div class="col-md-6 text-right">
           <h5>Cant. Pedida: {{ quantity }}</h5>
@@ -94,7 +98,7 @@
 
 <script>
 export default {
-  props: ["showDialog", "lots_group", "stock", "recordId", "quantity"],
+  props: ["showDialog", "lots_group", "stock", "recordId", "quantity", "producto"],
   data() {
     return {
       titleDialog: "Lotes",
