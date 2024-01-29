@@ -22,11 +22,20 @@
                         <tbody>
                         <tr v-for="(row, index) in lots_group" :key="row.id" v-show="row.quantity > 0">
                             <th align="center">
+                                <!--
                                 <el-checkbox
                                     :disabled="row.quantity  < 1"
                                     v-model="row.checked"
                                     @change="changeSelect(index, row.code, row.quantity)"
                                 ></el-checkbox>
+
+                                -->
+                                <el-radio-group v-model="idSelected" class="ml-4"  @change="changeSelect(index, row.code, row.quantity)">
+                                <el-radio
+                                        :label="row.code"
+
+                                ></el-radio>
+                                </el-radio-group>
                             </th>
                             <th>{{ row.code }}</th>
                             <th class>{{ row.quantity }}</th>
@@ -68,8 +77,10 @@ export default {
     },
     methods: {
         changeSelect(index, id, quantity_lot) {
+            this.lots_group[index].checked = true;
+            this.idSelected = id;
 
-            if (this.quantity > quantity_lot) {
+            /*if (this.quantity > quantity_lot) {
 
                 this.lots_group[index].checked = false;
 
@@ -81,7 +92,8 @@ export default {
                 this.lots_group[index].checked = true;
 
                 this.idSelected = id;
-            }
+            }*/
+
         },
         handleSelectionChange(val) {
             //this.$refs.multipleTable.clearSelection();

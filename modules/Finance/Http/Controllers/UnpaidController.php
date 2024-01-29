@@ -382,8 +382,7 @@ class UnpaidController extends Controller
         $configuration = Configuration::first();
 
         $base_template = 'default';
-
-        $user_log = User::find($seat->user_id);//auth()->user();
+        $user_log = User::find($seat[0]->user_id);//auth()->user();
         $establishment = Establishment::find(auth()->user()->establishment_id);
 
         $html = $template->pdf1($base_template, "unpaid", $company, $payments, $establishment, $format_pdf,$seat,$user_log);
@@ -712,8 +711,8 @@ class UnpaidController extends Controller
         $cabeceraC->comment = $comment;
         $cabeceraC->serie = null;
         $cabeceraC->number = $lista->seat + 1;
-        $cabeceraC->total_debe = $request->payment + $debeAdicional + $haberAdicional;
-        $cabeceraC->total_haber = $request->payment + $debeAdicional + $haberAdicional;
+        $cabeceraC->total_debe = $request->payment + $debeAdicional;
+        $cabeceraC->total_haber = $request->payment + $haberAdicional;
         $cabeceraC->revised1 = 0;
         $cabeceraC->user_revised1 = 0;
         $cabeceraC->revised2 = 0;

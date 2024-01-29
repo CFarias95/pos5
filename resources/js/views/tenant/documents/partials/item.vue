@@ -276,7 +276,7 @@
                         <div class="form-group">
                             <label class="control-label">Almacén</label>
                             <el-select v-model="form.warehouse_id" filterable clearable>
-                                <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description">
+                                <el-option v-for="option in warehouses_filter" :key="option.id" :value="option.id" :label="option.description">
                                 </el-option>
                             </el-select>
                         </div>
@@ -728,6 +728,7 @@ export default {
             validate_stock_add_item: false,
             //item_unit_type: {}
             warehouses: [],
+            warehouses_filter: [],
         }
     },
     created() {
@@ -784,13 +785,8 @@ export default {
             return false;
         },
         showLots() {
-            // if (
-            //     this.form.item_id &&
-            //     this.form.item.lots_enabled &&
-            //     this.form.lots_group.length > 0
-            // )
-
-            if (this.form.item_id && this.form.item.lots_enabled) {
+            //if (this.form.item_id && this.form.item.lots_enabled) {
+            if (this.form.warehouse_id!==null && this.form.item.lots_enabled) {
                 return true;
             }
 
@@ -1096,8 +1092,7 @@ export default {
                 lots_group: [],
                 IdLoteSelected: null,
                 document_item_id: null,
-                name_product_pdf: '',
-                warehouse_id: null,
+                name_product_pdf: ''
             };
 
             this.activePanel = 0;
@@ -1310,7 +1305,8 @@ export default {
                 this.form.unit_price_value = parseFloat(response.data.price);
             });
             this.lots = this.form.item.lots
-
+            let idlots = this.form.item.lots_group.filter(obj => obj.warehouse_id !==undefined && obj.warehouse_id !==null).map(obj => obj.warehouse_id).sort();
+            this.warehouses_filter=   this.warehouses.filter(obj => idlots.includes( obj.id));
             this.form.has_igv = this.form.item.has_igv;
             this.form.has_plastic_bag_taxes = this.form.item.has_plastic_bag_taxes;
             this.form.has_service_taxes = this.form.item.has_service_taxes;
@@ -1540,7 +1536,6 @@ export default {
         cleanItems() {
             this.items = []
             this.$refs.selectBarcode.$el.getElementsByTagName('input')[0].focus()
-            // console.log("add cart barcode")
         },
         validateTotalItem() {
 
@@ -1648,6 +1643,7 @@ export default {
             this.form.IdLoteSelected = id
         },
         clickLotGroup() {
+            this.form.lots_group=this.form.item.lots_group.filter(obj => obj.warehouse_id==this.form.warehouse_id);
             this.showDialogLots = true
         },
         async clickSelectLots() {
@@ -1816,7 +1812,6 @@ export default {
             let item = _.find(this.items, {'id': this.form.item_id});
             this.history_item_id = item.id;
             this.showDialogHistorySales = true;
-            // console.log(item)
         },
         async comprobarDescuento(){
             await this.$http.get(`/persons/record/${localStorage.customer_id}`).then((response) => {

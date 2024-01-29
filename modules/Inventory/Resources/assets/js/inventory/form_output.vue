@@ -44,7 +44,7 @@
               <label class="control-label">Almacén</label>
               <el-select v-model="form.warehouse_id" filterable @change="changeItem">
                 <el-option
-                  v-for="option in warehouses"
+                  v-for="option in warehouses_filter"
                   :key="option.id"
                   :value="option.id"
                   :label="option.description"
@@ -60,7 +60,7 @@
           <div
             style="padding-top: 3%"
             class="col-md-2 col-sm-2"
-            v-if="form.item_id && form.lots_enabled && form.lots_group.length > 0"
+            v-if="form.warehouse_id!==null && form.lots_enabled"
           >
             <a
               href="#"
@@ -229,6 +229,7 @@ export default {
       form: {},
       items: [],
       warehouses: [],
+      warehouses_filter: [],
       inventory_transactions: [],
       inventory_id: null,
       email: null,
@@ -240,12 +241,13 @@ export default {
     async changeItem() {
       this.form.lots = [];
       let item = await _.find(this.items, { id: this.form.item_id });
+      let idlots = item.lots_group.filter(obj => obj.warehouse_id !==undefined && obj.warehouse_id !==null).map(obj => obj.warehouse_id).sort();
+      this.warehouses_filter=   this.warehouses.filter(obj => idlots.includes( obj.id));
       this.form.lots_enabled = item.lots_enabled;
       let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
       this.form.lots = lots;
-      this.form.lots_enabled = item.lots_enabled;
       this.form.series_enabled = item.series_enabled;
-      this.form.lots_group = item.lots_group;
+      this.form.lots_group_original = item.lots_group;
       this.form.purchase_mean_price = item.purchase_mean_price;
     },
     addRowOutputLot(lots) {
@@ -284,6 +286,7 @@ export default {
         date_of_due: null,
         IdLoteSelected: null,
         lots_group: [],
+        lots_group_original: [],
         created_at: null,
         comments: null,
         purchase_mean_price: null,
@@ -351,7 +354,7 @@ export default {
       }
       this.loading_submit = true;
       this.form.type = this.type;
-      // console.log(this.form)
+
       await this.$http
         .post(`/${this.resource}/transaction`, this.form)
         .then((response) => {
@@ -386,10 +389,13 @@ export default {
       this.initForm();
     },
     clickLotGroup() {
+    this.form.lots_group=[];
+     this.form.lots_group=this.form.lots_group_original.filter(obj => obj.warehouse_id==this.form.warehouse_id);
       this.showDialogLots = true;
     },
     addRowLotGroup(id) {
       this.form.lot_code = id;
+      this.form.IdLoteSelected=true;
     },
     async clickSelectLots() {
       this.showDialogSelectLots = true;

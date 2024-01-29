@@ -251,8 +251,7 @@ use Modules\Item\Models\ItemLotsGroup;
                 ]);
                 $row->created_at = $created_at;
                 $row->save();
-                //Log::info('items - '.json_encode($request->items));
-                
+
 
                 //Log::info('ROW - '.$row);
 
@@ -266,6 +265,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             # code...
                             if ($value['checked'] == true) {
 
+
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado Lotes';
@@ -278,15 +278,40 @@ use Modules\Item\Models\ItemLotsGroup;
                                 //Log::info('Inventory antes de guardar');
                                 $inventory->save();
 
-                                /*
-                                $item_lot = ItemLotsGroup::findOrFail($value['id']);
-                                $item_lot->code = $value->code;
-                                $item_lot->quantity = $value->compromise_quantity;
-                                $item_lot->date_of_due =
-                                $item_lot->item_id = $it['id'];
-                                $item_lot->old_quantity = 0;
-                                $item_lot->update();
-                                */
+                                //lotes origen
+                                $lotOrigin = ItemLotsGroup::where('item_id',$it['id'])
+                                ->where('code',$value['code'])
+                                ->where('warehouse_id',$request->warehouse_id)
+                                ->first();
+                                $cantOrigin=$lotOrigin->quantity;
+
+                                //comprobar existencia producto
+                                $lotDest = ItemLotsGroup::where('item_id',$it['id'])
+                                ->where('code',$value['code'])
+                                ->where('warehouse_id',$request->warehouse_destination_id)
+                                ->first();
+
+                                if(isset($lotDest) && $lotDest != ''){
+
+                                    $cantDest=$lotOrigin->quantity;
+                                    $lotDest->quantity=$cantDest+$value['compromise_quantity'];
+                                    $lotDest->save();
+
+
+                                }else{
+                                    ItemLotsGroup::create([
+                                        'code' => $value['code'],
+                                        'quantity' => $value['compromise_quantity'],
+                                        'date_of_due' => $value['date_of_due'],
+                                        'warehouse_id' => $request->warehouse_destination_id,
+                                        'item_id' => $it['id']
+                                    ]);
+
+                                }
+
+                                $lotOrigin->quantity=$cantOrigin-$value['compromise_quantity'];
+                                $lotOrigin->save();
+
                             }
                         }
                     }

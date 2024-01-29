@@ -215,6 +215,7 @@ trait InventoryTrait
                         'id' => $row2->id,
                         'code' => $row2->code,
                         'quantity' => $row2->quantity,
+                        'warehouse_id' => $row2->warehouse_id,
                         'date_of_due' => $row2->date_of_due,
                         'checked' => false
                     ];

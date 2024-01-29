@@ -4,7 +4,7 @@ namespace Modules\Item\Models;
 
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
-
+use Modules\Inventory\Models\Warehouse;
 
 /**
  * Modules\Item\Models\ItemLotsGroup
@@ -25,7 +25,8 @@ class ItemLotsGroup extends ModelTenant
         'quantity',
         'date_of_due',
         'item_id',
-        'old_quantity'
+        'old_quantity',
+        'warehouse_id'
     ];
 
     public function item()
@@ -99,6 +100,25 @@ class ItemLotsGroup extends ModelTenant
     }
 
     /**
+     * @return mixed
+     */
+    public function getWarehouseId()
+    {
+        return $this->warehouse_id;
+    }
+
+    /**
+     * @param mixed $warehouse_id
+     *
+     * @return ItemLot
+     */
+    public function setWarehouseId($warehouse_id)
+    {
+        $this->warehouse_id = $warehouse_id;
+        return $this;
+    }
+
+    /**
      * @param mixed $item_id
      *
      * @return ItemLotsGroup
@@ -124,8 +144,14 @@ class ItemLotsGroup extends ModelTenant
             'quantity'    => $this->quantity,
             'date_of_due' => $this->date_of_due,
             'checked'     => false,
+            'warehouse_id' => $this->warehouse_id,
             'compromise_quantity' => 0
         ];
+    }
+
+    public function warehouse()
+    {
+        return $this->belongsTo(Warehouse::class);
     }
 
 }

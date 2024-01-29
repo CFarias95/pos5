@@ -652,6 +652,7 @@
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
+                            'warehouse_id' => $row->warehouse_id,
                             'checked' => false,
                             'compromise_quantity' => 0
 
@@ -764,6 +765,7 @@
                             'code' => $row->code,
                             'quantity' => $row->quantity,
                             'date_of_due' => $row->date_of_due,
+                            'warehouse_id' => $row->warehouse_id,
                             'checked' => false,
                             'compromise_quantity' => 0
                         ];

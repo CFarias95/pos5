@@ -949,10 +949,10 @@ class SaleNoteController extends Controller
     private function reloadPDF($sale_note, $format, $filename) {
         $this->createPdf($sale_note, $format, $filename);
     }
-    
+
 
     /**
-     * 
+     *
      * Obtener el ancho del ticket dependiendo del formato
      *
      * @param  string $format_pdf
@@ -965,7 +965,7 @@ class SaleNoteController extends Controller
         if(config('tenant.enabled_template_ticket_80'))
         {
             $width = 76;
-        } 
+        }
         else
         {
             switch ($format_pdf)
@@ -985,9 +985,9 @@ class SaleNoteController extends Controller
         return $width;
     }
 
-    
+
     /**
-     * 
+     *
      * Modificar valores del pdf para el formato ticket_50 (ancho, altura, margenes)
      *
      * @param  float $pdf_margin_right
@@ -1001,7 +1001,7 @@ class SaleNoteController extends Controller
         $pdf_margin_left = 2;
         $base_height = 90;
     }
-    
+
 
     public function createPdf($sale_note = null, $format_pdf = null, $filename = null)
     {
@@ -1218,9 +1218,9 @@ class SaleNoteController extends Controller
         if($helper_facturalo->isAllowedAddDispatchTicket($format_pdf, 'sale-note', $this->document))
         {
             $helper_facturalo->addDocumentDispatchTicket($pdf, $this->company, $this->document, [
-                $template, 
-                $base_template, 
-                $width, 
+                $template,
+                $base_template,
+                $width,
                 ($quantity_rows * 8) + $extra_by_item_description
             ]);
         }
@@ -1322,6 +1322,7 @@ class SaleNoteController extends Controller
                                 'code' => $row->code,
                                 'quantity' => $row->quantity,
                                 'date_of_due' => $row->date_of_due,
+                                'warehouse_id' => $row->warehouse_id,
                                 'checked'  => false
                             ];
                         }),
@@ -1454,6 +1455,7 @@ class SaleNoteController extends Controller
                         'id' => $row->id,
                         'code' => $row->code,
                         'quantity' => $row->quantity,
+                        'warehouse_id' => $row->warehouse_id,
                         'date_of_due' => $row->date_of_due,
                         'checked' => false
                     ];
@@ -1647,9 +1649,9 @@ class SaleNoteController extends Controller
 
     }
 
-    
+
     /**
-     * 
+     *
      * Totales de nota venta, se visualiza en el listado
      *
      * @param  Request $request
@@ -1984,9 +1986,9 @@ class SaleNoteController extends Controller
         return ['success' => true];
     }
 
-    
+
     /**
-     * 
+     *
      * Data para generar cpe desde nv
      *
      * @param  int $id
