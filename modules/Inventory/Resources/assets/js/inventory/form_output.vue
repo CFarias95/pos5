@@ -213,7 +213,7 @@ import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
   components: { LotsGroup, SelectLotsForm, Options },
-  props: ["showDialog", "recordId"],
+  props: ["showDialog", "recordId", "itemId", "warehouseId"],
   data() {
     return {
       type: "output",
@@ -286,7 +286,7 @@ export default {
         lots_group: [],
         created_at: null,
         comments: null,
-        purchase_mean_price:null,
+        purchase_mean_price: null,
       };
     },
     async initTables() {
@@ -305,6 +305,14 @@ export default {
       await this.initTables();
       this.initForm();
       this.loading = false;
+      if (this.itemId != null && this.warehouseId != null) {
+        console.log("Si trae la data");
+        this.form.warehouse_id = this.warehouseId;
+        this.form.item_id = this.itemId;
+        this.changeItem();
+      } else {
+        console.log("No trae data");
+      }
     },
     // async create() {
     //     this.titleDialog = 'Salida de producto del almacén'

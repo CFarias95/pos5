@@ -673,6 +673,7 @@
                   <th>Stock</th>
                   <th>Diferencia</th>
                   <th></th>
+                  <th>Acciones</th>
                 </tr>
               </thead>
               <tbody>
@@ -738,6 +739,26 @@
                       name="checked"
                     />
                   </th>
+                  <th>
+                    <button
+                      type="button"
+                      class="btn btn-custom btn-sm mt-2 mr-2"
+                      @click.prevent="
+                        clickCreate('input', row.individual_item_id, row.warehouse_id)
+                      "
+                    >
+                      <i class="fa fa-plus-circle"></i> Ingreso
+                    </button>
+                    <button
+                      type="button"
+                      class="btn btn-custom btn-sm mt-2 mr-2"
+                      @click.prevent="
+                        clickOutput(row.individual_item_id, row.warehouse_id)
+                      "
+                    >
+                      <i class="fa fa-minus-circle"></i> Salida
+                    </button>
+                  </th>
                 </tr>
               </tbody>
             </table>
@@ -754,6 +775,18 @@
       @addRowLotGroup="addRowLotGroup"
     >
     </lots-group>
+    <inventories-form
+      :showDialog.sync="showDialog"
+      :type="typeTransaction"
+      :itemId="itemId"
+      :warehouseId="warehouseId"
+    ></inventories-form>
+
+    <inventories-form-output
+      :showDialog.sync="showDialogOutput"
+      :itemId="itemId"
+      :warehouseId="warehouseId"
+    ></inventories-form-output>
   </div>
 </template>
 
@@ -768,10 +801,14 @@
 
 <script>
 import LotsGroup from "./lots_group.vue";
+import InventoriesForm from "@viewsModuleInventory/inventory/form.vue";
+import InventoriesFormOutput from "@viewsModuleInventory/inventory/form_output.vue";
 
 export default {
   components: {
     LotsGroup,
+    InventoriesFormOutput,
+    InventoriesForm,
   },
   props: {
     id: {
@@ -789,8 +826,14 @@ export default {
       resource: "production",
       loading_submit: false,
       showDialogLots: false,
+      showDialogOutput: false,
+      typeTransaction: null,
+      showDialog: false,
       errors: {},
       records: {},
+      recordId: null,
+      itemId: null,
+      warehouseId: null,
       isCreating: false,
       title: "Nuevo producto fabricado",
       item: {},
@@ -857,6 +900,20 @@ export default {
         this.form.destination_warehouse_id = null;
         return this.$message.error("Las bodegas no pueden ser las mismas");
       }
+    },
+    clickCreate(type, id, warehouseId) {
+      this.recordId = null;
+      this.typeTransaction = type;
+      this.itemId = id;
+      this.warehouseId = warehouseId;
+      this.showDialog = true;
+      console.log("item_id", this.itemId);
+    },
+    clickOutput(id, warehouseId) {
+      this.recordId = null;
+      this.itemId = id;
+      this.warehouseId = warehouseId;
+      this.showDialogOutput = true;
     },
     quantityControl() {
       let sum_quantities = this.form.samples + this.form.imperfect;

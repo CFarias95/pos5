@@ -234,7 +234,7 @@ import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
   components: { InputLotsForm, OutputLotsForm, Options },
-  props: ["showDialog", "recordId", "type"],
+  props: ["showDialog", "recordId", "type", "itemId", "warehouseId"],
   data() {
     return {
       loading: false,
@@ -347,6 +347,14 @@ export default {
       await this.initTables();
       this.initForm();
       this.loading = false;
+      if (this.itemId != null && this.warehouseId != null) {
+        console.log("Si trae la data");
+        this.form.warehouse_id = this.warehouseId;
+        this.form.item_id = this.itemId;
+        this.changeItem();
+      } else {
+        console.log("No trae data");
+      }
     },
     async searchRemoteItems(search) {
       this.loading_search = true;
