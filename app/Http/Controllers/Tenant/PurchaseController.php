@@ -562,7 +562,7 @@ class PurchaseController extends Controller
                     }
 
                     if (array_key_exists('item', $row)) {
-                        if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
+                        if (isset($row['item']['lots_enabled']) && ($row['item']['lots_enabled'] == true || $row['item']['lots_enabled'] == 'true')) {
 
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
@@ -577,6 +577,7 @@ class PurchaseController extends Controller
                                 $validatLote->save();
 
                             }else{
+
                                 $item_lots_group = ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
                                     'quantity' => $row['quantity'] * $presentation_quantity,
