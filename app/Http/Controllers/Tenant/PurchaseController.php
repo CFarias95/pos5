@@ -632,6 +632,8 @@ class PurchaseController extends Controller
                 return $doc;
             });
 
+            Log::info('Compra creada: '.json_encode($purchase));
+
             return [
                 'success' => true,
                 'data' => [
