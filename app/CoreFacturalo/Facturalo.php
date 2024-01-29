@@ -1608,6 +1608,13 @@ class Facturalo
                 // $document->items()->delete();
 
                 foreach ($inputs['items'] as $row) {
+                    Log::info('Item to create: '.json_encode($row));
+                    $item = Item::find($row['item_id'] );
+                    $row['item']['name'] = $item->name;
+                    $row['item']['purchase_mean_cost'] = $item->purchase_mean_cost;
+                    if(isset($row['name_product_pdf']) == false || $row['name_product_pdf'] == '' ){
+                        $row['name_product_pdf'] =$item->name.'/'.$item->description;
+                    }
                     $document->items()->create($row);
                 }
 

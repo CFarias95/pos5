@@ -307,9 +307,7 @@ class DocumentController extends Controller
      */
     public function searchLots(Request $request)
     {
-
         $records = ItemLot::where('series', 'like', "%{$request->input}%");
-
         $sale_note_item_id = $request->has('sale_note_item_id') ? $request->sale_note_item_id : null;
 
         if ($request->document_item_id)
