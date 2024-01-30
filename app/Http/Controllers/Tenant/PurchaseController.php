@@ -68,6 +68,7 @@ use App\Models\Tenant\UserDefaultDocumentType;
 use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Illuminate\Support\Facades\Log;
 use Modules\Sale\Models\SaleOpportunity;
+use App\Traits\KardexTrait;
 
 class PurchaseController extends Controller
 {
@@ -75,6 +76,7 @@ class PurchaseController extends Controller
     use FinanceTrait;
     use StorageDocument;
     use OfflineTrait;
+    use KardexTrait;
 
     private $id;
     private $purchase;
@@ -1590,6 +1592,16 @@ class PurchaseController extends Controller
                 foreach ($doc->items as $it) {
 
                     $p_i = PurchaseItem::findOrFail($it->id);
+                    /*
+                    if($p_i->lot_code){
+
+                        $this->restoreStockInWarehouseLotGroup($p_i->item_id, $p_i->warehouse_id, $p_i->quantity,$p_i->lot_code);
+
+                    }else{
+
+                        $this->restoreStockInWarehpuse($p_i->item_id, $p_i->warehouseid, $p_i->quantity);
+                    }
+                    */
                     $p_i->delete();
                 }
 
@@ -1644,20 +1656,6 @@ class PurchaseController extends Controller
 
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
-
-                            /*
-                                // factor de lista de precios
-                                $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
-
-                                ItemLotsGroup::create([
-                                    'code' => $row['lot_code'],
-                                    'quantity' => $row['quantity'] * $presentation_quantity,
-                                    // 'quantity' => $row['quantity'],
-                                    'date_of_due' => $row['date_of_due'],
-                                    'item_id' => $row['item_id']
-                                ]);
-                                */
-
                             $this->processUpdateItemLotsGroup($row, $p_item);
                         }
                     }
