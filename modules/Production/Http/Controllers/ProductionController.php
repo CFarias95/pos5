@@ -580,9 +580,9 @@ class ProductionController extends Controller
             $items_supplies = $request->supplies;
             //Log::info('tiem_supplies - '.json_encode($items_supplies));
             $costoT = 0;
-            Log::info("SUPLIES: ".json_encode($items_supplies));
-            Log::info('item - '.json_encode($items_supplies[0]['checked']));
-            Log::info('item - '.getType($items_supplies[0]['checked']));
+            Log::info("SUPLIES: " . json_encode($items_supplies));
+            Log::info('item - ' . json_encode($items_supplies[0]['checked']));
+            Log::info('item - ' . getType($items_supplies[0]['checked']));
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
@@ -1162,7 +1162,7 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production_supplies = ProductionSupply::where('production_id', $production->id)->with('itemSupply.individual_item')->get();
-        Log::info('prod_supp - '.$production_supplies);
+        Log::info('prod_supp - ' . $production_supplies);
         $warehouse_id = $production->warehouse_id;
         $data = $production->getCollectionData();
         $data['item_id'] = $production->item_id;
@@ -1279,6 +1279,23 @@ class ProductionController extends Controller
             $data->where('state_type_id', 'like', '%' . $state_type_id . '%');
         }
         return $data;
+    }
+
+    public function updateStockWarehouses($warehouseId, $itemId)
+    {
+        //Log::info('warehouse - item : '.$warehouseId.'-'.$itemId);
+        $warehouseItem = ItemWarehouse::where('warehouse_id', $warehouseId)
+            ->where('item_id', $itemId)
+            ->first();
+
+        if (!$warehouseItem) {
+            return response()->json(['stock' => 0 ]);
+        }
+        //Log::info('warehouseItem - '.$warehouseItem);
+
+        $stock = $warehouseItem->stock;
+
+        return response()->json(['stock' => $stock]);
     }
 
     /**

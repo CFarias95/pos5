@@ -118,6 +118,7 @@
                     Route::get('/plantilla/noConforme/{id}','ProductionController@plantillaNoConforme');
                     Route::post('/import', 'ProductionController@import');
                     Route::get('/production-counter/{date}', 'ProductionController@getProductionCount');
+                    Route::get('/updateStockWarehouses/{warehouseId}/{itemId}','ProductionController@updateStockWarehouses');
                 });
                 Route::prefix('packaging')->group(function () {
                     Route::get('', 'PackagingController@index')->name('tenant.packaging.index'); // ->middleware('redirect.level');

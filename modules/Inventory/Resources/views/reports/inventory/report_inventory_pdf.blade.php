@@ -78,7 +78,7 @@
         </tr>
         <tr>
             <td>
-                <p><strong>Producto: </strong>{{$records->item->name}}</p>
+                <p><strong>Producto: </strong>{{$records->item->name ? $records->item->name : 'NA'}}</p>
                 @if($records->lot_code)
                 <p><strong>Lote: </strong>{{$records->lot_code}}</p>
                 <p><strong>F. Vencimiento: </strong>
@@ -123,7 +123,7 @@
         {
             <tr>
                 <td>
-                    <p><strong>Producción asosiada: </strong>{{$records->production->name}}  - {{ $records->production->date_end }} </p>
+                    <p><strong>Producción asosiada: </strong>{{$records->production->name ? $records->production->name : 'NA'}}  - {{ $records->production->date_end }} </p>
                 </td>
             </tr>
         }

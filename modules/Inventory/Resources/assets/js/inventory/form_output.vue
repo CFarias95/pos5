@@ -60,7 +60,7 @@
           <div
             style="padding-top: 3%"
             class="col-md-2 col-sm-2"
-            v-if="form.warehouse_id!==null && form.lots_enabled"
+            v-if="form.warehouse_id !== null && form.lots_enabled"
           >
             <a
               href="#"
@@ -213,7 +213,7 @@ import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
   components: { LotsGroup, SelectLotsForm, Options },
-  props: ["showDialog", "recordId", "itemId", "warehouseId"],
+  props: ["showDialog", "recordId", "itemId", "warehouseId", "prod_order", "index"],
   data() {
     return {
       type: "output",
@@ -241,8 +241,11 @@ export default {
     async changeItem() {
       this.form.lots = [];
       let item = await _.find(this.items, { id: this.form.item_id });
-      let idlots = item.lots_group.filter(obj => obj.warehouse_id !==undefined && obj.warehouse_id !==null).map(obj => obj.warehouse_id).sort();
-      this.warehouses_filter=   this.warehouses.filter(obj => idlots.includes( obj.id));
+      let idlots = item.lots_group
+        .filter((obj) => obj.warehouse_id !== undefined && obj.warehouse_id !== null)
+        .map((obj) => obj.warehouse_id)
+        .sort();
+      this.warehouses_filter = this.warehouses.filter((obj) => idlots.includes(obj.id));
       this.form.lots_enabled = item.lots_enabled;
       let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
       this.form.lots = lots;
@@ -267,7 +270,7 @@ export default {
         .get(`/${this.resource}/filterProduction/${this.form.filter_date}`)
         .then((response) => {
           this.production = response.data;
-          //console.log('response', response.data);
+          console.log('response', response.data);
         });
     },
     initForm() {
@@ -298,6 +301,7 @@ export default {
         .then((response) => {
           // this.items = response.data.items
           this.warehouses = response.data.warehouses;
+          console.log("warehouses", this.warehouses);
           this.inventory_transactions = response.data.inventory_transactions;
         });
       await this.searchRemoteItems("");
@@ -309,13 +313,16 @@ export default {
       this.initForm();
       this.loading = false;
       if (this.itemId != null && this.warehouseId != null) {
-        console.log("Si trae la data");
+        
+        //console.log("warehouses", this.warehouses);
         this.form.warehouse_id = this.warehouseId;
         this.form.item_id = this.itemId;
+        this.form.production_id = this.prod_order;
         this.changeItem();
       } else {
         console.log("No trae data");
       }
+      this.filterProductionDate();
     },
     // async create() {
     //     this.titleDialog = 'Salida de producto del almacén'
@@ -358,14 +365,22 @@ export default {
       await this.$http
         .post(`/${this.resource}/transaction`, this.form)
         .then((response) => {
+          //console.log('response ', response)
           if (response.data.success) {
+            //console.log('entro al if success')
             this.$message.success(response.data.message);
             this.$eventHub.$emit("reloadData");
             //this.$emit('update:showDialog', false)
 
             this.showClose = false;
             this.inventory_id = response.data.id;
-            this.showDialogOptions = true;
+            if (this.itemId != null && this.warehouseId != null) {
+              this.showDialogOptions = false;
+              this.$emit("reloadStock", this.index, this.itemId, this.warehouseId );
+              this.close();
+            } else {
+              this.showDialogOptions = true;
+            }
 
             this.initForm();
           } else {
@@ -389,13 +404,15 @@ export default {
       this.initForm();
     },
     clickLotGroup() {
-    this.form.lots_group=[];
-     this.form.lots_group=this.form.lots_group_original.filter(obj => obj.warehouse_id==this.form.warehouse_id);
+      this.form.lots_group = [];
+      this.form.lots_group = this.form.lots_group_original.filter(
+        (obj) => obj.warehouse_id == this.form.warehouse_id
+      );
       this.showDialogLots = true;
     },
     addRowLotGroup(id) {
       this.form.lot_code = id;
-      this.form.IdLoteSelected=true;
+      this.form.IdLoteSelected = true;
     },
     async clickSelectLots() {
       this.showDialogSelectLots = true;

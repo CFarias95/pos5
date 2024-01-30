@@ -234,7 +234,7 @@ import { filterWords } from "../../../../../../resources/js/helpers/functions";
 
 export default {
   components: { InputLotsForm, OutputLotsForm, Options },
-  props: ["showDialog", "recordId", "type", "itemId", "warehouseId"],
+  props: ["showDialog", "recordId", "type", "itemId", "warehouseId", "prod_order", "index"],
   data() {
     return {
       loading: false,
@@ -348,9 +348,10 @@ export default {
       this.initForm();
       this.loading = false;
       if (this.itemId != null && this.warehouseId != null) {
-        console.log("Si trae la data");
+        //console.log("Si trae la data");
         this.form.warehouse_id = this.warehouseId;
         this.form.item_id = this.itemId;
+        this.form.production_id = this.prod_order;
         this.changeItem();
       } else {
         console.log("No trae data");
@@ -416,7 +417,13 @@ export default {
 
             this.showClose = false;
             this.inventory_id = response.data.id;
-            this.showDialogOptions = true;
+            if (this.itemId != null && this.warehouseId != null) {
+              this.showDialogOptions = false;
+              this.$emit("reloadStock", this.index, this.itemId, this.warehouseId );
+              this.close();
+            } else {
+              this.showDialogOptions = true;
+            }
 
             this.initForm();
           } else {
