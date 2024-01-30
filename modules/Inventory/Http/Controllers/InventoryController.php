@@ -149,8 +149,18 @@ class InventoryController extends Controller
 
 	public function filterProductionDate($filter_date)
 	{
-		$dates = Production::where('date_end', $filter_date)->get();
-		return $dates;
+		Log::info('filter_date - '.$filter_date);
+		if($filter_date && $filter_date != 'undefined')
+		{
+			$dates = Production::where('date_end', $filter_date)->get();
+			//Log::info('entro if');
+			return $dates;
+		}else{
+			$dates = Production::whereIn('state_type_id', ['01', '03'])->get();
+			//Log::info('entro else');
+			return $dates;
+		}
+		
 	}
 
 	public function searchItems(Request $request)
@@ -226,7 +236,7 @@ class InventoryController extends Controller
 			$lots = ($request->has('lots')) ? $request->input('lots') : [];
 
 			$item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id,
-				'warehouse_id'                                        => $warehouse_id]);
+				'warehouse_id'=> $warehouse_id]);
 
 			$inventory_transaction = InventoryTransaction::findOrFail($inventory_transaction_id);
 
@@ -344,7 +354,6 @@ class InventoryController extends Controller
 				'success' => true,
 				'message' => ($type == 'input') ? 'Ingreso registrado correctamente' : 'Salida registrada correctamente',
                 'id' => $inventory->id,
-                'email' => 'carlos.farias@joinec.net'
             ];
 		});
 

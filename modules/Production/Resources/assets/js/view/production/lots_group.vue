@@ -98,7 +98,15 @@
 
 <script>
 export default {
-  props: ["showDialog", "lots_group", "stock", "recordId", "quantity", "producto"],
+  props: [
+    "showDialog",
+    "lots_group",
+    "stock",
+    "recordId",
+    "quantity",
+    "producto",
+    "warehouseLotId",
+  ],
   data() {
     return {
       titleDialog: "Lotes",
@@ -172,6 +180,7 @@ export default {
     },
     create() {
       this.filter();
+      //console.log("warehouse", this.lots_group);
     },
 
     async submit() {
