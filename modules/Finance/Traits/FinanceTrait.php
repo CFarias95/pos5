@@ -132,7 +132,7 @@ use Illuminate\Support\Facades\Log;
         public function deleteAllPayments($payments)
         {
 
-            //Log::info('PAYMENTS '.json_encode($payments));
+            Log::info('PAYMENTS '.json_encode($payments));
 
             if(count($payments) > 0 ){
 
@@ -151,7 +151,7 @@ use Illuminate\Support\Facades\Log;
                         $retention->total_used = $montoUsado;
 
                         $retention->in_use = ($montoUsado > 0 )?true:false;
-                        
+
                         $retention->save();
                     }
 
@@ -164,7 +164,10 @@ use Illuminate\Support\Facades\Log;
                         }
 
                         $paymentD = DocumentPayment::find($payment['id']);
-                        $paymentD->delete();
+                        if($paymentD){
+                            $paymentD->delete();
+                        }
+
 
                     }
 

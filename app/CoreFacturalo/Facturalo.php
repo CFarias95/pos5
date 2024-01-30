@@ -140,6 +140,7 @@ class Facturalo
                 $document = Document::create($inputs);
                 $this->savePayments($document, $inputs['payments']);
                 $this->saveFee($document, $inputs['fee']);
+
                 foreach ($inputs['items'] as $row) {
                     $item = Item::find($row['item_id'] );
                     $row['item']['name'] = $item->name;
@@ -1595,8 +1596,16 @@ class Facturalo
 
                 foreach ($document->items as $it) {
                     //se usa el evento deleted del modelo - InventoryKardexServiceProvider document_item_delete
+                    if($it->item->IdLoteSelected){
+                        foreach($it->item->IdLoteSelected as $lot){
+                            $this->restoreStockInWarehouseLotGroup($it->item_id, $warehouse->id, $it->quantity,$lot->code);
+                        }
+                    }else{
+
+                        $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                    }
                     $it->delete();
-                    // $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+
                 }
 
                 // Al editar el item, borra los registros anteriores

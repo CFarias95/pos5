@@ -1305,8 +1305,15 @@ export default {
                 this.form.unit_price_value = parseFloat(response.data.price);
             });
             this.lots = this.form.item.lots
+
             let idlots = this.form.item.lots_group.filter(obj => obj.warehouse_id !==undefined && obj.warehouse_id !==null).map(obj => obj.warehouse_id).sort();
-            this.warehouses_filter=   this.warehouses.filter(obj => idlots.includes( obj.id));
+            if(idlots.count > 0){
+                this.warehouses_filter=   this.warehouses.filter(obj => idlots.includes(obj.id));
+            }else{
+                this.warehouses_filter=   this.warehouses;
+            }
+
+
             this.form.has_igv = this.form.item.has_igv;
             this.form.has_plastic_bag_taxes = this.form.item.has_plastic_bag_taxes;
             this.form.has_service_taxes = this.form.item.has_service_taxes;

@@ -3402,9 +3402,9 @@ export default {
     },
     async ediItem(row, index) {
       if (
-        this.form.operationTypeId == "" ||
-        this.form.operationTypeId == undefined ||
-        this.form.operationTypeId == null
+        this.form.operation_type_id == "" ||
+        this.form.operation_type_id == undefined ||
+        this.form.operation_type_id == null
       ) {
         this.$message.warning("selecciona un tipo de operacion antes de editar un item");
         return false;

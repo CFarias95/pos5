@@ -1744,13 +1744,14 @@ class PurchaseController extends Controller
      * @param  int $item_id
      * @return ItemLotsGroup
      */
-    private function createItemLotsGroup($lot_code, $quantity, $date_of_due, $item_id)
+    private function createItemLotsGroup($lot_code, $quantity, $date_of_due, $item_id, $warehouse_id)
     {
         return ItemLotsGroup::create([
             'code' => $lot_code,
             'quantity' => $quantity,
             'date_of_due' => $date_of_due,
-            'item_id' => $item_id
+            'item_id' => $item_id,
+            'warehouse_id'=>$warehouse_id
         ]);
     }
 
@@ -1773,7 +1774,7 @@ class PurchaseController extends Controller
         $quantity = $row['quantity'] * $presentation_quantity;
 
         if ($lot_code && $date_of_due) {
-            $item_lots_group = $this->createItemLotsGroup($lot_code, $quantity, $date_of_due, $row['item_id']);
+            $item_lots_group = $this->createItemLotsGroup($lot_code, $quantity, $date_of_due, $row['item_id'],$row['warehouse_id']);
             $purchase_item->item_lot_group_id = $item_lots_group->id;
             $purchase_item->update();
         } else {
@@ -1783,7 +1784,7 @@ class PurchaseController extends Controller
                 $new_date_of_due = $data_item_lot_group['date_of_due'];
                 $new_lot_code = $data_item_lot_group['lot_code'];
 
-                $item_lots_group = $this->createItemLotsGroup($new_lot_code, $quantity, $new_date_of_due, $row['item_id']);
+                $item_lots_group = $this->createItemLotsGroup($new_lot_code, $quantity, $new_date_of_due, $row['item_id'],$row['warehouse_id']);
 
                 $purchase_item->lot_code = $new_lot_code;
                 $purchase_item->date_of_due = $new_date_of_due;
