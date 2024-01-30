@@ -581,11 +581,15 @@ class PurchaseController extends Controller
 
                             }else{
 
+                                $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])
+                                ->where('code',$row['lot_code'])
+                                ->first();
+
                                 $item_lots_group = ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
                                     'quantity' => $row['quantity'] * $presentation_quantity,
                                     // 'quantity' => $row['quantity'],
-                                    'date_of_due' => $row['date_of_due'],
+                                    'date_of_due' => ($validatLote)? $validatLote->date_of_due:$row['date_of_due'],
                                     'warehouse_id' => $row['warehouse_id'],
                                     'item_id' => $row['item_id']
                                 ]);
