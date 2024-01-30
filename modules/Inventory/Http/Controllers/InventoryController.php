@@ -160,7 +160,7 @@ class InventoryController extends Controller
 			//Log::info('entro else');
 			return $dates;
 		}
-		
+
 	}
 
 	public function searchItems(Request $request)
@@ -302,10 +302,14 @@ class InventoryController extends Controller
 
                     }else{
 
+                    $validar = ItemLotsGroup::where('item_id',$request->item_id)
+                        ->where('code',$request->lot_code)
+                        ->first();
+
                         ItemLotsGroup::create([
                             'code' => $request->lot_code,
                             'quantity' => $request->quantity * $presentation_quantity,
-                            'date_of_due' =>$request->date_of_due,
+                            'date_of_due' =>($validar)?$validar->date_of_due:$request->date_of_due,
                             'warehouse_id' => $request->warehouse_id,
                             'item_id' => $request->item_id
                         ]);
