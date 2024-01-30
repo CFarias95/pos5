@@ -9,7 +9,7 @@ class ProductionSupply extends ModelTenant
 {
 
     protected $table = 'production_supplies';
-    protected $fillable = ['production_name','production_id', 'item_supply_id',  'item_supply_name', 'quantity', 'cost_per_unit', 'checked'];
+    protected $fillable = ['production_name','production_id', 'item_supply_id',  'item_supply_name', 'quantity', 'cost_per_unit', 'checked', 'item_supply_original_id'];
 
     public function production()
     {

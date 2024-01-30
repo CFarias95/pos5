@@ -580,14 +580,17 @@ class ProductionController extends Controller
             $items_supplies = $request->supplies;
             //Log::info('tiem_supplies - '.json_encode($items_supplies));
             $costoT = 0;
-            Log::info("SUPLIES: " . json_encode($items_supplies));
-            Log::info('item - ' . json_encode($items_supplies[0]['checked']));
-            Log::info('item - ' . getType($items_supplies[0]['checked']));
+            //Log::info("SUPLIES: " . json_encode($items_supplies));
+            //Log::info('item - ' . json_encode($items_supplies[0]['checked']));
+            //Log::info('item - ' . getType($items_supplies[0]['checked']));
+            // Error al registrar el ingreso: Undefined variable: item_supplies
+            Log::info('production - '.$production);
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
                 try {
                     foreach ($items_supplies as $item) {
+                        Log::info('item_supplies - '.json_encode($item));
                         $sitienelote = false;
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
@@ -601,6 +604,7 @@ class ProductionController extends Controller
                         $production_supply->quantity = (float) $qty;
                         $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
                         $production_supply->checked = $item['checked'];
+                        $production_supply->item_supply_original_id = $item['individual_item_id'];
 
                         $production_supply->save();
                         $costoT += ($qty * $production_supply->cost_per_unit);
