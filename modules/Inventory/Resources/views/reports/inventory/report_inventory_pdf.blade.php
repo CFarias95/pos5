@@ -78,7 +78,7 @@
         </tr>
         <tr>
             <td>
-                <p><strong>Producto: </strong>{{$records->item->name ? $records->item->name : 'NA'}}</p>
+                <p><strong>Producto: </strong>{{$records->item->name ? $records->item->name : 'NA'}} - {{$records->item->description ? $records->item->description : 'NA'}} - {{$records->item->model ? $records->item->model : 'NA'}} - {{$records->item->internal_id ? $records->item->internal_id : 'NA'}}</p>
                 @if($records->lot_code)
                 <p><strong>Lote: </strong>{{$records->lot_code}}</p>
                 <p><strong>F. Vencimiento: </strong>
