@@ -1752,15 +1752,28 @@ class PurchaseController extends Controller
     {
         $validatLote = ItemLotsGroup::where('item_id',$item_id)
         ->where('code',$lot_code)
+        ->where('warehouse_id', $warehouse_id)
         ->first();
 
-        return ItemLotsGroup::create([
-            'code' => $lot_code,
-            'quantity' => $quantity,
-            'date_of_due' => ($validatLote)?$validatLote->date_of_due:$date_of_due,
-            'item_id' => $item_id,
-            'warehouse_id'=>$warehouse_id
-        ]);
+        if($validatLote){
+            $validatLote->quantity += $quantity;
+            $validatLote->save();
+            return  $validatLote;
+        }else{
+            $validatLote = ItemLotsGroup::where('item_id',$item_id)
+                ->where('code',$lot_code)
+                ->first();
+
+            return ItemLotsGroup::create([
+                'code' => $lot_code,
+                'quantity' => $quantity,
+                'date_of_due' => ($validatLote)?$validatLote->date_of_due:$date_of_due,
+                'item_id' => $item_id,
+                'warehouse_id'=>$warehouse_id
+            ]);
+        }
+
+
     }
 
 
