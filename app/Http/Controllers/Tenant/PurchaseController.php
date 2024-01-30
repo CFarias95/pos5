@@ -459,7 +459,7 @@ class PurchaseController extends Controller
 
                 foreach ($data['items'] as $row) {
 
-                    //Log::info(json_encode($row));
+                    Log::info('Item a crear: '.json_encode($row));
                     //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
                     if ($item->unit_type_id != 'ZZ') {
@@ -562,7 +562,8 @@ class PurchaseController extends Controller
                     }
 
                     if (array_key_exists('item', $row)) {
-                        if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
+                        Log::info('Item Lots group: '.json_encode($row));
+                        if (isset($row['item']['lots_enabled']) && ($row['item']['lots_enabled'] == true || $row['item']['lots_enabled'] == 'true')) {
 
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
@@ -572,11 +573,14 @@ class PurchaseController extends Controller
                             ->where('warehouse_id',$row['warehouse_id'])
                             ->first();
 
+                            Log::info('Item Lots group ya existe: '.json_encode($validatLote));
+
                             if(isset($validatLote) && $validatLote != ''){
                                 $validatLote->quantity = $validatLote->quantity + ($row['quantity'] * $presentation_quantity);
                                 $validatLote->save();
 
                             }else{
+
                                 $item_lots_group = ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
                                     'quantity' => $row['quantity'] * $presentation_quantity,
@@ -630,6 +634,8 @@ class PurchaseController extends Controller
 
                 return $doc;
             });
+
+            Log::info('Compra creada: '.json_encode($purchase));
 
             return [
                 'success' => true,
@@ -2224,7 +2230,6 @@ class PurchaseController extends Controller
     {
         try {
             $model = $request->all();
-
             $supplier = Person::whereType('suppliers')->where('number', $model['supplier_ruc'])->first();
 
             if (!$supplier) {
@@ -2288,8 +2293,14 @@ class PurchaseController extends Controller
                     $doc->save();
 
                     foreach ($data['items'] as $row) {
-                        //log::info("Purchase item to create : ". json_encode($row['item']));
+                        log::info("Purchase item to create : ". json_encode($row['item']));
                         $row['has_igv'] = true;
+                        if(isset($row['total_base_igv']) == false ){
+                            $row['total_base_igv'] = 0;
+                        }
+                        if(isset($row['total_igv']) == false ){
+                            $row['total_igv'] = 0;
+                        }
                         $doc->items()->create($row);
                     }
 
@@ -2297,16 +2308,9 @@ class PurchaseController extends Controller
                         $doc->purchase_payments()->create($row);
                     }
 
-                    /*
-                    $doc->purchase_payments()->create([
-                        'date_of_payment' => $data['date_of_issue'],
-                        'payment_method_type_id' => $data['payment_method_type_id'],
-                        'payment' => $data['total'],
-                    ]);
-                    */
-
                     return $doc;
                 } catch (Exception $ex) {
+                    $doc->delete();
                     Log::error($ex->getMessage());
                     return false;
                 }
@@ -2318,7 +2322,6 @@ class PurchaseController extends Controller
                     $this->createAccountingEntry($purchase->id, null);
                     $this->createAccountingEntryPayment($purchase->id);
                 }
-
                 return [
                     'success' => true,
                     'message' => 'Xml cargado correctamente.',

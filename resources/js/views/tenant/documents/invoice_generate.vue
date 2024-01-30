@@ -2686,6 +2686,7 @@ export default {
 
       this.form.seller_id = data.seller_id;
       this.form.items = this.onPrepareItems(data.items);
+      //this.form.items = data.items;
       // this.form.series = data.series; //form.series no llena el selector
       if (this.table !== "quotations") {
         this.$store.commit(
@@ -2870,11 +2871,11 @@ export default {
         //i.charges = i.charges || [];
         i.charges = i.charges ? Object.values(i.charges) : [];
         i.attributes = i.attributes || [];
-        i.item.id = i.item_id;
         i.additional_information = this.onPrepareAdditionalInformation(
           i.additional_information
         );
         i.item = this.onPrepareIndividualItem(i);
+        i.item.id = i.item_id;
         return i;
       });
     },
