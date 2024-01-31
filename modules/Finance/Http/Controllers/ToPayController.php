@@ -422,119 +422,134 @@ class ToPayController extends Controller
 
     public function generateMultiPay(Request $request){
 
-        Log::info('Funcion para crear pago multiple To Pay');
-        Log::info('generateMultiPay' . json_encode($request));
+        try{
+            Log::info('Funcion para crear pago multiple To Pay');
+            Log::info('generateMultiPay' . json_encode($request));
 
-        $config = TenantConfiguration::first();
-        $documentIds = '';
-        $documentsSequentials = '';
-        $haber = [];
-        $sequential = PurchasePayment::latest('id')->first();
-        $debeAdicional = 0;
-        $haberAdicional = 0;
+            $config = TenantConfiguration::first();
+            $documentIds = '';
+            $documentsSequentials = '';
+            $haber = [];
+            $sequential = PurchasePayment::latest('id')->first();
+            $debeAdicional = 0;
+            $haberAdicional = 0;
 
-        foreach ($request->unpaid as $value) {
-            Log::info('DATA: ',$value);
-            $payment = new PurchasePayment();
-            $payment->purchase_id = $value['document_id'];
-            $payment->date_of_payment = $request->date_of_payment;
-            $payment->payment_method_type_id = $request->payment_method_type_id;
-            $payment->has_card = 0;
-            $payment->reference = $request->reference;
-            //$payment->payment_received = 1;
-            $payment->payment = $value['amount'];
-            $payment->fee_id = $value['fee_id'];
-            $payment->sequential = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
-            $payment->multipay = 'SI';
-            $payment->save();
+            foreach ($request->unpaid as $value) {
+                Log::info('DATA: ',$value);
+                $payment = new PurchasePayment();
+                $payment->purchase_id = $value['document_id'];
+                $payment->date_of_payment = $request->date_of_payment;
+                $payment->payment_method_type_id = $request->payment_method_type_id;
+                $payment->has_card = 0;
+                $payment->reference = $request->reference;
+                //$payment->payment_received = 1;
+                $payment->payment = $value['amount'];
+                $payment->fee_id = $value['fee_id'];
+                $payment->sequential = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
+                $payment->multipay = 'SI';
+                $payment->save();
 
-            $row['payment_destination_id'] = $request->payment_destination_id;
-            $this->createGlobalPayment($payment, $row);
+                $row['payment_destination_id'] = $request->payment_destination_id;
+                $this->createGlobalPayment($payment, $row);
 
-            $document = Purchase::find($value['document_id']);
-            $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+                $document = Purchase::find($value['document_id']);
+                $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
 
-            $documentIds .= 'PC'.$payment->id.';';
-            $customer = Person::find($value['customer_id']);
-            //Log::info($customer);
-            Log::info($config);
-            array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount']]);
+                $documentIds .= 'PC'.$payment->id.';';
+                $customer = Person::find($value['customer_id']);
+                //Log::info($customer);
+                Log::info($config);
+                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount']]);
 
-        }
+            }
 
-        $comment = 'Multipago '.$documentsSequentials;
+            $comment = 'Multipago '.$documentsSequentials;
 
-        foreach ($request->extras as $value) {
-            $debeAdicional += floatVal($value['debe']);
-            $haberAdicional += floatVal($value['haber']);
-        }
+            foreach ($request->extras as $value) {
+                $debeAdicional += floatVal($value['debe']);
+                $haberAdicional += floatVal($value['haber']);
+            }
 
-        $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
-        $cabeceraC = new AccountingEntries();
-        $cabeceraC->user_id = auth()->user()->id;
-        $cabeceraC->seat = ($lista && $lista->seat)? $lista->seat + 1 : 1;
-        $cabeceraC->seat_general = ($lista && $lista->seat)? $lista->seat + 1 : 1;
-        $cabeceraC->seat_date = $request->date_of_payment;
-        $cabeceraC->types_accounting_entrie_id = 1;
-        $cabeceraC->comment = $comment;
-        $cabeceraC->serie = null;
-        $cabeceraC->number = ($lista && $lista->seat)? $lista->seat + 1 : 1;
-        $cabeceraC->total_debe = $request->payment + $debeAdicional;
-        $cabeceraC->total_haber = $request->payment + $haberAdicional;
-        $cabeceraC->revised1 = 0;
-        $cabeceraC->user_revised1 = 0;
-        $cabeceraC->revised2 = 0;
-        $cabeceraC->user_revised2 = 0;
-        $cabeceraC->currency_type_id = $config->currency_type_id;
-        $cabeceraC->doctype = 1;
-        $cabeceraC->is_client = true;
-        $cabeceraC->establishment = auth()->user()->establishment;
-        $cabeceraC->prefix = 'ASC';
-        $cabeceraC->external_id = Str::uuid()->toString();
-        $cabeceraC->document_id = $documentIds;
+            $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
+            $cabeceraC = new AccountingEntries();
+            $cabeceraC->user_id = auth()->user()->id;
+            $cabeceraC->seat = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+            $cabeceraC->seat_general = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+            $cabeceraC->seat_date = $request->date_of_payment;
+            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->comment = $comment;
+            $cabeceraC->serie = null;
+            $cabeceraC->number = ($lista && $lista->seat)? $lista->seat + 1 : 1;
+            $cabeceraC->total_debe = $request->payment + $debeAdicional;
+            $cabeceraC->total_haber = $request->payment + $haberAdicional;
+            $cabeceraC->revised1 = 0;
+            $cabeceraC->user_revised1 = 0;
+            $cabeceraC->revised2 = 0;
+            $cabeceraC->user_revised2 = 0;
+            $cabeceraC->currency_type_id = $config->currency_type_id;
+            $cabeceraC->doctype = 1;
+            $cabeceraC->is_client = true;
+            $cabeceraC->establishment = auth()->user()->establishment;
+            $cabeceraC->prefix = 'ASC';
+            $cabeceraC->external_id = Str::uuid()->toString();
+            $cabeceraC->document_id = $documentIds;
 
-        $cabeceraC->save();
-        $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
-        $cabeceraC->save();
-
-        $detalle = new AccountingEntryItems();
-        $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
-        $detalle->accounting_entrie_id = $cabeceraC->id;
-        $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$config->cta_paymnets;
-        $detalle->seat_line = 1;
-        $detalle->debe = 0;
-        $detalle->haber = $request->payment + floatVal($debeAdicional) - floatVal($haberAdicional);
-        $detalle->save();
-
-        $line = 2;
-        foreach ($haber as $key => $value) {
-
-            Log::info('DATA DE HABER : '.json_encode($value));
+            $cabeceraC->save();
+            $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+            $cabeceraC->save();
 
             $detalle = new AccountingEntryItems();
+            $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
             $detalle->accounting_entrie_id = $cabeceraC->id;
-            $detalle->account_movement_id = $value['account'];
-            $detalle->seat_line = $line;
-            $detalle->haber = 0;
-            $detalle->debe = $value['amount'] ;
+            $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$config->cta_paymnets;
+            $detalle->seat_line = 1;
+            $detalle->debe = 0;
+            $detalle->haber = $request->payment + floatVal($debeAdicional) - floatVal($haberAdicional);
             $detalle->save();
-            $line += 1;
-        }
 
-        foreach ($request->extras as $value) {
-            $detalle = new AccountingEntryItems();
-            $detalle->accounting_entrie_id = $cabeceraC->id;
-            $detalle->account_movement_id = $value['account_id'];
-            $detalle->seat_line = $line;
-            $detalle->debe = floatVal($value['debe']);
-            $detalle->haber = floatVal($value['haber']);
-            $detalle->save();
-            $line += 1;
-        }
-        return[
-            'success' => true,
-            'message' => 'Multi pago generado exitosamente!'
-        ];
+            $line = 2;
+            foreach ($haber as $key => $value) {
 
+                Log::info('DATA DE HABER : '.json_encode($value));
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account'];
+                $detalle->seat_line = $line;
+                $detalle->haber = 0;
+                $detalle->debe = $value['amount'] ;
+                $detalle->save();
+                $line += 1;
+            }
+
+            foreach ($request->extras as $value) {
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account_id'];
+                $detalle->seat_line = $line;
+                $detalle->debe = floatVal($value['debe']);
+                $detalle->haber = floatVal($value['haber']);
+                $detalle->save();
+                $line += 1;
+            }
+            return[
+                'success' => true,
+                'message' => 'Multi pago generado exitosamente!'
+            ];
+
+        }catch(Exception $ex){
+
+            $explode = explode(';',$documentIds);
+            foreach ($explode as $value) {
+                $payment = PurchasePayment::find(str_replace(['PC',';'],'',$value));
+                if (!is_null($payment)) {
+                    $payment->delete();
+                }
+            }
+            return[
+                'success' => false,
+                'message' => 'Multi pago NO generado, '.$ex->getMessage()
+            ];
+        }
     }
 }
