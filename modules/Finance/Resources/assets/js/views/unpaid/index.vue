@@ -995,8 +995,6 @@ export default {
                     this.showMultiPay = false;
                 });
 
-
-
         },
 
         addExtra() {
