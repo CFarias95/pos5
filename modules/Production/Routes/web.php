@@ -119,6 +119,7 @@
                     Route::post('/import', 'ProductionController@import');
                     Route::get('/production-counter/{date}', 'ProductionController@getProductionCount');
                     Route::get('/updateStockWarehouses/{warehouseId}/{itemId}','ProductionController@updateStockWarehouses');
+                    Route::get('/getLotGroup/{warehouse_id}/{item_id}/{supply_id}','ProductionController@getLotGroups');
                 });
                 Route::prefix('packaging')->group(function () {
                     Route::get('', 'PackagingController@index')->name('tenant.packaging.index'); // ->middleware('redirect.level');

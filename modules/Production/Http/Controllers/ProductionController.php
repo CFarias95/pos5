@@ -603,7 +603,7 @@ class ProductionController extends Controller
                         $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
                         $production_supply->quantity = (float) $qty;
                         $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
-                        $production_supply->checked = $item['checked'];
+                        $production_supply->checked = isset($item['checked']) ? $item['checked'] : 0;
                         $production_supply->item_supply_original_id = $item['individual_item_id'];
 
                         $production_supply->save();
@@ -1063,6 +1063,37 @@ class ProductionController extends Controller
             'state_type_descr' => $state_type_descr->description,
             'item_warehouses' => $item_warehouses,
         ];
+    }
+
+    public function getLotGroups($warehouse_id, $item_id, $supply_id)
+    {
+        $lots_groups = [];
+
+        $items = self::optionsItemProduction($item_id);
+        //Log::info('items213 - '.json_encode($items));
+        
+        foreach($items as $item)
+        {
+            //Log::info('item123 - '.json_encode($item));
+            $supplies = $item['supplies'];
+            foreach($supplies as $supply)
+            {
+                //Log::info('supply - '.json_encode($supply));
+                foreach($supply['lots_group'] as $lots)
+                {
+                    if($lots->warehouse_id == $warehouse_id && $lots->quantity > 0)
+                    {
+                        //Log::info('lotgroups123 - '.json_encode($lots));
+                        array_push($lots_groups, $lots);
+                    }
+                }
+                
+            }
+            
+        }
+        //Log::info(' lots - '.json_encode($lots_groups));
+
+        return compact('lots_groups');
     }
 
     public static function optionsItemProduction($itemId = null)

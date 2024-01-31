@@ -180,7 +180,7 @@ export default {
     },
     create() {
       this.filter();
-      //console.log("warehouse", this.lots_group);
+      console.log("warehouse", this.lots_group);
     },
 
     async submit() {
