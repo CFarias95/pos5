@@ -854,14 +854,25 @@
                                             "
                                             style="padding-top: 1%"
                                         >
-                                            <a
+                                            <div v-if="row.warehouse_id == null">
+                                                <span>
+                                                    [&#10004; Seleccionar lote]
+                                                </span>
+                                            </div>
+                                            <div v-else>
+                                                <a
                                                 class="text-center font-weight-bold text-info"
                                                 href="#"
-                                                @click.prevent="
-                                                    clickLotGroup(row)
-                                                "
-                                                >[&#10004; Seleccionar lote]</a
-                                            >
+                                                @click.prevent="clickLotGroup(row)">
+                                                    [&#10004; Seleccionar lote]
+                                                </a>
+                                            </div>
+                                            <!-- <a
+                                                class="text-center font-weight-bold text-info"
+                                                href="#"
+                                                @click.prevent="clickLotGroup(row)">
+                                                    {{ row.warehouse_id == null ? 'Seleccione almacen primero' : '[&#10004; Seleccionar lote]' }}
+                                            </a> -->
                                         </div>
                                         <!-- JOINSOFTWARE
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
