@@ -39,6 +39,12 @@
     </el-dialog>
 </template>
 
+<style>
+    .el-dialog__wrapper {
+        background-color: rgba(0, 0, 0, 0.7);
+    }
+</style>
+
 <script>
 
     export default {
