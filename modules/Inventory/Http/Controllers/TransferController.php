@@ -227,7 +227,6 @@ use Modules\Item\Models\ItemLotsGroup;
         {
 
             $row = ItemWarehouse::where([['item_id', $item_id], ['warehouse_id', $warehouse_id]])->first();
-
             return [
                 'stock' => ($row) ? $row->stock : 0
             ];

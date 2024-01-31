@@ -265,7 +265,6 @@ class UnpaidController extends Controller
         return Excel::download(new AccountsReceivable, 'Allclients.xlsx');
     }
 
-
     public function reportPaymentMethodDays(Request $request)
     {
 
@@ -285,7 +284,6 @@ class UnpaidController extends Controller
         return $unpaidPaymentMethodDayExport->download('Reporte_C_Cobrar_F_Pago'.Carbon::now().'.xlsx');
 
     }
-
 
     public function pdf(Request $request) {
 

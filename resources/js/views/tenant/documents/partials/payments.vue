@@ -494,6 +494,7 @@ export default {
                     this.retentions = response.data.retentions;
                 }
             )
+            
             this.$http.get(`/cnp/list/${this.customerId}`).then(
                 response => {
                     this.credits = response.data.credits;
