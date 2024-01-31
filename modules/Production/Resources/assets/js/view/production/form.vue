@@ -1066,7 +1066,6 @@ export default {
             }
 
             return this.supplies.map(supply => {
-                // Encuentra el stock en el almacén seleccionado
                 const warehouseStock =
                     this.item_warehouses.find(
                         iw =>
@@ -1074,7 +1073,6 @@ export default {
                             iw.item_id === supply.individual_item_id
                     )?.stock || 0;
 
-                // Calcula la diferencia
                 const difference = supply.quantityD - warehouseStock;
 
                 return { ...supply, stock: warehouseStock, difference };
@@ -1134,30 +1132,31 @@ export default {
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
             }
         },
+        reloadLotGroups(warehouse_id, item_id, supply_id)
+        {
+            this.$http.get(`/${this.resource}/getLotGroup/${warehouse_id}/${item_id}/${supply_id}`)
+            .then(response => {
+                console.log('metodo reload',response.data.lots_groups)
+                this.selectSupply.lots_group = response.data.lots_groups
+                console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+            });
+        },
         clickLotGroup(row) {
-            //console.log("row", row);
-            let donwloadQuantity = row.quantityD;
-            this.selectSupply.supply_id = row.individual_item_id;
-            if (row.warehouse_id != null || row.undefined != undefined) {
-                this.selectSupply.lots_group = row.lots_group.filter(
-                    lot => lot.warehouse_id === row.warehouse_id
-                );
-                console.log(
-                    "this.selectSupply.lots_group1",
-                    this.selectSupply.lots_group
-                );
-            } else {
-                this.selectSupply.lots_group = row.lots_group;
-                console.log(
-                    "this.selectSupply.lots_group2",
-                    this.selectSupply.lots_group
-                );
-            }
-            //this.selectSupply.lots_group = row.lots_group;
-            this.selectSupply.quantity = _.round(donwloadQuantity, 4);
-            this.selectSupply.product = row.description;
-            this.selectSupply.warehouseLotId = row.warehouse_id;
-            this.showDialogLots = true;
+            let supply_id = row.individual_item_id
+            this.$http.get(`/${this.resource}/getLotGroup/${row.warehouse_id}/${this.form.item_id}/${supply_id}`)
+            .then(response => {
+                console.log('metodo reload',response.data.lots_groups)
+                this.selectSupply.lots_group = response.data.lots_groups
+                console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                let donwloadQuantity = row.quantityD;
+                this.selectSupply.supply_id = row.individual_item_id;
+                this.selectSupply.quantity = _.round(donwloadQuantity, 4);
+                this.selectSupply.product = row.description;
+                this.selectSupply.warehouseLotId = row.warehouse_id;
+                this.showDialogLots = true;
+            });
+            
+            
         },
         deleteStatus(id) {
             const index = this.records.findIndex(estado => estado.id === id);
