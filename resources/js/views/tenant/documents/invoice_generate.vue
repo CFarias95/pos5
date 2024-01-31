@@ -3929,9 +3929,9 @@ export default {
           // total_igv += parseFloat(row.total_igv)
           // total += parseFloat(row.total)
           if (row.total_igv_without_rounding) {
-            total_igv += parseFloat(row.total_igv_without_rounding);
+            total_igv += _.round(parseFloat(row.total_igv_without_rounding),2);
           } else {
-            total_igv += parseFloat(row.total_igv);
+            total_igv += _.round(parseFloat(row.total_igv),2);
           }
 
           // row.total_value_without_rounding = total_value
@@ -3969,7 +3969,7 @@ export default {
             parseFloat(row.total_service_taxes) +
             parseFloat(row.total_plastic_bag_taxes); //sumar icbper al total tributos
 
-          row.total_igv = total_value_partial * (row.percentage_igv / 100);
+          row.total_igv = _.round(total_value_partial * (row.percentage_igv / 100),2);
           row.total_base_igv = total_value_partial;
           total_value -= row.total_value;
 
@@ -3998,6 +3998,7 @@ export default {
       this.form.total_unaffected = _.round(total_unaffected, 2);
       this.form.total_free = _.round(total_free, 2);
       // this.form.total_igv = _.round(total_igv + total_free_igv, 2)
+      console.log('total IGV: ',total_igv);
       this.form.total_igv = _.round(total_igv, 2);
       this.form.total_value = _.round(total_value, 2);
       // this.form.total_taxes = _.round(total_igv, 2)

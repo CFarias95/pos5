@@ -3097,9 +3097,9 @@ export default {
                     // total_igv += parseFloat(row.total_igv)
                     // total += parseFloat(row.total)
                     if(row.total_igv_without_rounding) {
-                        total_igv += parseFloat(row.total_igv_without_rounding)
+                        total_igv += _.round(parseFloat(row.total_igv_without_rounding),2)
                     } else {
-                        total_igv += parseFloat(row.total_igv)
+                        total_igv += _.round(parseFloat(row.total_igv),2)
                     }
 
                     // row.total_value_without_rounding = total_value
@@ -3133,11 +3133,11 @@ export default {
                 if (['14', '15', '16'].includes(row.affectation_igv_type_id)) {
 
                     let unit_value = row.total_value / row.quantity
-                    let total_value_partial = unit_value * row.quantity
+                    let total_value_partial = _.round(unit_value * row.quantity,2)
                     // row.total_taxes = row.total_value - total_value_partial
                     row.total_taxes = row.total_value - total_value_partial + parseFloat(row.total_plastic_bag_taxes) //sumar icbper al total tributos
 
-                    row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                    row.total_igv = _.round(total_value_partial * (row.percentage_igv / 100),2)
                     row.total_base_igv = total_value_partial
                     total_value -= row.total_value
 
@@ -3428,7 +3428,7 @@ export default {
 
         },
         async submit() {
-            
+
             if (this.form.show_terms_condition) {
                 this.form.terms_condition = this.config.terms_condition_sale;
             }
