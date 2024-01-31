@@ -27,6 +27,7 @@
                                             :remote-method="searchRemoteItems"
                                             filterable
                                             remote
+                                            :disabled="this.form.records_id != null"
                                             @change="changeItem"
                                         >
                                             <el-option
@@ -896,8 +897,6 @@
                                             v-model="row.checked"
                                             label="Revisado?"
                                             size="large"
-                                            :checked="row.checked > 0"
-                                            name="checked"
                                         />
                                     </th>
                                     <th>
@@ -1334,6 +1333,7 @@ export default {
 
             this.loading_submit = true;
             this.form.supplies = this.supplies;
+            console.log('form.supplies', this.form.supplies)
             //console.log("this.supplies", this.supplies);
             // Si no existe un ID, estás creando un nuevo registro
             //console.log("submit production", this.form);
