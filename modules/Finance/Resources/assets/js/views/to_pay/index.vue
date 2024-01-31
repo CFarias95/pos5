@@ -385,7 +385,7 @@
                     <template #footer>
                         <span class="dialog-footer">
                             <el-button type="danger" @click="cancelMultiPay()">Cancel</el-button>
-                            <el-button v-if="formMultiPay.payment > 0" type="primary" @click="generateMultiPay()">
+                            <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary" @click="generateMultiPay()">
                                 Generar
                             </el-button>
                         </span>
@@ -424,6 +424,7 @@ export default {
             feeID: null,
             records: [],
             establishments: [],
+            loading_submit_multipay: false,
             pickerOptionsDates: {
                 disabledDate: (time) => {
                     time = moment(time).format("YYYY-MM-DD");
@@ -710,8 +711,7 @@ export default {
             this.initFormMultiPay()
         },
         async generateMultiPay() {
-            this.loading = true;
-
+            this.loading_submit_multipay = true
             await this.$http.post(`/${this.resource}/multipay`, this.formMultiPay)
                 .then((response) => {
                     if (response.data.success) {
@@ -720,13 +720,13 @@ export default {
                     } else {
                         this.$message.error(response.data.message);
                     }
+                })
+                .finally(()=>{
+                    this.loadToPay();
+                    this.loading_submit_multipay=false;
+                    this.showMultiPay = false;
+                    this.initFormMultiPay()
                 });
-
-            this.loadToPay();
-            this.loading = false;
-            this.showMultiPay = false;
-            this.initFormMultiPay()
-
         },
         addExtra() {
 

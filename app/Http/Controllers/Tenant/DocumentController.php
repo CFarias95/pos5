@@ -2397,8 +2397,8 @@ class DocumentController extends Controller
 
             $secuential = substr($secuencial,24,15);
 
-            Log::info('Secunecial documento para retenciones '.$secuential);
-            Log::info('Secunecial documento para retenciones '.$secuencial);
+            Log::info('Secuencial a buscar '.$secuential);
+            Log::info('Secuencial del documento para retenciones '.$secuencial);
 
             $retentions = Retention::where('supplier_id',$client_id)->whereColumn('total_used','<','total_retention')->where('optional','like','%numDocSustento": "'.$secuential.'"%')->get()->transform(function($row){
                 $data['id'] = $row->id;

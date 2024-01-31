@@ -227,7 +227,6 @@ use Modules\Item\Models\ItemLotsGroup;
         {
 
             $row = ItemWarehouse::where([['item_id', $item_id], ['warehouse_id', $warehouse_id]])->first();
-
             return [
                 'stock' => ($row) ? $row->stock : 0
             ];
@@ -263,9 +262,7 @@ use Modules\Item\Models\ItemLotsGroup;
                         // si tiene Lotes se crea el kardex por lotes
                         foreach ($it['lots'] as $key => $value) {
                             # code...
-                            if ($value['checked'] == true) {
-
-
+                            if ($value['checked'] == true && $value['compromise_quantity'] && $value['compromise_quantity'] > 0) {
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado Lotes';

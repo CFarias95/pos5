@@ -4272,6 +4272,8 @@ export default {
       };
     },
     async submit() {
+
+        this.loading_submit = true;
       let PaymentsPass = true;
       let letPaymentsTotal = 0;
       //validar pagos diferentes de o
@@ -4291,12 +4293,14 @@ export default {
 
         if (PaymentsPass == false) {
           this.$message.error("El monto en los pagos debe ser mayor a 0");
+          this.loading_submit = false;
           return false;
         }
         if (letPaymentsTotal > this.form.total || letPaymentsTotal < this.form.total) {
           this.$message.error(
             "La suma del total de los pagos" + letPaymentsTotal + "no es correcta"
           );
+          this.loading_submit = false;
           return;
         }
         //validar cupo
@@ -4309,7 +4313,8 @@ export default {
         }
         let validar = await this.validacionCupo();
         if (validar) {
-          return false;
+            this.loading_submit = false;
+            return false;
         }
       }
 
@@ -4318,11 +4323,13 @@ export default {
       _.forEach(this.form.items, (row) => {
         if (row.item.series_enabled) {
           errorSeries = parseFloat(row.quantity) !== row.item.lots.length;
+          this.loading_submit = false;
           return false;
         }
       });
       if (errorSeries) {
         this.$message.error("No se han seleccionado todas las series");
+        this.loading_submit = false;
         return false;
       }
 
@@ -4332,7 +4339,8 @@ export default {
       if (this.form.has_prepayment || this.prepayment_deduction) {
         let error_prepayment = await this.validateAffectationTypePrepayment();
         if (!error_prepayment.success)
-          return this.$message.error(error_prepayment.message);
+            this.loading_submit = false;
+            return this.$message.error(error_prepayment.message);
       }
 
       if (this.is_receivable) {
@@ -4343,6 +4351,7 @@ export default {
           validate.acum_total > parseFloat(this.form.total) ||
           validate.error_by_item > 0
         ) {
+            this.loading_submit = false;
           return this.$message.error(
             "Los montos ingresados superan al monto a pagar o son incorrectos"
           );
@@ -4351,6 +4360,7 @@ export default {
         let validate_payment_destination = await this.validatePaymentDestination();
 
         if (validate_payment_destination.error_by_item > 0) {
+            this.loading_submit = false;
           return this.$message.error("El destino del pago es obligatorio");
         }
       }
@@ -4359,7 +4369,10 @@ export default {
       await this.asignPlateNumberToItems();
 
       let val_detraction = await this.validateDetraction();
-      if (!val_detraction.success) return this.$message.error(val_detraction.message);
+      if (!val_detraction.success) {
+        this.loading_submit = false;
+        return this.$message.error(val_detraction.message);
+      }
 
       if (!this.enabled_payments) {
         this.form.payments = [];
@@ -4373,7 +4386,6 @@ export default {
       }
       // validacion sistema por puntos
 
-      this.loading_submit = true;
       let path = `/${this.resource}`;
 
       if (this.isUpdate) {
@@ -4416,6 +4428,7 @@ export default {
           this.loading_submit = false;
           this.setDefaultDocumentType();
         });
+
     },
     showOptionsDialog(response) {
       if (this.hidePreviewPdf) {

@@ -975,7 +975,6 @@ export default {
             } else {
                 await this.filterItems()
             }
-
         },
         filterItems() {
             this.items = this.all_items
@@ -1027,7 +1026,7 @@ export default {
                     lot.has_sale = true
                 })
 
-                await this.clickAddItem()
+                //await this.clickAddItem()
 
                 this.$refs.selectSearchNormal.$data.selectedLabel = '';
             }
