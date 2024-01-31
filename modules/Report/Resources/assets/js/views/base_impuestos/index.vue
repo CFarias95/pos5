@@ -149,10 +149,10 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-                
+
                 let dataR = response.data
                 delete dataR.data.data
-                this.pagination = dataR
+                this.pagination = response.data.meta
                 //this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 if (this.records.length > 0) {
@@ -171,5 +171,5 @@ export default {
             })
         },
     },
-}   
+}
 </script>
