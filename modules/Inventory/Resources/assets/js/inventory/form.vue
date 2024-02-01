@@ -267,10 +267,12 @@ export default {
           let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
           this.form.lots = lots;
           this.form.lots_enabled = item.lots_enabled;
+          console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
         } else {
           let item = await _.find(this.items, { id: this.form.item_id });
           this.form.lots_enabled = item.lots_enabled;
+          console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
           this.form.purchase_mean_price = item.purchase_mean_price;
         }
@@ -331,10 +333,14 @@ export default {
       await this.$http
         .get(`/${this.resource}/tables/transaction/${this.type}`)
         .then((response) => {
-          // this.items = response.data.items
+          this.items = response.data.items
+          console.log('form inventory item', this.items)
           this.warehouses = response.data.warehouses;
+          console.log('form inventory ware', this.warehouses)
           this.inventory_transactions = response.data.inventory_transactions;
+          console.log('form inventory transaction', this.inventory_transactions)
           this.production = response.data.production_finalizada;
+          console.log('form inventory prod', this.production)
         });
       await this.searchRemoteItems("");
     },

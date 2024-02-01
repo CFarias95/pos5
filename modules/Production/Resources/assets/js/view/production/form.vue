@@ -1366,8 +1366,8 @@ export default {
                     let formattedDate = dateEnd.format("YYYY-MM-DD");
 
                     /*let loteSugerido = "CCA-" + formattedDate + "-SL " + this.form.production_order;
-          alert("Se asignar de forma automática el lote : " + loteSugerido);
-          this.form.lot_code = loteSugerido;*/
+                    alert("Se asignar de forma automática el lote : " + loteSugerido);
+                    this.form.lot_code = loteSugerido;*/
 
                     let response = await this.$http.get(
                         `/${this.resource}/production-counter/${formattedDate}`
