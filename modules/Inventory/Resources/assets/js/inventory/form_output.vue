@@ -15,8 +15,8 @@
                 @change="changeItem"
               >
                 <el-option
-                  v-for="option in items"
-                  :key="option.id"
+                  v-for="(option, index) in items"
+                  :key="index"
                   :value="option.id"
                   :label="option.description"
                 ></el-option>
@@ -44,8 +44,8 @@
               <label class="control-label">Almacén</label>
               <el-select v-model="form.warehouse_id" filterable @change="changeItem">
                 <el-option
-                  v-for="option in warehouses_filter"
-                  :key="option.id"
+                  v-for="(option, index) in warehouses_filter"
+                  :key="index"
                   :value="option.id"
                   :label="option.description"
                 ></el-option>
@@ -105,8 +105,8 @@
               <label class="control-label">Motivo traslado</label>
               <el-select v-model="form.inventory_transaction_id" filterable>
                 <el-option
-                  v-for="option in inventory_transactions"
-                  :key="option.id"
+                  v-for="(option, index) in inventory_transactions"
+                  :key="index"
                   :value="option.id"
                   :label="option.name"
                 ></el-option>
@@ -135,8 +135,8 @@
             <label class="control-label">Produccion Finalizada</label>
             <el-select v-model="form.production_id" filterable clearable>
               <el-option
-                v-for="option in production"
-                :key="option.id"
+                v-for="(option, index) in production"
+                :key="index"
                 :value="option.id"
                 :label="option.name"
               >
@@ -240,14 +240,14 @@ export default {
   methods: {
     async changeItem() {
       this.form.lots = [];
-      let item = await _.find(this.items, { id: this.form.item_id });
+      let item = _.find(this.items, { id: this.form.item_id });
       let idlots = item.lots_group
         .filter((obj) => obj.warehouse_id !== undefined && obj.warehouse_id !== null)
         .map((obj) => obj.warehouse_id)
         .sort();
       this.warehouses_filter = this.warehouses.filter((obj) => idlots.includes(obj.id));
       this.form.lots_enabled = item.lots_enabled;
-      let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
+      let lots = _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
       this.form.lots = lots;
       this.form.series_enabled = item.series_enabled;
       this.form.lots_group_original = item.lots_group;
@@ -318,7 +318,7 @@ export default {
         this.form.warehouse_id = this.warehouseId;
         this.form.item_id = this.itemId;
         this.form.production_id = this.prod_order;
-        this.changeItem();
+        await this.changeItem();
       } else {
         console.log("No trae data");
       }
