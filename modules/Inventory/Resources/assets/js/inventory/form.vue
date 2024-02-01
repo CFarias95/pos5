@@ -15,8 +15,8 @@
                 @change="changeItem"
               >
                 <el-option
-                  v-for="option in items"
-                  :key="option.id"
+                  v-for="(index, option) in items"
+                  :key="index"
                   :value="option.id"
                   :label="option.description"
                 ></el-option>
