@@ -352,16 +352,20 @@ export default {
           : "Salida de producto del almacén";
       await this.initTables();
       this.initForm();
-      this.loading = false;
-      if (this.itemId != null && this.warehouseId != null) {
+      
+      if (this.itemId && this.warehouseId) {
         //console.log("Si trae la data");
         this.form.warehouse_id = this.warehouseId;
+        console.log(this.warehouseId)
         this.form.item_id = this.itemId;
+        console.log(this.itemId)
         this.form.production_id = this.prod_order;
-        this.changeItem();
+        console.log(this.prod_order)
+        await this.changeItem();
       } else {
         console.log("No trae data");
       }
+      this.loading = false;
     },
     async searchRemoteItems(search) {
       this.loading_search = true;
