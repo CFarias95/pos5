@@ -140,7 +140,7 @@ class InventoryController extends Controller
 	public function tables_transaction($type)
 	{
 		return [
-			//            'items' => $this->optionsItemFull(),
+			'items' => $this->optionsItemFull(),
 			'warehouses'             => $this->optionsWarehouse(),
 			'inventory_transactions' => $this->optionsInventoryTransaction($type),
 			'production_finalizada'  => Production::where('state_type_id', '03')->get(),
