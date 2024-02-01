@@ -171,7 +171,7 @@ class InventoryController extends Controller
 		//Log::info('print'.$search);
 
 		return [
-			'items' => $this->optionsItemFull($request, 20),
+			'items' => $this->optionsItemFull($request, 9999999),
 		];
 	}
 
