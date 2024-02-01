@@ -15,8 +15,8 @@
                 @change="changeItem"
               >
                 <el-option
-                  v-for="option in items"
-                  :key="option.id"
+                  v-for="(option, index) in items"
+                  :key="index"
                   :value="option.id"
                   :label="option.description"
                 ></el-option>
@@ -333,8 +333,8 @@ export default {
       await this.$http
         .get(`/${this.resource}/tables/transaction/${this.type}`)
         .then((response) => {
-          this.items = response.data.items
-          console.log('form inventory item', this.items)
+          /*this.items = response.data.items
+          console.log('form inventory item', this.items)*/
           this.warehouses = response.data.warehouses;
           console.log('form inventory ware', this.warehouses)
           this.inventory_transactions = response.data.inventory_transactions;
@@ -342,7 +342,8 @@ export default {
           this.production = response.data.production_finalizada;
           console.log('form inventory prod', this.production)
         });
-      await this.searchRemoteItems("");
+      
+        await this.searchRemoteItems("");
     },
     async create() {
       this.loading = true;
@@ -374,7 +375,7 @@ export default {
         .post(`/${this.resource}/search_items`, { search: search })
         .then((response) => {
           let items = response.data.items;
-          //console.log('logs', items)
+          console.log('logs', items)
           if (items.length > 0) {
             this.items = items; //filterWords(search, items);
           }
