@@ -49,8 +49,8 @@
               <label class="control-label">Almacén</label>
               <el-select v-model="form.warehouse_id" filterable @change="changeItem">
                 <el-option
-                  v-for="option in warehouses"
-                  :key="option.id"
+                  v-for="(option, index) in warehouses"
+                  :key="index"
                   :value="option.id"
                   :label="option.description"
                 ></el-option>
@@ -125,8 +125,8 @@
               <label class="control-label">Motivo traslado</label>
               <el-select v-model="form.inventory_transaction_id" filterable>
                 <el-option
-                  v-for="option in inventory_transactions"
-                  :key="option.id"
+                  v-for="(option, index) in inventory_transactions"
+                  :key="index"
                   :value="option.id"
                   :label="option.name"
                 ></el-option>
@@ -155,8 +155,8 @@
             <label class="control-label">Produccion Finalizada</label>
             <el-select v-model="form.production_id" filterable clearable>
               <el-option
-                v-for="option in production"
-                :key="option.id"
+                v-for="(option, index) in production"
+                :key="index"
                 :value="option.id"
                 :label="option.name"
               >
@@ -262,15 +262,18 @@ export default {
       if (this.items.length > 0) {
         if (this.type === "output") {
           this.form.lots = [];
-          let item = await _.find(this.items, { id: this.form.item_id });
+          let item = _.find(this.items, { id: this.form.item_id });
           this.form.lots_enabled = item.lots_enabled;
-          let lots = await _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
+          let lots = _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
           this.form.lots = lots;
           this.form.lots_enabled = item.lots_enabled;
           console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
         } else {
-          let item = await _.find(this.items, { id: this.form.item_id });
+          let item = _.find(this.items, { id: this.form.item_id });
+          console.log('items... - ', this.items)
+          console.log('form item id', this.form.item_id)
+          console.log('let item', item)
           this.form.lots_enabled = item.lots_enabled;
           console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
@@ -362,7 +365,7 @@ export default {
         console.log(this.itemId)
         this.form.production_id = this.prod_order;
         console.log(this.prod_order)
-        await this.changeItem();
+        //await this.changeItem();
       } else {
         console.log("No trae data");
       }
