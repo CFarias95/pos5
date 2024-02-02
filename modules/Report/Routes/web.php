@@ -62,7 +62,7 @@ if ($current_hostname) {
                     Route::get('/tables', 'PlanCuentasController@tables')
                         ->name('tenant.plan_cuentas.tables');
                     Route::get('/columns', 'PlanCuentasController@columns');*/
-                    
+
                 });
 
                 //SP Reporte Anticipos
@@ -82,7 +82,7 @@ if ($current_hostname) {
                     Route::get('/tables', 'PlanCuentasController@tables')
                         ->name('tenant.plan_cuentas.tables');
                     Route::get('/columns', 'PlanCuentasController@columns');*/
-                    
+
                 });
 
 
@@ -422,6 +422,19 @@ if ($current_hostname) {
                     Route::get('/pdf-simple', 'ReporteVentasDetalleController@pdfSimple');
                     Route::get('/recuperarCategorias', 'ReporteVentasDetalleController@recuperarCategorias');
                 });
+
+                // REPORTE DE PAGOS
+                Route::prefix('report_purchase_payments')->group(function () {
+                    Route::get('', 'ReporteComprasPagosController@index')
+                        ->name('tenant.reports.report_purchase_payments.index')
+                        ->middleware('tenant.internal.mode');
+                    Route::get('/pdf', 'ReporteComprasPagosController@pdf');
+                    Route::get('/excel', 'ReporteComprasPagosController@excel');
+                    Route::get('/filter', 'ReporteComprasPagosController@filter');
+                    Route::get('/records', 'ReporteComprasPagosController@records');
+                    Route::get('/pdf-simple', 'ReporteComprasPagosController@pdfSimple');
+                });
+
 
                 Route::prefix('plan_cuentas')->group(function () {
                     Route::get('', 'PlanCuentasController@index')

@@ -206,6 +206,7 @@ Vue.component('tenant-reporte-ventas-excel', require('../../modules/Report/Resou
 Vue.component('tenant-reporte-ventas-detalle-index', require('../../modules/Report/Resources/assets/js/views/reporte_ventas_detalle/index.vue'));
 Vue.component('tenant-reporte-ventas-detalle-excel', require('../../modules/Report/Resources/assets/js/views/reporte_ventas_detalle/index.vue'));
 
+Vue.component('tenant-reporte-purchases-payments-index',require('../../modules/Report/Resources/assets/js/views/report_purchase_payments/index.vue'));
 //Retenciones recibidas
 //Vue.component('tenant-retenciones_recibidas-index', require('../../modules/Report/Resources/assets/js/views/retenciones_recibidas/index.vue'));
 
