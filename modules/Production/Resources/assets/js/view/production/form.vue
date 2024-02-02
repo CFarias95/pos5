@@ -1124,13 +1124,25 @@ export default {
         },
         addRowLotGroup(id) {
             let IdLoteSelected = id;
+            console.log('this.selectSupply.supply_id', this.selectSupply)
+            console.log('this.suplies', this.supplies)
             const index = this.supplies.findIndex(
-                item => item.id === this.selectSupply.supply_id
+                item => item.individual_item_id === this.selectSupply.supply_id
             );
-
+            console.log('indexrowgrupo', index)
             if (index !== -1) {
+                console.log('entro if index add row')
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
+                this.supplies[index].lots_group.forEach((lot) => {
+                    let lotselected = IdLoteSelected.filter((x) => x.code == lot.code)
+                    console.log('lotselected', lotselected)
+                    if(lotselected.length > 0)
+                    {
+                        lot.compromise_quantity = lotselected[0].compromise_quantity;
+                    }
+                })
             }
+            console.log('this.suplies', this.supplies)
         },
         reloadLotGroups(warehouse_id, item_id, supply_id)
         {
@@ -1142,7 +1154,9 @@ export default {
             });
         },
         clickLotGroup(row) {
-            let supply_id = row.individual_item_id
+            this.selectSupply.lots_group = []
+            let supply_id = null
+            supply_id = row.individual_item_id
             this.$http.get(`/${this.resource}/getLotGroup/${row.warehouse_id}/${this.form.item_id}/${supply_id}`)
             .then(response => {
                 console.log('metodo reload',response.data.lots_groups)
@@ -1431,7 +1445,7 @@ export default {
             if (!warehouseId) {
                 return;
             }
-            console.log('index ', index)
+            //console.log('index ', index)
             if (index < 0 || index >= this.supplies.length || !this.supplies[index]) {
                 console.error("Índice inválido o elemento de supplies no encontrado", index);
                 return;

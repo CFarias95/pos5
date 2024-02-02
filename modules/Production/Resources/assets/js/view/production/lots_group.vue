@@ -208,14 +208,13 @@ export default {
         .filter((x) => x.compromise_quantity > 0)
         .map((item) => {
           return {
-            id: item.id,
             item_supply_id: item.item_supply_id,
             code: item.code,
             compromise_quantity: item.compromise_quantity,
             date_of_due: item.date_of_due,
           };
         });
-
+      console.log('lots-selected', lots_selecteds)
       await this.$emit("addRowLotGroup", lots_selecteds);
       await this.$emit("update:showDialog", false);
     },

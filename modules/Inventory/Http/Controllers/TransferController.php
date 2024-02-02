@@ -256,37 +256,41 @@ use Modules\Item\Models\ItemLotsGroup;
 
                 foreach ($request->items as $it) {
 
-                    //Log::info('it - '.json_encode($it));
+                    Log::info('it - '.json_encode($it));
 
-                    if($it['lots_enabled'] == true){
+                    if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
                         // si tiene Lotes se crea el kardex por lotes
                         foreach ($it['lots'] as $key => $value) {
                             # code...
                             if ($value['checked'] == true && $value['compromise_quantity'] && $value['compromise_quantity'] > 0) {
+                                Log::info('entro al if de value checked - '.$value['warehouse_id'].' - '.$value['warehouse_destination_id']);
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado Lotes';
                                 $inventory->item_id = $it['id'];
-                                $inventory->warehouse_id = $request->warehouse_id;
-                                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                                $inventory->warehouse_id = $value['warehouse_id'];
+                                $inventory->warehouse_destination_id = $value['warehouse_destination_id'];
                                 $inventory->quantity = $value['compromise_quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->lot_code = $value['code'];
                                 //Log::info('Inventory antes de guardar');
                                 $inventory->save();
+                                Log::info('inventory guardado');
 
                                 //lotes origen
                                 $lotOrigin = ItemLotsGroup::where('item_id',$it['id'])
                                 ->where('code',$value['code'])
-                                ->where('warehouse_id',$request->warehouse_id)
+                                ->where('warehouse_id', $value['warehouse_id'])
                                 ->first();
+                                Log::info('$lotOrigin - '.json_encode($lotOrigin));
                                 $cantOrigin=$lotOrigin->quantity;
 
                                 //comprobar existencia producto
                                 $lotDest = ItemLotsGroup::where('item_id',$it['id'])
                                 ->where('code',$value['code'])
-                                ->where('warehouse_id',$request->warehouse_destination_id)
+                                ->where('warehouse_id', $value['warehouse_destination_id'])
                                 ->first();
+                                Log::info('$lotDest - '.json_encode($lotDest));
 
                                 if(isset($lotDest) && $lotDest != ''){
 
@@ -299,8 +303,8 @@ use Modules\Item\Models\ItemLotsGroup;
                                     ItemLotsGroup::create([
                                         'code' => $value['code'],
                                         'quantity' => $value['compromise_quantity'],
-                                        'date_of_due' => $value['date_of_due'],
-                                        'warehouse_id' => $request->warehouse_destination_id,
+                                        'date_of_due' => $lotOrigin->date_of_due,
+                                        'warehouse_id' => $value['warehouse_destination_id'],
                                         'item_id' => $it['id']
                                     ]);
 

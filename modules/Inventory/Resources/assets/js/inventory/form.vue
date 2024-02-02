@@ -365,7 +365,7 @@ export default {
         console.log(this.itemId)
         this.form.production_id = this.prod_order;
         console.log(this.prod_order)
-        //await this.changeItem();
+        await this.changeItem();
       } else {
         console.log("No trae data");
       }
