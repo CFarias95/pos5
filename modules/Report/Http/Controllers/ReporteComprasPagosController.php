@@ -63,7 +63,12 @@ class ReporteComprasPagosController extends Controller
         $collection = collect($data);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;
-        $header = get_object_vars($data[0]);
+        if(isset($data[0]) ){
+            $header = get_object_vars($data[0]);
+        }else{
+            $header = [];
+        }
+
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
 
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);

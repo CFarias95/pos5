@@ -110,7 +110,7 @@
                 <div class="card-body">
                     <h6 class="card-title">Compras</h6>
                     <ul class="card-report-links">
-                        {{-- <li> 
+                        {{-- <li>
                             <a href="{{route('tenant.reports.purchases.index')}}">
                                 Compras totales
                             </a>
@@ -146,7 +146,7 @@
                                 Reporte compras retenciones
                             </a>
                         </li>
-                        <li> 
+                        <li>
                             <a href="{{route('tenant.reports.purchases.quotations')}}">
                                 Detalle de compras
                             </a>
@@ -160,7 +160,7 @@
                             <a href="{{route('tenant.reports.purchases.statement.index')}}">
                                 Extracto Compras
                             </a>
-                        </li> 
+                        </li>
                         <li>
                             <a href="{{route('tenant.reports.retentions.statement.index')}}">
                                 Extracto Retenciones
@@ -317,7 +317,7 @@
             <div class="card card-dashboard card-reports">
                 <div class="card-body">
                     <h6 class="card-title">Finanzas</h6>
-                    <ul class="card-report-links">                   
+                    <ul class="card-report-links">
 
                         <li>
                             <a href="{{route('tenant.reports.payable.statement.index')}}">Extracto Cuentas por Pagar</a>
@@ -336,6 +336,9 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.cobros_defectuosos.index')}}">Reporte Cobros Defectuosos</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.report_purchase_payments.index')}}">Reporte Pagos</a>
                         </li>
                     </ul>
                 </div>
