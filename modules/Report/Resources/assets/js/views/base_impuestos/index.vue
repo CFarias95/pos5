@@ -59,7 +59,7 @@
                                 </tr>
                             </tbody>
                         </table>
-   Comporbacion                     <div v-else>
+                        <div v-else>
                             <el-alert title="No Data" description="No se encontraron registros para mostrar" type="error"
                                 effect="dark" :closable="false" show-icon center />
                         </div>
