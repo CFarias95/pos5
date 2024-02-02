@@ -3,7 +3,7 @@
         <div class="page-header pr-0">
             <h2><a href="/dashboard"><i class="fas fa-tachometer-alt"></i></a></h2>
             <ol class="breadcrumbs">
-                <li class="active"><span>Reporte Cobros Defectuosos</span></li>
+                <li class="active"><span>Reporte Cobros Efectuados</span></li>
             </ol>
         </div>
         <div class="card-header bg-info">
@@ -67,8 +67,20 @@
                                     <td v-for="(key, index1) in all_keys" :key="index1">
                                         {{rowArray[0][key]}}
                                     </td>
-                                </tr>
+                                </tr>      
                             </tbody>
+                            <tfoot>
+                                <tr class="col-md-12">
+                                    <td colspan="16" class="text-right">
+                                        <strong>Valor Total Pagado Agrupado: {{ parseFloat(this.total_pagado).toFixed(2) }}</strong>
+                                    </td>
+                                </tr>
+                                <tr class="col-md-12">
+                                    <td colspan="16" class="text-right">
+                                        <strong>Valor Total Pagado Global: {{ parseFloat(this.total_pagado_global).toFixed(2) }}</strong>
+                                    </td>
+                                </tr>
+                            </tfoot>
                         </table>
                         <div v-else>
                             <el-alert title="No Data" description="No se encontraron registros para mostrar" type="error"
@@ -94,7 +106,7 @@ import queryString from 'query-string'
 export default {
     data() {
         return {
-            resource: 'reports/cobros_defectuosos',
+            resource: 'reports/cobros_efectuados',
             form: {
                 client_id: null,
                 date_start: null,
@@ -111,7 +123,9 @@ export default {
                     time = moment(time).format('YYYY-MM-DD')
                     return this.form.date_start > time
                 }
-            }
+            },
+            total_pagado: null,
+            total_pagado_global: null,
         }
     },
     created() {
@@ -149,6 +163,7 @@ export default {
                 date_start: moment().format('YYYY-MM-DD'),
                 date_end: moment().format('YYYY-MM-DD'),
             }
+            this.total_pagado = 0
 
         },
         customIndex(index) {
@@ -164,16 +179,24 @@ export default {
         getRecords() {
             return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
                 this.records = response.data.data
-
                 let dataR = response.data
                 delete dataR.data.data
+                this.total_pagado = 0
+                this.total_pagado_global = 0     
                 this.pagination = response.data.meta
                 //this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)
                 if (this.records.length > 0) {
-
+                    this.total_pagado_global = this.records[this.records.length - 1][0]
                     var keys = Object.keys(this.records[0]['0']);
                     this.all_keys = keys
+                    this.records.forEach(row => {
+                        //console.log('row[0] -',row[0])
+                        if(row[0].Valor_pagado >= 0)
+                        {
+                            this.total_pagado += parseFloat(row[0].Valor_pagado)
+                        }
+                    });
                 }
                 this.loading_submit = false
             });

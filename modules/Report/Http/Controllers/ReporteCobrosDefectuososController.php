@@ -26,6 +26,7 @@ class ReporteCobrosDefectuososController extends Controller
     {
         $sp = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?);", [$request->client_id, $request->date_start, $request->date_end]);
         //Log::info($sp);
+        $total = 0;
         $sp1 = array();
         $sp2 = [];
         foreach($sp as $row)
@@ -37,12 +38,21 @@ class ReporteCobrosDefectuososController extends Controller
             }
             break;
         }
+        foreach($sp as $row)
+        {
+            if((float)$row->Valor_pagado >= 0)
+            {
+                $total += (float)$row->Valor_pagado;
+            }
+        }
+
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
         $paginatedCollection['datos'] = $sp2;
+        $paginatedCollection['total'] = $total;
 
         return new ReporteCobrosDefectuososCollection($paginatedCollection);
     }
@@ -84,7 +94,7 @@ class ReporteCobrosDefectuososController extends Controller
 
         $pdf = PDF::loadView('report::cobros_defectuosos.cobros_defectuosos_pdf', compact("records", "company", "usuario_log", "request", "sp2"))->setPaper('a4', 'landscape');
 
-        $filename = 'Reporte_Cobros_Defectuosos_' . date('YmdHis');
+        $filename = 'Reporte_Cobros_Efectuados_' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }
@@ -117,6 +127,6 @@ class ReporteCobrosDefectuososController extends Controller
             ->fechaActual($fechaActual)
             ->sp2($sp2);
 
-        return $documentExport->download('Reporte_Cobros_Defectuosos_' . Carbon::now() . '.xlsx');
+        return $documentExport->download('Reporte_Cobros_Efectuados_' . Carbon::now() . '.xlsx');
     }
 }

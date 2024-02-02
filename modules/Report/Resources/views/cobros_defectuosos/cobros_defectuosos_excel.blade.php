@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Reporte Cobros Defectuosos</title>
+        <title>Reporte Cobros Efectuados</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -76,7 +76,7 @@
         </div>
         <hr>
         <div>
-            <h2 align="center" class="title"><strong>Reporte Cobros Defectuosos</strong></h2>
+            <h2 align="center" class="title"><strong>Reporte Cobros Efectuados</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             

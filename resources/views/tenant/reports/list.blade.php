@@ -335,7 +335,7 @@
                             <a href="{{route('tenant.anticipos_reporte.index')}}">Reporte Anticipos Cliente-Proveedor</a>
                         </li>
                         <li>
-                            <a href="{{route('tenant.cobros_defectuosos.index')}}">Reporte Cobros Defectuosos</a>
+                            <a href="{{route('tenant.cobros_defectuosos.index')}}">Reporte Cobros Efectuados</a>
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.report_purchase_payments.index')}}">Reporte Pagos</a>

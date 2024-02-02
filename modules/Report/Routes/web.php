@@ -85,7 +85,7 @@ if ($current_hostname) {
 
                 });
                 //SP Reporte Cobros Defectuosos
-                Route::prefix('cobros_defectuosos')->group(function () {
+                Route::prefix('cobros_efectuados')->group(function () {
                     Route::get('', 'ReporteCobrosDefectuososController@index')
                         ->name('tenant.cobros_defectuosos.index');
                     Route::get('/pdf', 'ReporteCobrosDefectuososController@pdf');
