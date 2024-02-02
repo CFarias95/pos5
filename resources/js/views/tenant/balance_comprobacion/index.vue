@@ -227,7 +227,9 @@ export default {
                                     })
                                     console.log('rows', this.cuentas)*/
           let len = this.records.length;
-          this.records.splice(len - 1, 1);
+          if(this.records.length > 0){
+            this.records.splice(len - 1, 1);
+          }
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
           this.loading_submit = false;
