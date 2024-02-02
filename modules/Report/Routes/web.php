@@ -84,6 +84,23 @@ if ($current_hostname) {
                     Route::get('/columns', 'PlanCuentasController@columns');*/
                     
                 });
+                //SP Reporte Cobros Defectuosos
+                Route::prefix('cobros_defectuosos')->group(function () {
+                    Route::get('', 'ReporteCobrosDefectuososController@index')
+                        ->name('tenant.cobros_defectuosos.index');
+                    Route::get('/pdf', 'ReporteCobrosDefectuososController@pdf');
+                    Route::get('/datosSP', 'ReporteCobrosDefectuososController@datosSP');
+                    Route::get('/excel', 'ReporteCobrosDefectuososController@excel');
+                    Route::get('/tables', 'ReporteCobrosDefectuososController@tables');
+                    /*Route::get('/filter', 'PlanCuentasController@filter')
+                        ->name('tenant.plan_cuentas.filter');
+                    Route::get('/item/tables', 'PlanCuentasController@item_tables')
+                        ->name('tenant.plan_cuentas.item_tables');
+                    Route::get('/tables', 'PlanCuentasController@tables')
+                        ->name('tenant.plan_cuentas.tables');
+                    Route::get('/columns', 'PlanCuentasController@columns');*/
+                    
+                });
 
 
                 Route::prefix('purchases')->group(function () {
