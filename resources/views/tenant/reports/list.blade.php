@@ -334,6 +334,9 @@
                         <li>
                             <a href="{{route('tenant.anticipos_reporte.index')}}">Reporte Anticipos Cliente-Proveedor</a>
                         </li>
+                        <li>
+                            <a href="{{route('tenant.cobros_defectuosos.index')}}">Reporte Cobros Defectuosos</a>
+                        </li>
                     </ul>
                 </div>
             </div>

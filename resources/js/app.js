@@ -221,6 +221,9 @@ Vue.component('tenant-stock-index', require('../../modules/Report/Resources/asse
 //Reporte Compra base e impuestos
 Vue.component('tenant-base_impuestos-index', require('../../modules/Report/Resources/assets/js/views/base_impuestos/index.vue'));
 
+//Reporte Pagos Defectuosos
+Vue.component('tenant-cobros_defectuosos-index', require('../../modules/Report/Resources/assets/js/views/cobros_defectuosos/index.vue'));
+
 /*PURCHASE QUOTATIONS REPORT */
 Vue.component('tenant-report-purchases-quotation', require('../../modules/Report/Resources/assets/js/views/purchases/quotation.vue'));
 
