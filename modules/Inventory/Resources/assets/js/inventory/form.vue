@@ -267,15 +267,15 @@ export default {
           let lots = _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
           this.form.lots = lots;
           this.form.lots_enabled = item.lots_enabled;
-          console.log('item - ', item.lots_enabled)
+          //console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
         } else {
           let item = _.find(this.items, { id: this.form.item_id });
-          console.log('items... - ', this.items)
-          console.log('form item id', this.form.item_id)
-          console.log('let item', item)
+          //console.log('items... - ', this.items)
+          //console.log('form item id', this.form.item_id)
+          //console.log('let item', item)
           this.form.lots_enabled = item.lots_enabled;
-          console.log('item - ', item.lots_enabled)
+          //console.log('item - ', item.lots_enabled)
           this.form.series_enabled = item.series_enabled;
           this.form.purchase_mean_price = item.purchase_mean_price;
         }
@@ -339,11 +339,11 @@ export default {
           /*this.items = response.data.items
           console.log('form inventory item', this.items)*/
           this.warehouses = response.data.warehouses;
-          console.log('form inventory ware', this.warehouses)
+          //console.log('form inventory ware', this.warehouses)
           this.inventory_transactions = response.data.inventory_transactions;
-          console.log('form inventory transaction', this.inventory_transactions)
+          //console.log('form inventory transaction', this.inventory_transactions)
           this.production = response.data.production_finalizada;
-          console.log('form inventory prod', this.production)
+          //console.log('form inventory prod', this.production)
         });
       
         await this.searchRemoteItems("");
@@ -360,11 +360,11 @@ export default {
       if (this.itemId && this.warehouseId) {
         //console.log("Si trae la data");
         this.form.warehouse_id = this.warehouseId;
-        console.log(this.warehouseId)
+        //console.log(this.warehouseId)
         this.form.item_id = this.itemId;
-        console.log(this.itemId)
+        //console.log(this.itemId)
         this.form.production_id = this.prod_order;
-        console.log(this.prod_order)
+        //console.log(this.prod_order)
         await this.changeItem();
       } else {
         console.log("No trae data");
@@ -378,7 +378,7 @@ export default {
         .post(`/${this.resource}/search_items`, { search: search })
         .then((response) => {
           let items = response.data.items;
-          console.log('logs', items)
+          //console.log('logs', items)
           if (items.length > 0) {
             this.items = items; //filterWords(search, items);
           }

@@ -584,13 +584,13 @@ class ProductionController extends Controller
             //Log::info('item - ' . json_encode($items_supplies[0]['checked']));
             //Log::info('item - ' . getType($items_supplies[0]['checked']));
             // Error al registrar el ingreso: Undefined variable: item_supplies
-            //Log::info('production - '.$production);
+            //Log::info('production - '.$production->id);
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
                 try {
                     foreach ($items_supplies as $item) {
-                        Log::info('item_supplies - ' . json_encode($item));
+                        //Log::info('item_supplies - ' . json_encode($item));
                         $sitienelote = false;
                         $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
                         $production_id = $production->id;
@@ -611,7 +611,7 @@ class ProductionController extends Controller
                         $lots_group = $item["lots_group"];
                         foreach ($lots_group as $lots) {
                             if (isset($lots["compromise_quantity"])) {
-                                Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
+                                //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
                                 //Log::info("Se tiene cantidad en un lote selecionado");
                                 $sitienelote = true;
                                 $item_lots_groups = new ItemSupplyLot();
@@ -671,7 +671,7 @@ class ProductionController extends Controller
                     $costoT = $totalA + $totalN;
                     $costoT = round($costoT / $stockT, 4);
 
-                    Log::info("ACTUAL " . $costoA . '-' . $stockA . ' NUEVO: ' . $costoT . "-" . $stockT);
+                    //Log::info("ACTUAL " . $costoA . '-' . $stockA . ' NUEVO: ' . $costoT . "-" . $stockT);
                     $item->purchase_mean_cost = $costoT;
                     $item->save();
                 } catch (Exception $ex2) {
@@ -859,6 +859,7 @@ class ProductionController extends Controller
             $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
             $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
+            $inventory_it->production_id = $production->id;
             $inventory_it->save();
 
             if (isset($production->lot_code) && $production->lot_code != "") {
@@ -927,6 +928,7 @@ class ProductionController extends Controller
                                 $inventory_it->quantity = (float) ($qty);
                                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                                 $inventory_it->lot_code = $lots["code"];
+                                $inventory_it->production_id = $production->id;
                                 $inventory_it->save();
                             }
                         }

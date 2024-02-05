@@ -1124,33 +1124,33 @@ export default {
         },
         addRowLotGroup(id) {
             let IdLoteSelected = id;
-            console.log('this.selectSupply.supply_id', this.selectSupply)
-            console.log('this.suplies', this.supplies)
+            //console.log('this.selectSupply.supply_id', this.selectSupply)
+            //console.log('this.suplies', this.supplies)
             const index = this.supplies.findIndex(
                 item => item.individual_item_id === this.selectSupply.supply_id
             );
-            console.log('indexrowgrupo', index)
+            //console.log('indexrowgrupo', index)
             if (index !== -1) {
-                console.log('entro if index add row')
+                //console.log('entro if index add row')
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
                 this.supplies[index].lots_group.forEach((lot) => {
                     let lotselected = IdLoteSelected.filter((x) => x.code == lot.code)
-                    console.log('lotselected', lotselected)
+                    //console.log('lotselected', lotselected)
                     if(lotselected.length > 0)
                     {
                         lot.compromise_quantity = lotselected[0].compromise_quantity;
                     }
                 })
             }
-            console.log('this.suplies', this.supplies)
+            //console.log('this.suplies', this.supplies)
         },
         reloadLotGroups(warehouse_id, item_id, supply_id)
         {
             this.$http.get(`/${this.resource}/getLotGroup/${warehouse_id}/${item_id}/${supply_id}`)
             .then(response => {
-                console.log('metodo reload',response.data.lots_groups)
+                //console.log('metodo reload',response.data.lots_groups)
                 this.selectSupply.lots_group = response.data.lots_groups
-                console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
             });
         },
         clickLotGroup(row) {
@@ -1159,9 +1159,9 @@ export default {
             supply_id = row.individual_item_id
             this.$http.get(`/${this.resource}/getLotGroup/${row.warehouse_id}/${this.form.item_id}/${supply_id}`)
             .then(response => {
-                console.log('metodo reload',response.data.lots_groups)
+                //console.log('metodo reload',response.data.lots_groups)
                 this.selectSupply.lots_group = response.data.lots_groups
-                console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
                 let donwloadQuantity = row.quantityD;
                 this.selectSupply.supply_id = row.individual_item_id;
                 this.selectSupply.quantity = _.round(donwloadQuantity, 4);
@@ -1284,21 +1284,26 @@ export default {
         },
         //JOINSOFTWARE
         handleChange(value) {
+        //console.log('value', value)
             if (value > 0) {
                 this.supplies.forEach(row => {
                     if (row.rounded_up) {
                         let baseQuantity = _.round(value * row.quantity, 4);
+                        //console.log('baseQuantity', baseQuantity)
                         let truncatedNumber =
                             Math.floor(baseQuantity * 1000) / 1000;
+                            //console.log('truncatedNumber', truncatedNumber)
                         let thirdDecimal = Math.floor(baseQuantity * 1000) % 10;
+                        //console.log('thirdDecimal', thirdDecimal)
                         let roundedQuantity;
 
                         if (thirdDecimal <= 2) {
                             roundedQuantity =
                                 Math.floor(truncatedNumber * 100) / 100;
                         } else if (thirdDecimal >= 3 && thirdDecimal <= 7) {
-                            let secondDecimal =
+                            /*let secondDecimal =
                                 Math.floor(baseQuantity * 100) % 10;
+                                console.log('secondDecimal', secondDecimal)
                             if (
                                 secondDecimal === 9 &&
                                 thirdDecimal >= 3 &&
@@ -1310,11 +1315,15 @@ export default {
                                 roundedQuantity =
                                     Math.floor(truncatedNumber * 100) / 100 +
                                     0.005;
-                            }
+                            }*/
+                            roundedQuantity =
+                                    Math.floor(truncatedNumber * 100) / 100 +
+                                    0.005;
                         } else if (thirdDecimal >= 8) {
                             roundedQuantity =
                                 Math.ceil(truncatedNumber * 100) / 100;
                         }
+                        //console.log('roundedQuantity', roundedQuantity)
 
                         row.quantityD = parseFloat(roundedQuantity.toFixed(3));
                     } else {
@@ -1346,7 +1355,7 @@ export default {
 
             this.loading_submit = true;
             this.form.supplies = this.supplies;
-            console.log('form.supplies', this.form.supplies)
+            //console.log('form.supplies', this.form.supplies)
             //console.log("this.supplies", this.supplies);
             // Si no existe un ID, estás creando un nuevo registro
             //console.log("submit production", this.form);
@@ -1464,7 +1473,7 @@ export default {
                         difference:
                             response.data.stock - this.supplies[index].quantityD
                     });
-                    console.log('stock', response.data.stock)
+                    //console.log('stock', response.data.stock)
                     if (this.supplies[index].difference <= 0) {
                         this.supply_difference = true
                         this.$message.error(
