@@ -12,209 +12,105 @@
                         <div class="col-lg-9">
                             <div class="row">
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.item_id
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Producto
+                                    <div :class="{
+                                        'has-danger': errors.item_id
+                                    }" class="form-group">
+                                        <label class="control-label">Producto
                                         </label>
-                                        <el-select
-                                            v-model="form.item_id"
-                                            :loading="loading_search"
-                                            :remote-method="searchRemoteItems"
-                                            filterable
-                                            remote
-                                            :disabled="this.form.records_id != null"
-                                            @change="changeItem"
-                                        >
-                                            <el-option
-                                                v-for="option in items"
-                                                :key="option.id"
-                                                :label="option.description"
-                                                :value="option.id"
-                                            ></el-option>
+                                        <el-select v-model="form.item_id" :loading="loading_search"
+                                            :remote-method="searchRemoteItems" filterable remote
+                                            :disabled="this.form.records_id != null" @change="changeItem">
+                                            <el-option v-for="option in items" :key="option.id" :label="option.description"
+                                                :value="option.id"></el-option>
                                         </el-select>
-                                        <small
-                                            v-if="errors.item_id"
-                                            class="form-control-feedback"
-                                            v-text="errors.item_id[0]"
-                                        ></small>
+                                        <small v-if="errors.item_id" class="form-control-feedback"
+                                            v-text="errors.item_id[0]"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.warehouse_id
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Almacén</label
-                                        >
-                                        <el-select
-                                            :disabled="!isCreating"
-                                            v-model="form.warehouse_id"
-                                            filterable
-                                        >
-                                            <el-option
-                                                v-for="option in warehouses"
-                                                :key="option.id"
-                                                :label="option.description"
-                                                :value="option.id"
-                                            ></el-option>
+                                    <div :class="{
+                                        'has-danger': errors.warehouse_id
+                                    }" class="form-group">
+                                        <label class="control-label">Almacén</label>
+                                        <el-select :disabled="!isCreating" v-model="form.warehouse_id" filterable>
+                                            <el-option v-for="option in warehouses" :key="option.id"
+                                                :label="option.description" :value="option.id"></el-option>
                                         </el-select>
-                                        <small
-                                            v-if="errors.warehouse_id"
-                                            class="form-control-feedback"
-                                            v-text="errors.warehouse_id[0]"
-                                        ></small>
+                                        <small v-if="errors.warehouse_id" class="form-control-feedback"
+                                            v-text="errors.warehouse_id[0]"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.quantity
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Cantidad</label
-                                        >
-                                        <el-input-number
-                                            v-model="form.quantity"
-                                            :controls="false"
-                                            :min="this.min_force"
-                                            :max="this.max_force"
-                                            :precision="precision"
-                                            @change="handleChange($event)"
-                                        ></el-input-number>
-                                        <small
-                                            v-if="errors.quantity"
-                                            class="form-control-feedback"
-                                            v-text="errors.quantity[0]"
-                                        ></small>
+                                    <div :class="{
+                                        'has-danger': errors.quantity
+                                    }" class="form-group">
+                                        <label class="control-label">Cantidad</label>
+                                        <el-input-number v-model="form.quantity" :controls="false" :min="this.min_force"
+                                            :max="this.max_force" :precision="precision"
+                                            @change="handleChange($event)"></el-input-number>
+                                        <small v-if="errors.quantity" class="form-control-feedback"
+                                            v-text="errors.quantity[0]"></small>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger':
-                                                errors.inventory_transaction_id
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Motivo traslado</label
-                                        >
-                                        <input
-                                            class="form-control"
-                                            readonly
-                                            type="text"
-                                            value="Ingreso de producción"
-                                        />
+                                    <div :class="{
+                                        'has-danger':
+                                            errors.inventory_transaction_id
+                                    }" class="form-group">
+                                        <label class="control-label">Motivo traslado</label>
+                                        <input class="form-control" readonly type="text" value="Ingreso de producción" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{ 'has-danger': errors.name }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Número de Ficha</label
-                                        >
-                                        <el-input
-                                            v-model="form.name"
-                                        ></el-input>
-                                        <small
-                                            v-if="errors.name"
-                                            class="form-control-feedback"
-                                            v-text="errors.name[0]"
-                                        ></small>
+                                    <div :class="{ 'has-danger': errors.name }" class="form-group">
+                                        <label class="control-label">Número de Ficha</label>
+                                        <el-input v-model="form.name"></el-input>
+                                        <small v-if="errors.name" class="form-control-feedback"
+                                            v-text="errors.name[0]"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.comment
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Comentario</label
-                                        >
-                                        <el-input
-                                            v-model="form.comment"
-                                        ></el-input>
-                                        <small
-                                            v-if="errors.comment"
-                                            class="form-control-feedback"
-                                            v-text="errors.comment[0]"
-                                        ></small>
+                                    <div :class="{
+                                        'has-danger': errors.comment
+                                    }" class="form-group">
+                                        <label class="control-label">Comentario</label>
+                                        <el-input v-model="form.comment"></el-input>
+                                        <small v-if="errors.comment" class="form-control-feedback"
+                                            v-text="errors.comment[0]"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger':
-                                                errors.production_order
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Orden de producción</label
-                                        >
-                                        <input
-                                            v-model="form.production_order"
-                                            class="form-control"
-                                            placeholder="Orden de producción"
-                                            type="text"
-                                        />
+                                    <div :class="{
+                                        'has-danger':
+                                            errors.production_order
+                                    }" class="form-group">
+                                        <label class="control-label">Orden de producción</label>
+                                        <input v-model="form.production_order" class="form-control"
+                                            placeholder="Orden de producción" type="text" />
 
-                                        <small
-                                            v-if="errors.production_order"
-                                            class="form-control-feedback"
-                                            v-text="errors.production_order[0]"
-                                        ></small>
+                                        <small v-if="errors.production_order" class="form-control-feedback"
+                                            v-text="errors.production_order[0]"></small>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.machine_id
-                                        }"
-                                        class="form-group"
-                                    >
+                                    <div :class="{
+                                        'has-danger': errors.machine_id
+                                    }" class="form-group">
                                         <label class="control-label">
                                             Maquina
                                         </label>
-                                        <el-select
-                                            :disabled="!isCreating"
-                                            v-model="form.machine_id"
-                                            @change="fetchMachineInfo()"
-                                        >
-                                            <el-option
-                                                v-for="option in machines"
-                                                :key="option.id"
-                                                :label="option.name"
-                                                :value="option.id"
-                                            ></el-option>
+                                        <el-select :disabled="!isCreating" v-model="form.machine_id"
+                                            @change="fetchMachineInfo()">
+                                            <el-option v-for="option in machines" :key="option.id" :label="option.name"
+                                                :value="option.id"></el-option>
                                         </el-select>
 
-                                        <small
-                                            v-if="errors.machine_id"
-                                            class="form-control-feedback"
-                                            v-text="errors.machine_id[0]"
-                                        ></small>
+                                        <small v-if="errors.machine_id" class="form-control-feedback"
+                                            v-text="errors.machine_id[0]"></small>
                                     </div>
 
-                                    <div
-                                        class="form-group"
-                                        v-if="form.machine_id"
-                                    >
+                                    <div class="form-group" v-if="form.machine_id">
                                         <el-tag type="danger" effect="dark">
                                             Min: {{ min_force }}
                                         </el-tag>
@@ -226,172 +122,96 @@
                                 </div>
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.lot_code
-                                        }"
-                                        class="form-group"
-                                    >
+                                    <div :class="{
+                                        'has-danger': errors.lot_code
+                                    }" class="form-group">
                                         <label class="control-label">
                                             Lote
                                         </label>
-                                        <input
-                                            v-model="form.lot_code"
-                                            class="form-control"
-                                            placeholder="Lote"
-                                            type="text"
-                                        />
+                                        <input v-model="form.lot_code" class="form-control" placeholder="Lote"
+                                            type="text" />
 
-                                        <small
-                                            v-if="errors.lot_code"
-                                            class="form-control-feedback"
-                                            v-text="errors.lot_code[0]"
-                                        ></small>
+                                        <small v-if="errors.lot_code" class="form-control-feedback"
+                                            v-text="errors.lot_code[0]"></small>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{ 'has-danger': errors.agreed }"
-                                        class="form-group"
-                                    >
+                                    <div :class="{ 'has-danger': errors.agreed }" class="form-group">
                                         <label class="control-label">
                                             Conformes
                                         </label>
-                                        <el-input-number
-                                            v-model="form.agreed"
-                                            :controls="false"
-                                            :min="0"
-                                            :precision="precision"
-                                        ></el-input-number>
+                                        <el-input-number v-model="form.agreed" :controls="false" :min="0"
+                                            :precision="precision"></el-input-number>
 
-                                        <small
-                                            v-if="errors.agreed"
-                                            class="form-control-feedback"
-                                            v-text="errors.agreed[0]"
-                                        ></small>
+                                        <small v-if="errors.agreed" class="form-control-feedback"
+                                            v-text="errors.agreed[0]"></small>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.imperfect
-                                        }"
-                                        class="form-group"
-                                    >
+                                    <div :class="{
+                                        'has-danger': errors.imperfect
+                                    }" class="form-group">
                                         <label class="control-label">
                                             Merma
                                         </label>
 
-                                        <el-input-number
-                                            v-model="form.imperfect"
-                                            :controls="false"
-                                            :min="0"
-                                            :precision="precision"
-                                        ></el-input-number>
+                                        <el-input-number v-model="form.imperfect" :controls="false" :min="0"
+                                            :precision="precision"></el-input-number>
 
-                                        <small
-                                            v-if="errors.imperfect"
-                                            class="form-control-feedback"
-                                            v-text="errors.imperfect[0]"
-                                        ></small>
+                                        <small v-if="errors.imperfect" class="form-control-feedback"
+                                            v-text="errors.imperfect[0]"></small>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 col-md-6 col-lg-6">
                                     <div class="bordered-container">
-                                        <div
-                                            :class="{
-                                                'has-danger': errors.samples
-                                            }"
-                                            class="form-group"
-                                        >
+                                        <div :class="{
+                                            'has-danger': errors.samples
+                                        }" class="form-group">
                                             <label class="control-label">
                                                 Muestras
                                             </label>
-                                            <el-input-number
-                                                v-model="form.samples"
-                                                :controls="false"
-                                                :min="0"
-                                                :precision="precision"
-                                                @change="quantityControl"
-                                            ></el-input-number>
-                                            <small
-                                                v-if="errors.samples"
-                                                class="form-control-feedback"
-                                                v-text="errors.samples[0]"
-                                            ></small>
+                                            <el-input-number v-model="form.samples" :controls="false" :min="0"
+                                                :precision="precision" @change="quantityControl"></el-input-number>
+                                            <small v-if="errors.samples" class="form-control-feedback"
+                                                v-text="errors.samples[0]"></small>
                                         </div>
-                                        <div
-                                            :class="{
-                                                'has-danger':
-                                                    errors.destination_warehouse_id
-                                            }"
-                                            class="form-group"
-                                        >
-                                            <label class="control-label"
-                                                >Bodega Destino</label
-                                            >
-                                            <el-select
-                                                v-model="
-                                                    form.destination_warehouse_id
-                                                "
-                                                filterable
-                                                @change="sameWarehouse"
-                                            >
-                                                <el-option
-                                                    v-for="option in warehouses"
-                                                    :key="option.id"
-                                                    :label="option.description"
-                                                    :value="option.id"
-                                                ></el-option>
+                                        <div :class="{
+                                            'has-danger':
+                                                errors.destination_warehouse_id
+                                        }" class="form-group">
+                                            <label class="control-label">Bodega Destino</label>
+                                            <el-select v-model="form.destination_warehouse_id
+                                                " filterable @change="sameWarehouse">
+                                                <el-option v-for="option in warehouses" :key="option.id"
+                                                    :label="option.description" :value="option.id"></el-option>
                                             </el-select>
-                                            <small
-                                                v-if="
-                                                    errors.destination_warehouse_id
-                                                "
-                                                class="form-control-feedback"
-                                                v-text="
-                                                    errors
-                                                        .destination_warehouse_id[0]
-                                                "
-                                            ></small>
+                                            <small v-if="errors.destination_warehouse_id
+                                                " class="form-control-feedback" v-text="errors
+            .destination_warehouse_id[0]
+        "></small>
                                         </div>
                                     </div>
                                 </div>
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.item_extra_data
-                                        }"
-                                        class="form-group"
-                                    >
+                                    <div :class="{
+                                        'has-danger': errors.item_extra_data
+                                    }" class="form-group">
                                         <label class="control-label">
                                             Color
                                         </label>
-                                        <el-select
-                                            v-model="form.item_extra_data.color"
-                                            :disable="
-                                                item === undefined ||
-                                                    item.colors === undefined ||
-                                                    item.colors.length < 1
-                                            "
-                                            filterable
-                                        >
-                                            <el-option
-                                                v-for="option in item.colors"
-                                                :key="option.id"
-                                                :label="option.color_name"
-                                                :value="option.id"
-                                            ></el-option>
+                                        <el-select v-model="form.item_extra_data.color" :disable="item === undefined ||
+                                            item.colors === undefined ||
+                                            item.colors.length < 1
+                                            " filterable>
+                                            <el-option v-for="option in item.colors" :key="option.id"
+                                                :label="option.color_name" :value="option.id"></el-option>
                                         </el-select>
-                                        <small
-                                            v-if="errors.item_extra_data"
-                                            class="form-control-feedback"
-                                            v-text="errors.item_extra_data[0]"
-                                        ></small>
+                                        <small v-if="errors.item_extra_data" class="form-control-feedback"
+                                            v-text="errors.item_extra_data[0]"></small>
                                     </div>
                                 </div>
 
@@ -407,56 +227,30 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.date_start
-                                                }"
-                                                class="form-group"
-                                            >
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.date_start
+                                            }" class="form-group">
                                                 <label class="control-label">
                                                     Fecha de inicio
                                                 </label>
-                                                <el-date-picker
-                                                    v-model="form.date_start"
-                                                    :clearable="false"
-                                                    format="dd/MM/yyyy"
-                                                    type="date"
-                                                    value-format="yyyy-MM-dd"
-                                                ></el-date-picker>
-                                                <small
-                                                    v-if="errors.date_start"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.date_start[0]
-                                                    "
-                                                ></small>
+                                                <el-date-picker v-model="form.date_start" :clearable="false"
+                                                    format="dd/MM/yyyy" type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                                <small v-if="errors.date_start" class="form-control-feedback" v-text="errors.date_start[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.time_start
-                                                }"
-                                                class="form-group"
-                                            >
-                                                <label class="control-label"
-                                                    >Hora de Inicio</label
-                                                >
-                                                <el-time-picker
-                                                    v-model="form.time_start"
-                                                    dusk="time_start"
-                                                    placeholder="Seleccionar"
-                                                    value-format="HH:mm:ss"
-                                                ></el-time-picker>
-                                                <small
-                                                    v-if="errors.time_start"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.time_start[0]
-                                                    "
-                                                ></small>
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.time_start
+                                            }" class="form-group">
+                                                <label class="control-label">Hora de Inicio</label>
+                                                <el-time-picker v-model="form.time_start" dusk="time_start"
+                                                    placeholder="Seleccionar" value-format="HH:mm:ss"></el-time-picker>
+                                                <small v-if="errors.time_start" class="form-control-feedback" v-text="errors.time_start[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                     </div>
@@ -465,75 +259,42 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.date_end
-                                                }"
-                                                class="form-group"
-                                            >
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.date_end
+                                            }" class="form-group">
                                                 <label class="control-label">
                                                     Fecha de Finalización
                                                 </label>
-                                                <el-date-picker
-                                                    v-model="form.date_end"
-                                                    :clearable="false"
-                                                    format="dd/MM/yyyy"
-                                                    type="date"
-                                                    value-format="yyyy-MM-dd"
-                                                ></el-date-picker>
-                                                <small
-                                                    v-if="errors.date_end"
-                                                    class="form-control-feedback"
-                                                    v-text="errors.date_end[0]"
-                                                ></small>
+                                                <el-date-picker v-model="form.date_end" :clearable="false"
+                                                    format="dd/MM/yyyy" type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                                <small v-if="errors.date_end" class="form-control-feedback"
+                                                    v-text="errors.date_end[0]"></small>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.time_end
-                                                }"
-                                                class="form-group"
-                                            >
-                                                <label class="control-label"
-                                                    >Hora de finalización</label
-                                                >
-                                                <el-time-picker
-                                                    v-model="form.time_end"
-                                                    dusk="time_end"
-                                                    placeholder="Seleccionar"
-                                                    value-format="HH:mm:ss"
-                                                ></el-time-picker>
-                                                <small
-                                                    v-if="errors.time_end"
-                                                    class="form-control-feedback"
-                                                    v-text="errors.time_end[0]"
-                                                ></small>
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.time_end
+                                            }" class="form-group">
+                                                <label class="control-label">Hora de finalización</label>
+                                                <el-time-picker v-model="form.time_end" dusk="time_end"
+                                                    placeholder="Seleccionar" value-format="HH:mm:ss"></el-time-picker>
+                                                <small v-if="errors.time_end" class="form-control-feedback"
+                                                    v-text="errors.time_end[0]"></small>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
-                                    <div
-                                        :class="{
-                                            'has-danger':
-                                                errors.production_collaborator
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Colaborador de producción</label
-                                        >
-                                        <input
-                                            class="form-control"
-                                            v-model="
-                                                form.production_collaborator
-                                            "
-                                            type="text"
-                                            value="Colaborador de produccion"
-                                        />
+                                    <div :class="{
+                                        'has-danger':
+                                            errors.production_collaborator
+                                    }" class="form-group">
+                                        <label class="control-label">Colaborador de producción</label>
+                                        <input class="form-control" v-model="form.production_collaborator
+                                            " type="text" value="Colaborador de produccion" />
                                     </div>
                                 </div>
 
@@ -549,60 +310,31 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.mix_date_start
-                                                }"
-                                                class="form-group"
-                                            >
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.mix_date_start
+                                            }" class="form-group">
                                                 <label class="control-label">
                                                     Fecha de inicio
                                                 </label>
-                                                <el-date-picker
-                                                    v-model="
-                                                        form.mix_date_start
-                                                    "
-                                                    :clearable="false"
-                                                    format="dd/MM/yyyy"
-                                                    type="date"
-                                                    value-format="yyyy-MM-dd"
-                                                ></el-date-picker>
-                                                <small
-                                                    v-if="errors.mix_date_start"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.mix_date_start[0]
-                                                    "
-                                                ></small>
+                                                <el-date-picker v-model="form.mix_date_start
+                                                    " :clearable="false" format="dd/MM/yyyy" type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                                <small v-if="errors.mix_date_start" class="form-control-feedback" v-text="errors.mix_date_start[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.mix_time_start
-                                                }"
-                                                class="form-group"
-                                            >
-                                                <label class="control-label"
-                                                    >Hora de Inicio</label
-                                                >
-                                                <el-time-picker
-                                                    v-model="
-                                                        form.mix_time_start
-                                                    "
-                                                    dusk="time_start"
-                                                    placeholder="Seleccionar"
-                                                    value-format="HH:mm:ss"
-                                                ></el-time-picker>
-                                                <small
-                                                    v-if="errors.mix_time_start"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.mix_time_start[0]
-                                                    "
-                                                ></small>
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.mix_time_start
+                                            }" class="form-group">
+                                                <label class="control-label">Hora de Inicio</label>
+                                                <el-time-picker v-model="form.mix_time_start
+                                                    " dusk="time_start" placeholder="Seleccionar"
+                                                    value-format="HH:mm:ss"></el-time-picker>
+                                                <small v-if="errors.mix_time_start" class="form-control-feedback" v-text="errors.mix_time_start[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                     </div>
@@ -611,185 +343,105 @@
                                 <div class="col-sm-12 col-md-4">
                                     <div class="row">
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.mix_date_end
-                                                }"
-                                                class="form-group"
-                                            >
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.mix_date_end
+                                            }" class="form-group">
                                                 <label class="control-label">
                                                     Fecha de Finalización
                                                 </label>
-                                                <el-date-picker
-                                                    v-model="form.mix_date_end"
-                                                    :clearable="false"
-                                                    format="dd/MM/yyyy"
-                                                    type="date"
-                                                    value-format="yyyy-MM-dd"
-                                                ></el-date-picker>
-                                                <small
-                                                    v-if="errors.mix_date_end"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.mix_date_end[0]
-                                                    "
-                                                ></small>
+                                                <el-date-picker v-model="form.mix_date_end" :clearable="false"
+                                                    format="dd/MM/yyyy" type="date"
+                                                    value-format="yyyy-MM-dd"></el-date-picker>
+                                                <small v-if="errors.mix_date_end" class="form-control-feedback" v-text="errors.mix_date_end[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                         <div class="col-6">
-                                            <div
-                                                :class="{
-                                                    'has-danger':
-                                                        errors.mix_time_end
-                                                }"
-                                                class="form-group"
-                                            >
-                                                <label class="control-label"
-                                                    >Hora de finalización</label
-                                                >
-                                                <el-time-picker
-                                                    v-model="form.mix_time_end"
-                                                    dusk="time_end"
-                                                    placeholder="Seleccionar"
-                                                    value-format="HH:mm:ss"
-                                                ></el-time-picker>
-                                                <small
-                                                    v-if="errors.mix_time_end"
-                                                    class="form-control-feedback"
-                                                    v-text="
-                                                        errors.mix_time_end[0]
-                                                    "
-                                                ></small>
+                                            <div :class="{
+                                                'has-danger':
+                                                    errors.mix_time_end
+                                            }" class="form-group">
+                                                <label class="control-label">Hora de finalización</label>
+                                                <el-time-picker v-model="form.mix_time_end" dusk="time_end"
+                                                    placeholder="Seleccionar" value-format="HH:mm:ss"></el-time-picker>
+                                                <small v-if="errors.mix_time_end" class="form-control-feedback" v-text="errors.mix_time_end[0]
+                                                    "></small>
                                             </div>
                                         </div>
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-4">
-                                    <div
-                                        :class="{
-                                            'has-danger':
-                                                errors.mix_collaborator
-                                        }"
-                                        class="form-group"
-                                    >
-                                        <label class="control-label"
-                                            >Colaborador de Mezcla</label
-                                        >
-                                        <input
-                                            class="form-control"
-                                            v-model="form.mix_collaborator"
-                                            type="text"
-                                            value="Colaborador de Mezcla"
-                                        />
+                                    <div :class="{
+                                        'has-danger':
+                                            errors.mix_collaborator
+                                    }" class="form-group">
+                                        <label class="control-label">Colaborador de Mezcla</label>
+                                        <input class="form-control" v-model="form.mix_collaborator" type="text"
+                                            value="Colaborador de Mezcla" />
                                     </div>
                                 </div>
                                 <div class="col-sm-12 col-md-3">
                                     <label class="control-label">
                                         Ficha Informativa
-                                        <el-tooltip
-                                            class="item"
-                                            content="No se contabilizará el stock"
-                                            effect="dark"
-                                            placement="top-start"
-                                        >
+                                        <el-tooltip class="item" content="No se contabilizará el stock" effect="dark"
+                                            placement="top-start">
                                             <i class="fa fa-info-circle"></i>
                                         </el-tooltip>
                                     </label>
-                                    <div
-                                        class="form-group"
-                                        :class="{
-                                            'has-danger': errors.informative
-                                        }"
-                                    >
-                                        <el-switch
-                                            v-model="form.informative"
-                                            active-text="Si"
-                                            inactive-text="No"
-                                        ></el-switch>
-                                        <small
-                                            class="form-control-feedback"
-                                            v-if="errors.informative"
-                                            v-text="errors.informative[0]"
-                                        >
+                                    <div class="form-group" :class="{
+                                        'has-danger': errors.informative
+                                    }">
+                                        <el-switch v-model="form.informative" active-text="Si"
+                                            inactive-text="No"></el-switch>
+                                        <small class="form-control-feedback" v-if="errors.informative"
+                                            v-text="errors.informative[0]">
                                         </small>
                                     </div>
                                 </div>
 
-                                <div
-                                    class="col-sm-12 col-md-9"
-                                    v-if="form.informative"
-                                >
-                                    <div
-                                        :class="{
-                                            'has-danger': errors.proccess_type
-                                        }"
-                                        class="form-group"
-                                    >
+                                <div class="col-sm-12 col-md-9" v-if="form.informative">
+                                    <div :class="{
+                                        'has-danger': errors.proccess_type
+                                    }" class="form-group">
                                         <label class="control-label">
                                             Tipo de proceso
                                         </label>
-                                        <el-input
-                                            v-model="form.proccess_type"
-                                        ></el-input>
-                                        <small
-                                            v-if="errors.proccess_type"
-                                            class="form-control-feedback"
-                                            v-text="errors.proccess_type[0]"
-                                        ></small>
+                                        <el-input v-model="form.proccess_type"></el-input>
+                                        <small v-if="errors.proccess_type" class="form-control-feedback"
+                                            v-text="errors.proccess_type[0]"></small>
                                     </div>
                                 </div>
                             </div>
                         </div>
                         <div class="col-lg-3">
-                            <div
-                                :class="{ 'has-danger': errors.records_id }"
-                                class="form-group"
-                            >
+                            <div :class="{ 'has-danger': errors.records_id }" class="form-group">
                                 <label class="control-label">Estado</label>
                                 <el-select v-model="form.records_id" filterable>
-                                    <el-option
-                                        v-for="option in records"
-                                        :key="option.id"
-                                        :label="option.description"
-                                        :value="option.id"
-                                    ></el-option>
+                                    <el-option v-for="option in records" :key="option.id" :label="option.description"
+                                        :value="option.id"></el-option>
                                 </el-select>
-                                <small
-                                    v-if="errors.records_id"
-                                    class="form-control-feedback"
-                                    v-text="errors.records_id[0]"
-                                ></small>
+                                <small v-if="errors.records_id" class="form-control-feedback"
+                                    v-text="errors.records_id[0]"></small>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <div class="form-actions text-right mt-4" v-if="false">
-                    <el-button
-                        :loading="loading_submit"
-                        native-type="submit"
-                        type="primary"
-                        >Guardar
+                    <el-button :loading="loading_submit" native-type="submit" type="primary">Guardar
                     </el-button>
                 </div>
 
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="onClose()"> Cancelar </el-button>
-                    <el-button
-                        :loading="loading_submit"
-                        native-type="(id) ? submit() : update()"
-                        type="primary"
-                        v-if="supply_difference == false"
-                    >
+                    <el-button :loading="loading_submit" native-type="(id) ? submit() : update()" type="primary"
+                        v-if="supply_difference == false">
                         {{ id ? "Actualizar" : "Guardar" }}
                     </el-button>
                 </div>
 
-                <div
-                    v-if="supplies && supplies.length > 0"
-                    class="col-12 col-md-12 mt-3"
-                >
+                <div v-if="supplies && supplies.length > 0" class="col-12 col-md-12 mt-3">
                     <h3 class="my-0">Lista de materiales</h3>
 
                     <div class="col-md-12 mt-3 table-responsive">
@@ -808,63 +460,44 @@
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr
-                                    v-for="(row, index) in this.supplies"
-                                    :key="row.id"
-                                >
+                                <tr v-for="(row, index) in this.supplies" :key="row.id">
                                     <th>
                                         {{
                                             row.individual_item
-                                                ? row.individual_item.name +
-                                                  " / " +
-                                                  row.individual_item
-                                                      .description
-                                                : row.description
+                                            ? row.individual_item.name +
+                                            " / " +
+                                            row.individual_item
+                                                .description
+                                            : row.description
                                         }}
                                     </th>
                                     <th>
-                                        <el-select
-                                            v-model="row.warehouse_id"
-                                            filterable
-                                            @change="
-                                                warehouse_stock(
-                                                    index,
-                                                    row.individual_item_id,
-                                                    row.warehouse_id,
-                                                )
-                                            "
-                                        >
-                                            <el-option
-                                                v-for="option in warehouses"
-                                                :key="option.id"
-                                                :label="option.description"
-                                                :value="option.id"
-                                            ></el-option>
+                                        <el-select v-model="row.warehouse_id" filterable @change="
+                                            warehouse_stock(
+                                                index,
+                                                row.individual_item_id,
+                                                row.warehouse_id,
+                                            )
+                                            ">
+                                            <el-option v-for="option in warehouses" :key="option.id"
+                                                :label="option.description" :value="option.id"></el-option>
                                         </el-select>
                                     </th>
                                     <th>
                                         <!-- {{ row.quantity }} -->
-                                        <el-input-number
-                                            v-model="row.quantityD"
-                                            :disabled="row.modificable == 0"
-                                        ></el-input-number>
+                                        <el-input-number v-model="row.quantityD"
+                                            :disabled="row.modificable == 0"></el-input-number>
 
-                                        <div
-                                            v-if="
-                                                row.lots_enabled && isCreating
-                                            "
-                                            style="padding-top: 1%"
-                                        >
+                                        <div v-if="row.lots_enabled && isCreating
+                                            " style="padding-top: 1%">
                                             <div v-if="row.warehouse_id == null">
                                                 <span>
                                                     [&#10004; Seleccionar lote]
                                                 </span>
                                             </div>
                                             <div v-else>
-                                                <a
-                                                class="text-center font-weight-bold text-info"
-                                                href="#"
-                                                @click.prevent="clickLotGroup(row)">
+                                                <a class="text-center font-weight-bold text-info" href="#"
+                                                    @click.prevent="clickLotGroup(row)">
                                                     [&#10004; Seleccionar lote]
                                                 </a>
                                             </div>
@@ -877,13 +510,10 @@
                                         </div>
                                         <!-- JOINSOFTWARE
                                     <el-input-number v-model="quantityD" :step="1"></el-input-number>
-                                    --></th>
+                                    -->
+                                    </th>
                                     <th>
-                                        <el-input-number
-                                            :value="row.quantity"
-                                            :controls="false"
-                                            disabled
-                                        ></el-input-number>
+                                        <el-input-number :value="row.quantity" :controls="false" disabled></el-input-number>
                                     </th>
                                     <th>{{ row.unit_type }}</th>
                                     <th>{{ row.stock ? row.stock : 0 }}</th>
@@ -893,39 +523,27 @@
                                         }}
                                     </th>
                                     <th>
-                                        <el-checkbox
-                                            v-model="row.checked"
-                                            label="Revisado?"
-                                            size="large"
-                                        />
+                                        <el-checkbox v-model="row.checked" label="Revisado?" size="large" />
                                     </th>
                                     <th>
-                                        <button
-                                            type="button"
-                                            class="btn btn-custom btn-sm mt-2 mr-2"
-                                            @click.prevent="
-                                                clickCreate(
-                                                    'input',
-                                                    row.individual_item_id,
-                                                    row.warehouse_id,
-                                                    index,
-                                                )
-                                            "
-                                        >
+                                        <button type="button" class="btn btn-custom btn-sm mt-2 mr-2" @click.prevent="
+                                            clickCreate(
+                                                'input',
+                                                row.individual_item_id,
+                                                row.warehouse_id,
+                                                index,
+                                            )
+                                            ">
                                             <i class="fa fa-plus-circle"></i>
                                             Ingreso
                                         </button>
-                                        <button
-                                            type="button"
-                                            class="btn btn-custom btn-sm mt-2 mr-2"
-                                            @click.prevent="
-                                                clickOutput(
-                                                    row.individual_item_id,
-                                                    row.warehouse_id,
-                                                    index
-                                                )
-                                            "
-                                        >
+                                        <button type="button" class="btn btn-custom btn-sm mt-2 mr-2" @click.prevent="
+                                            clickOutput(
+                                                row.individual_item_id,
+                                                row.warehouse_id,
+                                                index
+                                            )
+                                            ">
                                             <i class="fa fa-minus-circle"></i>
                                             Salida
                                         </button>
@@ -938,33 +556,15 @@
             </form>
         </div>
 
-        <lots-group
-            :lots_group="selectSupply.lots_group"
-            :quantity="selectSupply.quantity"
-            :producto="selectSupply.product"
-            :warehouseLotId="selectSupply.warehouseLotId"
-            :showDialog.sync="showDialogLots"
-            @addRowLotGroup="addRowLotGroup"
-        >
+        <lots-group :lots_group="selectSupply.lots_group" :quantity="selectSupply.quantity" :producto="selectSupply.product"
+            :warehouseLotId="selectSupply.warehouseLotId" :showDialog.sync="showDialogLots"
+            @addRowLotGroup="addRowLotGroup">
         </lots-group>
-        <inventories-form
-            :showDialog.sync="showDialog"
-            :type="typeTransaction"
-            :itemId="itemId"
-            :warehouseId="warehouseId"
-            :index="index"
-            :prod_order="prod_order"
-            @reloadStock="warehouse_stock"
-        ></inventories-form>
+        <inventories-form :showDialog.sync="showDialog" :type="typeTransaction" :itemId="itemId" :warehouseId="warehouseId"
+            :index="index" :prod_order="prod_order" @reloadStock="warehouse_stock"></inventories-form>
 
-        <inventories-form-output
-            :showDialog.sync="showDialogOutput"
-            :itemId="itemId"
-            :warehouseId="warehouseId"
-            :index="index"
-            :prod_order="prod_order"
-            @reloadStock="warehouse_stock"
-        ></inventories-form-output>
+        <inventories-form-output :showDialog.sync="showDialogOutput" :itemId="itemId" :warehouseId="warehouseId"
+            :index="index" :prod_order="prod_order" @reloadStock="warehouse_stock"></inventories-form-output>
     </div>
 </template>
 
@@ -1055,7 +655,7 @@ export default {
         this.initForm();
     },
     mounted() {
-        this.$eventHub.$on("reloadStock", (index, supply_id, warehouseId)=> {
+        this.$eventHub.$on("reloadStock", (index, supply_id, warehouseId) => {
             this.warehouse_stock(index, supply_id, warehouseId);
         });
     },
@@ -1135,42 +735,40 @@ export default {
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
                 this.supplies[index].lots_group.forEach((lot) => {
                     let lotselected = IdLoteSelected.filter((x) => x.code == lot.code)
-                    //console.log('lotselected', lotselected)
-                    if(lotselected.length > 0)
-                    {
+                    console.log('lotselected', lotselected)
+                    if (lotselected.length > 0) {
                         lot.compromise_quantity = lotselected[0].compromise_quantity;
                     }
                 })
             }
             //console.log('this.suplies', this.supplies)
         },
-        reloadLotGroups(warehouse_id, item_id, supply_id)
-        {
+        reloadLotGroups(warehouse_id, item_id, supply_id) {
             this.$http.get(`/${this.resource}/getLotGroup/${warehouse_id}/${item_id}/${supply_id}`)
-            .then(response => {
-                //console.log('metodo reload',response.data.lots_groups)
-                this.selectSupply.lots_group = response.data.lots_groups
-                //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
-            });
+                .then(response => {
+                    console.log('metodo reload', response.data.lots_groups)
+                    this.selectSupply.lots_group = response.data.lots_groups
+                    console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                });
         },
         clickLotGroup(row) {
             this.selectSupply.lots_group = []
             let supply_id = null
             supply_id = row.individual_item_id
             this.$http.get(`/${this.resource}/getLotGroup/${row.warehouse_id}/${this.form.item_id}/${supply_id}`)
-            .then(response => {
-                //console.log('metodo reload',response.data.lots_groups)
-                this.selectSupply.lots_group = response.data.lots_groups
-                //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
-                let donwloadQuantity = row.quantityD;
-                this.selectSupply.supply_id = row.individual_item_id;
-                this.selectSupply.quantity = _.round(donwloadQuantity, 4);
-                this.selectSupply.product = row.description;
-                this.selectSupply.warehouseLotId = row.warehouse_id;
-                this.showDialogLots = true;
-            });
-            
-            
+                .then(response => {
+                    console.log('metodo reload', response.data.lots_groups)
+                    this.selectSupply.lots_group = response.data.lots_groups
+                    console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                    let donwloadQuantity = row.quantityD;
+                    this.selectSupply.supply_id = row.individual_item_id;
+                    this.selectSupply.quantity = _.round(donwloadQuantity, 4);
+                    this.selectSupply.product = row.description;
+                    this.selectSupply.warehouseLotId = row.warehouse_id;
+                    this.showDialogLots = true;
+                });
+
+
         },
         deleteStatus(id) {
             const index = this.records.findIndex(estado => estado.id === id);
@@ -1288,46 +886,30 @@ export default {
             if (value > 0) {
                 this.supplies.forEach(row => {
                     if (row.rounded_up) {
-                        let baseQuantity = _.round(value * row.quantity, 4);
-                        //console.log('baseQuantity', baseQuantity)
-                        let truncatedNumber =
-                            Math.floor(baseQuantity * 1000) / 1000;
-                            //console.log('truncatedNumber', truncatedNumber)
+                        let baseQuantity = Math.floor((value * row.quantity) * 10000) / 10000;
+                        let truncatedNumber = Math.floor(baseQuantity * 1000) / 1000;
                         let thirdDecimal = Math.floor(baseQuantity * 1000) % 10;
                         //console.log('thirdDecimal', thirdDecimal)
                         let roundedQuantity;
 
                         if (thirdDecimal <= 2) {
-                            roundedQuantity =
-                                Math.floor(truncatedNumber * 100) / 100;
+                            roundedQuantity = Math.floor(truncatedNumber * 100) / 100;
                         } else if (thirdDecimal >= 3 && thirdDecimal <= 7) {
-                            /*let secondDecimal =
-                                Math.floor(baseQuantity * 100) % 10;
-                                console.log('secondDecimal', secondDecimal)
-                            if (
-                                secondDecimal === 9 &&
-                                thirdDecimal >= 3 &&
-                                thirdDecimal <= 7
-                            ) {
-                                roundedQuantity =
-                                    Math.floor(truncatedNumber) + 0.01;
+                            let secondDecimal = Math.floor(baseQuantity * 100) % 10;
+                            if (secondDecimal === 9 && thirdDecimal >= 3 && thirdDecimal <= 7) {
+                                roundedQuantity = Math.floor(truncatedNumber) + 0.01;
                             } else {
-                                roundedQuantity =
-                                    Math.floor(truncatedNumber * 100) / 100 +
-                                    0.005;
-                            }*/
-                            roundedQuantity =
-                                    Math.floor(truncatedNumber * 100) / 100 +
-                                    0.005;
+                                roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
+                            }
                         } else if (thirdDecimal >= 8) {
-                            roundedQuantity =
-                                Math.ceil(truncatedNumber * 100) / 100;
+                            roundedQuantity = Math.ceil(truncatedNumber * 100) / 100;
                         }
                         //console.log('roundedQuantity', roundedQuantity)
 
                         row.quantityD = parseFloat(roundedQuantity.toFixed(3));
                     } else {
-                        row.quantityD = _.round(value * row.quantity, 4);
+                        // Para casos no redondeados, asumiendo que también quieres truncar a 4 decimales
+                        row.quantityD = Math.floor((value * row.quantity) * 10000) / 10000;
                     }
                 });
             } else {
@@ -1395,9 +977,8 @@ export default {
                     let response = await this.$http.get(
                         `/${this.resource}/production-counter/${formattedDate}`
                     );
-                    let loteSugerido = `CCA-${dateEnd.format("DDMMYYYY")}-SL ${
-                        response.data.count
-                    }`;
+                    let loteSugerido = `CCA-${dateEnd.format("DDMMYYYY")}-SL ${response.data.count
+                        }`;
                     this.form.lot_code = loteSugerido;
                     alert(
                         `Se asignará de forma automática el lote: ${loteSugerido}`
@@ -1462,8 +1043,7 @@ export default {
             this.supply_difference = false
             this.$http
                 .get(
-                    `/${
-                        this.resource
+                    `/${this.resource
                     }/updateStockWarehouses/${warehouseId}/${supply_id}`
                 )
                 .then(response => {
@@ -1479,7 +1059,7 @@ export default {
                         this.$message.error(
                             "Tiene productos sin stock suficiente en ese almacen!"
                         );
-                    }else{
+                    } else {
                         this.supply_difference = false
                     }
                 })
@@ -1488,7 +1068,7 @@ export default {
                 });
         },
 
-        changeQuantityForm() {}
+        changeQuantityForm() { }
     }
 };
 </script>
