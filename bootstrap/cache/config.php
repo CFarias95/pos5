@@ -1,14 +1,14 @@
 <?php return array (
   'app' => 
   array (
-    'name' => 'Carlos',
+    'name' => 'Johan',
     'env' => 'local',
     'debug' => true,
     'url' => 'http://pos5.test',
     'timezone' => 'America/Lima',
     'locale' => 'es',
     'fallback_locale' => 'en',
-    'key' => 'base64:+SHAh7Jrj2y4zGQlIpX5mHcj+/16r+zPmBKU6kcRD58=',
+    'key' => 'base64:5DSfpP/S+4aoBaqM3M/aK5Rd1rCOH/pX6FPotLt8dXM=',
     'cipher' => 'AES-256-CBC',
     'providers' => 
     array (
@@ -239,7 +239,7 @@
         'connection' => 'default',
       ),
     ),
-    'prefix' => 'carlos_cache',
+    'prefix' => 'johan_cache',
   ),
   'configuration' => 
   array (
@@ -281,7 +281,7 @@
       'sqlite' => 
       array (
         'driver' => 'sqlite',
-        'database' => 'pos5',
+        'database' => 'johan',
         'prefix' => '',
       ),
       'mysql' => 
@@ -289,7 +289,7 @@
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'pos5',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -309,7 +309,7 @@
         'driver' => 'pgsql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'pos5',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -322,7 +322,7 @@
         'driver' => 'sqlsrv',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'pos5',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'charset' => 'utf8',
@@ -333,7 +333,7 @@
         'driver' => 'mysql',
         'host' => '127.0.0.1',
         'port' => '3306',
-        'database' => 'pos5',
+        'database' => 'johan',
         'username' => 'root',
         'password' => '',
         'unix_socket' => '',
@@ -377,7 +377,7 @@
     array (
       'font_dir' => 'C:\\laragon\\www\\pos5\\storage\\fonts/',
       'font_cache' => 'C:\\laragon\\www\\pos5\\storage\\fonts/',
-      'temp_dir' => 'C:\\Users\\andre\\AppData\\Local\\Temp',
+      'temp_dir' => 'C:\\Users\\GREENC~1\\AppData\\Local\\Temp',
       'chroot' => 'C:\\laragon\\www\\pos5',
       'enable_font_subsetting' => false,
       'pdf_backend' => 'CPDF',
@@ -397,7 +397,7 @@
     'exports' => 
     array (
       'chunk_size' => 1000,
-      'temp_path' => 'C:\\Users\\andre\\AppData\\Local\\Temp',
+      'temp_path' => 'C:\\Users\\GREENC~1\\AppData\\Local\\Temp',
       'csv' => 
       array (
         'delimiter' => ';',
@@ -1144,7 +1144,7 @@
       0 => 2,
       1 => 100,
     ),
-    'cookie' => 'carlos_session',
+    'cookie' => 'johan_session',
     'path' => '/',
     'domain' => NULL,
     'secure' => false,
