@@ -886,7 +886,8 @@ export default {
             if (value > 0) {
                 this.supplies.forEach(row => {
                     if (row.rounded_up) {
-                        let baseQuantity = Math.floor((value * row.quantity) * 10000) / 10000;
+                        let baseQuantity = _.round(value * row.quantity, 3);
+                        console.log('baseQuantity', baseQuantity);
                         let truncatedNumber = Math.floor(baseQuantity * 1000) / 1000;
                         let thirdDecimal = Math.floor(baseQuantity * 1000) % 10;
                         //console.log('thirdDecimal', thirdDecimal)
@@ -895,12 +896,6 @@ export default {
                         if (thirdDecimal <= 2) {
                             roundedQuantity = Math.floor(truncatedNumber * 100) / 100;
                         } else if (thirdDecimal >= 3 && thirdDecimal <= 7) {
-                            /*let secondDecimal = Math.floor(baseQuantity * 100) % 10;
-                            if (secondDecimal === 9 && thirdDecimal >= 3 && thirdDecimal <= 7) {
-                                roundedQuantity = Math.floor(truncatedNumber) + 0.01;
-                            } else {
-                                roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
-                            }*/
                             roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
                         } else if (thirdDecimal >= 8) {
                             roundedQuantity = Math.ceil(truncatedNumber * 100) / 100;

@@ -201,6 +201,9 @@
                                         <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
                                             @click.prevent="clickEtiqueta(row.id)">Etiquetas
                                         </button>
+                                        <!-- <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
+                                            @click.prevent="clickEtiqueta2(row.id)">Etiquetas 2
+                                        </button> -->
                                         <button v-if="row.state_type_id == '03'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
                                             @click.prevent="clickMezcla(row.id)">P.Mezcla
                                         </button>
@@ -392,6 +395,9 @@ export default {
         clickEtiqueta(recordId) {
             window.open(`/${this.resource}/etiqueta/${recordId}`, '_blank');
         },
+        /*clickEtiqueta2(recordId) {
+            window.open(`/${this.resource}/etiqueta2/${recordId}`, '_blank');
+        },*/
         clickImportSet() {
             this.showImportSetDialog = true
         },
