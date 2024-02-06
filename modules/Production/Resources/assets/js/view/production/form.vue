@@ -895,12 +895,13 @@ export default {
                         if (thirdDecimal <= 2) {
                             roundedQuantity = Math.floor(truncatedNumber * 100) / 100;
                         } else if (thirdDecimal >= 3 && thirdDecimal <= 7) {
-                            let secondDecimal = Math.floor(baseQuantity * 100) % 10;
+                            /*let secondDecimal = Math.floor(baseQuantity * 100) % 10;
                             if (secondDecimal === 9 && thirdDecimal >= 3 && thirdDecimal <= 7) {
                                 roundedQuantity = Math.floor(truncatedNumber) + 0.01;
                             } else {
                                 roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
-                            }
+                            }*/
+                            roundedQuantity = Math.floor(truncatedNumber * 100) / 100 + 0.005;
                         } else if (thirdDecimal >= 8) {
                             roundedQuantity = Math.ceil(truncatedNumber * 100) / 100;
                         }
