@@ -780,8 +780,6 @@ class UnpaidController extends Controller
             ];
 
         }
-
-
     }
 
     public function generateMultiPayReverse($id,$payments){

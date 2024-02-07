@@ -433,6 +433,8 @@ class ToPayController extends Controller
             $sequential = PurchasePayment::latest('id')->first();
             $debeAdicional = 0;
             $haberAdicional = 0;
+            $totalDebe = 0;
+            $totalHaber = 0;
 
             foreach ($request->unpaid as $value) {
                 Log::info('DATA: ',$value);
@@ -507,6 +509,8 @@ class ToPayController extends Controller
             $detalle->haber = $request->payment + floatVal($debeAdicional) - floatVal($haberAdicional);
             $detalle->save();
 
+            $totalHaber += $detalle->haber;
+
             $line = 2;
             foreach ($haber as $key => $value) {
 
@@ -520,6 +524,9 @@ class ToPayController extends Controller
                 $detalle->debe = $value['amount'] ;
                 $detalle->save();
                 $line += 1;
+
+                $totalHaber += $detalle->haber;
+                $totalDebe += $detalle->debe;
             }
 
             foreach ($request->extras as $value) {
@@ -531,7 +538,13 @@ class ToPayController extends Controller
                 $detalle->haber = floatVal($value['haber']);
                 $detalle->save();
                 $line += 1;
+                $totalHaber += $detalle->haber;
+                $totalDebe += $detalle->debe;
             }
+
+            $cabeceraC->total_debe = $totalDebe;
+            $cabeceraC->total_haber = $totalHaber;
+
             return[
                 'success' => true,
                 'message' => 'Multi pago generado exitosamente!'
