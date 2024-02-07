@@ -1515,13 +1515,18 @@ class ProductionController extends Controller
 
     public function etiqueta2($recordId)
     {
-        $produccion = Production::where('id', $recordId)->get();
-        Log::info('produccion -'.$produccion);
-        //$production_supplies = $produccion->productionSupplies;
+        Log::info('id - '.$recordId);
+        $produccion = Production::with('production_supplies')->find($recordId);
+        Log::info('produccion -'.json_encode($produccion->production_supplies->item_supply));
+        //$production_supplies = ProductionSupply::where('production_id', $recordId)->get();
+        $production_supplies = ProductionSupply::where('production_id', $produccion->id)->get();
+
+        Log::info('production_supplies - '.json_encode($production_supplies));
         $company = Company::first();
         $fechaActual = date('d/m/Y');
-        $recordId = $produccion->item_id;
-        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact(/*"production_supplies",*/ "company", "recordId", "produccion"));
+        //$recordId = $produccion->item_id;
+        //Log::info('recordId - '.$recordId );
+        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("production_supplies", "company", "recordId", "produccion"));
 
         $filename = 'Etiquetas2_' . $produccion->production_order . date('YmdHis');
 

@@ -395,6 +395,7 @@ export default {
       this.$refs.selectSearchNormal.blur();
     },
     addRowLot(lots) {
+      //console.log('lots', lots)
       this.form_add.lots = lots;
     },
     validateAddItem() {
@@ -440,7 +441,7 @@ export default {
         }
       } else {
         const row = this.items.find((x) => x.id == this.form_add.item_id);
-        console.log("item", row);
+        //console.log("item", row);
         this.form.items.push({
           id: row.id,
           description: row.description,
@@ -512,7 +513,7 @@ export default {
       }
 
       let row = this.items.find((x) => x.id == this.form_add.item_id);
-      console.log("clickAddItem", row);
+      //console.log("clickAddItem", row);
       this.form.items.push({
         id: row.id,
         name: row.name,
@@ -528,8 +529,11 @@ export default {
       this.initFormAdd();
     },
     clickLotcodeOutput() {
+      //console.log('this.form.warehouse_id', this.form.warehouse_id)
+      //console.log('this.form_add.lots_group', this.form_add.lots_group)
         this.form_add.lots_group_aux=this.form_add.lots_group.filter(obj => obj.warehouse_id==this.form.warehouse_id);
-      this.showDialogLotsOutput = true;
+        //console.log('this.form_add.lots_group_aux', this.form_add.lots_group_aux)
+        this.showDialogLotsOutput = true;
     },
     clickSeriesOutput() {
       this.showDialogSeriesOutput = true;

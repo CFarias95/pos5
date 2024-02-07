@@ -395,9 +395,9 @@ export default {
         clickEtiqueta(recordId) {
             window.open(`/${this.resource}/etiqueta/${recordId}`, '_blank');
         },
-        /*clickEtiqueta2(recordId) {
+        clickEtiqueta2(recordId) {
             window.open(`/${this.resource}/etiqueta2/${recordId}`, '_blank');
-        },*/
+        },
         clickImportSet() {
             this.showImportSetDialog = true
         },

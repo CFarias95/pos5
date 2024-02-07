@@ -238,6 +238,7 @@ use Modules\Item\Models\ItemLotsGroup;
             /*Log::info('data'.$request->created_at);
             $created_at = Carbon::parse($request->created_at);
             Log::info('date11 - '.$created_at);*/
+            //Log::info('request - '.$request);
             $result = DB::connection('tenant')->transaction(function () use ($request) {
                 $created_at = Carbon::parse($request->created_at);
                 //Log::info('date'.$created_at);
@@ -249,6 +250,7 @@ use Modules\Item\Models\ItemLotsGroup;
                     'client_id' => $request->client_id,
                 ]);
                 $row->created_at = $created_at;
+                //Log::info('Inventory Transfer saved');
                 $row->save();
 
 
@@ -256,46 +258,52 @@ use Modules\Item\Models\ItemLotsGroup;
 
                 foreach ($request->items as $it) {
 
-                    Log::info('it - '.json_encode($it));
+                    //Log::info('it - '.json_encode($it));
 
                     if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
+                        //Log::info('Entro primre if - '.json_encode($it['lots']));
                         // si tiene Lotes se crea el kardex por lotes
                         foreach ($it['lots'] as $key => $value) {
+                            //Log::info('Entro foreach - '.json_encode($value));
                             # code...
                             if ($value['checked'] == true && $value['compromise_quantity'] && $value['compromise_quantity'] > 0) {
-                                Log::info('entro al if de value checked - '.$value['warehouse_id'].' - '.$value['warehouse_destination_id']);
+                                //Log::info('entro al if de value checked - '.json_encode($value));
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado Lotes';
                                 $inventory->item_id = $it['id'];
+                                //Log::info('before');
                                 $inventory->warehouse_id = $value['warehouse_id'];
-                                $inventory->warehouse_destination_id = $value['warehouse_destination_id'];
+                                //Log::info('inventory warehouse');
+                                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                                //Log::info('inventory warehouse destination');
                                 $inventory->quantity = $value['compromise_quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->lot_code = $value['code'];
                                 //Log::info('Inventory antes de guardar');
                                 $inventory->save();
-                                Log::info('inventory guardado');
+                                //Log::info('inventory guardado');
 
                                 //lotes origen
                                 $lotOrigin = ItemLotsGroup::where('item_id',$it['id'])
                                 ->where('code',$value['code'])
                                 ->where('warehouse_id', $value['warehouse_id'])
                                 ->first();
-                                Log::info('$lotOrigin - '.json_encode($lotOrigin));
-                                $cantOrigin=$lotOrigin->quantity;
+                                //Log::info('$lotOrigin - '.json_encode($lotOrigin));
+                                //$cantOrigin=$lotOrigin->quantity;
 
                                 //comprobar existencia producto
                                 $lotDest = ItemLotsGroup::where('item_id',$it['id'])
                                 ->where('code',$value['code'])
-                                ->where('warehouse_id', $value['warehouse_destination_id'])
+                                ->where('warehouse_id', $request->warehouse_destination_id)
                                 ->first();
-                                Log::info('$lotDest - '.json_encode($lotDest));
+                                //Log::info('$lotDest - '.json_encode($lotDest));
 
                                 if(isset($lotDest) && $lotDest != ''){
 
-                                    $cantDest=$lotOrigin->quantity;
-                                    $lotDest->quantity=$cantDest+$value['compromise_quantity'];
+                                    //$cantDest=$lotOrigin->quantity;
+                                    //Log::info('LotDestif - ');
+                                    $lotDest->quantity+= $value['compromise_quantity'];
                                     $lotDest->save();
 
 
@@ -304,13 +312,13 @@ use Modules\Item\Models\ItemLotsGroup;
                                         'code' => $value['code'],
                                         'quantity' => $value['compromise_quantity'],
                                         'date_of_due' => $lotOrigin->date_of_due,
-                                        'warehouse_id' => $value['warehouse_destination_id'],
+                                        'warehouse_id' => $request->warehouse_destination_id,
                                         'item_id' => $it['id']
                                     ]);
 
                                 }
 
-                                $lotOrigin->quantity=$cantOrigin-$value['compromise_quantity'];
+                                $lotOrigin->quantity -= $value['compromise_quantity'];
                                 $lotOrigin->save();
 
                             }

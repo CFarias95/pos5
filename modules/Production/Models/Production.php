@@ -3,7 +3,7 @@
 
 namespace Modules\Production\Models;
 
-
+use App\Models\Tenant\Inventory;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\ModelTenant;
 use App\Models\Tenant\ProductionSupply;
@@ -79,6 +79,7 @@ class Production extends ModelTenant
 
     protected $with = [
         'state_type',
+        'production_supplies'
     ];
 
     protected $fillable = [
@@ -214,8 +215,16 @@ class Production extends ModelTenant
     /**
      * @return \Illuminate\Database\Eloquent\Relations\HasMany
      */
-    public function productionSupplies()
+    public function production_supplies()
     {
-        return $this->hasMany(ProductionSupply::class, 'production_id');
+        return $this->hasMany(ProductionSupply::class);
+    }
+
+    /**
+     * @return \Illuminate\Database\Eloquent\Relations\HasMany
+     */
+    public function production_inventories()
+    {
+        return $this->hasMany(Inventory::class);
     }
 }
