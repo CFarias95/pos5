@@ -525,7 +525,6 @@ class ToPayController extends Controller
                 $detalle->save();
                 $line += 1;
 
-                $totalHaber += $detalle->haber;
                 $totalDebe += $detalle->debe;
             }
 
@@ -544,6 +543,7 @@ class ToPayController extends Controller
 
             $cabeceraC->total_debe = $totalDebe;
             $cabeceraC->total_haber = $totalHaber;
+            $cabeceraC->save();
 
             return[
                 'success' => true,
