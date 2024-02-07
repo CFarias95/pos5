@@ -66,8 +66,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         warehouse_id: warehouse_id,
         retention_type_id_income: row_old.retention_type_id_income,
         retention_type_id_iva: row_old.retention_type_id_iva,
-        income_retention: _.round(row_old.income_retention,2),
-        iva_retention: _.round(row_old.iva_retention,2),
+        income_retention: (row_old.retention_type_id_income) ? _.round(row_old.income_retention,2) : null,
+        iva_retention: (row_old.retention_type_id_iva) ? _.round(row_old.iva_retention,2) : null,
         name_product_pdf: row_old.name_product_pdf,
         images: row_old.images,
         record_id: record_id, // fixed for update sale_note
