@@ -1538,7 +1538,7 @@ class ProductionController extends Controller
             }
         });*/
         $inventarios->transform(function ($row) use (&$empaque_items, &$production_items) {
-            Log::info('$row->item - ' . json_encode($row->item));
+            //Log::info('$row->item - ' . json_encode($row->item));
             $attributes = collect($row->item->attributes);
             $hasEMAttribute = $attributes->contains(function ($attribute) {
                 return $attribute->attribute_type_id == 'EM';
