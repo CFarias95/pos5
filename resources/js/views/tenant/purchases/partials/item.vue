@@ -993,11 +993,11 @@ export default {
                 if (this.form.has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.12)), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - _.round(this.iva / 1.12,2)), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.08)), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - _.round(this.iva / 1.08,2)), 2)
                     } else if (this.form.affectation_igv_type_id == '12') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - (this.iva / 1.14)), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - _.round(this.iva / 1.14,2)), 2)
                     } else if (this.form.affectation_igv_type_id == '30') {
                         this.form.iva_retention = 0
                     }
@@ -1005,11 +1005,11 @@ export default {
                 } else {
 
                     if (this.form.affectation_igv_type_id == '10') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.12) - this.iva), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (_.round(this.iva * 1.12,2) - this.iva), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.08) - this.iva), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (_.round(this.iva * 1.08,2) - this.iva), 2)
                     } else if (this.form.affectation_igv_type_id == '12') {
-                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * ((this.iva * 1.14) - this.iva), 3)
+                        this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (_.round(this.iva * 1.14,2) - this.iva), 2)
                     } else if (this.form.affectation_igv_type_id == '30') {
                         this.form.iva_retention = 0
                     }
@@ -1029,19 +1029,19 @@ export default {
                 if (this.form.has_igv) {
 
                     if (this.form.affectation_igv_type_id == '10') {
-                        this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.12), 4)
+                        this.form.income_retention = _.round((val.percentage / 100) * _.round((this.income / 1.12),2), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
-                        this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.08), 4)
+                        this.form.income_retention = _.round((val.percentage / 100) * _.round((this.income / 1.08),2), 2)
                     } else if (this.form.affectation_igv_type_id == '12') {
-                        this.form.income_retention = _.round((val.percentage / 100) * (this.income / 1.14), 4)
+                        this.form.income_retention = _.round((val.percentage / 100) * _.round((this.income / 1.14),2), 2)
                     } else if (this.form.affectation_igv_type_id == '30') {
 
-                        this.form.income_retention = _.round((val.percentage / 100) * this.income, 4)
+                        this.form.income_retention = _.round((val.percentage / 100) * _.round(this.income,2), 2)
                     }
 
                 } else {
 
-                    this.form.income_retention = _.round((val.percentage / 100) * this.income, 4)
+                    this.form.income_retention = _.round((val.percentage / 100) * _.round(this.income,2), 2)
                 }
 
                 this.is_income = true

@@ -12,15 +12,15 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     if (currency_type_id_old === currency_type_id_def && currency_type_id_old !== currency_type_id_new) {
         unit_price = unit_price / exchange_rate_sale;
-        row_old.income_retention = row_old.income_retention / exchange_rate_sale;
-        row_old.iva_retention = row_old.iva_retention / exchange_rate_sale;
+        row_old.income_retention = _.round(row_old.income_retention / exchange_rate_sale,2);
+        row_old.iva_retention = _.round(row_old.iva_retention / exchange_rate_sale,2);
 
     }
 
     if (currency_type_id_new === currency_type_id_def && currency_type_id_old !== currency_type_id_new) {
         unit_price = unit_price * exchange_rate_sale;
-        row_old.income_retention = row_old.income_retention * exchange_rate_sale;
-        row_old.iva_retention = row_old.iva_retention * exchange_rate_sale;
+        row_old.income_retention = _.round(row_old.income_retention * exchange_rate_sale,2);
+        row_old.iva_retention = _.round(row_old.iva_retention * exchange_rate_sale,2);
     }
 
     // fixed for update sale_note
@@ -66,8 +66,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         warehouse_id: warehouse_id,
         retention_type_id_income: row_old.retention_type_id_income,
         retention_type_id_iva: row_old.retention_type_id_iva,
-        income_retention: row_old.income_retention,
-        iva_retention: row_old.iva_retention,
+        income_retention: (row_old.retention_type_id_income) ? _.round(row_old.income_retention,2) : null,
+        iva_retention: (row_old.retention_type_id_iva) ? _.round(row_old.iva_retention,2) : null,
         name_product_pdf: row_old.name_product_pdf,
         images: row_old.images,
         record_id: record_id, // fixed for update sale_note

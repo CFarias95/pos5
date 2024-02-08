@@ -665,6 +665,8 @@ class UnpaidController extends Controller
             $sequential = DocumentPayment::latest('id')->first();
             $debeAdicional = 0;
             $haberAdicional = 0;
+            $totalDebe = 0;
+            $totalHaber = 0;
 
             foreach ($request->unpaid as $value) {
                 //Log::info('DATA: ',$value);
@@ -736,6 +738,7 @@ class UnpaidController extends Controller
             $detalle->haber = 0;
             $detalle->debe = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
             $detalle->save();
+            $totalDebe += $detalle->debe;
 
             $line = 2;
             foreach ($haber as $key => $value) {
@@ -748,6 +751,8 @@ class UnpaidController extends Controller
                 $detalle->haber = $value['amount'] ;
                 $detalle->save();
                 $line += 1;
+
+                $totalHaber += $detalle->haber;
             }
 
             foreach ($request->extras as $value) {
@@ -759,7 +764,14 @@ class UnpaidController extends Controller
                 $detalle->haber = floatVal($value['haber']);
                 $detalle->save();
                 $line += 1;
+
+                $totalDebe += $detalle->debe;
+                $totalHaber += $detalle->haber;
             }
+
+            $cabeceraC->total_debe = $totalDebe;
+            $cabeceraC->total_haber = $totalHaber;
+            $cabeceraC->save();
 
             return[
                 'success' => true,
@@ -780,8 +792,6 @@ class UnpaidController extends Controller
             ];
 
         }
-
-
     }
 
     public function generateMultiPayReverse($id,$payments){

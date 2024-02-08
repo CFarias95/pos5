@@ -1476,7 +1476,7 @@ export default {
 
                         this.form.ret.forEach((data) => {
 
-                            if (row.iva_retention >= 0 && row.retention_type_id_iva) {
+                            if ( row.iva_retention && row.iva_retention >= 0 && row.retention_type_id_iva) {
 
                                 const retIvaDesc = _.find(this.retention_types_iva, { 'id': row.retention_type_id_iva })
 
@@ -1491,7 +1491,7 @@ export default {
                                 }
                             }
 
-                            if (row.income_retention >= 0 && row.retention_type_id_income) {
+                            if (row.income_retention && row.income_retention >= 0 && row.retention_type_id_income) {
 
                                 const retIncomeDesc = _.find(this.retention_types_income, { 'id': row.retention_type_id_income })
 
@@ -1509,7 +1509,7 @@ export default {
 
                         });
 
-                        if (nuevaRetIVA == true && row.iva_retention >= 0 && row.retention_type_id_iva) {
+                        if (nuevaRetIVA == true && row.iva_retention && row.iva_retention >= 0 && row.retention_type_id_iva) {
 
                             let retencionLocal = {}
                             retencionLocal.tipo = 'IVA'
@@ -1524,7 +1524,7 @@ export default {
                             //console.log("Agregando retencion de IVA "+ retIvaDesc.description)
                         }
 
-                        if (nuevaRetRENTA == true && row.income_retention >= 0 && row.retention_type_id_income) {
+                        if (nuevaRetRENTA == true && row.income_retention && row.income_retention >= 0 && row.retention_type_id_income) {
 
                             let retencionLocal = {}
                             retencionLocal.tipo = 'RENTA'
@@ -1541,7 +1541,7 @@ export default {
 
                     } else {
 
-                        if (row.iva_retention >= 0 && row.retention_type_id_iva) {
+                        if ( row.iva_retention && row.iva_retention >= 0 && row.retention_type_id_iva) {
 
                             let retencionLocal = {}
                             retencionLocal.tipo = 'IVA'
@@ -1555,7 +1555,7 @@ export default {
 
                             //console.log("Agregando PRIMERA retencion de IVA "+ retIvaDesc.description)
                         }
-                        if (row.income_retention >= 0 && row.retention_type_id_income) {
+                        if (row.income_retention && row.income_retention >= 0 && row.retention_type_id_income) {
 
                             let retencionLocal = {}
                             retencionLocal.tipo = 'RENTA'
