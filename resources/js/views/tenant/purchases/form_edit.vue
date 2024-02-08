@@ -1713,7 +1713,7 @@ export default {
       this.form.ret = [];
 
       this.form.items.forEach((row) => {
-        if (row.iva_retention || row.income_retention || row.iva_retention >= 0 || row.income_retention >= 0) {
+        if (row.iva_retention >= 0 || row.income_retention >= 0) {
 
           retention_iva = parseFloat(row.iva_retention);
           retention_renta = parseFloat(row.income_retention);
