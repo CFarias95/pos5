@@ -17,7 +17,7 @@ class ProductionSupply extends ModelTenant
         return $this->belongsTo(Production::class);
     }
 
-    public function item_supply()
+    public function itemSupply()
     {
         return $this->belongsTo(ItemSupply::class);
     }

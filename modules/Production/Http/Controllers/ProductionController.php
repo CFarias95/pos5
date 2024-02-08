@@ -6,6 +6,7 @@ use App\Imports\ProductionImport;
 use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\Catalogs\AffectationIgvType;
+use App\Models\Tenant\Catalogs\AttributeType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Item;
@@ -743,7 +744,7 @@ class ProductionController extends Controller
                 $warehouse_id = $warehouse_id;
                 $warehouse_destination_id = $destination_warehouse_id;
                 $compromise_quantity = $samples;
-                Log::info('samples - '.$samples);
+                Log::info('samples - ' . $samples);
                 $transfers = new TransferController();
                 $transferRequest = new TransferRequest();
 
@@ -811,9 +812,9 @@ class ProductionController extends Controller
                 $transferRequest['items'] = $items;
                 $transferRequest['client_id'] = $client_id;
                 $transferRequest['created_at'] = $created_at->toDateTimeString();
-                Log::info('compromise_quantity - '.$compromise_quantity);
+                Log::info('compromise_quantity - ' . $compromise_quantity);
                 $transferRequest['quantity'] = $compromise_quantity;
-                Log::info('tranfer Request - '.json_encode($transferRequest));
+                Log::info('tranfer Request - ' . json_encode($transferRequest));
                 return $transfers->store($transferRequest);
             }
         } catch (Exception $ex) {
@@ -1515,18 +1516,47 @@ class ProductionController extends Controller
 
     public function etiqueta2($recordId)
     {
-        Log::info('id - '.$recordId);
         $produccion = Production::with('production_supplies')->find($recordId);
-        Log::info('produccion -'.json_encode($produccion->production_supplies->item_supply));
-        //$production_supplies = ProductionSupply::where('production_id', $recordId)->get();
-        $production_supplies = ProductionSupply::where('production_id', $produccion->id)->get();
-
-        Log::info('production_supplies - '.json_encode($production_supplies));
         $company = Company::first();
         $fechaActual = date('d/m/Y');
-        //$recordId = $produccion->item_id;
-        //Log::info('recordId - '.$recordId );
-        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("production_supplies", "company", "recordId", "produccion"));
+        $recordId = $produccion->item_id;
+        $producido = Item::find($recordId);
+
+        $production_items = [];
+        $empaque_items = [];
+
+        $inventarios = Inventory::where('production_id', $produccion->id)->where('inventory_transaction_id', '101')->get();
+        /*$inventarios->transform(function ($row) use (&$empaque_items) {
+            Log::info('$row->item - ' . json_encode($row->item));
+            $data_filtrada = collect($row->item->attributes)->filter(function ($attribute) {
+                return $attribute->attribute_type_id == 'EM';
+            })->toArray();
+
+            Log::info('data_filtrada -' . json_encode($data_filtrada));
+            if (!empty($data_filtrada)) {
+                $empaque_items = array_merge($empaque_items, $data_filtrada);
+            }
+        });*/
+        $inventarios->transform(function ($row) use (&$empaque_items, &$production_items) {
+            Log::info('$row->item - ' . json_encode($row->item));
+            $attributes = collect($row->item->attributes);
+            $hasEMAttribute = $attributes->contains(function ($attribute) {
+                return $attribute->attribute_type_id == 'EM';
+            });
+        
+            if ($hasEMAttribute) {
+                $empaque_items[] = $row->item;
+            } else {
+                $production_items[] = $row->item;
+            }
+        });
+
+        //Log::info('production_items - '.json_encode($production_items));
+        //Log::info('empaque_items - '.json_encode($empaque_items));
+
+        $atributo = AttributeType::where('description', 'Empaque')->get();
+
+        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items"));
 
         $filename = 'Etiquetas2_' . $produccion->production_order . date('YmdHis');
 

@@ -201,9 +201,9 @@
                                         <button class="btn waves-effect waves-light btn-xs btn-warning" type="button"
                                             @click.prevent="clickEtiqueta(row.id)">Etiquetas
                                         </button>
-                                        <!-- <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
+                                        <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
                                             @click.prevent="clickEtiqueta2(row.id)">Etiquetas 2
-                                        </button> -->
+                                        </button>
                                         <button v-if="row.state_type_id == '03'" class="btn waves-effect waves-light btn-xs btn-primary" type="button"
                                             @click.prevent="clickMezcla(row.id)">P.Mezcla
                                         </button>
