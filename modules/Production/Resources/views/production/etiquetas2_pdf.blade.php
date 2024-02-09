@@ -38,7 +38,7 @@
     <tbody>
         <tr>
             <td>{{ $produccion->date_end }}</td>
-            <td>{{ $produccion->production_order }}</td>
+            <td>{{ $produccion->name }}</td>
             <td>{{ $produccion->quantity }}</td>
         </tr>
     </tbody>
