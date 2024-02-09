@@ -250,7 +250,7 @@ class InventoryKardex extends ModelTenant
                 }
 
                 $data['cost'] = $cost;
-                $data['lot_code'] = $lot_code;
+                $data['lot_code'] = $inventory_kardexable->lot_code;
                 break;
 
             case $models[2]: // Nota de venta
