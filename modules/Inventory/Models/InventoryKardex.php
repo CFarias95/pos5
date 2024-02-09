@@ -229,10 +229,10 @@ class InventoryKardex extends ModelTenant
                 $imp = Purchase::where('series',optional($inventory_kardexable)->series)->where('number',optional($inventory_kardexable)->number)->first();
                 $lot_code = '';
 
-                Log::info('importacion asociada: '.json_encode($imp->import));
+                //Log::info('importacion asociada: '.json_encode($imp->import));
                 $numeroImp = '';
                 if($imp->import){
-                    Log::info('importacion asociada: '.json_encode($imp->import->numeroImportacion));
+                    //Log::info('importacion asociada: '.json_encode($imp->import->numeroImportacion));
                     $numeroImp = ' / '.$imp->import->numeroImportacion;
                 }
 
@@ -245,7 +245,7 @@ class InventoryKardex extends ModelTenant
                 foreach ($inventory_kardexable->items as $key => $value) {
                     if($value->item_id == $item->id){
                         $cost=$value->unit_value;
-                        $lot_code = $value->lot_code. ', ';
+                        $lot_code = $value->lot_code;
                     }
                 }
 
