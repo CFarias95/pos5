@@ -1120,13 +1120,16 @@ export default {
             }
         },
         updateTotalDescargar() {
-            let total = 0;
+            if(this.supplies.length > 0)
+            {
+                let total = 0;
 
-            this.supplies.forEach(supply => {
-            total += parseFloat(supply.quantityD) || 0;
-            });
+                this.supplies.forEach(supply => {
+                total += parseFloat(supply.quantityD) || 0;
+                });
 
-            this.totalManualDescargar = total;
+                this.totalManualDescargar = total;
+            }
         },
         clickCreate(type, id, warehouseId, index) {
             this.recordId = null;
