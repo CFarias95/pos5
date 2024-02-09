@@ -47,12 +47,22 @@ class PaymentMethodTypeController extends Controller
 
     public function store(PaymentMethodTypeRequest $request)
     {
-
         $id = $request->input('id');
-        $record = PaymentMethodType::firstOrNew(['id' => $id]);
-        $record->fill($request->all());
-        $record->save();
 
+        if($id && $id != '#'){
+            $record = PaymentMethodType::firstOrNew(['id' => $id]);
+            $record->fill($request->all());
+            $record->save();
+        }else{
+            
+            $id = PaymentMethodType::where('id','!=','99')->orderBy('id','desc')->first();
+            $nextId=intval($id->id);
+            $record = PaymentMethodType::firstOrNew(['id' => $nextId]);
+
+            $record->fill($request->all());
+            $record->id = $nextId;
+            $record->save();
+        }
 
         return [
             'success' => true,

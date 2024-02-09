@@ -165,7 +165,7 @@ class InventoryKardex extends ModelTenant
 
             case $models[0]: //venta
 
-                $lot_code = 'N/A';
+                $lot_code = '';
                 //$cpe_input = ($qty > 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
 
                 //$cpe_output = ($qty < 0) ? (isset($inventory_kardexable->sale_note_id) || isset($inventory_kardexable->order_note_id) || isset($inventory_kardexable->sale_notes_relateds) ? "-" : $qty) : "-";
@@ -209,14 +209,25 @@ class InventoryKardex extends ModelTenant
                 }else{
                     $cost='N/A';
                 }
+
+                foreach ($inventory_kardexable->items as $key => $value) {
+                    Log::info('$inventory_kardexable->items'.json_encode($value));
+                    if($value->item_id == $item->id){
+                        if($value->item->IdLoteSelected){
+                            foreach($value->item->IdLoteSelected as $lot){
+                                $lot_code .= $lot->code . ', ';
+                            }
+                        }
+                        $cost=$value->unit_value;
+                    }
+                }
                 $data['cost'] = $cost;//$item->purchase_mean_cost;
                 $data['lot_code'] = $lot_code;
-
                 break;
 
             case $models[1]: //COMPRA
                 $imp = Purchase::where('series',optional($inventory_kardexable)->series)->where('number',optional($inventory_kardexable)->number)->first();
-                $lot_code = 'N/A';
+                $lot_code = '';
 
                 Log::info('importacion asociada: '.json_encode($imp->import));
                 $numeroImp = '';
@@ -234,7 +245,7 @@ class InventoryKardex extends ModelTenant
                 foreach ($inventory_kardexable->items as $key => $value) {
                     if($value->item_id == $item->id){
                         $cost=$value->unit_value;
-                        $lot_code = $value->lot_code;
+                        $lot_code = $value->lot_code. ', ';
                     }
                 }
 

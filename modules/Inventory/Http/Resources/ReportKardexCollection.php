@@ -14,6 +14,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Carbon;
 use Modules\Inventory\Models\Devolution;
 use App\Models\Tenant\Dispatch;
+use Illuminate\Support\Facades\Log;
 use Modules\Order\Models\OrderNote;
 
 
@@ -30,7 +31,8 @@ class ReportKardexCollection extends ResourceCollection
         $this->calcularRestante(self::$re);
 
         return $this->collection->transform(function($row, $key) {
-            return  $row->getKardexReportCollection(self::$balance);
+            Log::info('ReportKardexCollection'.json_encode($row));
+            return $row->getKardexReportCollection(self::$balance);
             /** @var \Modules\Inventory\Models\InventoryKardex  $row */
             //return self::determinateRow($row);
         });
@@ -87,12 +89,12 @@ class ReportKardexCollection extends ResourceCollection
                     'balance' => $doc_balance,
                     'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->number_full:"-",
                     'order_note_asoc' => isset($row->inventory_kardexable->order_note_id) ? optional($row->inventory_kardexable)->order_note->number_full:"-",
-                    // 'sale_note_asoc' => isset($row->inventory_kardexable->sale_note_id)  ? optional($row->inventory_kardexable)->sale_note->prefix.'-'.optional($row->inventory_kardexable)->sale_note->id:"-",
                     'doc_asoc' => $cpe_doc_asoc,
                     'lot_code' => $row->inventory_kardexable->lot_code,
                 ];
 
             case $models[1]: // COMPRA
+
                 return [
                     'id' => $row->id,
                     'item_name' => $row->item->description,
