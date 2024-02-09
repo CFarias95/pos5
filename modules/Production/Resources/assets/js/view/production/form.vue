@@ -828,6 +828,7 @@
                                         <el-select
                                             v-model="row.warehouse_id"
                                             filterable
+                                            :disabled="form.records_id !== '02'"
                                             @change="
                                                 warehouse_stock(
                                                     index,
@@ -848,7 +849,7 @@
                                         <!-- {{ row.quantity }} -->
                                         <el-input-number
                                             v-model="row.quantityD"
-                                            :disabled="row.modificable == 0"
+                                            :disabled="row.modificable == 0 || form.records_id !== '02'"
                                             @change="updateTotalDescargar"
                                         ></el-input-number>
 
@@ -905,6 +906,7 @@
                                             v-model="row.checked"
                                             label="Revisado?"
                                             size="large"
+                                            :disabled="form.records_id !== '02'"
                                         />
                                     </th>
                                     <th>
@@ -919,6 +921,7 @@
                                                     index
                                                 )
                                             "
+                                            :disabled="form.records_id !== '02'"
                                         >
                                             <i class="fa fa-plus-circle"></i>
                                             Ingreso
@@ -933,6 +936,7 @@
                                                     index
                                                 )
                                             "
+                                            :disabled="form.records_id !== '02'"
                                         >
                                             <i class="fa fa-minus-circle"></i>
                                             Salida
