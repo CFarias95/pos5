@@ -54,9 +54,9 @@ class PaymentMethodTypeController extends Controller
             $record->fill($request->all());
             $record->save();
         }else{
-            
+
             $id = PaymentMethodType::where('id','!=','99')->orderBy('id','desc')->first();
-            $nextId=intval($id->id);
+            $nextId=intval($id->id) + 1;
             $record = PaymentMethodType::firstOrNew(['id' => $nextId]);
 
             $record->fill($request->all());

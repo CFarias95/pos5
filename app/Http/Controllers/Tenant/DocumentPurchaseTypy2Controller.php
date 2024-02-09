@@ -60,6 +60,8 @@ class DocumentPurchaseTypy2Controller extends Controller
                 'accountant' => $request->input('accountant'),
                 'stock' => $request->input('stock'),
                 'sign' => $request->input('sign'),
+                'cost' => $request->input('cost'),
+
             ]);
 
             $msg = 'Tipo de documento de compra actualizado con éxito';

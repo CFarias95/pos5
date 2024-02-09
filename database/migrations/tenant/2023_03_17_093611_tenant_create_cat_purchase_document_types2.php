@@ -18,6 +18,7 @@ class TenantCreateCatPurchaseDocumentTypes2 extends Migration
             $table->boolean('active')->default(true);
             $table->boolean('accountant')->default(false);
             $table->boolean('stock')->default(false);
+            $table->boolean('cost')->default(false);
             $table->integer('sign')->default(1);
             $table->string('short')->nullable();
             $table->string('description')->nullable();
