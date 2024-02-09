@@ -1452,7 +1452,7 @@ export default {
             let total_isc = 0
             let retention_iva = 0
             let retention_renta = 0
-            let toal_retenido = 0
+            let toal_retenido = 0;
             this.form.ret = []
 
             this.form.items.forEach((row) => {
@@ -1461,8 +1461,10 @@ export default {
                 retention_renta = 0
                 //console.log("Iten procesando", row)
 
-                if (row.iva_retention || row.income_retention || row.iva_retention >= 0 || row.income_retention >= 0) {
+                if (row.iva_retention >= 0 || row.income_retention >= 0) {
 
+                    console.log("Iten row.iva_retention", row.iva_retention)
+                    console.log("Iten procesando", row)
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
                     toal_retenido += (retention_iva + retention_renta)
@@ -1621,12 +1623,12 @@ export default {
             this.form.total_value = _.round(total_value, 2)
             // this.form.total_taxes = _.round(total_igv, 2)
             //impuestos (isc + igv)
-            //console.log('toal_retenido', toal_retenido)
+            console.log('toal_retenido',parseFloat(toal_retenido))
             this.form.total_taxes = _.round(total_igv + total_isc, 2)
-            this.form.total_ret = _.round(toal_retenido, 2)
+            this.form.total_ret = _.round(parseFloat(toal_retenido), 2)
 
             total = total - toal_retenido
-            //console.log('total', total)
+            console.log('total', total)
             this.form.total = _.round(total, 2)
 
             this.calculatePerception()
