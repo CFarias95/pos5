@@ -94,13 +94,22 @@ class PurchaseController extends Controller
 
     public function columns()
     {
-        return [
+        $columns =  [
             'number' => 'Número',
             'date_of_issue' => 'Fecha de emisión',
             'date_of_due' => 'Fecha de vencimiento',
             'date_of_payment' => 'Fecha de pago',
             'name' => 'Nombre proveedor',
         ];
+
+        $documents = PurchaseDocumentTypes2::get()->transform(function($row){
+            return [
+                'id'=>$row->idType,
+                'name'=>$row->description,
+            ];
+        });
+
+        return compact('columns', 'documents');
     }
 
     public function records(Request $request)
@@ -114,37 +123,45 @@ class PurchaseController extends Controller
     public function getRecords($request)
     {
 
+        $records = Purchase::query();
+
         switch ($request->column) {
             case 'name':
 
-                $records = Purchase::whereHas('supplier', function ($query) use ($request) {
+                $records->whereHas('supplier', function ($query) use ($request) {
                     return $query->where($request->column, 'like', "%{$request->value}%");
                 })
-                    ->whereTypeUser()
-                    ->latest();
-
+                    ->whereTypeUser();
                 break;
 
             case 'date_of_payment':
 
-                $records = Purchase::whereHas('purchase_payments', function ($query) use ($request) {
+                $records->whereHas('purchase_payments', function ($query) use ($request) {
                     return $query->where($request->column, 'like', "%{$request->value}%");
                 })
-                    ->whereTypeUser()
-                    ->latest();
+                    ->whereTypeUser();
 
                 break;
 
             default:
 
-                $records = Purchase::where($request->column, 'like', "%{$request->value}%")
-                    ->whereTypeUser()
-                    ->latest();
+                $records->where($request->column, 'like', "%{$request->value}%")
+                    ->whereTypeUser();
 
                 break;
         }
 
-        return $records;
+        if($request->sequential){
+
+            $records->where('sequential_number', 'like', "%{$request->sequential}%");
+        }
+
+        if($request->intern){
+            $records->where('document_type_intern', $request->intern);
+
+        }
+
+        return $records->latest();
     }
 
     public function tables()

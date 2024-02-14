@@ -488,7 +488,7 @@ class Purchase extends ModelTenant
         {
             $query->where('establishment_id', $establishment_id);
         }
-        
+
         $query->select(
             'id',
             'state_type_id',
@@ -626,6 +626,7 @@ class Purchase extends ModelTenant
             'date_of_due'                    => ($this->date_of_due) ? $this->date_of_due->format('Y-m-d') : '-',
             'purchase_order'                         => $this->purchase_order,
             'number'                         => $this->number_full,
+            'sequential_number'              => $this->sequential_number,
             'supplier_name'                  => $this->supplier->name,
             'supplier_number'                => $this->supplier->number,
             'supplier_telephone'             => optional($this->supplier)->telephone,
