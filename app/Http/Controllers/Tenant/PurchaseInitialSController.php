@@ -478,7 +478,7 @@ class PurchaseInitialSController extends Controller
         }
 
         try {
-            $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo) {
+            $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo, $docIntern) {
                 $numero = Purchase::where('establishment_id', $data['establishment_id'])->where('series', $data['series'])->count();
                 $data['number'] = $numero + 1;
                 $doc = Purchase::create($data);
@@ -530,7 +530,7 @@ class PurchaseInitialSController extends Controller
                     //Log::info(json_encode($row));
                     //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
-                    if ($item->unit_type_id != 'ZZ') {
+                    if ($item->unit_type_id != 'ZZ' && $docIntern->cost) {
                         $costoA = $item->purchase_mean_cost;
                         $stockA = $item->stock;
                         $totalA = $costoA * $stockA;

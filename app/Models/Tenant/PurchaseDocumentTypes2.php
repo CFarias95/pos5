@@ -17,6 +17,13 @@ class PurchaseDocumentTypes2 extends ModelTenant
         'accountant',
         'stock',
         'sign',
+        'cost',
+    ];
+    protected $casts = [
+        'sign' => 'bool',
+        'stock' => 'bool',
+        'cost' => 'bool',
+        'accountant' => 'bool',
     ];
 
     public function getCollectionData()
@@ -30,6 +37,7 @@ class PurchaseDocumentTypes2 extends ModelTenant
             'accountant' => $this->accountant,
             'stock' => $this->stock,
             'sign' => $this->sign,
+            'cost' => $this->cost,
         ];
 
         return $data;

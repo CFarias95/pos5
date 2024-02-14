@@ -137,6 +137,23 @@
                                            v-text="errors.active[0]"></small>
                                 </div>
                             </div>
+
+                            <div class="col-md-4">
+                                <div :class="{'has-danger': errors.active}"
+                                     class="form-group">
+                                     <label class="control-label">Afecta Costo?</label>
+                                    <el-switch
+                                        v-model="form.cost"
+                                        class="ml-2"
+                                        active-text="Si"
+                                        inactive-text="No"
+                                        style="--el-switch-on-color: #13ce66; --el-switch-off-color: #ff4949"
+                                    />
+                                    <small v-if="errors.cost"
+                                           class="form-control-feedback"
+                                           v-text="errors.cost[0]"></small>
+                                </div>
+                            </div>
                         </div>
                     </el-tab-pane>
                 </el-tabs>
@@ -223,15 +240,13 @@ export default {
         initForm() {
             this.errors = {}
             this.form = {
-
                 active: false,
                 accountant : false,
                 stock: false,
-                sign: false
-
+                sign: false,
+                cost: false,
             }
             this.resource = 'purchases'
-
         },
         async opened() {
 
