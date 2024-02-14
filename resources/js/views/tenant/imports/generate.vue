@@ -290,6 +290,17 @@ export default {
         async submit() {
             this.loading_submit = true
 
+            if(!this.form.numeroImportacion)
+            {
+                this.loading_submit = false
+                return this.$message.error("El número de cuenta es obligatorio")
+            }
+            if(!this.form.cuenta_contable)
+            {
+                this.loading_submit = false
+                return this.$message.error("La cuenta contable es obligatorio")
+            }
+
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {
                     if (response.data.success) {

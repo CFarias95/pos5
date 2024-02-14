@@ -22,23 +22,44 @@
     }
     $logo = "storage/uploads/logos/{$company->logo}";
 @endphp
-<center>
-    <img src="{{ $logo }}" style="width: 25%;" />
-</center>
+
+<table class="full-width">
+    <tr>
+        <td rowspan="3">
+            <div class="img-container">
+                <img src="{{ $logo }}" class="img-resize"/>
+            </div>       
+        </td>
+        <td rowspan="2"><strong>SISTEMA DE GESTIÓN DE SEGURIDAD ALIMENTARIA</strong></td>
+        <td>CCA-BPM-001</td>
+    </tr>
+    <tr>
+        <td>ORDEN DE PRODUCCIÓN</td>
+        
+    </tr>
+    <tr>
+        <td>Actualización: Mayo 2022</td>
+        <td>REV. 06</td>
+    </tr>
+</table>
+
 <br>
 <br>
 <table class="full-width">
-    <thead>
-        <tr>
-            <th>Fecha</th>
-            <th>N° de ficha</th>
-            <th>Cantidad a Producir</th>
-        </tr>
-    </thead>
+    {{-- <thead>
+        
+    </thead> --}}
     <tbody>
         <tr>
+            <th>Fecha</th>
             <td>{{ $produccion->date_end }}</td>
+        </tr>
+        <tr>
+            <th>N° Solicitud Producción</th>
             <td>{{ $produccion->name }}</td>
+        </tr>
+        <tr>
+            <th>Cantidad a Producir</th>
             <td>{{ $produccion->quantity }}</td>
         </tr>
     </tbody>
@@ -49,7 +70,12 @@
 <table class="full-width">
     <thead>
         <tr>
-            <th class="section-title" colspan="4">{{ $formatted_date_end }} || Materia Prima Solicitada a Bodega</th>
+            <th class="section-title" colspan="4">
+                <center>Materia Prima Solicitada a Bodega</center>
+            </th>
+        </tr>
+        <tr>
+            <th class="section-title" colspan="4">Fecha Vencimiento: {{ $formatted_date_end }}</th>
         </tr>
         <tr>
             <th>Detalle</th>
@@ -80,7 +106,7 @@
             </tr>
         @endforeach
         <tr>
-            <th>Total KG</th>
+            <th>Total Solicitado</th>
             <td>{{ $totalKg }}</td>
             <td style="border-bottom: none; border-right: none;"></td>
             <td style="border-bottom: none; border-right: none; border-left: none;"></td>
@@ -94,7 +120,9 @@
 <table class="full-width">
     <thead>
         <tr>
-            <th class="section-title" colspan="4">Empaques</th>
+            <th class="section-title" colspan="4">
+                <center>Material de Empaque Solicitado a Bodega</center>
+            </th>
         </tr>
         <tr>
             <th>Detalle</th>
@@ -125,7 +153,7 @@
             </tr>
         @endforeach
         <tr>
-            <th>Total KG</th>
+            <th>Total Solicitado</th>
             <td>{{ $totalKgEM }}</td>
             <td style="border-bottom: none; border-right: none;"></td>
             <td style="border-bottom: none; border-right: none; border-left: none;"></td>
@@ -167,7 +195,7 @@
             </th>
         </tr>
         <tr>
-            <th colspan="2">Lote: </th>
+            <th colspan="2">Lote Asignado: </th>
             <td colspan="2">{{ $produccion->lot_code }}</td>
         </tr>
         <tr>
@@ -209,5 +237,12 @@
         background-color: #f2f2f2;
         text-align: center;
         font-weight: bold;
+    }
+    .img-resize {
+        width: 25%;
+        height: auto;
+    }
+    .img-container {
+        text-align: center;
     }
 </style>
