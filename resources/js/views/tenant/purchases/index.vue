@@ -33,6 +33,7 @@
                         <th>Estado</th>
                         <th>Estado de pago</th>
                         <th>Número</th>
+                        <th>Secuencial ingresado</th>
                         <th>Productos</th>
                         <th>Retenciones</th>
                         <th>Estado retencion</th>
@@ -60,6 +61,8 @@
                         <td>{{row.state_type_payment_description}}</td>
                         <td>{{ row.number }}<br/>
                             <small v-text="row.document_type_description"></small><br/>
+                        </td>
+                        <td>{{ row.sequential_number }}<br/>
                         </td>
                         <td>
                             <el-popover

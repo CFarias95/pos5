@@ -37,6 +37,7 @@ use App\Models\Tenant\AccountingEntries;
 use App\Models\Tenant\AccountingEntryItems;
 use App\Models\Tenant\AccountMovement;
 use App\Models\Tenant\Configuration as TenantConfiguration;
+use App\Models\Tenant\Imports;
 use App\Models\Tenant\PaymentMethodType;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\PurchasePayment;
@@ -112,7 +113,14 @@ class ToPayController extends Controller
             ];
         });
 
-        return compact('suppliers', 'establishments', 'users', 'accounts', 'payment_destinations', 'payment_method_types');
+        $imports = Imports::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->numeroImportacion
+            ];
+        });
+
+        return compact('imports','suppliers', 'establishments', 'users', 'accounts', 'payment_destinations', 'payment_method_types');
     }
 
 
@@ -151,6 +159,7 @@ class ToPayController extends Controller
         $tipo = 0;
         $d_start = null;
         $d_end = null;
+        $import_id = $request['import_id'] ?? 0;
 
 
         switch ($period) {
@@ -205,8 +214,8 @@ class ToPayController extends Controller
             }
             $user_id = $person->id;
         }
-        Log::info('ToPayController '. $include_liquidated);
-        $data = DB::connection('tenant')->select('CALL SP_CuentarPorPagar(?,?,?,?,?,?,?,?)',[$establishment_id,json_encode($customer_id),$user_id,$importe,$include_liquidated,$tipo,$d_start,$d_end]);
+
+        $data = DB::connection('tenant')->select('CALL SP_CuentarPorPagar(?,?,?,?,?,?,?,?,?)',[$establishment_id,json_encode($customer_id),$user_id,$importe,$include_liquidated,$tipo,$d_start,$d_end,$import_id]);
 
         return $data;
 

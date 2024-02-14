@@ -61,6 +61,7 @@ class PurchaseCollection extends ResourceCollection
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'date_of_due' => ($row->date_of_due) ? $row->date_of_due->format('Y-m-d'):'-',
                 'number' => $row->number_full,
+                'sequential_number' => $row->sequential_number,
                 'supplier_name' => $row->supplier->name,
                 'supplier_number' => $row->supplier->number,
                 'currency_type_id' => $row->currency_type_id,
