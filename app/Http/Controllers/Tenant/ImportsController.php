@@ -96,8 +96,8 @@ class ImportsController extends Controller
         $source = DB::connection("tenant")->select("CALL SP_Reporteimportacion(?)",[$id]);
 
         return (new ImportExport)
-            ->records($source)
-            ->download('Reporte_Importacion_' . Carbon::now() . '.xlsx');
+            ->records($source)->view();
+            //->preview('Reporte_Importacion_' . Carbon::now() . '.xlsx')->toHtml();
 
     }
     //genera el asiento contable del ISD registrado en la importacion

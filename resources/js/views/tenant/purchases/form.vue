@@ -1795,7 +1795,7 @@ export default {
                 this.loading_submit = true
             }
             // await this.changePaymentMethodType(false)
-            //console.log('Enviando Datos: ', this.form)
+            console.log('Enviando Datos: ', this.form)
 
             await this.$http.post(`/${this.resource}`, this.form)
                 .then(response => {

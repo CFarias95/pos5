@@ -461,10 +461,11 @@ class PurchaseController extends Controller
 
                 foreach ($data['items'] as $row) {
 
-                    Log::info('Item a crear: '.json_encode($row));
+                    //Log::info('Item a crear: '.json_encode($row));
+                    //Log::info('docintern - '.json_encode($docIntern));
                     //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
-                    if ($item->unit_type_id != 'ZZ' && $docIntern->cost) {
+                    if ($item->unit_type_id != 'ZZ' && $docIntern[0]->cost) {
                         $costoA = $item->purchase_mean_cost;
                         $stockA = $item->stock;
                         $totalA = $costoA * $stockA;
