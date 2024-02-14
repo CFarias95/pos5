@@ -25,7 +25,8 @@ class TenantSPCuentarPorPagar extends Migration
             IN `liquidated` INT,
             IN `tipo` INT,
             IN `date_start` VARCHAR(50),
-            IN `date_end` VARCHAR(50)
+            IN `date_end` VARCHAR(50),
+            IN `import_id` VARCHAR(50)
         )
         LANGUAGE SQL
         NOT DETERMINISTIC
@@ -50,15 +51,18 @@ class TenantSPCuentarPorPagar extends Migration
             CASE WHEN df.id IS NOT NULL THEN DATE_FORMAT(df.date, '%Y/%m/%d') ELSE  DATE_FORMAT(d.date_of_due , '%Y/%m/%d') END AS date_of_due,
             'purchase' AS 'type',d.currency_type_id,d.exchange_rate_sale, d.user_id, users.name as username,
             CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL(SUM(dp.payment),0) ELSE d.total - IFNULL(SUM(dp.payment), 0) END as total_subtraction,
-            DATE_FORMAT(df.f_posdated, '%Y/%m/%d') f_posdated,df.posdated as posdated
+            DATE_FORMAT(df.f_posdated, '%Y/%m/%d') f_posdated,df.posdated as posdated,
+            i.numeroImportacion AS import
             FROM purchases AS d
             JOIN purchase_fee AS df ON df.purchase_id = d.id
             LEFT JOIN purchase_payments AS dp ON dp.fee_id = df.id AND dp.purchase_id = d.id
             JOIN persons ON persons.id = d.supplier_id
             JOIN users ON users.id = d.user_id
+            LEFT JOIN import AS i ON i.id = d.import_id
             WHERE (d.establishment_id = establecimiento OR 0=establecimiento)
             AND (supplier LIKE CONCAT('%',d.supplier_id,'%') OR supplier LIKE '%[0]%')
             AND (d.user_id = usuario OR 0=usuario)
+            AND (d.import_id = import_id OR 0 = import_id)
             GROUP BY id, df.id
         ) AS AA
             WHERE (AA.total >= valor OR 0=valor)

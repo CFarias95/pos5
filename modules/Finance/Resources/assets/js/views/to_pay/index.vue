@@ -92,6 +92,14 @@
                                                 :value="item.id"></el-option>
                                         </el-select>
                                     </div>
+                                    <div class="col-md-4">
+                                        <label class="control-label">Importacion</label>
+                                        <el-select filterable clearable v-model="form.import_id"
+                                            placeholder="Seleccionar importacion">
+                                            <el-option v-for="item in imports" :key="item.id" :label="item.name"
+                                                :value="item.id"></el-option>
+                                        </el-select>
+                                    </div>
 
                                     <div class="col-lg-3 col-md-3">
                                         <div class="form-group">
@@ -453,6 +461,7 @@ export default {
             showMultiPay: false,
             multiPayArray: [],
             accounts:[],
+            imports : [],
         };
     },
     async created() {
@@ -595,6 +604,7 @@ export default {
                 this.payment_method_types = response.data.payment_method_types;
                 this.payment_destinations = response.data.payment_destinations;
                 this.accounts = response.data.accounts;
+                this.imports = response.data.imports;
             });
         },
         loadToPay() {
