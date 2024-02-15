@@ -176,6 +176,7 @@ class ProductionController extends Controller
             $production->fill($request->all());
             $production->inventory_id_reference = $request->input('inventory_id_reference');
             $production->warehouse_id = $warehouse_id;
+            //Log::info('warehouse_id - '.$production->warehouse_id);
             $production->state_type_id = $state_type_id;
             $production->user_id = auth()->user()->id;
             $production->soap_type_id = $this->getCompanySoapTypeId();
@@ -956,7 +957,7 @@ class ProductionController extends Controller
     {
         $count = Production::whereDate('created_at', $date)->count();
 
-        // Incrementar el contador para la próxima producción
+
         return response()->json(['count' => $count + 1]);
     }
 
@@ -1213,8 +1214,9 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production_supplies = ProductionSupply::where('production_id', $production->id)->with('itemSupply.individual_item')->get();
-        Log::info('prod_supp - ' . $production_supplies);
+        Log::info('Orden produccion a editar - ' . $production);
         $warehouse_id = $production->warehouse_id;
+        Log::info('warehouse_id - '.$warehouse_id);
         $data = $production->getCollectionData();
         $data['item_id'] = $production->item_id;
         $data['warehouse_id'] = $warehouse_id;
@@ -1264,6 +1266,7 @@ class ProductionController extends Controller
             //Log::info("transformed_supplies",$transformed_supplies);
         }
         $data["supplies"] = $transformed_supplies;
+        Log::info('data a retornar - '.json_encode($data));
         return $data;
     }
 

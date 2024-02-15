@@ -1254,13 +1254,14 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
-                        this.title = "Editar producto fabricado";
-                        this.form = response.data;
+                        this.title = "Editar producto fabricado"
+                        this.form = response.data
+                        this.form.warehouse_id = response.data.warehouse_id
                         //this.form.samples = 0;
                         //this.form.destination_warehouse_id = null;
-                        //console.log("DATA: ",response.data)
+                        console.log("DATA: ",response.data)
 
-                        let currentStatus = this.form.records_id;
+                        let currentStatus = this.form.records_id
                         switch (currentStatus) {
                             case "01":
                                 this.isCreating = true;
@@ -1287,6 +1288,7 @@ export default {
 
                         this.fetchMachineInfo();
                     });
+                    this.handleChange(this.form.quantity)
             } else {
                 this.isCreating = true;
                 this.deleteStatus("04");
