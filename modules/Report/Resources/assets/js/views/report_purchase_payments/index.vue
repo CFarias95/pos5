@@ -33,6 +33,13 @@
                                             </el-select>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Agrupar por multipago?</label>
+                                            <el-switch v-model="form.multipay"  @change="getRecordsByFilter"></el-switch>
+                                        </div>
+                                    </div>
+
 
                                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
 
@@ -119,13 +126,13 @@ export default {
                 desde: null,
                 hasta: null,
                 supplier_id: 0,
+                multipay: false,
             },
             records: [],
             persons: [],
             loading_submit: false,
             loading_search: false,
             headers: [],
-
         }
     },
     async created() {
@@ -143,6 +150,7 @@ export default {
                 desde: moment().format('YYYY-MM-DD'),
                 hasta: moment().format('YYYY-MM-DD'),
                 supplier_id: 0,
+                multipay : false,
             }
         },
         async getRecordsByFilter() {

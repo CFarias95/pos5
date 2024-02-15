@@ -57,8 +57,11 @@ class ReporteComprasPagosController extends Controller
         $desde = $request->desde;
         $hasta = $request->hasta;
         $supplier = $request->supplier_id;
+        $multipay = ($request->multipay === true || $request->multipay === 'true')? 'SI':'NO';
 
-        $data = DB::connection('tenant')->select('CALL SP_pagos(?,?,?);',[$supplier,$desde,$hasta]);
+        Log::info('MULTIPAY: '.$multipay);
+
+        $data = DB::connection('tenant')->select('CALL SP_pagos(?,?,?,?);',[$supplier,$desde,$hasta,$multipay]);
 
         $collection = collect($data);
         $per_page = (config('tenant.items_per_page'));
@@ -85,7 +88,9 @@ class ReporteComprasPagosController extends Controller
         $desde = $request->desde;
         $hasta = $request->hasta;
         $supplier = $request->supplier_id;
-        $records = DB::connection('tenant')->select('CALL SP_pagos(?,?,?);',[$supplier,$desde,$hasta]);
+        $multipay = (isset($request->multipay) && ($request->multipay == true || $request->multipay == 'true'))? 'SI':'NO';
+
+        $records = DB::connection('tenant')->select('CALL SP_pagos(?,?,?,?);',[$supplier,$desde,$hasta,$multipay]);
 
         $documentExport = new ReportPurchasePaymentsExport();
         $documentExport
