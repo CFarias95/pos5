@@ -1,5 +1,13 @@
 {
+<<<<<<< HEAD
     "/js/app.js": "/js/app.js?id=a837ccd78b202eefbe48",
+=======
+<<<<<<< HEAD
+    "/js/app.js": "/js/app.js?id=c3fe8a68bae85b3408c7",
+=======
+    "/js/app.js": "/js/app.js?id=7486cdbaf751b03bba0d",
+>>>>>>> 1d07171ebd108d1a0dc52e94adc1e6a06edaeb00
+>>>>>>> 926a9e8193f5a799f5ba58576a8c511b2bfa539f
     "/css/app.css": "/css/app.css?id=e5bebe2427fdad87f818",
     "/css/auth.css": "/css/auth.css?id=d33bdc227f840ea209e1",
     "/js/vendor.js": "/js/vendor.js?id=b05b8ba129b131165064",
