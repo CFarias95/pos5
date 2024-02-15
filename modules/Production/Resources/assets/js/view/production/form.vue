@@ -1290,6 +1290,8 @@ export default {
                         this.fetchMachineInfo();
                     });
                     this.handleChange(this.form.quantity)
+                    //this.warehouse_stock()
+                    this.updateTotalDescargar()
             } else {
                 this.isCreating = true;
                 this.deleteStatus("04");
@@ -1413,7 +1415,7 @@ export default {
                     this.form.records_id == "03" &&
                     this.form.lot_code == null
                 ) {
-                    let dateEnd = moment(this.form.date_end);
+                    let dateEnd = moment();
                     let formattedDate = dateEnd.format("YYYY-MM-DD");
 
                     /*let loteSugerido = "CCA-" + formattedDate + "-SL " + this.form.production_order;
