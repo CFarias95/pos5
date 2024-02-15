@@ -591,43 +591,87 @@ class ProductionController extends Controller
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
                 try {
+                    $production_supply = ProductionSupply::where('production_id', $production->id)->get();
+                    foreach ($production_supply as $suppli) {
+                        $suppli->delete();
+                    }
                     foreach ($items_supplies as $item) {
                         //Log::info('item_supplies - ' . json_encode($item));
                         $sitienelote = false;
-                        $production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
-                        $production_id = $production->id;
-                        $qty = $item['quantityD'] ?? 0;
-                        $production_supply->production_name = $production->name;
-                        $production_supply->production_id = $production_id;
-                        $production_supply->item_supply_name = $item['description'];
-                        $production_supply->item_supply_id = $item['id'];
-                        $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
-                        $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
-                        $production_supply->quantity = (float) $qty;
-                        $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
-                        $production_supply->checked = isset($item['checked']) ? $item['checked'] : 0;
-                        $production_supply->item_supply_original_id = $item['individual_item_id'];
+                        //$production_supply = ProductionSupply::where('production_id', $production->id)->where("item_supply_id", $item['id'])->first();
+                        /*
+                        if(isset($production_supply) && $production_supply){
+                            $production_id = $production->id;
+                            $qty = $item['quantityD'] ?? 0;
+                            $production_supply->production_name = $production->name;
+                            $production_supply->production_id = $production_id;
+                            $production_supply->item_supply_name = $item['description'];
+                            $production_supply->item_supply_id = $item['id'];
+                            $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
+                            $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
+                            $production_supply->quantity = (float) $qty;
+                            $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
+                            $production_supply->checked = isset($item['checked']) ? $item['checked'] : 0;
+                            $production_supply->item_supply_original_id = $item['individual_item_id'];
 
-                        $production_supply->save();
-                        $costoT += ($qty * $production_supply->cost_per_unit);
-                        $lots_group = $item["lots_group"];
-                        foreach ($lots_group as $lots) {
-                            if (isset($lots["compromise_quantity"])) {
-                                //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
-                                //Log::info("Se tiene cantidad en un lote selecionado");
-                                $sitienelote = true;
-                                $item_lots_groups = new ItemSupplyLot();
-                                $item_lots_groups->item_supply_id = $item['id'];
-                                $item_lots_groups->item_supply_name = $item['description'];
-                                $item_lots_groups->lot_code = $lots["code"];
-                                $item_lots_groups->lot_id = $lots["id"];
-                                $item_lots_groups->production_name = $production->name;
-                                $item_lots_groups->production_id = $production_id;
-                                $item_lots_groups->quantity = $lots["compromise_quantity"];
-                                $item_lots_groups->expiration_date = $lots["date_of_due"];
-                                $item_lots_groups->save();
+                            $production_supply->save();
+                            $costoT += ($qty * $production_supply->cost_per_unit);
+                            $lots_group = $item["lots_group"];
+                            foreach ($lots_group as $lots) {
+                                if (isset($lots["compromise_quantity"])) {
+                                    //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
+                                    //Log::info("Se tiene cantidad en un lote selecionado");
+                                    $sitienelote = true;
+                                    $item_lots_groups = new ItemSupplyLot();
+                                    $item_lots_groups->item_supply_id = $item['id'];
+                                    $item_lots_groups->item_supply_name = $item['description'];
+                                    $item_lots_groups->lot_code = $lots["code"];
+                                    $item_lots_groups->lot_id = $lots["id"];
+                                    $item_lots_groups->production_name = $production->name;
+                                    $item_lots_groups->production_id = $production_id;
+                                    $item_lots_groups->quantity = $lots["compromise_quantity"];
+                                    $item_lots_groups->expiration_date = $lots["date_of_due"];
+                                    $item_lots_groups->save();
+                                }
                             }
-                        }
+                        }else{
+                        */
+                            $production_supply = new ProductionSupply();
+                            $production_id = $production->id;
+                            $qty = $item['quantityD'] ?? 0;
+                            $production_supply->production_name = $production->name;
+                            $production_supply->production_id = $production_id;
+                            $production_supply->item_supply_name = $item['description'];
+                            $production_supply->item_supply_id = $item['id'];
+                            $production_supply->warehouse_name = $item['warehouse_name'] ?? null;
+                            $production_supply->warehouse_id = $item['warehouse_id'] ?? null;
+                            $production_supply->quantity = (float) $qty;
+                            $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
+                            $production_supply->checked = isset($item['checked']) ? $item['checked'] : 0;
+                            $production_supply->item_supply_original_id = $item['individual_item_id'];
+
+                            $production_supply->save();
+                            $costoT += ($qty * $production_supply->cost_per_unit);
+                            $lots_group = $item["lots_group"];
+                            foreach ($lots_group as $lots) {
+                                if (isset($lots["compromise_quantity"])) {
+                                    //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
+                                    //Log::info("Se tiene cantidad en un lote selecionado");
+                                    $sitienelote = true;
+                                    $item_lots_groups = new ItemSupplyLot();
+                                    $item_lots_groups->item_supply_id = $item['id'];
+                                    $item_lots_groups->item_supply_name = $item['description'];
+                                    $item_lots_groups->lot_code = $lots["code"];
+                                    $item_lots_groups->lot_id = $lots["id"];
+                                    $item_lots_groups->production_name = $production->name;
+                                    $item_lots_groups->production_id = $production_id;
+                                    $item_lots_groups->quantity = $lots["compromise_quantity"];
+                                    $item_lots_groups->expiration_date = $lots["date_of_due"];
+                                    $item_lots_groups->save();
+                                }
+                            }
+                        //}
+
 
                         if (count($lots_group) > 0) {
 
@@ -1545,7 +1589,7 @@ class ProductionController extends Controller
             $hasEMAttribute = $attributes->contains(function ($attribute) {
                 return $attribute->attribute_type_id == 'EM';
             });
-        
+
             if ($hasEMAttribute) {
                 $empaque_items[] = $row->item;
             } else {
