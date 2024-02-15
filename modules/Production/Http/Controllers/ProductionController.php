@@ -1273,13 +1273,16 @@ class ProductionController extends Controller
             $item_supply_id = $supply->item_supply_id;
             Log::info('supply - '.json_encode($supply->itemSupply->individual_item->attributes));
             $empaque = null;
-            foreach($supply->itemSupply->individual_item->attributes as $attribute)
-            {
-                if($attribute->attribute_type_id == 'EM')
+            if(isset($supply->itemSupply->individual_item->attributes)){
+                foreach($supply->itemSupply->individual_item->attributes as $attribute)
                 {
-                    $empaque = '(Empaque)';
+                    if($attribute->attribute_type_id == 'EM')
+                    {
+                        $empaque = '(Empaque)';
+                    }
                 }
             }
+
             //por cada insumo que se fabricó voy a obtener los lotes que se utilizó
             //para ello obtengo la producción y el id del insumo que se utilizó en esa producción
             $itemSupplyLots = ItemSupplyLot::select('item_supply_lots.*', 'item_lots_group.*', 'item_lots_group.quantity as compromise_quantity', 'item_supply_lots.quantity as supply_quantity')
