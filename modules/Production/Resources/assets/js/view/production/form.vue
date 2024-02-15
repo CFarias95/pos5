@@ -1259,7 +1259,7 @@ export default {
                         this.form.warehouse_id = response.data.warehouse_id
                         //this.form.samples = 0;
                         //this.form.destination_warehouse_id = null;
-                        console.log("DATA: ",response.data)
+                        //console.log("DATA: ",response.data)
 
                         let currentStatus = this.form.records_id
                         switch (currentStatus) {
@@ -1289,6 +1289,8 @@ export default {
                         this.fetchMachineInfo();
                     });
                     this.handleChange(this.form.quantity)
+                    //this.warehouse_stock()
+                    this.updateTotalDescargar()
             } else {
                 this.isCreating = true;
                 this.deleteStatus("04");
@@ -1412,7 +1414,7 @@ export default {
                     this.form.records_id == "03" &&
                     this.form.lot_code == null
                 ) {
-                    let dateEnd = moment(this.form.date_end);
+                    let dateEnd = moment();
                     let formattedDate = dateEnd.format("YYYY-MM-DD");
 
                     /*let loteSugerido = "CCA-" + formattedDate + "-SL " + this.form.production_order;

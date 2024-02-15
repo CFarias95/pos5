@@ -955,8 +955,7 @@ class ProductionController extends Controller
 
     public function getProductionCount($date)
     {
-        $count = Production::whereDate('created_at', $date)->count();
-
+        $count = Production::whereDate('date_end', $date)->count();
 
         return response()->json(['count' => $count + 1]);
     }
@@ -1257,8 +1256,8 @@ class ProductionController extends Controller
                 'unit_type' => $supply->itemSupply->individual_item->unit_type->description,
                 'quantity_per_unit' => $supply->quantity,
                 'lots_enabled' => $supply->itemSupply->individual_item->lots_enabled,
-                'warehouse_id' => $supply->warehouse_id,
-                'warehouse_name' => $supply->warehouse_name,
+                'warehouse_id' => 5,
+                'warehouse_name' => 'Bod. Materia Prima',
                 'lots_group' => $transformed_supply_lots,
             ];
 
