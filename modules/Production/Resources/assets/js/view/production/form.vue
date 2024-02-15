@@ -1129,7 +1129,13 @@ export default {
                 let total = 0;
 
                 this.supplies.forEach(supply => {
-                total += parseFloat(supply.quantityD) || 0;
+                    console.log('suplpy', supply)
+                    console.log('suplpyD', supply.description)
+                    console.log('suplpyDI', supply.description.indexOf('(Empaque)'))
+                    if(supply.description.indexOf('(Empaque)') < 0)
+                    {
+                        total += parseFloat(supply.quantityD) || 0;
+                    }         
                 });
 
                 this.totalManualDescargar = total;

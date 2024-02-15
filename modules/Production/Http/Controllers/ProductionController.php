@@ -1271,6 +1271,15 @@ class ProductionController extends Controller
         foreach ($production_supplies as $supply) {
             $checked = $supply->checked;
             $item_supply_id = $supply->item_supply_id;
+            Log::info('supply - '.json_encode($supply->itemSupply->individual_item->attributes));
+            $empaque = null;
+            foreach($supply->itemSupply->individual_item->attributes as $attribute)
+            {
+                if($attribute->attribute_type_id == 'EM')
+                {
+                    $empaque = '(Empaque)';
+                }
+            }
             //por cada insumo que se fabricó voy a obtener los lotes que se utilizó
             //para ello obtengo la producción y el id del insumo que se utilizó en esa producción
             $itemSupplyLots = ItemSupplyLot::select('item_supply_lots.*', 'item_lots_group.*', 'item_lots_group.quantity as compromise_quantity', 'item_supply_lots.quantity as supply_quantity')
@@ -1293,7 +1302,7 @@ class ProductionController extends Controller
 
             $transformed_supply = [
                 'id' => $item_supply_id,
-                'description' => $supply->item_supply_name ?? '',
+                'description' => ($supply->item_supply_name) ? $supply->item_supply_name.$empaque : '',
                 'item_id' => $supply->itemSupply->individual_item->id,
                 'quantityD' => $supply->quantity,
                 'checked' => $checked,
