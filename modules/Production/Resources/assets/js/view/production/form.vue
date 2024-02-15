@@ -1254,12 +1254,13 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
+                        console.log("DATA: ",response.data)
+
                         this.title = "Editar producto fabricado"
                         this.form = response.data
                         this.form.warehouse_id = response.data.warehouse_id
                         //this.form.samples = 0;
                         //this.form.destination_warehouse_id = null;
-                        console.log("DATA: ",response.data)
 
                         let currentStatus = this.form.records_id
                         switch (currentStatus) {
@@ -1314,7 +1315,7 @@ export default {
                 destination_warehouse_id: null
             };
             this.supplies = {};
-            await this.isUpdate();
+            this.isUpdate();
         },
         async getTable() {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
