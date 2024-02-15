@@ -651,8 +651,10 @@ class ProductionController extends Controller
                             $production_supply->item_supply_original_id = $item['individual_item_id'];
 
                             $production_supply->save();
+
                             $costoT += ($qty * $production_supply->cost_per_unit);
                             $lots_group = $item["lots_group"];
+
                             foreach ($lots_group as $lots) {
                                 if (isset($lots["compromise_quantity"])) {
                                     //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
@@ -671,7 +673,6 @@ class ProductionController extends Controller
                                 }
                             }
                         //}
-
 
                         if (count($lots_group) > 0) {
 
