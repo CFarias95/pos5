@@ -1260,11 +1260,13 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
-                        console.log("DATA: ",response.data)
-
+                        console.log("DATA: ",response)
+                        console.log("warehouse_id6: ", this.form.warehouse_id)
                         this.title = "Editar producto fabricado"
                         this.form = response.data
-                        this.form.warehouse_id = response.data.warehouse_id
+                        //this.form.warehouse_id = response.data.warehouse_id
+                        console.log("warehouse_id: ", response.data.warehouse_id)
+                        console.log("warehouse_id1: ", this.form.warehouse_id)
                         //this.form.samples = 0;
                         //this.form.destination_warehouse_id = null;
 
@@ -1481,9 +1483,8 @@ export default {
             this.form.item_extra_data.color = null;
             this.item = item;
             //console.log("changeIte: ", this.item);
-            this.form.warehouse_id = item.lugar_produccion
-                ? item.lugar_produccion
-                : item.warehouse_id;
+            //this.form.warehouse_id = item.lugar_produccion ? item.lugar_produccion : item.warehouse_id;
+            console.log('entro al changeItem')
             item.supplies.forEach(row => {
                 if (this.form.quantity > 0) {
                     row.quantityD = _.round(
@@ -1493,6 +1494,7 @@ export default {
                 } else {
                     row.quantityD = _.round(row.quantity, 4);
                 }
+                row.warehouse_id = 5
             });
 
             this.supplies = item.supplies;
