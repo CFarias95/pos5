@@ -1129,9 +1129,9 @@ export default {
                 let total = 0;
 
                 this.supplies.forEach(supply => {
-                    console.log('suplpy', supply)
-                    console.log('suplpyD', supply.description)
-                    console.log('suplpyDI', supply.description.indexOf('(Empaque)'))
+                    //console.log('suplpy', supply)
+                    //console.log('suplpyD', supply.description)
+                    //console.log('suplpyDI', supply.description.indexOf('(Empaque)'))
                     if(supply.description.indexOf('(Empaque)') < 0)
                     {
                         total += parseFloat(supply.quantityD) || 0;
@@ -1170,7 +1170,7 @@ export default {
             ) {
                 //console.log("samples - ", this.form.samples);
                 return this.$message.error(
-                    "La Merma o Muestra no deben ser mayor a la candida!"
+                    "La Merma o Muestra no deben ser mayor a la cantidad!"
                 );
             }
         },
@@ -1497,16 +1497,12 @@ export default {
             }
             this.supply_difference = false
             this.$http
-                .get(
-                    `/${this.resource
-                    }/updateStockWarehouses/${warehouseId}/${supply_id}`
-                )
+                .get(`/${this.resource}/updateStockWarehouses/${warehouseId}/${supply_id}`)
                 .then(response => {
                     Vue.set(this.supplies, index, {
                         ...this.supplies[index],
                         stock: response.data.stock,
-                        difference:
-                            response.data.stock - this.supplies[index].quantityD
+                        difference: response.data.stock - this.supplies[index].quantityD
                     });
                     //console.log('stock', response.data.stock)
                     if (this.supplies[index].difference <= 0) {
@@ -1515,6 +1511,14 @@ export default {
                             "Tiene productos sin stock suficiente en ese almacen!"
                         );
                     } else {
+                        this.supply_difference = false
+                    }
+
+                    let allHaveStock = this.supplies.every(supply => supply.difference > 0)
+                    if(!allHaveStock)
+                    {
+                        this.supply_difference = true
+                    }else{
                         this.supply_difference = false
                     }
                 })
