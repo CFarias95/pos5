@@ -757,6 +757,7 @@ class ProductionController extends Controller
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
                 }
             } catch (Exception $ex) {
+                
                 Log::error("Error UPDATE PRODUCTION: " . $ex->getMessage());
                 $production->state_type_id = '01';
                 $production->save();
