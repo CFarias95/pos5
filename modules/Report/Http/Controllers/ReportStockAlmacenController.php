@@ -147,7 +147,7 @@ class ReportStockAlmacenController extends Controller
         $items = Item::get()->transform(function($row){
             return[
                 'id' => $row->id,
-                'name' =>$row->name,
+                'name' =>$row->name.' / '.$row->description.' / '.$row->internal_id.' / '.$row->model.' / '.$row->factory_code,
             ];
         });
 
