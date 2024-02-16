@@ -1187,7 +1187,7 @@ export default {
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
                 this.supplies[index].lots_group.forEach((lot) => {
                     let lotselected = IdLoteSelected.filter((x) => x.code == lot.code)
-                    console.log('lotselected', lotselected)
+                    //console.log('lotselected', lotselected)
                     if (lotselected.length > 0) {
                         lot.compromise_quantity = lotselected[0].compromise_quantity;
                     }
@@ -1198,9 +1198,9 @@ export default {
         reloadLotGroups(warehouse_id, item_id, supply_id) {
             this.$http.get(`/${this.resource}/getLotGroup/${warehouse_id}/${item_id}/${supply_id}`)
                 .then(response => {
-                    console.log('metodo reload', response.data.lots_groups)
+                    //console.log('metodo reload', response.data.lots_groups)
                     this.selectSupply.lots_group = response.data.lots_groups
-                    console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                    //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
                 });
         },
         clickLotGroup(row) {
@@ -1209,9 +1209,9 @@ export default {
             supply_id = row.individual_item_id
             this.$http.get(`/${this.resource}/getLotGroup/${row.warehouse_id}/${this.form.item_id}/${supply_id}`)
                 .then(response => {
-                    console.log('metodo reload', response.data.lots_groups)
+                    //console.log('metodo reload', response.data.lots_groups)
                     this.selectSupply.lots_group = response.data.lots_groups
-                    console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
+                    //console.log('this.selectSupply.lots_group', this.selectSupply.lots_group)
                     let donwloadQuantity = row.quantityD;
                     this.selectSupply.supply_id = row.individual_item_id;
                     this.selectSupply.quantity = _.round(donwloadQuantity, 4);
@@ -1260,13 +1260,13 @@ export default {
                 await this.$http
                     .get(`/${this.resource}/record/${this.id}`)
                     .then(response => {
-                        console.log("DATA: ",response)
-                        console.log("warehouse_id6: ", this.form.warehouse_id)
+                        //console.log("DATA: ",response)
+                        //console.log("warehouse_id6: ", this.form.warehouse_id)
                         this.title = "Editar producto fabricado"
                         this.form = response.data
                         //this.form.warehouse_id = response.data.warehouse_id
-                        console.log("warehouse_id: ", response.data.warehouse_id)
-                        console.log("warehouse_id1: ", this.form.warehouse_id)
+                        //console.log("warehouse_id: ", response.data.warehouse_id)
+                        //console.log("warehouse_id1: ", this.form.warehouse_id)
                         //this.form.samples = 0;
                         //this.form.destination_warehouse_id = null;
 
@@ -1298,8 +1298,11 @@ export default {
                         this.fetchMachineInfo();
                     });
                     this.handleChange(this.form.quantity)
-                    //this.warehouse_stock()
                     this.updateTotalDescargar()
+
+                    this.supplies.forEach((row, index) =>{
+                        this.warehouse_stock(index, row.individual_item_id, row.warehouse_id)
+                    })
             } else {
                 this.isCreating = true;
                 this.deleteStatus("04");
@@ -1346,7 +1349,7 @@ export default {
                 this.supplies.forEach(row => {
                     if (row.rounded_up) {
                         let baseQuantity = _.round(value * row.quantity, 3);
-                        console.log('baseQuantity', baseQuantity);
+                        //console.log('baseQuantity', baseQuantity);
                         let truncatedNumber = Math.floor(baseQuantity * 1000) / 1000;
                         let thirdDecimal = Math.floor(baseQuantity * 1000) % 10;
                         //console.log('thirdDecimal', thirdDecimal)
@@ -1484,8 +1487,9 @@ export default {
             this.item = item;
             //console.log("changeIte: ", this.item);
             //this.form.warehouse_id = item.lugar_produccion ? item.lugar_produccion : item.warehouse_id;
-            console.log('entro al changeItem')
-            item.supplies.forEach(row => {
+            //console.log('entro al changeItem')
+            item.supplies.forEach((row, index) => {
+                //console.log('row :', row)
                 if (this.form.quantity > 0) {
                     row.quantityD = _.round(
                         this.form.quantity * row.quantity,
@@ -1495,10 +1499,12 @@ export default {
                     row.quantityD = _.round(row.quantity, 4);
                 }
                 row.warehouse_id = 5
+                //this.warehouse_stock(index, row.individual_item_id, row.warehouse_id)
             });
-
-            this.supplies = item.supplies;
-            this.updateTotalDescargar();
+            //this.handleChange(this.form.quantity)
+            this.supplies = item.supplies
+            //this.warehouse_stock()
+            this.updateTotalDescargar()
             //console.log("itemssupplui", this.supplies);
         },
         warehouse_stock(index, supply_id, warehouseId) {

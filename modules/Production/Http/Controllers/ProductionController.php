@@ -780,19 +780,19 @@ class ProductionController extends Controller
 
     public function tranferSamples($samples, $destination_warehouse_id, $warehouse_id, $production)
     {
-        Log::info('Entra a transfersamples');
+        //Log::info('Entra a transfersamples');
         //Log::info('$samples - '.$samples);
         //Log::info('$destination_warehouse_id - '.$destination_warehouse_id);
         try {
             if (isset($samples) && $samples > 0 && isset($destination_warehouse_id) && $destination_warehouse_id != null) {
-                Log::info('Entra al if transfersamples');
+                //Log::info('Entra al if transfersamples');
                 $description = "Traslado de Muestras";
                 $client_id = null;
                 $created_at = Carbon::now();
                 $warehouse_id = $warehouse_id;
                 $warehouse_destination_id = $destination_warehouse_id;
                 $compromise_quantity = $samples;
-                Log::info('samples - ' . $samples);
+                //Log::info('samples - ' . $samples);
                 $transfers = new TransferController();
                 $transferRequest = new TransferRequest();
 
@@ -850,7 +850,7 @@ class ProductionController extends Controller
                     Log::error('Production item is not set');
                 }
 
-                Log::info('fin transfersSamples');
+                //Log::info('fin transfersSamples');
 
 
                 //$request = new Request();
@@ -860,9 +860,9 @@ class ProductionController extends Controller
                 $transferRequest['items'] = $items;
                 $transferRequest['client_id'] = $client_id;
                 $transferRequest['created_at'] = $created_at->toDateTimeString();
-                Log::info('compromise_quantity - ' . $compromise_quantity);
+                //Log::info('compromise_quantity - ' . $compromise_quantity);
                 $transferRequest['quantity'] = $compromise_quantity;
-                Log::info('tranfer Request - ' . json_encode($transferRequest));
+                //Log::info('tranfer Request - ' . json_encode($transferRequest));
                 return $transfers->store($transferRequest);
             }
         } catch (Exception $ex) {
@@ -1142,7 +1142,7 @@ class ProductionController extends Controller
             //Log::info('item123 - '.json_encode($item));
             $supplies = $item['supplies'];
             foreach ($supplies as $supply) {
-                Log::info('supply - ' . json_encode($supply));
+                //Log::info('supply - ' . json_encode($supply));
                 if ($supply['individual_item_id'] == $supply_id) {
                     //Log::info('supply - '.json_encode($supply));
                     foreach ($supply['lots_group'] as $lots) {
@@ -1260,9 +1260,9 @@ class ProductionController extends Controller
     {
         $production = Production::findOrFail($id);
         $production_supplies = ProductionSupply::where('production_id', $production->id)->with('itemSupply.individual_item')->get();
-        Log::info('Orden produccion a editar - ' . $production);
+        //Log::info('Orden produccion a editar - ' . $production);
         $warehouse_id = $production->warehouse_id;
-        Log::info('warehouse_id - '.$warehouse_id);
+        //Log::info('warehouse_id - '.$warehouse_id);
         $data = $production->getCollectionData();
         $data['item_id'] = $production->item_id;
         $data['warehouse_id'] = $warehouse_id;
@@ -1273,7 +1273,7 @@ class ProductionController extends Controller
         foreach ($production_supplies as $supply) {
             $checked = $supply->checked;
             $item_supply_id = $supply->item_supply_id;
-            Log::info('supply - '.json_encode($supply->itemSupply->individual_item->attributes));
+            //Log::info('supply - '.json_encode($supply->itemSupply->individual_item->attributes));
             $empaque = null;
             if(isset($supply->itemSupply->individual_item->attributes)){
                 foreach($supply->itemSupply->individual_item->attributes as $attribute)
@@ -1324,7 +1324,7 @@ class ProductionController extends Controller
             //Log::info("transformed_supplies",$transformed_supplies);
         }
         $data["supplies"] = $transformed_supplies;
-        Log::info('data a retornar - '.json_encode($data));
+        //Log::info('data a retornar - '.json_encode($data));
         return $data;
     }
 
