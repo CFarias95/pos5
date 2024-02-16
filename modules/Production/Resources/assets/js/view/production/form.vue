@@ -1397,6 +1397,21 @@ export default {
             //console.log("submit production", this.form);
 
             if (!this.form.id) {
+                if (this.form.records_id == "01" && this.form.lot_code == null
+                ) {
+                    let dateEnd = moment();
+                    let formattedDate = dateEnd.format("YYYY-MM-DD");
+
+                    let response = await this.$http.get(
+                        `/${this.resource}/production-counter/${formattedDate}`
+                    );
+                    let loteSugerido = `CCA-${dateEnd.format("DDMMYYYY")}-SL ${response.data.count
+                        }`;
+                    this.form.lot_code = loteSugerido;
+                    alert(
+                        `Se asignará de forma automática el lote: ${loteSugerido}`
+                    );
+                }
                 await this.$http
                     .post(`/${this.resource}/create`, this.form)
                     .then(response => {
@@ -1417,9 +1432,7 @@ export default {
             } else {
                 // Si existe un ID, estás actualizando un registro existente
                 //VALIDAMOS SI YA SE LE ASIGNO UN LOTE Y SI VA A ESTADO FINALIZADO
-                if (
-                    this.form.records_id == "03" &&
-                    this.form.lot_code == null
+                /*if (this.form.records_id == "03" && this.form.lot_code == null
                 ) {
                     let dateEnd = moment();
                     let formattedDate = dateEnd.format("YYYY-MM-DD");
@@ -1428,7 +1441,7 @@ export default {
                     alert("Se asignar de forma automática el lote : " + loteSugerido);
                     this.form.lot_code = loteSugerido;*/
 
-                    let response = await this.$http.get(
+                    /*let response = await this.$http.get(
                         `/${this.resource}/production-counter/${formattedDate}`
                     );
                     let loteSugerido = `CCA-${dateEnd.format("DDMMYYYY")}-SL ${response.data.count
@@ -1437,7 +1450,7 @@ export default {
                     alert(
                         `Se asignará de forma automática el lote: ${loteSugerido}`
                     );
-                }
+                }*/
                 await this.$http
                     .put(`/${this.resource}/update/${this.form.id}`, this.form)
                     .then(response => {

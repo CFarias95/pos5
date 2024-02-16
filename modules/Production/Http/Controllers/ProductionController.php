@@ -171,6 +171,7 @@ class ProductionController extends Controller
             $quantity = $request->input('quantity');
             $state_type_id = $request->records_id;
             $informative = $request->input('informative', false);
+            //Log::info('Lot code - '.$request->input('lot_code'));
 
             $production = new Production();
             $production->fill($request->all());
@@ -1001,7 +1002,7 @@ class ProductionController extends Controller
 
     public function getProductionCount($date)
     {
-        $count = Production::whereDate('date_end', $date)->count();
+        $count = Production::whereDate('created_at', $date)->count();
 
         return response()->json(['count' => $count + 1]);
     }
