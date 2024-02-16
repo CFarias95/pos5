@@ -539,6 +539,15 @@ class Purchase extends ModelTenant
      */
     public function  getCollectionData()
     {
+        $canEdit = true;
+        $fees = PurchaseFee::where('purchase_id',$this->id)->get();
+        foreach ($fees as $f){
+            $payments = PurchasePayment::where('purchase_id',$this->id)->where('fee_id',$f->id)->get();
+            if($payments && $payments->count() > 0){
+                $canEdit= false;
+            }
+        }
+
         $total = $this->total;
         if ($this->total_perception) {
             $total += round($this->total_perception, 2);
@@ -553,22 +562,6 @@ class Purchase extends ModelTenant
                 $customer_name = $customer->name;
             }
         }
-        /*
-            alone_number
-            internal_id
-            brand
-            description
-            quantity
-
-            lot_has_sale
-
-            web_platform_name
-            unit_value
-            */
-
-
-        // --    total_item_purchase
-        // --    utility_item
 
         $guides = (array)$this->guides;
 
@@ -610,8 +603,6 @@ class Purchase extends ModelTenant
                 ];
             }
         }
-
-
 
         return [
             'id'                             => $this->id,
@@ -666,13 +657,14 @@ class Purchase extends ModelTenant
                     'quantity'    => round($row->quantity, 2)
                 ];
             }),
-            'retenciones' => $retMejora,
-            'retenciones_state_id' => $idRetentionsState,
-            'retenciones_id' => $idRetentions,
-            'retenciones_state_name' => $nameRetentionsState,
-            'retenciones_unique_name' => $fileRetentions,
-            'print_a4'                       => url('') . "/purchases/print/{$this->external_id}/a4",
-            'filename'                         => $this->filename,
+            'retenciones'                   => $retMejora,
+            'retenciones_state_id'          => $idRetentionsState,
+            'retenciones_id'                => $idRetentions,
+            'retenciones_state_name'        => $nameRetentionsState,
+            'retenciones_unique_name'       => $fileRetentions,
+            'print_a4'                      => url('') . "/purchases/print/{$this->external_id}/a4",
+            'filename'                      => $this->filename,
+            'can_edit'                      => $canEdit,
         ];
     }
 

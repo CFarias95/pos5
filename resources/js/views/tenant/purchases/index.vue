@@ -125,7 +125,7 @@
                         <td class="text-right">{{ row.total   }}</td>
                         <td class="text-right">
                             <template v-if="permissions.edit_purchase">
-                                <a v-if="row.state_type_id != '11' && row.retenciones_state_id != '05' && row.retenciones_state_id != '03'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
+                                <a v-if="row.can_edit && row.state_type_id != '11' && row.retenciones_state_id != '05' && row.retenciones_state_id != '03'" :href="`/${resource}/edit/${row.id}`" type="button" class="btn waves-effect waves-light btn-xs btn-info">Editar</a>
                             </template>
                             <template v-if="permissions.annular_purchase">
                                 <button v-if="row.state_type_id != '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickAnulate(row.id)">Anular</button>
