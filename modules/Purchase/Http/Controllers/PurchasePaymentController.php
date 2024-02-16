@@ -305,7 +305,7 @@ class PurchasePaymentController extends Controller
                 $cabeceraC->user_id = $document->user_id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = date('y-m-d');
+                $cabeceraC->seat_date = $payment->date_of_payment;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = null;
