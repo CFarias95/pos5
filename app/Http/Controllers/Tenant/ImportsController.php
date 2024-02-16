@@ -100,6 +100,13 @@ class ImportsController extends Controller
             //->preview('Reporte_Importacion_' . Carbon::now() . '.xlsx')->toHtml();
 
     }
+    public function liquidationsReportExcel($id){
+        $source = DB::connection("tenant")->select("CALL SP_Reporteimportacion(?)",[$id]);
+
+        return (new ImportExport)
+            ->records($source)
+            ->download('Reporte_Importacion_' . Carbon::now() . '.xlsx');
+    }
     //genera el asiento contable del ISD registrado en la importacion
     public function isdAccountant($id){
 

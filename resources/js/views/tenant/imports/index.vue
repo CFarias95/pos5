@@ -51,9 +51,12 @@
                             </span>
                         </td>
                         <td class="text-right">
-
                             <button class="btn btn-success btn-sm" type="button"
                                 @click.prevent="clickGenerteReport(row.id)">
+                                <i class="fas fa-eye"></i> Previsualizar
+                            </button>
+                            <button class="btn btn-success btn-sm" type="button"
+                                @click.prevent="clickGenerateExcel(row.id)">
                                 <i class="fas fa-table"></i> Reporte
                             </button>
                             <button class="btn btn-info btn-sm" type="button" @click.prevent="clickGenerteiIsd(row.id)">
@@ -213,10 +216,10 @@ export default {
             });
         },
         clickGenerteReport(importId) {
-            //alert('SE generara el reporte de la importacion '+importId)
-            //console.log('DATA: ',importId);
-            //console.log(`/imports/liquidation-report/${importId}`);
-            window.open(`/imports/liquidation-report/${importId}`, '_blank');
+            window.open(`/imports/liquidation-report/${importId}`, '_blank')
+        },
+        clickGenerateExcel(importId) {
+            window.open(`/imports/liquidation-report-excel/${importId}`, '_blank')
         },
         clickGenerteiIsd(importId) {
             this.$http.get(`/${this.resource}/isd/${importId}`)

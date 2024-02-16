@@ -652,6 +652,7 @@ if ($hostname) {
             Route::get('imports/create', 'Tenant\ImportsController@create')->name('tenant.imports.form');
             Route::post('imports', 'Tenant\ImportsController@store');
             Route::get('imports/liquidation-report/{id}', 'Tenant\ImportsController@liquidationsReport');
+            Route::get('imports/liquidation-report-excel/{id}', 'Tenant\ImportsController@liquidationsReportExcel');
             Route::get('imports/tables', 'Tenant\ImportsController@table');
             Route::get('imports/isd/{id}', 'Tenant\ImportsController@isdAccountant');
             Route::get('imports/comunication/{id}', 'Tenant\ImportsController@comunicationsAccountant');
