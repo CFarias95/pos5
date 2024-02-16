@@ -661,7 +661,7 @@ class ProductionController extends Controller
                             $lots_group = $item["lots_group"];
 
                             foreach ($lots_group as $lots) {
-                                if (isset($lots["compromise_quantity"])) {
+                                if (isset($lots["compromise_quantity"]) && $lots["compromise_quantity"] > 0) {
                                     //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
                                     //Log::info("Se tiene cantidad en un lote selecionado");
                                     $sitienelote = true;
@@ -1139,7 +1139,7 @@ class ProductionController extends Controller
     {
         $lots_groups = [];
 
-        $items = self::optionsItemProduction($item_id);
+        /*$items = self::optionsItemProduction($item_id);
         //Log::info('items213 - '.json_encode($items));
 
         foreach ($items as $item) {
@@ -1157,8 +1157,10 @@ class ProductionController extends Controller
                     }
                 }
             }
-        }
+        }*/
         //Log::info(' lots - '.json_encode($lots_groups));
+
+        $lots_groups = ItemLotsGroup::where('warehouse_id', $warehouse_id)->where('item_id', $supply_id)->get();
 
         return compact('lots_groups');
     }

@@ -212,6 +212,7 @@ export default {
             code: item.code,
             compromise_quantity: item.compromise_quantity,
             date_of_due: item.date_of_due,
+            warehouse_id: item.warehouse_id,
           };
         });
       console.log('lots-selected', lots_selecteds)

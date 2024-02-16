@@ -814,7 +814,7 @@
                                     v-for="(row, index) in this.supplies"
                                     :key="row.id"
                                 >
-                                    <th>
+                                    <th :class="{ 'fondo-verde-claro': row.IdLoteSelected }">
                                         {{
                                             row.individual_item
                                                 ? row.individual_item.name +
@@ -1002,6 +1002,9 @@
     border: 1px solid #ccc;
     border-radius: 5px;
     margin: 10px 0;
+}
+.fondo-verde-claro {
+    background-color: #b2fab4;
 }
 </style>
 
