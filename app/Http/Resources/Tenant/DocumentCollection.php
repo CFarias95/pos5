@@ -2,6 +2,8 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\DocumentFee;
+use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\EmailSendLog;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Item;
@@ -146,6 +148,15 @@ class DocumentCollection extends ResourceCollection
 
             $btn_retention = !is_null($row->retention);
 
+            $canEdit = true;
+            $fees = DocumentFee::where('document_id',$row->id)->get();
+            foreach ($fees as $f){
+                $payments = DocumentPayment::where('document_id',$row->id)->where('fee_id',$f->id)->get();
+                if($payments && $payments->count() > 0){
+                    $canEdit= false;
+                }
+            }
+
             return [
                 'id' => $row->id,
                 'group_id' => $row->group_id,
@@ -214,7 +225,7 @@ class DocumentCollection extends ResourceCollection
                 'message_regularize_shipping' => $message_regularize_shipping,
                 'regularize_shipping' => (bool) $row->regularize_shipping,
                 'purchase_order' => $row->purchase_order,
-                'is_editable' => $row->is_editable,
+                'is_editable' => $canEdit,
                 'dispatches' => $this->getDispatches($row),
                 'soap_type' => $row->soap_type,
                 'plate_numbers' => $row->getPlateNumbers(),

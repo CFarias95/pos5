@@ -10,7 +10,7 @@
             <h3 class="my-0">Stock por Almacén</h3>
         </div>
         <div class="card mb-0 card-body">
-            <div class="col-md-12 col-lg-12 col-xl-12 ">
+            <div class="col-md-12 col-lg-12 col-xl-12">
                 <div class="row mt-2">
                     <div class="row">
                         <div class="col-12">
@@ -42,7 +42,8 @@
                         <div class="col-3">
                             <label> Categoría</label>
                             <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
-                                :show-all-levels="false" expandTrigger='hover' @change="getRecords" change-on-select></el-cascader>
+                                :show-all-levels="false" expandTrigger='hover' @change="getRecords"
+                                change-on-select></el-cascader>
                         </div>
                         <div class="col-3">
                             <label>Linea</label>
@@ -66,30 +67,33 @@
                     </div>
                 </div>
             </div>
-        </div>
-        <div class="col-md-12">
-            <div class="table-responsive">
-                <table class="table table-hover">
-                    <thead>
-                        <tr v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
-                            <th v-for="(value1, name) in key">
-                                <strong>{{ value1 }}</strong>
-                            </th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row" >
-                            <tr v-for="valor in row" :row="valor" class="" slot="heading" >
-                                <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj" :key="nombre" >
-                                    {{ obj }}
-                                </td>
+            <br>
+            <br>
+            <div class="col-md-12 col-lg-12 col-xl-12">
+                <div class="table-responsive">
+                    <table  class="table table-bordered">
+                        <thead>
+                            <tr v-for="(key, value) in almacenList" :index="customIndex(value)" :row="key">
+                                <th v-for="(value1, name) in key">
+                                    <strong>{{ value1 }}</strong>
+                                </th>
                             </tr>
-                        </slot>
-                    </tbody>
-                </table>
-                <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
-                    :total="pagination.total" layout="total, prev, pager, next" @current-change="getRecords">
-                </el-pagination>
+                        </thead>
+                        <tbody>
+                            <slot v-for="(row, index) in records" :index="customIndex(index)" :row="row">
+                                <tr v-for="valor in row" :row="valor" class="" slot="heading">
+                                    <td v-for="(obj, nombre) in valor" :index="customIndex(nombre)" :row="obj"
+                                        :key="nombre">
+                                        {{ obj }}
+                                    </td>
+                                </tr>
+                            </slot>
+                        </tbody>
+                    </table>
+                    <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
+                        :total="pagination.total" layout="total, prev, pager, next" @current-change="getRecords">
+                    </el-pagination>
+                </div>
             </div>
         </div>
     </div>
@@ -98,7 +102,6 @@
 <script>
 
 import queryString from 'query-string'
-
 export default {
     data() {
         return {
