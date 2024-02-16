@@ -661,7 +661,7 @@ class ProductionController extends Controller
                             $lots_group = $item["lots_group"];
 
                             foreach ($lots_group as $lots) {
-                                if (isset($lots["compromise_quantity"]) && $lots["compromise_quantity"] > 0) {
+                                if (isset($lots["compromise_quantity"]) && $lots["compromise_quantity"] > 0 && $lots['warehouse_id'] == $item['warehouse_id']) {
                                     //Log::info('$lots["compromise_quantity"] - ' . $lots["compromise_quantity"]);
                                     //Log::info("Se tiene cantidad en un lote selecionado");
                                     $sitienelote = true;
