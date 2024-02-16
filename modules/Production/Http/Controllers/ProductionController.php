@@ -593,6 +593,10 @@ class ProductionController extends Controller
                 //Log::info("Actualiza a elaboracion");
                 try {
                     $production_supply = ProductionSupply::where('production_id', $production->id)->get();
+                    $item_lotss  = ItemSupplyLot::where('production_id', $production->id)->get();
+                    foreach ($item_lotss as $lotss) {
+                        $lotss->delete();
+                    }
                     foreach ($production_supply as $suppli) {
                         $suppli->delete();
                     }

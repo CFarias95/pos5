@@ -1186,7 +1186,7 @@ export default {
                 //console.log('entro if index add row')
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
                 this.supplies[index].lots_group.forEach((lot) => {
-                    let lotselected = IdLoteSelected.filter((x) => x.code == lot.code)
+                    let lotselected = IdLoteSelected.filter((x) => x.code == lot.code && x.warehouse_id == this.supplies[index].warehouse_id)
                     //console.log('lotselected', lotselected)
                     if (lotselected.length > 0) {
                         lot.compromise_quantity = lotselected[0].compromise_quantity;
