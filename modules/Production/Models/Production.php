@@ -170,6 +170,7 @@ class Production extends ModelTenant
         //$state = StateTypeProduction::find($this->state_type_id);
         //$data['state_type_description'] = $state->description;
         $data['state_type_description'] = $this->state_type->description;
+        $data['warehouse_id'] = $this->warehouse_id;
 
         $item_extra_data = (array)$this->item_extra_data;
         $data['color'] = null;
