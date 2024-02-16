@@ -158,7 +158,11 @@ class PurchaseController extends Controller
 
         if($request->intern){
             $records->where('document_type_intern', $request->intern);
+        }
 
+        if($request->retention){
+            $retentions = RetentionsEC::where('idRetencion','like','%'.$request->retention.'%')->select('idDocumento')->get();
+            $records->whereIn('id', $retentions);
         }
 
         return $records->latest();

@@ -43,10 +43,8 @@ class Retention extends ModelTenant
         'total',
         'optional',
         'legends',
-
         'filename',
         'hash',
-
         'has_xml',
         'has_pdf',
         'has_cdr',

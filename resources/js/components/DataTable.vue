@@ -111,7 +111,7 @@
                     <label>
                         Secuencial:
                     </label>
-                    <el-input v-model="search.sequential" @change="getRecords"></el-input>
+                    <el-input v-model="search.sequential" clearable @change="getRecords"></el-input>
                 </div>
                 <div class="col-lg-3 col-md-3 col-sm-3">
                     <label>
@@ -122,7 +122,12 @@
                         </el-option>
                     </el-select>
                 </div>
-
+                <div class="col-lg-3 col-md-3 col-sm-3">
+                    <label>
+                        Retencion:
+                    </label>
+                    <el-input v-model="search.retention" clearable @change="getRecords"></el-input>
+                </div>
             </template>
         </div>
 
