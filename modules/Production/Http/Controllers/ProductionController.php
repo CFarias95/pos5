@@ -962,7 +962,7 @@ class ProductionController extends Controller
 
                         foreach ($lots_group as $lots) {
 
-                            if (isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0) {
+                            if (isset($lots["compromise_quantity"]) && floatval($lots["compromise_quantity"]) > 0 && $lots['warehouse_id'] == $item['warehouse_id']) {
                                 $qty = floatval($lots["compromise_quantity"]) ?? 0;
                                 //PRIMERO INTENTA REALIZAR EL INGRESO O SALIDA DEL STOCK
                                 $item_lots_group = ItemLotsGroup::findOrFail($lots["id"]);
