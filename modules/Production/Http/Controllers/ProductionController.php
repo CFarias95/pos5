@@ -937,7 +937,7 @@ class ProductionController extends Controller
             // Salida insumos por molino
 
             foreach ($items_supplies as $item) {
-                //Log::info($item);
+                Log::info($items_supplies);
                 if ($item['unit_type'] != 'Servicio') {
                     if ($item["lots_group"]) {
                         $lots_group = $item["lots_group"];

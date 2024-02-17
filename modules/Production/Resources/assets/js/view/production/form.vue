@@ -782,7 +782,7 @@
                         :loading="loading_submit"
                         native-type="(id) ? submit() : update()"
                         type="primary"
-                        v-if="supply_difference == false"
+                        v-if="supply_difference == false || form.records_id == '03'"
                     >
                         {{ id ? "Actualizar" : "Guardar" }}
                     </el-button>
