@@ -782,7 +782,7 @@
                         :loading="loading_submit"
                         native-type="(id) ? submit() : update()"
                         type="primary"
-                        v-if="supply_difference == false || form.records_id == '03'"
+                        v-if="supply_difference == false || this.form.records_id == '03'"
                     >
                         {{ id ? "Actualizar" : "Guardar" }}
                     </el-button>
@@ -1519,8 +1519,11 @@ export default {
                 console.error("Índice inválido o elemento de supplies no encontrado", index);
                 return;
             }
-            this.supply_difference = false
-            this.$http
+
+            if(this.form.records_id !== '03' || this.form.records_id !== '04')
+            {
+                this.supply_difference = false
+                this.$http
                 .get(`/${this.resource}/updateStockWarehouses/${warehouseId}/${supply_id}`)
                 .then(response => {
                     Vue.set(this.supplies, index, {
@@ -1538,7 +1541,7 @@ export default {
                         this.supply_difference = false
                     }
 
-                    let allHaveStock = this.supplies.every(supply => supply.difference > 0)
+                    let allHaveStock = this.supplies.every(supply => supply.difference >= 0)
                     if(!allHaveStock)
                     {
                         this.supply_difference = true
@@ -1549,6 +1552,12 @@ export default {
                 .catch(error => {
                     console.error("Error al actualizar el stock", error);
                 });
+            }
+            if(this.form.records_id == '03')
+            {
+                this.supply_difference = true
+            }
+            
         },
 
         changeQuantityForm() { }
