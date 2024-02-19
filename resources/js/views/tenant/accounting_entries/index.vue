@@ -51,7 +51,7 @@
                                           <tr>
                                             <td colspan="2" class="text-center py-0">
                                                 <p class="my-0" >-- {{ row.seat_date | toDate }} --</p>
-                                                <p class="my-0">Asiento N°: {{row.filename}} -- {{row.type}} </p>
+                                                <p class="my-0">Asiento N°: {{row.filename}} -- {{row.type}} -- {{row.serie}} </p>
                                             </td>
                                             <td  class="text-center"></td>
                                             <td  class="text-center"></td>
@@ -72,7 +72,7 @@
                                             <td  class="text-right">$ {{ det.haber | toDecimals }} </td>
                                             <td  class="text-center"> {{ det.seat_cost}} </td>
                                             </tr>
-                                            
+
                                           <tr>
                                             <td>
                                                 <p class="my-0" >
@@ -81,7 +81,7 @@
                                                 </p>
                                             </td>
                                             <td width="7%" class="font-weight-bold">
-                                                
+
                                                 <p class="my-0" >TOTAL: </p>
                                             </td>
                                             <td  class="text-right">$ {{subTotalDebe(row.detalles)| toDecimals }} </td>
@@ -97,7 +97,7 @@
                     </div>
                 </data-table>
             </div>
-  
+
               <account-options-pdf :showDialog.sync="showDialogOptionsPdf"
                                    :recordId="recordId"
                                    :showClose="true"></account-options-pdf>
@@ -182,7 +182,7 @@ export default {
         }
     },
     async created() {
-        
+
     },
     mounted() {
         this.loadConfiguration()

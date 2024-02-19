@@ -296,7 +296,7 @@ class PurchasePaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = 'Pago factura de compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                $comment = $payment->reference.' | Pago factura de compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
 
                 $total_debe = $payment->payment;
                 $total_haber = $payment->payment;
@@ -308,7 +308,7 @@ class PurchasePaymentController extends Controller
                 $cabeceraC->seat_date = $payment->date_of_payment;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'PAGO COMPRA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -598,6 +598,7 @@ class PurchasePaymentController extends Controller
                 $cabeceraC->id = null;
                 $cabeceraC->user_id = $idauth;
                 $cabeceraC->seat = $seat;
+                $cabeceraC->serie = 'REVERSO PAGO COMPRA';
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = date('y-m-d');
                 $cabeceraC->comment = $comment;

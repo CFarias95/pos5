@@ -737,7 +737,7 @@ class DocumentController extends Controller
                 $cabeceraC->seat_date = $document->date_of_issue;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'VENTA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -1022,7 +1022,7 @@ class DocumentController extends Controller
                 $cabeceraC->seat_date = $document->date_of_issue;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'NOTA CREDITO';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -1317,7 +1317,7 @@ class DocumentController extends Controller
                     $cabeceraC->seat_date = $document->date_of_issue;
                     $cabeceraC->types_accounting_entrie_id = 1;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'COBRO VENTA';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $payment->payment;
                     $cabeceraC->total_haber = $payment->payment;
@@ -1404,7 +1404,7 @@ class DocumentController extends Controller
                     $cabeceraC->seat_date = $document->date_of_issue;
                     $cabeceraC->types_accounting_entrie_id = 1;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'COBRO NOTA CREDITO';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $payment->payment;
                     $cabeceraC->total_haber = $payment->payment;

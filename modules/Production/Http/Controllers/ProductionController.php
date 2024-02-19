@@ -284,7 +284,7 @@ class ProductionController extends Controller
                 $cabeceraC->seat_date = $document->date_start;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'INICIO ORDEN DE PRODUCCION';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -419,7 +419,7 @@ class ProductionController extends Controller
                 $cabeceraC->seat_date = $document->date_end;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'FIN ORDEN DE PRODUCCION';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -481,7 +481,7 @@ class ProductionController extends Controller
                     $cabeceraC->seat_general = ($seat_general + 1);
                     $cabeceraC->seat_date = $document->date_end;
                     $cabeceraC->types_accounting_entrie_id = 1;
-                    $cabeceraC->comment = $comment;
+                    $cabeceraC->comment = 'SALIDA DEFECTUOSOS ORDEN PRODUCCION';
                     $cabeceraC->serie = null;
                     $cabeceraC->number = ($seat + 1);
                     $cabeceraC->total_debe = $contoUnitarioProd;
@@ -762,7 +762,7 @@ class ProductionController extends Controller
                     $this->inventoryFinishedProduct($production, $inventory_transaction_item2);
                 }
             } catch (Exception $ex) {
-                
+
                 Log::error("Error UPDATE PRODUCTION: " . $ex->getMessage());
                 $production->state_type_id = '01';
                 $production->save();

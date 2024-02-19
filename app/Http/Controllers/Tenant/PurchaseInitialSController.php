@@ -810,7 +810,7 @@ class PurchaseInitialSController extends Controller
                 $cabeceraC->seat_date = $document->date_of_issue;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'COMPRA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -1365,7 +1365,7 @@ class PurchaseInitialSController extends Controller
                     $cabeceraC->seat_date = $document->date_of_issue;
                     $cabeceraC->types_accounting_entrie_id = 1;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'PAGO COMPRA';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $total_debe;
                     $cabeceraC->total_haber = $total_haber;

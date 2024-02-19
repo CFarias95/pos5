@@ -778,7 +778,7 @@ class PurchaseController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = 'Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                $comment = $document->observation.' | '.$document->sequential_number.' | Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
 
                 $total_debe = $document->total;
                 $total_haber = $document->total;
@@ -790,7 +790,7 @@ class PurchaseController extends Controller
                 $cabeceraC->seat_date = $document->date_of_issue;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'COMPRA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $total_debe;
                 $cabeceraC->total_haber = $total_haber;
@@ -1345,7 +1345,7 @@ class PurchaseController extends Controller
                     $cabeceraC->seat_date = $document->date_of_issue;
                     $cabeceraC->types_accounting_entrie_id = 1;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'PAGO COMPRA';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $total_debe;
                     $cabeceraC->total_haber = $total_haber;

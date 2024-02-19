@@ -413,7 +413,7 @@ class DocumentPaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = (($document->document_type_id == '03')?'Cobro '.substr($document->series,0,1):'Cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                $comment = (($document->document_type_id == '03')?$request->reference.' | Cobro '.substr($document->series,0,1):$request->reference.' | Cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
 
                 $total_debe = 0;
                 $total_haber = 0;
@@ -425,7 +425,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->seat_date = $request->date_of_payment;
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'COBRO VENTA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $request->payment;
                 $cabeceraC->total_haber = $request->payment;
@@ -615,7 +615,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->seat_date = date('y-m-d');
                 $cabeceraC->types_accounting_entrie_id = 1;
                 $cabeceraC->comment = $comment;
-                $cabeceraC->serie = null;
+                $cabeceraC->serie = 'REVERSO COBRO VENTA';
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $request->payment * -1;
                 $cabeceraC->total_haber = $request->payment  * -1;
