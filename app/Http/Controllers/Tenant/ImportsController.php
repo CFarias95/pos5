@@ -176,9 +176,9 @@ class ImportsController extends Controller
                     $cabeceraC->seat = $seat;
                     $cabeceraC->seat_general = $seat_general;
                     $cabeceraC->seat_date = $document->updated_at;
-                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->types_accounting_entrie_id = 3;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'IMPORTACION';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $valor;
                     $cabeceraC->total_haber = $valor;
@@ -309,9 +309,9 @@ class ImportsController extends Controller
                     $cabeceraC->seat = $seat;
                     $cabeceraC->seat_general = $seat_general;
                     $cabeceraC->seat_date = $document->updated_at;
-                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->types_accounting_entrie_id = 3;
                     $cabeceraC->comment = $comment;
-                    $cabeceraC->serie = null;
+                    $cabeceraC->serie = 'IMPORTACION';
                     $cabeceraC->number = $seat;
                     $cabeceraC->total_debe = $valor;
                     $cabeceraC->total_haber = $valor;
@@ -410,9 +410,9 @@ class ImportsController extends Controller
             $cabeceraC->seat = $seat;
             $cabeceraC->seat_general = $seat_general;
             $cabeceraC->seat_date = $document->updated_at;
-            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->types_accounting_entrie_id = 3;
             $cabeceraC->comment = $comment;
-            $cabeceraC->serie = null;
+            $cabeceraC->serie = 'IMPORTACION';
             $cabeceraC->number = $seat;
             $cabeceraC->total_debe = $total_debe;
             $cabeceraC->total_haber = $total_haber;

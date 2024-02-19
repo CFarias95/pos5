@@ -423,7 +423,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $request->date_of_payment;
-                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->types_accounting_entrie_id = 4;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'COBRO VENTA';
                 $cabeceraC->number = $seat;
@@ -613,7 +613,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = date('y-m-d');
-                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->types_accounting_entrie_id = 4;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'REVERSO COBRO VENTA';
                 $cabeceraC->number = $seat;

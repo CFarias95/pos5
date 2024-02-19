@@ -708,7 +708,7 @@ class UnpaidController extends Controller
             $cabeceraC->seat = $lista->seat + 1;
             $cabeceraC->seat_general = $lista->seat + 1;
             $cabeceraC->seat_date = $request->date_of_payment;
-            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->types_accounting_entrie_id = 4;
             $cabeceraC->comment = $comment;
             $cabeceraC->serie = 'MULTICOBROS';
             $cabeceraC->number = $lista->seat + 1;

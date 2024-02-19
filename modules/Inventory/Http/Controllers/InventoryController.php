@@ -423,7 +423,7 @@ class InventoryController extends Controller
             $cabeceraC->seat = $seat;
             $cabeceraC->seat_general = $seat_general;
             $cabeceraC->seat_date = date('Y-m-d');
-            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->types_accounting_entrie_id = 10;
             $cabeceraC->comment = $comment;
             $cabeceraC->serie = ($transaction->type == 'input')?'INGRESO PRODUCTO':'SALIDA PRODUCTO';
             $cabeceraC->number = $seat;

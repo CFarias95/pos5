@@ -788,7 +788,7 @@ class PurchaseController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_of_issue;
-                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->types_accounting_entrie_id = 2;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'COMPRA';
                 $cabeceraC->number = $seat;
@@ -1343,7 +1343,7 @@ class PurchaseController extends Controller
                     $cabeceraC->seat = $seat;
                     $cabeceraC->seat_general = $seat_general;
                     $cabeceraC->seat_date = $document->date_of_issue;
-                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->types_accounting_entrie_id = 5;
                     $cabeceraC->comment = $comment;
                     $cabeceraC->serie = 'PAGO COMPRA';
                     $cabeceraC->number = $seat;

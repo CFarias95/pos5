@@ -232,9 +232,9 @@ class AdvanceController extends Controller
             $cabeceraC->seat = $seat;
             $cabeceraC->seat_general = $seat_general;
             $cabeceraC->seat_date = $document->created_at;
-            $cabeceraC->types_accounting_entrie_id = 1;
+            $cabeceraC->types_accounting_entrie_id = ($document->is_supplier)?7:6;
             $cabeceraC->comment = $comment;
-            $cabeceraC->serie = null;
+            $cabeceraC->serie = ($document->is_supplier)?'ANTICIPO PROVEEDOR':'ANTICIPO CLIENTE';
             $cabeceraC->number = $seat;
             $cabeceraC->total_debe = $document->valor;
             $cabeceraC->total_haber = $document->valor;

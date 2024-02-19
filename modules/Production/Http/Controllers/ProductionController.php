@@ -282,7 +282,7 @@ class ProductionController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_start;
-                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->types_accounting_entrie_id = 11;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'INICIO ORDEN DE PRODUCCION';
                 $cabeceraC->number = $seat;
@@ -417,7 +417,7 @@ class ProductionController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_end;
-                $cabeceraC->types_accounting_entrie_id = 1;
+                $cabeceraC->types_accounting_entrie_id = 11;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'FIN ORDEN DE PRODUCCION';
                 $cabeceraC->number = $seat;
@@ -480,7 +480,7 @@ class ProductionController extends Controller
                     $cabeceraC->seat = ($seat + 1);
                     $cabeceraC->seat_general = ($seat_general + 1);
                     $cabeceraC->seat_date = $document->date_end;
-                    $cabeceraC->types_accounting_entrie_id = 1;
+                    $cabeceraC->types_accounting_entrie_id = 11;
                     $cabeceraC->comment = 'SALIDA DEFECTUOSOS ORDEN PRODUCCION';
                     $cabeceraC->serie = null;
                     $cabeceraC->number = ($seat + 1);
