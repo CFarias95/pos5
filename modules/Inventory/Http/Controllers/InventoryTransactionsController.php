@@ -133,9 +133,9 @@ class InventoryTransactionsController extends Controller
     public function records(Request $request){
 
         if(isset($request->column)){
-            $records = InventoryTransaction::where($request->column, 'like', "%{$request->value}%");
+            $records = InventoryTransaction::where($request->column, 'like', "%{$request->value}%")->where('visible', true);
         }else{
-            $records = InventoryTransaction::query();
+            $records = InventoryTransaction::where('visible', true);
         }
 
         return new ResourcesInventoryTransactionsCollection($records->paginate(config('tenant.items_per_page')));

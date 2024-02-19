@@ -274,7 +274,7 @@ trait InventoryTrait
      */
     public function optionsInventoryTransaction($type)
     {
-        $records = InventoryTransaction::where('type', $type)->get();
+        $records = InventoryTransaction::where('type', $type)->where('visible', 1)->get();
         return $records;
     }
 

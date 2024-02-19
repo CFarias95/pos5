@@ -1083,8 +1083,9 @@ export default {
         };
     },
     async created() {
-        await this.getTable();
-        this.initForm();
+        await this.getTable()
+        this.initForm()
+        this.totalManualDescargar = 0
     },
     mounted() {
         this.$eventHub.$on("reloadStock", (index, supply_id, warehouseId) => {
@@ -1304,7 +1305,7 @@ export default {
                     this.updateTotalDescargar()
 
                     this.supplies.forEach((row, index) =>{
-                        this.warehouse_stock(index, row.individual_item_id, row.warehouse_id)
+                        this.warehouse_stock(index, row.item_id, row.warehouse_id)
                     })
             } else {
                 this.isCreating = true;
@@ -1519,7 +1520,7 @@ export default {
                 console.error("Índice inválido o elemento de supplies no encontrado", index);
                 return;
             }
-
+            //console.log('form', this.form)
             if(this.form.records_id !== '03' || this.form.records_id !== '04')
             {
                 this.supply_difference = false
@@ -1552,6 +1553,8 @@ export default {
                 .catch(error => {
                     console.error("Error al actualizar el stock", error);
                 });
+            }else{
+                return
             }
             if(this.form.records_id == '03')
             {

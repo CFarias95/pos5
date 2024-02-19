@@ -183,6 +183,9 @@
                         Route::get('tables', 'InventoryTransactionsController@tables');
                         Route::get('record/{id}', 'InventoryTransactionsController@record');
                         Route::post('create', 'InventoryTransactionsController@store');
+
+                        /*Route::get('list', 'InventoryTransactionListController@index')->name('inventory.transactions');
+                        Route::get('list/records', 'InventoryTransactionListController@records');*/
                     });
 
                 });

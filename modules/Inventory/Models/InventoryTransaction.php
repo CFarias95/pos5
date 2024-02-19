@@ -17,7 +17,10 @@ class InventoryTransaction extends ModelTenant
         'type',
         'id',
         'cta_account',
+        'visible',
     ];
+
+    protected $casts = ['visible' => 'bool'];
 
     public function inventories()
     {

@@ -767,6 +767,13 @@
                                         </li>
                                     @endif
 
+                                    {{-- @if(in_array('inventory_transactions', $vc_module_levels))
+                                        <li class="{{(($firstLevel === 'inventory') && ($secondLevel === 'transactions')) ? 'nav-active' : ''}}">
+                                            <a class="nav-link"
+                                               href="{{route('inventory.transactions')}}">Transacciones Inventario</a>
+                                        </li>
+                                    @endif --}}
+
                                 </ul>
                             </li>
                         @endif
