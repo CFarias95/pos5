@@ -52,7 +52,7 @@ class TenantSPCuentarPorPagar extends Migration
             'purchase' AS 'type',d.currency_type_id,d.exchange_rate_sale, d.user_id, users.name as username,
             CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL(SUM(dp.payment),0) ELSE d.total - IFNULL(SUM(dp.payment), 0) END as total_subtraction,
             DATE_FORMAT(df.f_posdated, '%Y/%m/%d') f_posdated,df.posdated as posdated,
-            i.numeroImportacion AS import
+            i.numeroImportacion AS import_number
             FROM purchases AS d
             JOIN purchase_fee AS df ON df.purchase_id = d.id
             LEFT JOIN purchase_payments AS dp ON dp.fee_id = df.id AND dp.purchase_id = d.id
