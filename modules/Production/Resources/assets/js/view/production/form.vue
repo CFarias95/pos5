@@ -1131,7 +1131,7 @@ export default {
             if(this.supplies.length > 0)
             {
                 let total = 0;
-
+                //console.log('this.supplies', this.supplies)
                 this.supplies.forEach(supply => {
                     //console.log('suplpy', supply)
                     //console.log('suplpyD', supply.description)
@@ -1305,7 +1305,7 @@ export default {
                     this.updateTotalDescargar()
 
                     this.supplies.forEach((row, index) =>{
-                        this.warehouse_stock(index, row.item_id, row.warehouse_id)
+                        this.warehouse_stock(index, row.individual_item_id, row.warehouse_id)
                     })
             } else {
                 this.isCreating = true;
@@ -1485,7 +1485,7 @@ export default {
 
         changeItem() {
             let item = _.find(this.items, { id: this.form.item_id });
-            //console.log("item", item);
+            //console.log("item", this.form.item_id);
             this.form.item_extra_data = {};
             this.form.item_extra_data.color = null;
             this.item = item;
@@ -1512,6 +1512,8 @@ export default {
             //console.log("itemssupplui", this.supplies);
         },
         warehouse_stock(index, supply_id, warehouseId) {
+            console.log('item', supply_id)
+            console.log('warehouse', warehouseId)
             if (!warehouseId) {
                 return;
             }

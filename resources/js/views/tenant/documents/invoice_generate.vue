@@ -324,7 +324,7 @@
           </div>
           <div class="card-body border-top no-gutters p-0">
             <div class="table-responsive">
-              <table class="table table-sm">
+              <table class="table table-products">
                 <thead>
                   <tr>
                     <th width="5%">#</th>
@@ -332,6 +332,7 @@
                     <th class="text-center font-weight-bold">Unidad</th>
                     <th class="text-right font-weight-bold">Cantidad</th>
                     <th class="text-right font-weight-bold">Valor Unitario</th>
+                    <th class="text-right font-weight-bold">Descuento</th>
                     <th class="text-right font-weight-bold">Precio Unitario</th>
                     <th class="text-right font-weight-bold">Subtotal</th>
                     <!--<th class="text-right font-weight-bold">Cargo</th>-->
@@ -397,6 +398,7 @@
                       {{ currency_type.symbol }}
                       {{ getFormatUnitPriceRow(row.unit_value) }}
                     </td>
+                    <td class="text-right">{{ row.discounts.length > 0 ? row.discounts[0].percentage : 0 }}%</td>
                     <td class="text-right">
                       {{ currency_type.symbol }}
                       {{ getFormatUnitPriceRow(row.unit_price) }}
@@ -1302,7 +1304,7 @@
                           </thead>
                           <tbody>
                             <tr v-for="(row, index) in form.fee" :key="index">
-                              <td>
+                              <td> 
                                 <el-select
                                   v-model="row.payment_method_type_id"
                                   @change="changePaymentMethodType(index)"
@@ -1971,7 +1973,34 @@
 .el-upload-list__item {
   max-width: 100px;
 }
+.table-products {
+  width: 100%;
+  border-collapse: collapse;
+}
+
+.table-products th, .table-products td {
+  border: 1px solid #ddd;
+  padding: 8px;
+}
+
+.table-products th {
+  padding: 8px;
+  text-align: left;
+}
+
+.table-products tbody tr:hover {
+  background-color: inherit;
+}
+
+.table-products tbody tr:last-child td {
+  border: none;
+}
+
+.table-products tbody tr:nth-child(even) {
+  background-color: #f9f9f9;
+}
 </style>
+
 <script>
 import DocumentFormItem from "./partials/item.vue";
 import PersonForm from "../persons/form.vue";
@@ -3051,7 +3080,10 @@ export default {
         this.readonly_date_of_due = false;
         this.form.payment_method_type_id = null;
         this.enabled_payments = true;
-      } else {
+      } else if(payment_method_type.id == "28")
+      {
+        this.form.fee[index].date = this.form.date_of_issue
+      }else{
         //this.form.date_of_due = this.form.date_of_issue;
         this.readonly_date_of_due = false;
         this.form.payment_method_type_id = null;
@@ -3086,7 +3118,7 @@ export default {
       this.$http
         .get(`/${this.resource}/advance/${this.form.customer_id}/null`)
         .then((response) => {
-          console.log("addAdvancesCustomer", response);
+          //console.log("addAdvancesCustomer", response);
           this.advances = response.data.advances;
         });
     },
@@ -3998,7 +4030,7 @@ export default {
       this.form.total_unaffected = _.round(total_unaffected, 2);
       this.form.total_free = _.round(total_free, 2);
       // this.form.total_igv = _.round(total_igv + total_free_igv, 2)
-      console.log('total IGV: ',total_igv);
+      //console.log('total IGV: ',total_igv);
       this.form.total_igv = _.round(total_igv, 2);
       this.form.total_value = _.round(total_value, 2);
       // this.form.total_taxes = _.round(total_igv, 2)
@@ -4598,6 +4630,7 @@ export default {
     changePaymentCondition() {
       this.form.fee = [];
       this.form.payments = [];
+      //console.log('this.form.payment_condition_id', this.form.payment_condition_id)
       if (this.form.payment_condition_id === "01") {
         this.clickAddPayment();
         this.initDataPaymentCondition01();
@@ -4676,8 +4709,7 @@ export default {
       let date = moment(this.form.date_of_issue)
         .add(first.number_days, "days")
         .format("YYYY-MM-DD");
-
-      this.form.date_of_due = date;
+      this.form.date_of_due = date
       this.form.fee.push({
         id: null,
         document_id: null,
@@ -4756,7 +4788,7 @@ export default {
       return total_pay;
     },
     setDescriptionOfItem(item) {
-      console.log(item);
+      //console.log(item);
       return showNamePdfOfDescription(item, this.config.show_pdf_name);
     },
     checkKeyWithAlt(e) {
