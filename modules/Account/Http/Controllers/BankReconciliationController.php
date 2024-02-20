@@ -17,6 +17,7 @@ use App\Models\Tenant\Configuration;
 use App\Models\Tenant\DocumentPayment;
 use App\Models\Tenant\PurchasePayment;
 use App\Models\Tenant\Retention;
+use Exception;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
@@ -28,7 +29,9 @@ use Modules\Account\Exports\ReportAccountingConcarExport;
 use Modules\Account\Exports\ReportAccountingFoxcontExport;
 use Modules\Account\Exports\ReportAccountingContasisExport;
 use Modules\Account\Exports\ReportAccountingSumeriusExport;
+use Modules\Account\Http\Resources\BankReconciliationCollection;
 use Modules\Account\Http\Resources\ReconciliationCollection;
+use Modules\Account\Models\BankReconciliation;
 
 class BankReconciliationController extends Controller
 {
@@ -118,11 +121,8 @@ class BankReconciliationController extends Controller
     //recupera todos los datos de accounting entrys items
     public function records(Request $request)
     {
-
         $records = $this->getRecords($request);
-
-        //return $records->get();
-        return new ReconciliationCollection($records->paginate(config('tenant.items_per_page')));
+        return new BankReconciliationCollection($records->paginate(config('tenant.items_per_page')));
     }
 
     // Retorna la informacion aplicando filtros
@@ -130,105 +130,27 @@ class BankReconciliationController extends Controller
     {
         $fecha = $request->date;
         $cta = $request->cta;
-        $include = $request->include;
-        $reference = $request->reference;
 
-        $records = AccountingEntries::where('document_id', 'like', 'CF%');
-        $records2 = AccountingEntries::where('document_id', 'like', 'PC%');
-        $records3 = AccountingEntries::where('document_id', 'not like', 'PC%')->where('document_id', 'not like', 'CF%');
-
-        if(isset($reference) && $reference != ''){
-
-            $reference = str_replace(' ','',$reference);
-
-            if(str_contains($reference,'A,')){
-                Log::info('Referencia a buscr : '.str_replace('A,','',$reference));
-                $id = Advance::select('id')->where('reference','like','%'. trim(str_replace('A,','',$reference)).'%')->get();
-
-                $idPDocu = DocumentPayment::whereIn('reference',$id)->get()->transform(function($row){return['CF'.$row->id];});
-                $idPPurc = PurchasePayment::whereIn('reference',$id)->get()->transform(function($row){return['PC'.$row->id];});
-
-                $records->whereIn('document_id',$idPDocu);
-                $records2->whereIn('document_id',$idPPurc);
-                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
-
-            }
-            elseif(str_contains($reference,'R,')){
-                Log::info('Retencial a buscar : '.str_replace('R,','',$reference));
-                $id = Retention::select('id')->where('ubl_version','like','%'. trim(str_replace('R,','',$reference)).'%')->get();
-
-                $idPDocu = DocumentPayment::whereIn('reference',$id)->get()->transform(function($row){return['CF'.$row->id];});
-                $idPPurc = PurchasePayment::whereIn('reference',$id)->get()->transform(function($row){return['PC'.$row->id];});
-
-                $records->whereIn('document_id',$idPDocu);
-                $records2->whereIn('document_id',$idPPurc);
-                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
-
-            }else{
-
-                $idPDocu = DocumentPayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['CF'.$row->id];});
-                $idPPurc = PurchasePayment::select('id')->where('reference','like','%'.$reference.'%')->get()->transform(function($row){return['PC'.$row->id];});
-
-                $records->whereIn('document_id',$idPDocu);
-                $records2->whereIn('document_id',$idPPurc);
-                //$records3->whereIn('document_id',$idPPurc)->whereIn('document_id',$idPDocu);
-            }
-        }
+        $records = BankReconciliation::query();
 
         if (isset($fecha)) {
-            $records->where('seat_date', $fecha);
-            $records2->where('seat_date', $fecha);
-            $records3->where('seat_date', $fecha);
+            $records->where('month',$fecha);
+        }
+        if (isset($cta)) {
+            $records->where('account_id',$cta);
         }
 
-        $records->join('accounting_entry_items', function ($join) use($include,$cta){
-            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
-            if(isset($include) && $include != 2){
-                $join->where('accounting_entry_items.reconciliation','=',$include);
-            }
-            if(isset($cta)){
-                $join->where('accounting_entry_items.account_movement_id','=', $cta);
-            }
-        });
-        $records->select('accounting_entry_items.*');
-
-        $records2->join('accounting_entry_items', function ($join) use($include,$cta){
-            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
-            if(isset($include) && $include != 2){
-                $join->where('accounting_entry_items.reconciliation','=',$include);
-            }
-            if(isset($cta)){
-                $join->where('accounting_entry_items.account_movement_id','=', $cta);
-            }
-        });
-        $records2->select('accounting_entry_items.*');
-
-        $records3->join('accounting_entry_items', function ($join) use($include,$cta){
-            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
-            if(isset($include) && $include != 2){
-                $join->where('accounting_entry_items.reconciliation','=',$include);
-            }
-            if(isset($cta)){
-                $join->where('accounting_entry_items.account_movement_id','=', $cta);
-            }
-        });
-        $records3->select('accounting_entry_items.*');
-
-
-        $data = $records->union($records2)->union($records3);
-        return $data->orderBy('id','desc');
+        return $records->orderBy('id','desc');
     }
 
     //retorna la lista de valores para filtrar
     public function columns()
     {
-
         $ctas = AccountMovement::get();
-
         $ctas = $ctas->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'name' => $row->description
+                'name' => $row->code.' - '.$row->description
             ];
         });
 
@@ -236,22 +158,22 @@ class BankReconciliationController extends Controller
     }
 
     //funciona para puntear los asientos contables
-    public function reconciliate($id)
+    public function reconciliate($reconciliationId,$id)
     {
-        $record = AccountingEntryItems::find($id);
+        $record = AccountingEntryItems::findOrFail($id);
         if ($record) {
-            $record->reconciliation = true;
-            $record->user_id_reconciliation = Auth()->user()->id;
-            $record->reconciliation_date = date('Y-m-d H:i:s');
+            $record->bank_reconciliated = true;
+            $record->bank_reconciliation_id = $reconciliationId;
+            $record->date_bank_reconciliated = date('Y-m-d H:i:s');
             $record->save();
             return [
                 'success' => true,
-                'message' => "Linea del asiento punteada correctamente"
+                'message' => "Conciliacion reguistrada"
             ];
         } else {
             return [
                 'success' => false,
-                'message' => "No se pudo puntear la linea del asiento contable"
+                'message' => "No se pudo conciliar el registro"
             ];
         }
     }
@@ -271,6 +193,83 @@ class BankReconciliationController extends Controller
         ->records($records)
         ->download('Punteo_Contable' . '.xlsx');
 
+    }
+
+    public function movements(Request $request){
+
+        $account = $request->account_id;
+        $month = $request->month;
+        $id = $request->id;
+
+        if(strlen($month) > 7){
+            $month = substr($month,0,7);
+        }
+
+
+        $data = AccountingEntryItems::query();
+
+        if($account){
+            $data->where('account_movement_id',$account);
+        }
+
+        if($month){
+
+            $mov = AccountingEntries::where('seat_date','like',$month.'%')->get()->transform(function($row){
+                return[
+                    'id' =>$row->id
+                ];
+            });
+
+            $data->whereIn('accounting_entrie_id',$mov);
+        }
+
+
+        return $data->get()->transform(function($row){
+            $accountingEntrie = AccountingEntries::find($row->accounting_entrie_id);
+            return[
+                'comment' => $accountingEntrie->comment,
+                'debe' => $row->debe,
+                'haber' => $row->haber,
+                'bank_reconciliated' => $row->bank_reconciliated,
+                'id' => $row->id,
+            ];
+        });
+    }
+
+    public function store( Request $request){
+        $id = $request->id;
+        try{
+            if($id){
+                $record = BankReconciliation::find($id);
+                $record->fill($request);
+                $record->save();
+                return[
+                    'success'=>true,
+                    'message'=>'Se ha actualizado la información correctamente.'
+                ];
+            }else{
+                $record = new BankReconciliation();
+                $record->fill($request->toArray());
+                $record->month = $request->month.'-01';
+                $record->user_id = auth()->user()->id;
+                $record->save();
+                return[
+                    'success'=>true,
+                    'message'=>'Se ha generado la conciliacion bancaria con éxito.',
+                ];
+            }
+        }catch(Exception $ex){
+            Log::error('Error BankReconciliationController '.$ex->getMessage());
+            return[
+                'success'=> false,
+                'message'=>'Se ha generado un error en BankReconciliationController '.$ex->getMessage()
+            ];
+        }
+    }
+
+    public function record($id){
+        $data = BankReconciliation::find($id);
+        return $data;
     }
 
 }

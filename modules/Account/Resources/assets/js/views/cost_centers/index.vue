@@ -17,26 +17,6 @@
 
         <div class="card-body">
             <div class="table-responsive">
-                <!-- <data-table :resource="resource">
-                    <tr slot="heading">
-                        <th>Id</th>
-                        <th>Nombre</th>
-                        <th>Fecha Creado</th>
-                        <th>Acciones</th>
-                    </tr>
-                    <tr slot-scope="{ index, row }" :key="index" :rowGroup="row.level_1"
-                        :class="{ 'text-success border-left border-success': (row.audited > 0), }">
-                        <td>{{ row.id }}</td>
-                        <td>{{ row.name }}</td>
-                        <td>{{ row.created_at }}</td>
-                        <td class="text-right">
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-info"
-                                @click.prevent="clickCreate(row.id)">Editar</button>
-                            <button type="button" class="btn waves-effect waves-light btn-xs btn-danger"
-                                @click.prevent="clickDelete(row.id)">Eliminar</button>
-                        </td>
-                    </tr>
-                </data-table> -->
                 <template>
                     <div>
                         <el-table :data="records" style="width: 100%; margin-bottom: 20px" row-key="id" border

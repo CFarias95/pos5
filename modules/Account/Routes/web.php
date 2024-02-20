@@ -50,11 +50,16 @@ if($hostname) {
                 Route::get('excel', 'ReconciliationController@excel');
             });
             Route::prefix('bank_reconciliation')->group(function () {
-                Route::get('/', 'BankReconciliationController@index')->name('tenant.bank_reconciliation.index');
+                Route::get('/', 'BankReconciliationController@index')->name('tenant.bank_reconciliation.create');
                 Route::get('records', 'BankReconciliationController@records');
                 Route::get('columns', 'BankReconciliationController@columns');
                 Route::get('reconciliate/{id}', 'BankReconciliationController@reconciliate');
                 Route::get('excel', 'BankReconciliationController@excel');
+                Route::post('movements', 'BankReconciliationController@movements');
+                Route::post('', 'BankReconciliationController@store');
+                Route::get('record/{id}', 'BankReconciliationController@record');
+                Route::get('reconciliate/{reconciliationId}/{id}', 'BankReconciliationController@record');
+
             });
 
             Route::prefix('accounting_audit')->group(function () {
