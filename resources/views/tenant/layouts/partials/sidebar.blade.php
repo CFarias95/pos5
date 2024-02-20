@@ -1116,6 +1116,14 @@
                                     </a>
                                 </li>
                                 @endif
+                                @if(in_array('bank_reconciliation', $vc_module_levels))
+                                <li class="{{(($firstLevel === 'bank_reconciliation') )   ? 'nav-active' : ''}}">
+                                    <a class="nav-link"
+                                       href="{{ route('tenant.bank_reconciliation.create') }}">
+                                        Conciliacion bancaria
+                                    </a>
+                                </li>
+                                @endif
                             </ul>
                         </li>
                     @endif

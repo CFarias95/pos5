@@ -151,6 +151,7 @@ Vue.component('tenant-ledger-accounts', require('../../modules/Account/Resources
 Vue.component('tenant-accounting-reconciliation', require('../../modules/Account/Resources/assets/js/views/accounting_reconciliation/index.vue'));
 Vue.component('tenant-accounting-audit', require('../../modules/Account/Resources/assets/js/views/accounting_audit/index.vue'));
 Vue.component('tenant-cost-centers', require('../../modules/Account/Resources/assets/js/views/cost_centers/index.vue'));
+Vue.component('tenant-bank-reconciliation', require('../../modules/Account/Resources/assets/js/views/bank_reconciliation/index.vue'));
 
 
 
