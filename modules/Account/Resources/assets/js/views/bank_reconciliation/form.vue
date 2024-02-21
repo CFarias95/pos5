@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :loading="loading_form">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -9,18 +9,18 @@
                         <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
-                        <label class="control-label">Saldo inicial</label>
-                        <el-input type="number" v-model="form.initial_value"></el-input>
+                        <label class="control-label">Saldo estado de cuenta</label>
+                        <el-input type="number" v-model="form.initial_value" @change="recalculateDif"></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Total debe</label>
-                        <el-input v-model="form.total_debe" readonly></el-input>
+                        <el-input type="number" v-model="form.total_debe" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Total haber</label>
-                        <el-input v-model="form.total_haber" readonly></el-input>
+                        <el-input type="number" v-model="form.total_haber" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.diference_value }">
@@ -30,14 +30,14 @@
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.month }">
                         <label class="control-label">Mes a conciliar</label>
-                        <el-date-picker v-model="form.month" type="month" required value-format="yyyy-MM" format="MM/yyyy"
-                            :clearable="false"></el-date-picker>
+                        <el-date-picker v-model="form.month" type="month" :required="true" value-format="yyyy-MM"
+                            format="MM/yyyy" :clearable="false" :readonly="form.id != null"></el-date-picker>
                         <small class="form-control-feedback" v-if="errors.month" v-text="errors.month[0]"></small>
                     </div>
                     <div class="col-md-12">
                         <div class="form-group" :class="{ 'has-danger': errors.account_id }">
                             <label class="control-label">Cuenta movimiento</label>
-                            <el-select v-model="form.account_id" filterable required>
+                            <el-select v-model="form.account_id" filterable :required="true" :disabled="form.id != null">
                                 <el-option v-for="option in ctas" :key="option.id" :label="option.name" :value="option.id"
                                     v-if="option.id != form.id"></el-option>
                             </el-select>
@@ -48,6 +48,10 @@
                         <div class="form-group">
                             <el-button :v-if="form.account_id != null && form.month != null" type="warning"
                                 @click.prevent="getMovements()">Colsultar Movimientos</el-button>
+                            <el-button @click.prevent="close()">Cancelar</el-button>
+                            <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+                            <el-button  v-if="form.id != null" type="success" @click.prevent="closeReconciliation()">Cerrar
+                                Conciliacion</el-button>
                         </div>
                     </div>
                     <div class="col-md-12">
@@ -55,10 +59,12 @@
                             <table class="table">
                                 <thead>
                                     <tr>
+                                        <th>Asiento</th>
+                                        <th>Fecha</th>
                                         <th>Comment</th>
                                         <th>Debe</th>
                                         <th>Haber</th>
-                                        <th>Accion</th>
+                                        <th></th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -66,6 +72,12 @@
                                         <tr v-for="(row, index) in movements" :key="index" :class="{
                                             'bg-success text-white': row.bank_reconciliated == 1,
                                         }">
+                                            <td>
+                                                {{ row.entry }}
+                                            </td>
+                                            <td>
+                                                {{ row.date }}
+                                            </td>
                                             <td>
                                                 {{ row.comment }}
                                             </td>
@@ -76,7 +88,10 @@
                                                 {{ row.haber }}
                                             </td>
                                             <td>
-                                                <el-button @click.prevent="reconciliate(row)">Reconciliar</el-button>
+                                                <el-button v-if="row.bank_reconciliated == 0"
+                                                    @click.prevent="reconciliate(row)"><i class="fa fa-plus-circle" aria-hidden="true"></i></el-button>
+                                                <el-button v-if="row.bank_reconciliated == 1"
+                                                    @click.prevent="unconciliate(row)"><i class="fa fa-minus-circle" aria-hidden="true"></i></el-button>
                                             </td>
                                         </tr>
                                     </template>
@@ -89,6 +104,7 @@
             <div class="form-actions text-right pt-2">
                 <el-button @click.prevent="close()">Cancelar</el-button>
                 <el-button type="primary" native-type="submit" :loading="loading_submit">Guardar</el-button>
+                <el-button v-if="form.id != null" type="success" @click.prevent="closeReconciliation()">Cerrar Conciliacion</el-button>
             </div>
         </form>
     </el-dialog>
@@ -106,6 +122,7 @@ export default {
             form: {},
             ctas: [],
             movements: [],
+            loading_form: false,
         }
     },
     created() {
@@ -123,9 +140,12 @@ export default {
                 month: null,
                 account_id: null,
             }
+            this.ctas = []
+            this.movements = []
+
         },
         create() {
-
+            this.loading_form = true
             this.titleDialog = (this.recordId) ? 'Editar conciliacion bancaria' : 'Nueva conciliacion bancaria'
             this.loadTable()
             if (this.recordId) {
@@ -137,6 +157,7 @@ export default {
                         this.getMovements()
                     })
             }
+            this.loading_form = false
         },
         loadTable() {
 
@@ -175,25 +196,77 @@ export default {
         },
         getMovements() {
 
+            if (this.form.id == null) {
+                this.$message.success('Primero guarda la información del la conciliacion antes de empezar a conciliar')
+                return
+            }
+
             this.$http.post(`/${this.resource}/movements`, this.form).then(response => {
                 this.movements = response.data
             })
         },
         reconciliate(asiento) {
-            this.$http.get(`/${this.resource}/reconciliate/${this.form.id}/${asiento.id}`)
-            .then(response => {
-                console.log('reconciliate', response.data)
-                if (response.data.success) {
-                    this.$message.success(response.data.message)
-                    this.form.total_debe += parseFloat(asiento.debe)
-                    this.form.total_haber += parseFloat(asiento.haber)
-                    this.form.diference_value = parseFloat(this.form.initial_value) + parseFloat(this.form.total_debe) - parseFloat(this.form.total_haber)
 
-                    this.getMovements()
-                } else {
-                    this.$message.error(response.data.message)
-                }
-            })
+            if (this.form.id == null) {
+                this.$message.success('Primero guarda la información del la conciliacion antes de empezar a conciliar')
+                return
+            }
+
+            this.$http.get(`/${this.resource}/reconciliate/${this.form.id}/${asiento.id}`)
+                .then(response => {
+                    console.log('reconciliate', response.data)
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.form.total_debe += parseFloat(asiento.debe)
+                        this.form.total_haber += parseFloat(asiento.haber)
+                        this.form.diference_value = parseFloat(this.form.initial_value) + parseFloat(this.form.total_debe) - parseFloat(this.form.total_haber)
+
+                        this.getMovements()
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+        },
+        recalculateDif() {
+            this.form.diference_value = this.form.initial_value + this.form.total_debe - this.form.total_haber
+        },
+        closeReconciliation() {
+
+            this.$http.get(`/${this.resource}/close/${this.form.id}`)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                        this.close()
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    if (error.response.status === 422) {
+                        this.errors = error.response.data
+                    } else {
+                        console.log(error.response)
+                    }
+                })
+                .then(() => {
+                    this.loading_submit = false
+                })
+        },
+        unconciliate(asiento){
+            this.$http.get(`/${this.resource}/unconciliate/${asiento.id}`)
+                .then(response => {
+                    console.log('unconciliate', response.data)
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.form.total_debe -= parseFloat(asiento.debe)
+                        this.form.total_haber -= parseFloat(asiento.haber)
+                        this.form.diference_value = parseFloat(this.form.initial_value) - parseFloat(this.form.total_debe) + parseFloat(this.form.total_haber)
+                        this.getMovements()
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
         }
     }
 }

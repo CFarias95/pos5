@@ -14,14 +14,35 @@
             <h3 class="my-0">Lista de reconciliaciones bancarias</h3>
         </div>
         <div class="card-body">
+            <div>
+                <form autocomplete="off">
+                    <div class="form-body">
+                        <div class="row">
+                            <div class="form-group col-md-4" :class="{ 'has-danger': errors.account_id }">
+                                <label class="control-label">Cuenta movimiento</label>
+                                <el-select v-model="search.account_id" filterable clearable @change="getData">
+                                    <el-option v-for="option in ctas" :key="option.id" :label="option.name"
+                                        :value="option.id"></el-option>
+                                </el-select>
+                            </div>
+                            <div class="form-group col-md-4" :class="{ 'has-danger': errors.month }">
+                                <label class="control-label">Mes a conciliar</label>
+                                <el-date-picker v-model="search.month" type="month" value-format="yyyy-MM" @change="getData"
+                                    format="MM/yyyy" :clearable="true"></el-date-picker>
+                                <small class="form-control-feedback" v-if="errors.month" v-text="errors.month[0]"></small>
+                            </div>
+                        </div>
+                    </div>
+
+                </form>
+            </div>
             <div class="table-responsive">
                 <template>
                     <div>
-                        <el-table :data="records" style="width: 100%; margin-bottom: 20px" row-key="id" border
-                            default-expand-all>
+                        <el-table :data="records" style="width: 100%" row-key="id" :row-class-name="tableRowClassName">
                             <el-table-column prop="id" label="Número" sortable />
                             <el-table-column prop="initial_value" label="Saldo inicial" sortable />
-                            <el-table-column prop="total_haber" label="Total debe" sortable />
+                            <el-table-column prop="total_debe" label="Total debe" sortable />
                             <el-table-column prop="total_haber" label="Total haber" sortable />
                             <el-table-column prop="diference_value" label="Diferencia" sortable />
                             <el-table-column prop="status" label="Estado" sortable />
@@ -30,9 +51,13 @@
                             <el-table-column prop="month" label="Fecha conciliacion" />
                             <el-table-column label="Acciones">
                                 <template slot-scope="scope" v-if="scope.row">
-                                    <el-button size="small" type="info" @click="clickCreate(scope.row.id)">Editar</el-button>
-                                    <el-button size="small" type="danger"
-                                        @click="handleDelete(scope.$index, scope.row.id)">Delete</el-button>
+                                    <div>
+                                        <el-button :disabled="scope.row.status == 'Cerrada'" size="small" type="info"
+                                            @click="clickCreate(scope.row.id)">Editar</el-button>
+                                        <br><br>
+                                        <el-button size="small" type="danger"
+                                            @click="handleDelete(scope.row.id)">PDF</el-button>
+                                    </div>
                                 </template>
                             </el-table-column>
                         </el-table>
@@ -65,17 +90,33 @@ export default {
             records: [],
             pagination: {},
             loading_submit: false,
+            search: {},
+            ctas: [],
         }
     },
     created() {
+        this.initForm()
+
         this.$eventHub.$on('reloadData', () => {
             this.getData()
         })
+        this.$http.get(`/${this.resource}/columns`).then(response => {
+            this.ctas = response.data.ctas
+        })
+
         this.getData()
     },
     methods: {
+        initForm() {
+            this.errors = {}
+            this.search = {
+                month: null,
+                account_id: null,
+            }
+            this.ctas = []
+        },
         getData() {
-            this.$http.get(`/${this.resource}/records`)
+            this.$http.post(`/${this.resource}/records`,this.search)
                 .then(response => {
                     this.records = response.data.data
                     this.pagination = response.data.meta;
@@ -110,6 +151,20 @@ export default {
             this.recordId = recordId
             this.showDialog = true
         },
+        tableRowClassName(row, rowIndex) {
+            if (row.status = 'Cerrada') {
+                return 'success-row'
+            }
+        }
     }
 }
 </script>
+<style>
+.el-table .warning-row {
+    --el-table-tr-bg-color: var(--el-color-warning-light-9);
+}
+
+.el-table .success-row {
+    --el-table-tr-bg-color: var(--el-color-success-light-9);
+}
+</style>

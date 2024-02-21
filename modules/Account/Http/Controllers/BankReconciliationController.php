@@ -134,7 +134,8 @@ class BankReconciliationController extends Controller
         $records = BankReconciliation::query();
 
         if (isset($fecha)) {
-            $records->where('month',$fecha);
+
+            $records->where('month',$fecha.'-01');
         }
         if (isset($cta)) {
             $records->where('account_id',$cta);
@@ -177,6 +178,28 @@ class BankReconciliationController extends Controller
             ];
         }
     }
+
+    public function unconciliate($id)
+    {
+        $record = AccountingEntryItems::findOrFail($id);
+        if ($record) {
+            $record->bank_reconciliated = false;
+            $record->bank_reconciliation_id = null;
+            $record->date_bank_reconciliated = null;
+            $record->save();
+            return [
+                'success' => true,
+                'message' => "Se desconcilio el movimiento"
+            ];
+        } else {
+            return [
+                'success' => false,
+                'message' => "No se pudo desconciliar el registro"
+            ];
+        }
+    }
+
+
 
     public function excel(Request $request)
     {
@@ -227,6 +250,8 @@ class BankReconciliationController extends Controller
         return $data->get()->transform(function($row){
             $accountingEntrie = AccountingEntries::find($row->accounting_entrie_id);
             return[
+                'entry' => $accountingEntrie->filename,
+                'date' => $accountingEntrie->seat_date,
                 'comment' => $accountingEntrie->comment,
                 'debe' => $row->debe,
                 'haber' => $row->haber,
@@ -241,13 +266,20 @@ class BankReconciliationController extends Controller
         try{
             if($id){
                 $record = BankReconciliation::find($id);
-                $record->fill($request);
+                $record->fill($request->toArray());
                 $record->save();
                 return[
                     'success'=>true,
                     'message'=>'Se ha actualizado la información correctamente.'
                 ];
             }else{
+                $validar = BankReconciliation::where('account_id',$request->account_id)->where('month',$request->month.'-01')->get();
+                if($validar && $validar->count() > 0){
+                    return[
+                        'success'=>false,
+                        'message'=>'Ya se encuentra una conciliacion para la cuenta en la fecha '.$request->month
+                    ];
+                }
                 $record = new BankReconciliation();
                 $record->fill($request->toArray());
                 $record->month = $request->month.'-01';
@@ -270,6 +302,17 @@ class BankReconciliationController extends Controller
     public function record($id){
         $data = BankReconciliation::find($id);
         return $data;
+    }
+
+    public function close($id){
+
+        $data = BankReconciliation::find($id);
+        $data->status = 1;
+        $data->save();
+        return [
+            'success'=> true,
+            'message'=> 'La conciliación se ha cerrado exitosamente.'
+        ];
     }
 
 }

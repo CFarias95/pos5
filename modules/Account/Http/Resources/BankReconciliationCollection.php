@@ -29,7 +29,7 @@ class BankReconciliationCollection extends ResourceCollection
             $data['id'] = $row->id;
             $data['initial_value'] = $row->initial_value;
             $data['total_haber'] = $row->total_haber;
-            $data['total_haber'] = $row->total_haber;
+            $data['total_debe'] = $row->total_debe;
             $data['diference_value'] = $row->diference_value;
             $data['status'] = $status;
             $data['user_id'] = $user->name;

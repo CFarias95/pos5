@@ -24,9 +24,10 @@ class TenantCreateTableBankReconciliations extends Migration
             $table->unsignedInteger('account_id');
             $table->date('month');
             $table->timestamps();
-
             $table->foreign('user_id')->references('id')->on('users');
             $table->foreign('account_id')->references('id')->on('account_movements');
+        } );
+    }
 
     /**
      * Reverse the migrations.

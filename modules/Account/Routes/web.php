@@ -51,14 +51,16 @@ if($hostname) {
             });
             Route::prefix('bank_reconciliation')->group(function () {
                 Route::get('/', 'BankReconciliationController@index')->name('tenant.bank_reconciliation.create');
-                Route::get('records', 'BankReconciliationController@records');
+                Route::post('records', 'BankReconciliationController@records');
                 Route::get('columns', 'BankReconciliationController@columns');
                 Route::get('reconciliate/{id}', 'BankReconciliationController@reconciliate');
+                Route::get('unconciliate/{id}', 'BankReconciliationController@unconciliate');
                 Route::get('excel', 'BankReconciliationController@excel');
                 Route::post('movements', 'BankReconciliationController@movements');
                 Route::post('', 'BankReconciliationController@store');
                 Route::get('record/{id}', 'BankReconciliationController@record');
-                Route::get('reconciliate/{reconciliationId}/{id}', 'BankReconciliationController@record');
+                Route::get('close/{id}', 'BankReconciliationController@close');
+                Route::get('reconciliate/{reconciliationId}/{id}', 'BankReconciliationController@reconciliate');
 
             });
 
