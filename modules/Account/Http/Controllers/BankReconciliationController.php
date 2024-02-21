@@ -128,8 +128,8 @@ class BankReconciliationController extends Controller
     // Retorna la informacion aplicando filtros
     public function getRecords($request)
     {
-        $fecha = $request->date;
-        $cta = $request->cta;
+        $fecha = $request->month;
+        $cta = $request->account_id;
 
         $records = BankReconciliation::query();
 
