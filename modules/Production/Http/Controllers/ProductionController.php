@@ -937,7 +937,7 @@ class ProductionController extends Controller
             // Salida insumos por molino
 
             foreach ($items_supplies as $item) {
-                Log::info($items_supplies);
+                //Log::info($items_supplies);
                 if ($item['unit_type'] != 'Servicio') {
                     if ($item["lots_group"]) {
                         $lots_group = $item["lots_group"];
@@ -1187,29 +1187,28 @@ class ProductionController extends Controller
                     foreach ($lots_group as $lot) {
                         $lot["item_supply_id"] = $value["id"];
                     }
-                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["name"] . '/' . $value["individual_item"]["description"] : $value["individual_item"]["name"];
-                    /*$unit_quantity = $value['quantity'];
-                    if ($value['rounded_up'] > 0) {
-                        $truncated_number = bcdiv($value['quantity'], 1, 3);
-                        $last_digit = substr($truncated_number, -1);
-
-                        $truncated_number = substr($truncated_number, 0, -1); // Remueve el último dígito para redondeo
-                        if ($last_digit <= 2) {
-                            $rounded_number = $truncated_number . '0'; // Convierte a '0'
-                        } elseif ($last_digit >= 3 && $last_digit <= 7) {
-                            $rounded_number = $truncated_number . '5'; // Convierte a '5'
-                        } elseif ($last_digit >= 8) {
-                            $rounded_number = bcadd($truncated_number, '0.01', 2); // Incrementa en '0.01'
+                    //Log::info('individual_item11 - '.json_encode($value['item']));
+                    $empaque = null;
+                    $atributos = $value['individual_item']['attributes'];
+                    //Log::info('atributos -'.json_encode($atributos));
+                    if(isset($atributos)){
+                        foreach($atributos as $atributo)
+                        {
+                            if($atributo->attribute_type_id == 'EM')
+                            {
+                                //Log::info('Entro if');
+                                $empaque = '(Empaque)';
+                            }
                         }
-                        $value['quantity'] = $rounded_number;
-                    }*/
+                    }
+                    $descriotion = $value["individual_item"]["description"] ? $value["individual_item"]["name"] . '/' . $value["individual_item"]["description"] : $value["individual_item"]["name"];
 
                     //Log::info('new value - ' .$value['quantity']);
                     //Log::info('old value - ' .$unit_quantity);
                     $transformed_supply = [
                         'id' => $value["id"],
                         'individual_item_id' => $value["individual_item_id"],
-                        'description' => $descriotion,
+                        'description' => $descriotion.$empaque,
                         'quantity' => $value["quantity"],
                         'unit_type' => $value["individual_item"]["unit_type"]["description"],
                         'quantity_per_unit' => $value['quantity'],
@@ -1286,6 +1285,7 @@ class ProductionController extends Controller
                 {
                     if($attribute->attribute_type_id == 'EM')
                     {
+                        //Log::info('Entro if');
                         $empaque = '(Empaque)';
                     }
                 }
@@ -1310,7 +1310,7 @@ class ProductionController extends Controller
                     'item_id' => $supplyLots["item_supply_id"],
                 ];
             }
-
+            //Log::info('empaque - '.$empaque);
             $transformed_supply = [
                 'id' => $item_supply_id,
                 'description' => ($supply->item_supply_name) ? $supply->item_supply_name.$empaque : '',

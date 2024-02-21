@@ -157,6 +157,8 @@ Vue.component('tenant-bank-reconciliation', require('../../modules/Account/Resou
 
 Vue.component('inventory-review-index', require('@viewsModuleInventory/inventory-review/index.vue'));
 
+//Vue.component('inventory-transactions', require('../../modules/Inventory/Resources/assets/js/inventory/transactions_list.vue'));
+
 //
 Vue.component('tenant-inventory-report', require('../../modules/Inventory/Resources/assets/js/inventory/reports/index.vue'));
 //

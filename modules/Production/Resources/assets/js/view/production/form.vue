@@ -1083,8 +1083,9 @@ export default {
         };
     },
     async created() {
-        await this.getTable();
-        this.initForm();
+        await this.getTable()
+        this.initForm()
+        this.totalManualDescargar = 0
     },
     mounted() {
         this.$eventHub.$on("reloadStock", (index, supply_id, warehouseId) => {
@@ -1130,7 +1131,7 @@ export default {
             if(this.supplies.length > 0)
             {
                 let total = 0;
-
+                //console.log('this.supplies', this.supplies)
                 this.supplies.forEach(supply => {
                     //console.log('suplpy', supply)
                     //console.log('suplpyD', supply.description)
@@ -1484,7 +1485,7 @@ export default {
 
         changeItem() {
             let item = _.find(this.items, { id: this.form.item_id });
-            //console.log("item", item);
+            //console.log("item", this.form.item_id);
             this.form.item_extra_data = {};
             this.form.item_extra_data.color = null;
             this.item = item;
@@ -1511,6 +1512,8 @@ export default {
             //console.log("itemssupplui", this.supplies);
         },
         warehouse_stock(index, supply_id, warehouseId) {
+            console.log('item', supply_id)
+            console.log('warehouse', warehouseId)
             if (!warehouseId) {
                 return;
             }
@@ -1519,7 +1522,7 @@ export default {
                 console.error("Índice inválido o elemento de supplies no encontrado", index);
                 return;
             }
-
+            //console.log('form', this.form)
             if(this.form.records_id !== '03' || this.form.records_id !== '04')
             {
                 this.supply_difference = false
@@ -1552,6 +1555,8 @@ export default {
                 .catch(error => {
                     console.error("Error al actualizar el stock", error);
                 });
+            }else{
+                return
             }
             if(this.form.records_id == '03')
             {

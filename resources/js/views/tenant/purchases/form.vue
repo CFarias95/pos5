@@ -1465,8 +1465,16 @@ export default {
 
                     console.log("Iten row.iva_retention", row.iva_retention)
                     console.log("Iten procesando", row)
+                    if(row.iva_retention < 0){
+                        row.iva_retention = 0
+                    }
+                    if(row.income_retention < 0){
+                        row.income_retention = 0
+                    }
+
                     retention_iva = parseFloat(row.iva_retention)
                     retention_renta = parseFloat(row.income_retention)
+                    
                     toal_retenido += (retention_iva + retention_renta)
                     this.haveRetentions = true
                     this.maxLength1 = 15
