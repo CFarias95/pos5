@@ -180,7 +180,7 @@ export default {
     },
     create() {
       this.filter();
-      console.log("warehouse", this.lots_group);
+      //console.log("warehouse", this.lots_group);
     },
 
     async submit() {
@@ -203,19 +203,24 @@ export default {
           "La cantidades comprometida de un lote no debe sobrepasar su capacidad."
         );
       }
-
+      //console.log('this.lots_group_', this.lots_group_)
       const lots_selecteds = this.lots_group_
         .filter((x) => x.compromise_quantity > 0)
         .map((item) => {
           return {
-            item_supply_id: item.item_supply_id,
+            id: item.id,
+            item_supply_id: item.item_id,
             code: item.code,
             compromise_quantity: item.compromise_quantity,
             date_of_due: item.date_of_due,
             warehouse_id: item.warehouse_id,
+            created_at: item.created_at,
+            old_quantity: item.old_quantity,
+            quantity: item.quantity,
+            updated_at: item.updated_at,
           };
         });
-      console.log('lots-selected', lots_selecteds)
+      //console.log('lots-selected', lots_selecteds)
       await this.$emit("addRowLotGroup", lots_selecteds);
       await this.$emit("update:showDialog", false);
     },

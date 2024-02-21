@@ -286,6 +286,10 @@
                   ></el-option>
                 </el-select>
               </div>
+              <div v-if="form.customer_id" class="form-group col-sm-6 mb-0">
+                <label class="control-label font-weight-bold text-info">Días de Crédito</label>
+                <el-input v-model="form.credit_days" disabled></el-input>
+              </div>
 
               <!-- sistema por puntos -->
               <div
@@ -328,7 +332,8 @@
                 <thead>
                   <tr>
                     <th width="5%">#</th>
-                    <th class="font-weight-bold" width="30%">Descripción</th>
+                    <th class="font-weight-bold" width="20%">Descripción</th>
+                    <th class="text-center font-weight-bold">Almacen</th>
                     <th class="text-center font-weight-bold">Unidad</th>
                     <th class="text-right font-weight-bold">Cantidad</th>
                     <th class="text-right font-weight-bold">Valor Unitario</th>
@@ -390,6 +395,7 @@
                       </template>
                       <!-- sistema por puntos -->
                     </td>
+                    <td class="text-center">{{ idSelectedWarehouseName(row) }}</td>
                     <td class="text-center">{{ row.item.unit_type_id }}</td>
 
                     <td class="text-right">{{ row.quantity }}</td>
@@ -2096,6 +2102,7 @@ export default {
       document_type_03_filter: null,
       operation_types: [],
       establishments: [],
+      establishments1: [],
       payment_method_types: [],
       establishment: null,
       // all_series: [],
@@ -2197,6 +2204,7 @@ export default {
       this.currency_types = response.data.currency_types;
       this.business_turns = response.data.business_turns;
       this.establishments = response.data.establishments;
+      this.establishments1 = response.data.establishments1;
       this.operation_types = response.data.operation_types;
       this.$store.commit("setAllSeries", response.data.series);
       // this.all_series = response.data.series
@@ -2461,6 +2469,7 @@ export default {
         total_tips: 0, //propinas
         aproved: false,
         traslados: 0,
+        credit_days: 0,
       };
 
       this.form_cash_document = {
@@ -4070,6 +4079,23 @@ export default {
 
       this.setTotalPointsBySale(this.config);
     },
+    idSelectedWarehouseName(item)
+    {
+      //console.log('this.item', item)
+      if(item.IdLoteSelected != null)
+      {
+        let selected = item.IdLoteSelected[0].warehouse_id
+        const warehouse_filter = this.establishments1.filter((row) => row.id == selected)
+        return warehouse_filter[0].description
+      }else if(item.warehouse_id != null){
+        let selected = item.warehouse_id
+        const warehouse_filter = this.establishments1.filter((row) => row.id == selected)
+        return warehouse_filter[0].description
+      }
+      
+      //console.log('warehouse_filter', warehouse_filter[0].description)
+      //return warehouse_filter[0].description
+    },
     sumDiscountsNoBaseByItem(row) {
       let sum_discount_no_base = 0;
 
@@ -4574,7 +4600,8 @@ export default {
       this.form.customer_address_id = null;
 
       let customer = _.find(this.customers, { id: this.form.customer_id });
-      //console.log("customers - ", customer);
+      console.log("customers - ", customer);
+      this.form.credit_days = customer.credit_days;
       let traslados_cliente = [];
 
       this.traslados_list.forEach((row) => {
@@ -4788,7 +4815,7 @@ export default {
       return total_pay;
     },
     setDescriptionOfItem(item) {
-      //console.log(item);
+      //console.log('item descripcion',item);
       return showNamePdfOfDescription(item, this.config.show_pdf_name);
     },
     checkKeyWithAlt(e) {

@@ -1180,22 +1180,36 @@ export default {
         },
         addRowLotGroup(id) {
             let IdLoteSelected = id;
-            //console.log('this.selectSupply.supply_id', this.selectSupply)
+            //console.log('this.selectSupply', this.selectSupply)
             //console.log('this.suplies', this.supplies)
             const index = this.supplies.findIndex(
                 item => item.individual_item_id === this.selectSupply.supply_id
             );
+            let lotencontrado = false
             //console.log('indexrowgrupo', index)
-            if (index !== -1) {
+            if (index > -1) {
                 //console.log('entro if index add row')
+                //console.log('123123', IdLoteSelected)
+                //console.log('345345', this.supplies[index].lots_group)
                 this.supplies[index].IdLoteSelected = IdLoteSelected;
-                this.supplies[index].lots_group.forEach((lot) => {
+                this.supplies[index].lots_group = IdLoteSelected;
+                /*this.supplies[index].lots_group.forEach((lot) => {
                     let lotselected = IdLoteSelected.filter((x) => x.code == lot.code && x.warehouse_id == this.supplies[index].warehouse_id)
                     //console.log('lotselected', lotselected)
                     if (lotselected.length > 0) {
                         lot.compromise_quantity = lotselected[0].compromise_quantity;
+                        lotencontrado = true
                     }
-                })
+                }) */
+                /*if(lotencontrado == false)
+                {
+                    this.supplies[index].lots_group.push([
+                        'code'= IdLoteSelected[0].code,
+                        'compromise_quantity' => IdLoteSelected[0].compromise_quantity,
+                        'date_of_due' => IdLoteSelected[0].date_of_due,
+                        'warehouse_id' => IdLoteSelected[0].warehouse_id,
+                    ])
+                }  */      
             }
             //console.log('this.suplies', this.supplies)
         },
@@ -1512,8 +1526,8 @@ export default {
             //console.log("itemssupplui", this.supplies);
         },
         warehouse_stock(index, supply_id, warehouseId) {
-            console.log('item', supply_id)
-            console.log('warehouse', warehouseId)
+            //console.log('item', supply_id)
+            //console.log('warehouse', warehouseId)
             if (!warehouseId) {
                 return;
             }

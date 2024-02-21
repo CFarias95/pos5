@@ -1775,6 +1775,10 @@ export default {
                 return { success: true, message: '' }
             }
         },
+        /*validarSecuencialProveedor()
+        {
+
+        },*/
         async submit() {
 
             if(this.form.document_type_id == '04'){

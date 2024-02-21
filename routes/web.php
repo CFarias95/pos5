@@ -672,6 +672,7 @@ if ($hostname) {
             Route::get('purchases/tables_purchase', 'Tenant\PurchaseController@tables_purchase');
             Route::get('purchases/table/{table}', 'Tenant\PurchaseController@table');
             Route::post('purchases', 'Tenant\PurchaseController@store');
+            //Route::get('purchases/validateSecuencial', 'Tenant\PruchaseController@validateSecuencial');
             Route::post('purchases/update', 'Tenant\PurchaseController@update');
             Route::get('purchases/record/{document}', 'Tenant\PurchaseController@record');
             Route::get('purchases/edit/{id}', 'Tenant\PurchaseController@edit');
