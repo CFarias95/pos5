@@ -274,6 +274,9 @@ Vue.component('tenant-ecommerce-item-sets-index', require('../../modules/Ecommer
 Vue.component('tenant-purchase-quotations-index', require('../../modules/Purchase/Resources/assets/js/views/purchase-quotations/index.vue'));
 Vue.component('tenant-purchase-quotations-form', require('../../modules/Purchase/Resources/assets/js/views/purchase-quotations/form.vue'));
 
+Vue.component('tenant-purchase-retentions-index', require('../../modules/Purchase/Resources/assets/js/views/purchase-retentions/index.vue'));
+
+
 Vue.component('tenant-purchase-orders-index', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/index.vue'));
 Vue.component('tenant-purchase-orders-form', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/form.vue'));
 Vue.component('tenant-purchase-orders-generate', require('../../modules/Purchase/Resources/assets/js/views/purchase-orders/generate.vue'));

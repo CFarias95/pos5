@@ -10,7 +10,7 @@ class RetentionTypePurchase extends ModelTenant
     public $timestamps = false;
     protected $table = 'cat_add_retention_types';
 
-    
+
     public static function getDataApiApp()
     {
         $states = self::get();

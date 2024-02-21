@@ -90,10 +90,20 @@ if($current_hostname) {
                 Route::post('/reverse', 'PurchasePaymentController@generateReverse');
                 Route::post('/expenses', 'PurchasePaymentController@generateExpenses');
 
-
-
             });
 
+            Route::prefix('purchase-retentions')->group(function () {
+
+                Route::get('', 'PurchaseRetentionsController@index')->name('tenant.purchase-retentions.index');
+                Route::post('/records', 'PurchaseRetentionsController@records');
+                Route::get('/record/{id}', 'PurchaseRetentionsController@record');
+                Route::get('/columns', 'PurchaseRetentionsController@columns');
+                Route::post('', 'PurchaseRetentionsController@store');
+                Route::delete('/{purchase_payment}', 'PurchaseRetentionsController@destroy');
+                Route::post('/reverse', 'PurchaseRetentionsController@generateReverse');
+                Route::post('/expenses', 'PurchaseRetentionsController@generateExpenses');
+
+            });
 
             Route::prefix('fixed-asset')->group(function () {
 

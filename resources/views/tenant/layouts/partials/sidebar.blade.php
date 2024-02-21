@@ -673,6 +673,12 @@
                                             </ul>
                                         </li>
                                     @endif
+                                    @if(in_array('purchase_retentions', $vc_module_levels))
+                                        <li class="{{ ($firstLevel === 'purchase_retentions' )?'nav-active':'' }}">
+                                            <a class="nav-link"
+                                               href="{{route('tenant.purchase-retentions.index')}}">Retenciones para compras</a>
+                                        </li>
+                                    @endif
                                 </ul>
                             </li>
                         @endif
