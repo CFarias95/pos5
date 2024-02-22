@@ -763,6 +763,7 @@ export default {
             retentions:[],
             is_countable: false,
             is_credit_note: false,
+            unique_secuencial: false,
         }
     },
     async mounted() {
@@ -1775,11 +1776,35 @@ export default {
                 return { success: true, message: '' }
             }
         },
-        /*validarSecuencialProveedor()
+        validarSecuencialProveedor()
         {
+            this.unique_secuencial = false
+            let data = []
+            let supplierId = this.form.supplier_id
+            let secuencial = this.form.sequential_number
+            this.$http.get(`/${this.resource}/validateSecuencial/${supplierId}/${secuencial}`)
+            .then(response => {
+                //console.log(response.data.existente)
+                data = response.data.existente
+            });
 
-        },*/
+            if(data.length > 0)
+            {
+                this.unique_secuencial = true
+            }else{
+                this.unique_secuencial = false
+            }
+
+            //return unique_secuencial
+        },
         async submit() {
+
+            this.validarSecuencialProveedor()
+
+            if(this.unique_secuencial == true)
+            {
+                return this.$message.error('El secuencial ya existe con este proveedor');
+            }
 
             if(this.form.document_type_id == '04'){
                 this.loading_submit = true
