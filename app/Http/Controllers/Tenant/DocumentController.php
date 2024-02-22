@@ -264,6 +264,7 @@ class DocumentController extends Controller
         $series = $user->getSeries();
         // $prepayment_documents = $this->table('prepayment_documents');
         $establishments = Establishment::where('id', $establishment_id)->get();// Establishment::all();
+        $establishments1 = Establishment::all();
         $document_types_invoice = DocumentType::whereIn('id', ['01', '03'])->get();
         $document_types_note = DocumentType::whereIn('id', ['07', '08'])->get();
         $note_credit_types = NoteCreditType::whereActive()->orderByDescription()->get();
@@ -319,6 +320,7 @@ class DocumentController extends Controller
             'authUser',
             'customers',
             'establishments',
+            'establishments1',
             'series',
             'document_types_invoice',
             'document_types_note',

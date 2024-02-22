@@ -248,14 +248,14 @@
                             @foreach($row->attributes as $attr)
                                 <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
                             @endforeach
-                        @endif 
+                        @endif  --}}
                         @if($row->discounts)
                             @foreach($row->discounts as $dtos)
                                 <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
                             @endforeach
                         @endif
 
-                        @if($row->charges)
+                        {{--@if($row->charges)
                             @foreach($row->charges as $charge)
                                 <br/><span style="font-size: 9px">{{ $document->currency_type->symbol}} {{ $charge->amount}} ({{ $charge->factor * 100 }}%) {{$charge->description }}</span>
                             @endforeach

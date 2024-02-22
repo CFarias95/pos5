@@ -1139,27 +1139,6 @@ class ProductionController extends Controller
     {
         $lots_groups = [];
 
-        /*$items = self::optionsItemProduction($item_id);
-        //Log::info('items213 - '.json_encode($items));
-
-        foreach ($items as $item) {
-            //Log::info('item123 - '.json_encode($item));
-            $supplies = $item['supplies'];
-            foreach ($supplies as $supply) {
-                //Log::info('supply - ' . json_encode($supply));
-                if ($supply['individual_item_id'] == $supply_id) {
-                    //Log::info('supply - '.json_encode($supply));
-                    foreach ($supply['lots_group'] as $lots) {
-                        if ($lots->warehouse_id == $warehouse_id && $lots->quantity > 0) {
-                            //Log::info('lotgroups123 - '.json_encode($lots));
-                            array_push($lots_groups, $lots);
-                        }
-                    }
-                }
-            }
-        }*/
-        //Log::info(' lots - '.json_encode($lots_groups));
-
         $lots_groups = ItemLotsGroup::where('warehouse_id', $warehouse_id)->where('item_id', $supply_id)->get();
 
         return compact('lots_groups');

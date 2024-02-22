@@ -2429,4 +2429,11 @@ class PurchaseController extends Controller
             });
         return $purchaseOrder;
     }
+
+    public function validateSecuencial($supplierId, $secuencial)
+    {
+        $existente = Purchase::where('supplier_id', $supplierId)->where('sequential_number', $secuencial)->get();
+
+        return compact('existente');
+    }
 }
