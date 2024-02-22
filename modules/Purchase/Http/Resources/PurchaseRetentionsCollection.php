@@ -27,7 +27,7 @@ class PurchaseRetentionsCollection extends ResourceCollection
                 'code' => $row->code,
                 'percentage' => $row->percentage,
                 'type' => $tipo->description,
-                'account_id' => $account ? $account->code.'  - '.$account->description : '',
+                'account' => $account ? $account->code.'  - '.$account->description : '',
             ];
         });
     }

@@ -25,12 +25,12 @@
                                         :value="option.id"></el-option>
                                 </el-select>
                             </div>
-                            <div class="form-group col-md-4" :class="{ 'has-danger': errors.month }">
+                            <!-- <div class="form-group col-md-4" :class="{ 'has-danger': errors.month }">
                                 <label class="control-label">Mes a conciliar</label>
                                 <el-date-picker v-model="search.month" type="month" value-format="yyyy-MM" @change="getData"
                                     format="MM/yyyy" :clearable="true"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.month" v-text="errors.month[0]"></small>
-                            </div>
+                            </div> -->
                         </div>
                     </div>
 
@@ -53,8 +53,8 @@
                                         <el-button size="small" type="info"
                                             @click="clickCreate(scope.row.id)">Editar</el-button>
                                         <br><br>
-                                        <el-button size="small" type="danger"
-                                            @click="handleDelete(scope.row.id)">Eliminar</el-button>
+                                        <!-- <el-button size="small" type="danger"
+                                            @click="handleDelete(scope.row.id)">Eliminar</el-button> -->
                                     </div>
                                 </template>
                             </el-table-column>
@@ -87,6 +87,7 @@ export default {
             record: {},
             records: [],
             pagination: {},
+            limit:null,
             loading_submit: false,
             search: {},
             ctas: [],
@@ -114,7 +115,11 @@ export default {
             this.ctas = []
         },
         getData() {
-            this.$http.post(`/${this.resource}/records`, this.getQueryParameters)
+
+            this.search.page = this.pagination.current_page
+            this.search.limit = this.limit
+
+            this.$http.post(`/${this.resource}/records`, this.search)
                 .then(response => {
                     this.records = response.data.data
                     this.pagination = response.data.meta;
@@ -153,15 +158,7 @@ export default {
             if (row.status = 'Cerrada') {
                 return 'success-row'
             }
-        },
-        getQueryParameters() {
-
-            return queryString.stringify({
-                page: this.pagination.current_page,
-                limit: this.limit,
-                ...this.search
-            });
-        },
+        }
     }
 }
 </script>
