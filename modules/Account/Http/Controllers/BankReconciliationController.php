@@ -237,7 +237,7 @@ class BankReconciliationController extends Controller
 
         if($month){
 
-            $mov = AccountingEntries::where('seat_date','like',$month.'%')->get()->transform(function($row){
+            $mov = AccountingEntries::where('seat_date','like',$month.'%')->orderBy('seat_date','asc')->get()->transform(function($row){
                 return[
                     'id' =>$row->id
                 ];
@@ -247,14 +247,14 @@ class BankReconciliationController extends Controller
         }
 
 
-        return $data->get()->transform(function($row){
+        return $data->orderBy('accounting_entrie_id', 'asc')->get()->transform(function($row){
             $accountingEntrie = AccountingEntries::find($row->accounting_entrie_id);
             return[
                 'entry' => $accountingEntrie->filename,
                 'date' => $accountingEntrie->seat_date,
                 'comment' => $accountingEntrie->comment,
-                'debe' => $row->debe,
-                'haber' => $row->haber,
+                'debe' => round($row->debe,2),
+                'haber' => round($row->haber,2),
                 'bank_reconciliated' => $row->bank_reconciliated,
                 'id' => $row->id,
             ];
