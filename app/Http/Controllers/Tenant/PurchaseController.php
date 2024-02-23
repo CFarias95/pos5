@@ -2357,6 +2357,9 @@ class PurchaseController extends Controller
             }
 
             $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                Log::info('Data Compra XML');
+                Log::info($data);
+                
                 try {
                     $doc = new Purchase();
                     $doc->fill($data);
@@ -2381,7 +2384,7 @@ class PurchaseController extends Controller
                     return $doc;
                 } catch (Exception $ex) {
                     $doc->delete();
-                    Log::error($ex->getMessage());
+                    Log::error('Error al tratar de crear Compra desde iimportacion: '.$ex->getMessage());
                     return false;
                 }
             });
