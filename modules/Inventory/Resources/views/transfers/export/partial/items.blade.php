@@ -55,7 +55,6 @@
                     $itemCollection['internal_id'] = substr($itemCollection['internal_id'], 0, 10);
                     $itemCollection['unit_type_text'] = substr($itemCollection['unit_type_text'], 0, 10);
                     $qty = $inventory->quantity;
-                    $lot_code = $lote[$index]->lot_code;
 
                     /*
                 @todo BUSCAR DONDE SE GUARDA LA SERIE en modules/Inventory/Http/Controllers/TransferController.php 237
@@ -65,9 +64,9 @@
                     <tr>
                         <td class="celda text-center">{{ $index + 1 }}</td>
                         <!--<td class="celda text-left"></td>-->
-                        <td class="celda text-left">{{ $itemCollection['description'] }}</td>
-                        <td class="celda">{{ $itemCollection['unit_type_text'] }}</td>
-                        <td class="celda">{{ $qty }}</td>
+                        <td class="celda text-left">{{ ($inventory->item->name)?$inventory->item->name.' / ':'' }}{{ $inventory->item->description }}</td>
+                        <td class="celda">{{ $inventory->item->unit_type->description }}</td>
+                        <td class="celda">{{ $inventory->quantity }}</td>
                         <td class="celda">{{ $inventory->lot_code }}</td>
                         <!--            <td>SERIE</td>-->
                     </tr>

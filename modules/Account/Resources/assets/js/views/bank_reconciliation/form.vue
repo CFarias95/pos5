@@ -56,14 +56,14 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <table class="table">
+                            <table class="table" style="text-align: right;">
                                 <thead>
                                     <tr>
-                                        <th>Asiento</th>
-                                        <th>Fecha</th>
+                                        <th width="10%">Asiento</th>
+                                        <th width="10%">Fecha</th>
                                         <th>Comment</th>
-                                        <th>Debe</th>
-                                        <th>Haber</th>
+                                        <th width="10%">Debe</th>
+                                        <th width="10%">Haber</th>
                                         <th></th>
                                     </tr>
                                 </thead>
