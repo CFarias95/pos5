@@ -49,7 +49,7 @@
                 @foreach ($inventories as $index => $inventory)
                     <?php
                     /** @var \Modules\Inventory\Models\Inventory $inventory */
-                    $item = $inventory->item;
+                    /*$item = $inventory->item;
                     $itemCollection = $item->getCollectionData($configuration);
                     $itemCollection['description'] = substr($itemCollection['name'] . ' / ' . $itemCollection['description'].' / '.$itemCollection['model'], 0, 49);
                     $itemCollection['internal_id'] = substr($itemCollection['internal_id'], 0, 10);
