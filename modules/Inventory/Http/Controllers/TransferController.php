@@ -20,6 +20,7 @@ use Modules\Inventory\Exports\InventoryTransferExport;
     use Modules\Inventory\Http\Requests\InventoryRequest;
     use Modules\Inventory\Http\Requests\TransferRequest;
     use App\Models\Tenant\Person;
+use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Exception;
 use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
@@ -43,18 +44,49 @@ use Modules\Item\Models\ItemLotsGroup;
 
         public function columns()
         {
-            return [
+            $columns =  [
                 'created_at' => 'Fecha de emisión',
             ];
+
+            $clients = Person::get()->transform(function($row){
+                return [
+                    'id'=> $row->id,
+                    'description' => $row->name
+                ];
+            });
+
+            $warehouses = Warehouse::get()->transform(function($row){
+                return[
+                    'id' => $row->id,
+                    'description' => $row->description
+                ];
+            });
+
+            return compact('columns', 'clients', 'warehouses');
         }
 
         public function records(Request $request)
         {
-            if ($request->column) {
-                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory', 'client'])->where('created_at', 'like', "%{$request->value}%")->latest();
-            } else {
-                $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory', 'client'])->latest();
+            $records = InventoryTransfer::with(['warehouse', 'warehouse_destination', 'inventory', 'client']);
 
+            if ($request->column) {
+                $records->where('created_at', 'like', "%{$request->value}%")->latest();
+            }
+
+            if ($request->client_id) {
+                $records->where('client_id', $request->client_id)->latest();
+            }
+
+            if ($request->warehouse) {
+                $records->where('warehouse_id', $request->warehouse)->orWhere('warehouse_destination_id', $request->warehouse)->latest();
+            }
+
+            if ($request->warehouse_id) {
+                $records->where('warehouse_id', $request->warehouse_id)->latest();
+            }
+
+            if ($request->warehouse_destination_id) {
+                $records->where('warehouse_destination_id', $request->warehouse_destination_id)->latest();
             }
 
             //$person = Person::where('id', $records->client_id)->get();
@@ -71,6 +103,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 ->latest();*/
 
             //Log::info('records'.json_encode($records));
+
             return new TransferCollection($records->paginate(config('tenant.items_per_page')));
         }
 
