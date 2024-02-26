@@ -444,6 +444,7 @@ class PurchaseController extends Controller
                     $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
                     $tipoSerie = null;
                     $tiposerieText = '';
+
                     if (isset($serie) && $serie->series_id != '') {
                         $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
@@ -1604,19 +1605,23 @@ class PurchaseController extends Controller
                         $ret->delete();
                     }
                     */
-                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
+                    $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
+
                     $tipoSerie = null;
                     $tiposerieText = '';
-                    if ($serie->count() > 0) {
-                        $tipoSerie = Series::find($serie[0]->series_id);
+                    if (isset($serie)) {
+                        $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
                     } else {
-                        $tipoSerie = Series::where('document_type_id', '20')->get();
-                        $tiposerieText = $tipoSerie[0]->number;
+                        $tipoSerie = Series::where('document_type_id', '20')->first();
+                        $tiposerieText = $tipoSerie->number;
                     }
 
                     $establecimiento = Establishment::find($doc->establishment_id);
-                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
+                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->orderBy('idRetencion','desc')->first();
+                    $secuelcialRet = $secuelcialRet->idRetencion;
+                    $secuelcialRet = substr($secuelcialRet,7);
+                    $secuelcialRet = intVal($secuelcialRet);
 
                     $ret = new RetentionsEC();
                     $ret->idRetencion = ($IdRetencionHistorico) ? $IdRetencionHistorico : 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
