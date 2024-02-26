@@ -441,19 +441,22 @@ class PurchaseController extends Controller
 
                 if (count($data['ret']) > 0) {
 
-                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
+                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->where('document_type_id','20')->first();
                     $tipoSerie = null;
                     $tiposerieText = '';
-                    if ($serie->count() > 0) {
-                        $tipoSerie = Series::find($serie[0]->series_id);
+                    if (isset($serie) && $serie->count() > 0) {
+                        $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
                     } else {
-                        $tipoSerie = Series::where('document_type_id', '20')->get();
-                        $tiposerieText = $tipoSerie[0]->number;
+                        $tipoSerie = Series::where('document_type_id', '20')->first();
+                        $tiposerieText = $tipoSerie->number;
                     }
 
                     $establecimiento = Establishment::find($doc->establishment_id);
-                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
+                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->orderBy('idRetencion','desc')->first();
+                    $secuelcialRet = $secuelcialRet->idRetencion;
+                    $secuelcialRet = substr($secuelcialRet,7);
+                    $secuelcialRet = intVal($secuelcialRet);
 
                     $ret = new RetentionsEC();
                     $ret->idRetencion = 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
@@ -2359,7 +2362,7 @@ class PurchaseController extends Controller
             $purchase = DB::connection('tenant')->transaction(function () use ($data) {
                 Log::info('Data Compra XML');
                 Log::info($data);
-                
+
                 try {
                     $doc = new Purchase();
                     $doc->fill($data);
