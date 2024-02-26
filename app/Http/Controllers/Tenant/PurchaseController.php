@@ -441,7 +441,7 @@ class PurchaseController extends Controller
 
                 if (count($data['ret']) > 0) {
 
-                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->where('document_type_id','20')->first();
+                    $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
                     $tipoSerie = null;
                     $tiposerieText = '';
                     if (isset($serie) && $serie->series_id != '') {
