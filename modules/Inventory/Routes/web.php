@@ -305,8 +305,8 @@
                     Route::post('search-items', 'TransferController@searchItems');
                     //Route::get('/getEstados', 'TransferController@getEstados');
                     Route::get('/updateEstado/{id}/{estado_id}', 'TransferController@updateEstado');
-
-                     Route::get('/download/pdf/{inventoryTransfer}', 'TransferController@getPdf');
+                    Route::get('/reverse/{id}', 'TransferController@reverse');
+                    Route::get('/download/pdf/{inventoryTransfer}', 'TransferController@getPdf');
                      // Route::get('info/{inventoryTransfer}', 'TransferController@getInventoryTransferData');
 
                 });

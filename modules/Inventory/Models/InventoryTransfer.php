@@ -42,7 +42,6 @@ use App\Models\Tenant\ModelTenant;
     class InventoryTransfer extends ModelTenant
     {
 
-
         protected $table = 'inventories_transfer';
 
         use UsesTenantConnection;

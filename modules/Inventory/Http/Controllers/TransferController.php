@@ -20,7 +20,8 @@ use Modules\Inventory\Exports\InventoryTransferExport;
     use Modules\Inventory\Http\Requests\InventoryRequest;
     use Modules\Inventory\Http\Requests\TransferRequest;
     use App\Models\Tenant\Person;
-    use Modules\Item\Models\ItemLot;
+use Exception;
+use Modules\Item\Models\ItemLot;
 use Modules\Item\Models\ItemLotsGroup;
 
     class TransferController extends Controller
@@ -235,10 +236,6 @@ use Modules\Item\Models\ItemLotsGroup;
 
         public function store(TransferRequest $request)
         {
-            /*Log::info('data'.$request->created_at);
-            $created_at = Carbon::parse($request->created_at);
-            Log::info('date11 - '.$created_at);*/
-            //Log::info('request - '.$request);
             $result = DB::connection('tenant')->transaction(function () use ($request) {
                 $created_at = Carbon::parse($request->created_at);
                 //Log::info('date'.$created_at);
@@ -250,18 +247,10 @@ use Modules\Item\Models\ItemLotsGroup;
                     'client_id' => $request->client_id,
                 ]);
                 $row->created_at = $created_at;
-                //Log::info('Inventory Transfer saved');
                 $row->save();
 
-
-                //Log::info('ROW - '.$row);
-
                 foreach ($request->items as $it) {
-
-                    //Log::info('it - '.json_encode($it));
-
                     if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
-                        //Log::info('Entro primre if - '.json_encode($it['lots']));
                         // si tiene Lotes se crea el kardex por lotes
                         foreach ($it['lots'] as $key => $value) {
                             //Log::info('Entro foreach - '.json_encode($value));
@@ -323,8 +312,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                             }
                         }
-                    }
-                    elseif($it['series_enabled'] == true){
+                    }elseif($it['series_enabled'] == true){
                         //si tienes series
                         $inventory = new Inventory();
                         $inventory->type = 2;
@@ -348,6 +336,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             }
                         }
                     }else{
+
                         $inventory = new Inventory();
                         $inventory->type = 2;
                         $inventory->description = 'Traslado';
@@ -358,7 +347,6 @@ use Modules\Item\Models\ItemLotsGroup;
                         $inventory->inventories_transfer_id = $row->id;
                         $inventory->save();
                     }
-
                 }
 
                 return [
@@ -366,10 +354,47 @@ use Modules\Item\Models\ItemLotsGroup;
                     'message' => 'Traslado creado con éxito'
                 ];
             });
-
             return $result;
+        }
 
+        public function reverse($id){
+            try{
 
+                $transfer = InventoryTransfer::find($id);
+
+                $reverseTransfer = new InventoryTransfer();
+                $reverseTransfer->fill($transfer->toArray());
+                $reverseTransfer->id =  null;
+                $reverseTransfer->description = 'Reverso Traslado  de: '.$transfer->description;
+                $reverseTransfer->warehouse_id = $transfer->warehouse_destination_id;
+                $reverseTransfer->warehouse_destination_id= $transfer->warehouse_id;
+                $reverseTransfer->save();
+
+                foreach($transfer->inventories as $it){
+
+                    $reverseInventory = new Inventory();
+                    $reverseInventory->fill($it->toArray());
+                    $reverseInventory->id = null;
+                    $reverseInventory->warehouse_id = $it->warehouse_destination_id;
+                    $reverseInventory->warehouse_destination_id= $it->warehouse_id;
+                    $reverseInventory->description = 'Reverso '. $it->description;
+                    $reverseInventory->save();
+
+                }
+
+                return[
+                    'success'=> true,
+                    'message'=>'Reverso generado satisfactoriamente'
+                ];
+
+            }catch(Exception $ex){
+                Log::error('Error al generar reverso de Traslado');
+                Log::error($ex);
+                return[
+                    'success'=> false,
+                    'message'=>'Error al generar reversión del traslado ' .$ex->getMessage()
+                ];
+            }
         }
 
 
