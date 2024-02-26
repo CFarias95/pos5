@@ -444,7 +444,7 @@ class PurchaseController extends Controller
                     $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->where('document_type_id','20')->first();
                     $tipoSerie = null;
                     $tiposerieText = '';
-                    if (isset($serie) && $serie->count() > 0) {
+                    if (isset($serie) && $serie->series_id != '') {
                         $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
                     } else {
