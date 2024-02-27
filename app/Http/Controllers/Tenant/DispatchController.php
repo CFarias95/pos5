@@ -166,13 +166,22 @@ class DispatchController extends Controller
             if ($type != 't') {
                 foreach ($document->items as $item) {
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
+                    $lotes = '';
+                    foreach($item->item->IdLoteSelected as $lot){
+                        $lotes .= 'Cod. Lote: '. $lot . ', ';
+                    }
                     $items[] = [
                         'item_id' => $item->item_id,
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
                         'name' => ($item->item->name != null) ? $item->item->name : ' ',
-                        'name_product_pdf' => $name_product_pdf
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $lotes,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => $item->item->factory_code,
+                        'IdLoteSelected' => $item->item->IdLoteSelected,
                     ];
                 }
             } else {
@@ -184,8 +193,9 @@ class DispatchController extends Controller
                 $document->customer_id = $document->client_id;//warehouse_destination->establishment->customer_associate_id;
                 $document->transfer_reason_type_id = '04';
                 $document->transfer_reason_description = $document->description;
-                $document->customer =  $document->warehouse_destination->establishment->associated;
+                $document->customer = ($document->client)?$document->client: $document->warehouse_destination->establishment->associated;
                 $document->reference_transfer_id = $document_id;
+
                 $origin['location_id'] = [$document->warehouse->establishment->department_id, $document->warehouse->establishment->province_id, $document->warehouse->establishment->district_id];
                 $origin['address'] = $document->warehouse->establishment->address;
                 $origin['country_id'] = $document->warehouse->establishment->country_id;
@@ -204,25 +214,42 @@ class DispatchController extends Controller
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
                         'name' => $item->item->name,
-                        'name_product_pdf' => $name_product_pdf
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $item->lot_code,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => $item->item->factory_code,
+
                     ];
                 }
+
+                $document->items = $items;
             }
         } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
+                $lotes = '';
+                if(isset($item->item->IdLoteSelected)){
+                    foreach($item->item->IdLoteSelected as $lot){
+                        $lotes .= 'Cod. Lote: '. $lot->code . ', ';
+                    }
+                }
                 $items[] = [
                     'item_id' => $item->item_id,
                     'item' => $item,
                     'quantity' => $item->quantity,
                     'description' => $item->item->description,
-                    'name' => $item->item->name,
-                    'name_product_pdf' => $name_product_pdf
+                    'name' => (isset($item->item->name))?$item->item->name:'-',
+                    'name_product_pdf' => $name_product_pdf,
+                    'lote' => $lotes,
+                    'internal_id' => $item->item->internal_id,
+                    'model' =>  $item->item->model,
+                    'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
                 ];
             }
         }
 
-        Log::info(json_encode($items));
+        Log::info(json_encode($document));
         return view('tenant.dispatches.form', compact('document', 'items', 'type', 'dispatch'));
     }
 

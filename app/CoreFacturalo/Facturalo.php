@@ -211,11 +211,10 @@ class Facturalo
                         $itemD = DispatchItem::find($item->id);
                         $itemD->delete();
                     }
-
                     foreach ($inputs['items'] as $row) {
+                        Log::info('row to CREATE: '.json_encode($row));
                         $document->items()->create($row);
                     }
-
                     $document->save();
                     $this->document = $document;
 
@@ -223,6 +222,7 @@ class Facturalo
                     $document = Dispatch::create($inputs);
 
                     foreach ($inputs['items'] as $row) {
+                        Log::info('row to CREATE: '.json_encode($row));
                         $document->items()->create($row);
                     }
                     $document->save();

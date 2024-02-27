@@ -479,7 +479,12 @@
                             <thead>
                             <tr>
                                 <th>#</th>
+                                <th class="font-weight-bold">Nombre</th>
                                 <th class="font-weight-bold">Descripción</th>
+                                <th class="font-weight-bold">Model</th>
+                                <th class="font-weight-bold">Cod. Interno</th>
+                                <th class="font-weight-bold">Cod. Fabrica</th>
+                                <th class="font-weight-bold">Lote/Serie</th>
                                 <th class="text-right font-weight-bold">Cantidad</th>
                                 <template v-if="document">
                                     <th></th>
@@ -490,7 +495,12 @@
                             <tbody>
                             <tr v-for="(row, index) in form.items" :key="index">
                                 <td>{{ index + 1 }}</td>
+                                <td>{{ row.name }}</td>
                                 <td>{{ setDescriptionOfItem(row) }}</td>
+                                <td>{{ row.model }}</td>
+                                <td>{{ row.internal_id }}</td>
+                                <td>{{ row.factory_code }}</td>
+                                <td>{{ row.lote }}</td>
                                 <template v-if="!filterIndex(index)">
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>
