@@ -1,5 +1,5 @@
 <template>
-    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :loading="loading_form">
+    <el-dialog :title="titleDialog" :visible="showDialog" @close="close" @open="create" :loading="loading_form" width="85%">
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
@@ -10,7 +10,7 @@
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Saldo estado de cuenta</label>
-                        <el-input type="number" v-model="form.initial_value" @change="recalculateDif"></el-input>
+                        <el-input type="number" :step="0.01" :min="0" :max="999999999999999" v-model="form.initial_value" @change="recalculateDif"></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
@@ -20,12 +20,12 @@
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Total haber</label>
-                        <el-input type="number" v-model="form.total_haber" readonly></el-input>
+                        <el-input type="number" :step="0.01" :min="0" :max="999999999999999"  v-model="form.total_haber" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.diference_value }">
                         <label class="control-label">Diferencia</label>
-                        <el-input type="number" v-model="form.diference_value" readonly></el-input>
+                        <el-input type="number" :step="0.01" :min="0" :max="999999999999999"  v-model="form.diference_value" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.diference_value" v-text="errors.name[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.month }">
@@ -56,14 +56,14 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
-                            <table class="table">
+                            <table class="table" style="text-align: right;">
                                 <thead>
                                     <tr>
-                                        <th>Asiento</th>
-                                        <th>Fecha</th>
+                                        <th width="10%">Asiento</th>
+                                        <th width="10%">Fecha</th>
                                         <th>Comment</th>
-                                        <th>Debe</th>
-                                        <th>Haber</th>
+                                        <th width="10%">Debe</th>
+                                        <th width="10%">Haber</th>
                                         <th></th>
                                     </tr>
                                 </thead>

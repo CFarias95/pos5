@@ -24,6 +24,7 @@ class TransferCollection extends ResourceCollection
                 'description' => $row->description,
                 'quantity' => round($row->quantity, 1),
                 'warehouse' => $row->warehouse->description,
+                'is_reverse' => (str_contains($row->description,'Reverso Traslado  de:') == true)? 'SI':'NO',
                 'warehouse_destination' => $row->warehouse_destination->description,
                 'created_at' => $row->created_at->format('Y-m-d H:i:s'),
                 'estado_id' => $row->estado_id,

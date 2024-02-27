@@ -38,7 +38,9 @@
                         <th class="text-right">Acciones</th>
                     </tr>
                     <tr></tr>
-                    <tr slot-scope="{ index, row }">
+                    <tr slot-scope="{ index, row }" :class="{
+                        'bg-danger text-white': row.is_reverse == 'SI',
+                    }">
                         <td>{{ index }}</td>
                         <td>{{ row.created_at }}</td>
                         <td>{{ row.warehouse }}</td>
@@ -77,7 +79,7 @@
                                 <el-button slot="reference"><i class="fa fa-list"></i></el-button>
                             </el-popover>
                         </td>
-                        <td> 
+                        <td>
                             <el-select v-model="row.estado_id" @change="updateEstado(row.id, row.estado_id)">
                                 <el-option v-for="estado in estados" :key="estado" :label="estado"
                                     :value="estado"></el-option>
@@ -93,6 +95,11 @@
                                 @click.prevent="clickGuide(row.id)">
                                 <i class="fa fa-truck"></i>
                                 Guía
+                            </button>
+                            <button class="btn waves-effect waves-light btn-xs btn-danger" type="button"
+                                @click.prevent="clickReverse(row.id)">
+                                <i class="fa fa-undo" aria-hidden="true"></i>
+                                REVERSAR
                             </button>
                         </td>
                         <!--<td class="text-right">
@@ -128,7 +135,7 @@ export default {
             resource: "transfers",
             recordId: null,
             typeTransaction: null,
-            estados:[],
+            estados: [],
             estado_id: null,
             temp: null,
         };
@@ -152,15 +159,25 @@ export default {
         clickDownload(type, id) {
             window.open(`/${this.resource}/download/${type}/${id}`, "_blank");
         },
-        clickGuide(id){
-            location.href =`/dispatches/create/${id}/t`;
+        clickGuide(id) {
+            location.href = `/dispatches/create/${id}/t`;
         },
-        updateEstado(id, estado_id){
+        updateEstado(id, estado_id) {
             this.$http.get(`/${this.resource}/updateEstado/${id}/${estado_id}`)
                 .then(response => {
                     console.log('Guardado exitosamente')
                 });
         },
+        clickReverse(id) {
+            this.$http.get(`/${this.resource}/reverse/${id}`)
+                .then(response => {
+                    if (response.data.status == true) {
+                        this.$message.success(response.data.message)
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                });
+        }
     }
 };
 </script>

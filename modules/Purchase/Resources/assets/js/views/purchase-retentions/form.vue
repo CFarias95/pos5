@@ -25,12 +25,12 @@
                     </div>
                     <div class="form-group col-md-3" :class="{ 'has-danger': errors.code }">
                         <label class="control-label">Código</label>
-                        <el-input v-model="form.code"></el-input>
+                        <el-input v-model="form.code" :readonly="form.id != null"></el-input>
                         <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
                     </div>
                     <div class="form-group col-md-3" :class="{ 'has-danger': errors.month }">
                         <label class="control-label">Tipo</label>
-                            <el-select v-model="form.type_id" filterable :required="true">
+                            <el-select v-model="form.type_id" filterable :required="true" :readonly="form.id != null" >
                                 <el-option key="1" value="01" label="RENTA"></el-option>
                                 <el-option key="2" value="02" label="IVA"></el-option>
                             </el-select>
@@ -38,13 +38,13 @@
                     </div>
                     <div class="form-group col-md-3" :class="{ 'has-danger': errors.code2 }" v-if="form.type_id == '02'">
                         <label class="control-label">Código ATS</label>
-                        <el-input v-model="form.code2" :required="form.type_id == '02'"></el-input>
+                        <el-input v-model="form.code2" :required="form.type_id == '02'" :readonly="form.id != null" ></el-input>
                         <small class="form-control-feedback" v-if="errors.code2" v-text="errors.code2[0]"></small>
                     </div>
                     <div class="col-md-6">
                         <div class="form-group" :class="{ 'has-danger': errors.account_id }">
                             <label class="control-label">Cuenta movimiento</label>
-                            <el-select v-model="form.account_id" filterable :required="true" :disabled="form.id != null">
+                            <el-select v-model="form.account_id" filterable :required="true">
                                 <el-option v-for="option in ctas" :key="option.id" :label="option.name" :value="option.id"
                                 ></el-option>
                             </el-select>

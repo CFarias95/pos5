@@ -59,7 +59,6 @@
 
         protected $casts = [
             'item_id' => 'int',
-
             'warehouse_id' => 'int',
             'warehouse_destination_id' => 'int',
             'quantity' => 'float',
@@ -150,7 +149,7 @@
         {
         return $this->belongsTo(Production::class, 'production_id');
         }
-    
+
     /**
      * Obtener datos para reporte movimientos
      *
@@ -262,7 +261,7 @@
         /**
          *
          * Filtros adicionales por campos del producto
-         * 
+         *
          * @param  Builder $query
          * @param  array $additional_filters
          * @return Builder
@@ -286,7 +285,7 @@
         /**
          *
          * Filtrar por almacén
-         * 
+         *
          * @param  Builder $query
          * @param  int $warehouse_id
          * @return Builder
@@ -298,11 +297,11 @@
             return $query;
         }
 
-        
+
         /**
          *
          * Ordener por fecha de creacion del registro
-         * 
+         *
          * @param  Builder $query
          * @param  string $order
          * @return Builder
@@ -314,7 +313,7 @@
 
 
         /**
-         * 
+         *
          * Ordernar por descripcion del producto
          *
          * @param  Builder $query
@@ -328,9 +327,9 @@
                             ->orderBy('items.description', $order);
         }
 
-        
+
         /**
-         * 
+         *
          * Datos para reporte de ajuste de stock
          *
          * @return array
@@ -353,7 +352,7 @@
             }
 
             // $stock_system=$this->getStockFull($this->created_at->format('Y-m-d'));
-            
+
             return [
                 'item_description' => $this->item->getInternalIdDescription(),
                 // 'stock_system' => $stock_system,

@@ -271,9 +271,7 @@ export default {
                         {
                             id: null,
                             purchase_id: null,
-                            date_of_payment: new Date(
-                                Invoice.factura.infoFactura.fechaEmision["_text"]
-                            ).toLocaleDateString("en-ca"),
+                            date_of_payment: date.toLocaleDateString("en-ca"),
                             payment_method_type_id: "01",
                             reference: null,
                             payment_destination_id: "cash",

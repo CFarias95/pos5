@@ -62,6 +62,7 @@ use App\Models\Tenant\Retention;
 use App\Models\Tenant\RetentionTypePurchase;
 use App\Models\Tenant\RetentionsDetailEC;
 use App\Models\Tenant\RetentionsEC;
+use App\Models\Tenant\RetentionTypesPurchase;
 use App\Models\Tenant\Series;
 use App\Models\Tenant\TypeDocsPurchase;
 use App\Models\Tenant\UserDefaultDocumentType;
@@ -102,10 +103,10 @@ class PurchaseController extends Controller
             'name' => 'Nombre proveedor',
         ];
 
-        $documents = PurchaseDocumentTypes2::get()->transform(function($row){
+        $documents = PurchaseDocumentTypes2::get()->transform(function ($row) {
             return [
-                'id'=>$row->idType,
-                'name'=>$row->description,
+                'id' => $row->idType,
+                'name' => $row->description,
             ];
         });
 
@@ -151,17 +152,17 @@ class PurchaseController extends Controller
                 break;
         }
 
-        if($request->sequential){
+        if ($request->sequential) {
 
             $records->where('sequential_number', 'like', "%{$request->sequential}%");
         }
 
-        if($request->intern){
+        if ($request->intern) {
             $records->where('document_type_intern', $request->intern);
         }
 
-        if($request->retention){
-            $retentions = RetentionsEC::where('idRetencion','like','%'.$request->retention.'%')->select('idDocumento')->get();
+        if ($request->retention) {
+            $retentions = RetentionsEC::where('idRetencion', 'like', '%' . $request->retention . '%')->select('idDocumento')->get();
             $records->whereIn('id', $retentions);
         }
 
@@ -330,7 +331,7 @@ class PurchaseController extends Controller
     {
         $items = $this->table('items');
         $items_import = Item::all()->transform(function ($row) {
-            $full_description = $row->name.' / '.$row->description.' / '.$row->model.' / '.$row->internal_id;
+            $full_description = $row->name . ' / ' . $row->description . ' / ' . $row->model . ' / ' . $row->internal_id;
             return [
                 'id' => $row->id,
                 'item_code' => $row->item_code,
@@ -440,19 +441,23 @@ class PurchaseController extends Controller
 
                 if (count($data['ret']) > 0) {
 
-                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
+                    $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
                     $tipoSerie = null;
                     $tiposerieText = '';
-                    if ($serie->count() > 0) {
-                        $tipoSerie = Series::find($serie[0]->series_id);
+
+                    if (isset($serie) && $serie->series_id != '') {
+                        $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
                     } else {
-                        $tipoSerie = Series::where('document_type_id', '20')->get();
-                        $tiposerieText = $tipoSerie[0]->number;
+                        $tipoSerie = Series::where('document_type_id', '20')->first();
+                        $tiposerieText = $tipoSerie->number;
                     }
 
                     $establecimiento = Establishment::find($doc->establishment_id);
-                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
+                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->orderBy('idRetencion','desc')->first();
+                    $secuelcialRet = $secuelcialRet->idRetencion;
+                    $secuelcialRet = substr($secuelcialRet,7);
+                    $secuelcialRet = intVal($secuelcialRet);
 
                     $ret = new RetentionsEC();
                     $ret->idRetencion = 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
@@ -586,43 +591,40 @@ class PurchaseController extends Controller
                     }
 
                     if (array_key_exists('item', $row)) {
-                        Log::info('Item Lots group: '.json_encode($row));
+                        Log::info('Item Lots group: ' . json_encode($row));
                         if (isset($row['item']['lots_enabled']) && ($row['item']['lots_enabled'] == true || $row['item']['lots_enabled'] == 'true')) {
 
                             // factor de lista de precios
                             $presentation_quantity = (isset($p_item->item->presentation->quantity_unit)) ? $p_item->item->presentation->quantity_unit : 1;
 
-                            $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])
-                            ->where('code',$row['lot_code'])
-                            ->where('warehouse_id',$row['warehouse_id'])
-                            ->first();
+                            $validatLote = ItemLotsGroup::where('item_id', $row['item_id'])
+                                ->where('code', $row['lot_code'])
+                                ->where('warehouse_id', $row['warehouse_id'])
+                                ->first();
 
-                            Log::info('Item Lots group ya existe: '.json_encode($validatLote));
+                            Log::info('Item Lots group ya existe: ' . json_encode($validatLote));
 
-                            if(isset($validatLote) && $validatLote != ''){
+                            if (isset($validatLote) && $validatLote != '') {
                                 $validatLote->quantity = $validatLote->quantity + ($row['quantity'] * $presentation_quantity);
                                 $validatLote->save();
+                            } else {
 
-                            }else{
-
-                                $validatLote = ItemLotsGroup::where('item_id',$row['item_id'])
-                                ->where('code',$row['lot_code'])
-                                ->first();
+                                $validatLote = ItemLotsGroup::where('item_id', $row['item_id'])
+                                    ->where('code', $row['lot_code'])
+                                    ->first();
 
                                 $item_lots_group = ItemLotsGroup::create([
                                     'code' => $row['lot_code'],
                                     'quantity' => $row['quantity'] * $presentation_quantity,
                                     // 'quantity' => $row['quantity'],
-                                    'date_of_due' => ($validatLote)? $validatLote->date_of_due:$row['date_of_due'],
+                                    'date_of_due' => ($validatLote) ? $validatLote->date_of_due : $row['date_of_due'],
                                     'warehouse_id' => $row['warehouse_id'],
                                     'item_id' => $row['item_id']
                                 ]);
 
                                 $p_item->item_lot_group_id = $item_lots_group->id;
                                 $p_item->update();
-
                             }
-
                         }
                     }
                 }
@@ -663,7 +665,7 @@ class PurchaseController extends Controller
                 return $doc;
             });
 
-            Log::info('Compra creada: '.json_encode($purchase));
+            Log::info('Compra creada: ' . json_encode($purchase));
 
             return [
                 'success' => true,
@@ -687,7 +689,7 @@ class PurchaseController extends Controller
             if (key_exists('currency_type_id', $row) == false) {
                 $row['currency_type_id'] = $purchase->currency_type_id;
             }
-            $row['number'] = $key+1;
+            $row['number'] = $key + 1;
             $purchase->fee()->create($row);
             $purchase->date_of_due = $row['date'];
         }
@@ -736,22 +738,34 @@ class PurchaseController extends Controller
         $document = Purchase::find($document_id);
         $documentoInterno = $document->document_type2;
         $entry = (AccountingEntries::get())->last();
-        $iva = 0;
-        $renta = 0;
+        $ivaArray = [];
+        $rentaArray = [];
 
         if ($ret && count($ret) > 0) {
 
             foreach ($ret as $rett) {
-
+                Log::info('RETENCIONES' . json_encode($rett));
                 if ($rett['tipo'] == 'IVA') {
-                    $iva += floatval($rett['valor']);
+                    if (array_key_exists($rett['code'], $ivaArray)) {
+                        $ivaArray[$rett['code']] += $rett['valor'];
+                    } else {
+                        $ivaArray[$rett['code']] = $rett['valor'];
+                    }
+                    //$iva += floatval($rett['valor']);
+
                 }
                 if ($rett['tipo'] == 'RENTA')
-
-                    $renta += floatval($rett['valor']);
+                    if (array_key_exists($rett['code'], $rentaArray)) {
+                        $rentaArray[$rett['code']] += $rett['valor'];
+                    } else {
+                        $rentaArray[$rett['code']] = $rett['valor'];
+                    }
+                //$renta += floatval($rett['valor']);
             }
         }
 
+        Log::info('RETENCIONES IVA' . json_encode($ivaArray));
+        Log::info('RETENCIONES RENTA' . json_encode($rentaArray));
         /*
         if ($document->document_type_id != '01' && $document->document_type_id != '376' && ) {
             return;
@@ -778,7 +792,7 @@ class PurchaseController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = $document->observation.' | '.$document->sequential_number.' | Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                $comment = $document->observation . ' | ' . $document->sequential_number . ' | Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
 
                 $total_debe = $document->total;
                 $total_haber = $document->total;
@@ -956,39 +970,50 @@ class PurchaseController extends Controller
                         }
                     }
 
-                    if ($iva > 0 && $configuration->cta_iva_tax) {
-                        $seatCostIVA = AccountMovement::find($configuration->cta_iva_tax);
-                        $n += 1;
-                        $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $cabeceraC->id;
-                        $detalle->account_movement_id = $configuration->cta_iva_tax;
-                        $detalle->seat_line = $n;
-                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
-                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        $detalle->seat_cost = ($seatCostIVA && $seatCostIVA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
-                        if ($detalle->save() == false) {
-                            $cabeceraC->delete();
-                            return;
-                            //abort(500,'No se pudo generar el asiento contable del documento');
+                    if (sizeof($ivaArray) > 0) {
+
+                        foreach($ivaArray as $key => $iva){
+                            $n += 1;
+                            $retInterna = RetentionTypesPurchase::where('code',$key)->first();
+                            $ivaCta = (isset($retInterna) && $retInterna->account_id)? $retInterna->account_id : $configuration->cta_iva_tax;
+                            $seatCostIVA = AccountMovement::find($ivaCta);
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = $ivaCta;
+                            $detalle->seat_line = $n;
+                            $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
+                            $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
+                            $detalle->seat_cost = ($seatCostIVA && $seatCostIVA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
+                            if ($detalle->save() == false) {
+                                $cabeceraC->delete();
+                                return;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
                         }
                     }
 
-                    if ($renta > 0 && $configuration->cta_income_tax) {
-                        $n += 1;
-                        $seatCostRENTA = AccountMovement::find($configuration->cta_income_tax);
-                        $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $cabeceraC->id;
-                        $detalle->account_movement_id = $configuration->cta_income_tax;
-                        $detalle->seat_line = $n;
-                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
-                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        $detalle->seat_cost = ($seatCostRENTA && $seatCostRENTA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
-                        if ($detalle->save() == false) {
-                            $cabeceraC->delete();
-                            return;
-                            //abort(500,'No se pudo generar el asiento contable del documento');
+                    if (sizeOf($rentaArray) > 0) {
+
+                        foreach($rentaArray as $key => $renta){
+                            $retInterna = RetentionTypesPurchase::where('code',$key)->first();
+                            $rentaCta = (isset($retInterna) && $retInterna->account_id)? $retInterna->account_id : $configuration->cta_income_tax;
+                            $n += 1;
+                            $seatCostRENTA = AccountMovement::find($rentaCta);
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = $rentaCta;
+                            $detalle->seat_line = $n;
+                            $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
+                            $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
+                            $detalle->seat_cost = ($seatCostRENTA && $seatCostRENTA->cost_center > 0) ? $document->establishment->cost_center[count($document->establishment->cost_center) - 1] : null;
+                            if ($detalle->save() == false) {
+                                $cabeceraC->delete();
+                                return;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
                         }
                     }
+
                 } else {
 
                     $accountMID = ($customer->account) ? $customer->account : $configuration->cta_suppliers;
@@ -1267,33 +1292,42 @@ class PurchaseController extends Controller
                         }
                     }
 
-                    if ($iva > 0 && $configuration->cta_iva_tax) {
+                    if (sizeof($ivaArray) > 0) {
+
                         $n += 1;
-                        $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $cabeceraC->id;
-                        $detalle->account_movement_id = $configuration->cta_iva_tax;
-                        $detalle->seat_line = $n;
-                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
-                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
-                        if ($detalle->save() == false) {
-                            $cabeceraC->delete();
-                            return;
-                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        foreach($ivaArray as $key => $iva){
+                            $retInterna = RetentionTypesPurchase::where('code',$key)->first();
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = ($retInterna && $retInterna->count() > 0 && isset($retInterna->account_id))?$retInterna->account_id : $configuration->cta_iva_tax;
+                            $detalle->seat_line = $n;
+                            $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($iva);
+                            $detalle->haber = ($documentoInterno->sign > 0) ? floatval($iva) : 0;
+                            if ($detalle->save() == false) {
+                                $cabeceraC->delete();
+                                return;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
+
                         }
+
                     }
 
-                    if ($renta > 0 && $configuration->cta_income_tax) {
+                    if (sizeOf($rentaArray) > 0) {
                         $n += 1;
-                        $detalle = new AccountingEntryItems();
-                        $detalle->accounting_entrie_id = $cabeceraC->id;
-                        $detalle->account_movement_id = $configuration->cta_income_tax;
-                        $detalle->seat_line = $n;
-                        $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
-                        $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
-                        if ($detalle->save() == false) {
-                            $cabeceraC->delete();
-                            return;
-                            //abort(500,'No se pudo generar el asiento contable del documento');
+                        foreach($rentaArray as $key => $renta){
+                            $retInterna = RetentionTypesPurchase::where('code',$key)->first();
+                            $detalle = new AccountingEntryItems();
+                            $detalle->accounting_entrie_id = $cabeceraC->id;
+                            $detalle->account_movement_id = ($retInterna && $retInterna->count() > 0 && isset($retInterna->account_id))?$retInterna->account_id : $configuration->cta_income_tax;
+                            $detalle->seat_line = $n;
+                            $detalle->debe = ($documentoInterno->sign > 0) ? 0 : floatval($renta);
+                            $detalle->haber = ($documentoInterno->sign > 0) ? floatval($renta) : 0;
+                            if ($detalle->save() == false) {
+                                $cabeceraC->delete();
+                                return;
+                                //abort(500,'No se pudo generar el asiento contable del documento');
+                            }
                         }
                     }
                 }
@@ -1459,14 +1493,14 @@ class PurchaseController extends Controller
 
         $base_template = Establishment::find($document->establishment_id)->template_pdf;
 
-        Log::info('Purchase: '.$document);
+        Log::info('Purchase: ' . $document);
         //Log::info('FEE ID: '.$id);
         //$conect = DocumentPayment::where('document_id', $docs->id)->where('fee_id', $id)->get();
         //Log::info('createPdf1 DocumentPayment: '.json_encode($conect));
 
         //$i = $conect[$index];
-        $account_entry = AccountingEntries::where('document_id', 'C'.$document->id)->first();
-        Log::info('Account Entry - '.$account_entry);
+        $account_entry = AccountingEntries::where('document_id', 'C' . $document->id)->first();
+        Log::info('Account Entry - ' . $account_entry);
         //$user_log = auth()->user();
 
         $html = $template->pdf($base_template, "purchase", $company, $document, $format_pdf, $account_entry);
@@ -1571,19 +1605,23 @@ class PurchaseController extends Controller
                         $ret->delete();
                     }
                     */
-                    $serie = UserDefaultDocumentType::where('user_id', $doc->user_id)->get();
+                    $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
+
                     $tipoSerie = null;
                     $tiposerieText = '';
-                    if ($serie->count() > 0) {
-                        $tipoSerie = Series::find($serie[0]->series_id);
+                    if (isset($serie)) {
+                        $tipoSerie = Series::find($serie->series_id);
                         $tiposerieText = $tipoSerie->number;
                     } else {
-                        $tipoSerie = Series::where('document_type_id', '20')->get();
-                        $tiposerieText = $tipoSerie[0]->number;
+                        $tipoSerie = Series::where('document_type_id', '20')->first();
+                        $tiposerieText = $tipoSerie->number;
                     }
 
                     $establecimiento = Establishment::find($doc->establishment_id);
-                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->count();
+                    $secuelcialRet = RetentionsEC::where('establecimiento', $establecimiento->code)->where('ptoEmision', $tiposerieText)->orderBy('idRetencion','desc')->first();
+                    $secuelcialRet = $secuelcialRet->idRetencion;
+                    $secuelcialRet = substr($secuelcialRet,7);
+                    $secuelcialRet = intVal($secuelcialRet);
 
                     $ret = new RetentionsEC();
                     $ret->idRetencion = ($IdRetencionHistorico) ? $IdRetencionHistorico : 'R' . $establecimiento->code . substr($tiposerieText, 1, 3) . str_pad($secuelcialRet + 1, 9, 0, STR_PAD_LEFT);
@@ -1770,30 +1808,28 @@ class PurchaseController extends Controller
      */
     private function createItemLotsGroup($lot_code, $quantity, $date_of_due, $item_id, $warehouse_id)
     {
-        $validatLote = ItemLotsGroup::where('item_id',$item_id)
-        ->where('code',$lot_code)
-        ->where('warehouse_id', $warehouse_id)
-        ->first();
+        $validatLote = ItemLotsGroup::where('item_id', $item_id)
+            ->where('code', $lot_code)
+            ->where('warehouse_id', $warehouse_id)
+            ->first();
 
-        if($validatLote){
+        if ($validatLote) {
             $validatLote->quantity += $quantity;
             $validatLote->save();
             return  $validatLote;
-        }else{
-            $validatLote = ItemLotsGroup::where('item_id',$item_id)
-                ->where('code',$lot_code)
+        } else {
+            $validatLote = ItemLotsGroup::where('item_id', $item_id)
+                ->where('code', $lot_code)
                 ->first();
 
             return ItemLotsGroup::create([
                 'code' => $lot_code,
                 'quantity' => $quantity,
-                'date_of_due' => ($validatLote)?$validatLote->date_of_due:$date_of_due,
+                'date_of_due' => ($validatLote) ? $validatLote->date_of_due : $date_of_due,
                 'item_id' => $item_id,
-                'warehouse_id'=>$warehouse_id
+                'warehouse_id' => $warehouse_id
             ]);
         }
-
-
     }
 
 
@@ -1815,7 +1851,7 @@ class PurchaseController extends Controller
         $quantity = $row['quantity'] * $presentation_quantity;
 
         if ($lot_code && $date_of_due) {
-            $item_lots_group = $this->createItemLotsGroup($lot_code, $quantity, $date_of_due, $row['item_id'],$row['warehouse_id']);
+            $item_lots_group = $this->createItemLotsGroup($lot_code, $quantity, $date_of_due, $row['item_id'], $row['warehouse_id']);
             $purchase_item->item_lot_group_id = $item_lots_group->id;
             $purchase_item->update();
         } else {
@@ -1825,7 +1861,7 @@ class PurchaseController extends Controller
                 $new_date_of_due = $data_item_lot_group['date_of_due'];
                 $new_lot_code = $data_item_lot_group['lot_code'];
 
-                $item_lots_group = $this->createItemLotsGroup($new_lot_code, $quantity, $new_date_of_due, $row['item_id'],$row['warehouse_id']);
+                $item_lots_group = $this->createItemLotsGroup($new_lot_code, $quantity, $new_date_of_due, $row['item_id'], $row['warehouse_id']);
 
                 $purchase_item->lot_code = $new_lot_code;
                 $purchase_item->date_of_due = $new_date_of_due;
@@ -2329,18 +2365,21 @@ class PurchaseController extends Controller
             }
 
             $purchase = DB::connection('tenant')->transaction(function () use ($data) {
+                Log::info('Data Compra XML');
+                Log::info($data);
+
                 try {
                     $doc = new Purchase();
                     $doc->fill($data);
                     $doc->save();
 
                     foreach ($data['items'] as $row) {
-                        log::info("Purchase item to create : ". json_encode($row['item']));
+                        log::info("Purchase item to create : " . json_encode($row['item']));
                         $row['has_igv'] = true;
-                        if(isset($row['total_base_igv']) == false ){
+                        if (isset($row['total_base_igv']) == false) {
                             $row['total_base_igv'] = 0;
                         }
-                        if(isset($row['total_igv']) == false ){
+                        if (isset($row['total_igv']) == false) {
                             $row['total_igv'] = 0;
                         }
                         $doc->items()->create($row);
@@ -2353,7 +2392,7 @@ class PurchaseController extends Controller
                     return $doc;
                 } catch (Exception $ex) {
                     $doc->delete();
-                    Log::error($ex->getMessage());
+                    Log::error('Error al tratar de crear Compra desde iimportacion: '.$ex->getMessage());
                     return false;
                 }
             });
