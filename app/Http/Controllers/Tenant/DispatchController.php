@@ -221,6 +221,11 @@ class DispatchController extends Controller
                         'factory_code' => $item->item->factory_code,
 
                     ];
+                    $items[0]['IdLoteSelected'][]  = [
+                        "code" => $item->lot_code,
+                        "compromise_quantity" => $item->quantity,
+                    ];
+
                 }
 
                 $document->items = $items;
@@ -245,6 +250,7 @@ class DispatchController extends Controller
                     'internal_id' => $item->item->internal_id,
                     'model' =>  $item->item->model,
                     'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
+                    'IdLoteSelected' => $item->item->IdLoteSelected,
                 ];
             }
         }
