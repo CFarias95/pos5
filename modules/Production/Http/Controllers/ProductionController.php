@@ -583,11 +583,9 @@ class ProductionController extends Controller
             $items_supplies = $request->supplies;
             //Log::info('tiem_supplies - '.json_encode($items_supplies));
             $costoT = 0;
-            //Log::info("SUPLIES: " . json_encode($items_supplies));
-            //Log::info('item - ' . json_encode($items_supplies[0]['checked']));
-            //Log::info('item - ' . getType($items_supplies[0]['checked']));
-            // Error al registrar el ingreso: Undefined variable: item_supplies
-            //Log::info('production - '.$production->id);
+            $samples = 0;
+
+            
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
@@ -709,6 +707,7 @@ class ProductionController extends Controller
                     }
                     //Log::info('Pasa el foreach de costoT');
                     $production->cost_supplies = $costoT;
+                    Log::info('produccion - '.$production);
                     $production->save();
 
                     $item = Item::where('id', $production->item_id)->first();
@@ -1570,21 +1569,11 @@ class ProductionController extends Controller
 
         $production_items = [];
         $empaque_items = [];
-
+        $inventories = null;
+        
         $inventarios = Inventory::where('production_id', $produccion->id)->where('inventory_transaction_id', '101')->get();
-        /*$inventarios->transform(function ($row) use (&$empaque_items) {
-            Log::info('$row->item - ' . json_encode($row->item));
-            $data_filtrada = collect($row->item->attributes)->filter(function ($attribute) {
-                return $attribute->attribute_type_id == 'EM';
-            })->toArray();
-
-            Log::info('data_filtrada -' . json_encode($data_filtrada));
-            if (!empty($data_filtrada)) {
-                $empaque_items = array_merge($empaque_items, $data_filtrada);
-            }
-        });*/
+        
         $inventarios->transform(function ($row) use (&$empaque_items, &$production_items) {
-            //Log::info('$row->item - ' . json_encode($row->item));
             $attributes = collect($row->item->attributes);
             $hasEMAttribute = $attributes->contains(function ($attribute) {
                 return $attribute->attribute_type_id == 'EM';
@@ -1595,14 +1584,12 @@ class ProductionController extends Controller
             } else {
                 $production_items[] = $row->item;
             }
+            return $row;
         });
 
-        //Log::info('production_items - '.json_encode($production_items));
-        //Log::info('empaque_items - '.json_encode($empaque_items));
+        //$atributo = AttributeType::where('description', 'Empaque')->get();
 
-        $atributo = AttributeType::where('description', 'Empaque')->get();
-
-        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items"));
+        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items", "inventarios"));
 
         $filename = 'Etiquetas2_' . $produccion->production_order . date('YmdHis');
 

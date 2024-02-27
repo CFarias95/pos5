@@ -74,7 +74,11 @@ class Production extends ModelTenant
         'machine_id' => 'int',
         'informative' => 'bool',
         'agreed' => 'float',
-        'imperfect' => 'float'
+        'imperfect' => 'float',
+        'revision' => 'bool',
+        'verificacion_nombre' => 'bool',
+        'verificacion_date_issue' => 'bool',
+        'verificacion_date_end' => 'bool',
     ];
 
     protected $with = [
@@ -111,6 +115,25 @@ class Production extends ModelTenant
         'mix_collaborator',
         'soap_type_id',
         'cost_supplies',
+        'num_personas',
+        'presentacion',
+        'muestra1',
+        'muestra2',
+        'muestra3',
+        'muestra4',
+        'muestra5',
+        'ph',
+        'color',
+        'olor',
+        'sabor',
+        'solubilidad',
+        'revision',
+        'enviado',
+        'verificacion_nombre',
+        'verificacion_date_issue',
+        'verificacion_date_end',
+        'observaciones2',
+        'samples',
     ];
 
     /**

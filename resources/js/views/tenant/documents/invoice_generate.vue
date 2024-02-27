@@ -4357,7 +4357,7 @@ export default {
         }
         if (letPaymentsTotal > this.form.total || letPaymentsTotal < this.form.total) {
           this.$message.error(
-            "La suma del total de los pagos" + letPaymentsTotal + "no es correcta"
+            "La suma del total de los pagos " + letPaymentsTotal + " no es correcta"
           );
           this.loading_submit = false;
           return;

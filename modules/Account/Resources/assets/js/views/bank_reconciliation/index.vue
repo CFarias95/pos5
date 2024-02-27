@@ -56,7 +56,7 @@
                                             @click="clickCreate(scope.row.id)">Editar</el-button>
                                         <br><br>
                                         <el-button size="small" type="danger"
-                                            @click="handleDelete(scope.row.id)">PDF</el-button>
+                                            @click="clickPdf(scope.row.id)">PDF</el-button>
                                     </div>
                                 </template>
                             </el-table-column>
@@ -145,6 +145,15 @@ export default {
             });
 
             window.open(`/reports/retention/${type}/?${query}`, "_blank");
+
+        },
+        clickPdf(id) {
+
+            /*let query = queryString.stringify({
+                ...this.form
+            });*/
+
+            window.open(`/${this.resource}/pdf/${id}`, "_blank");
 
         },
         clickCreate(recordId = null) {

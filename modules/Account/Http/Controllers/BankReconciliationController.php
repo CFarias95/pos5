@@ -32,6 +32,8 @@ use Modules\Account\Exports\ReportAccountingSumeriusExport;
 use Modules\Account\Http\Resources\BankReconciliationCollection;
 use Modules\Account\Http\Resources\ReconciliationCollection;
 use Modules\Account\Models\BankReconciliation;
+use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Tenant\User;
 
 class BankReconciliationController extends Controller
 {
@@ -169,7 +171,7 @@ class BankReconciliationController extends Controller
             $record->save();
             return [
                 'success' => true,
-                'message' => "Conciliacion reguistrada"
+                'message' => "Conciliacion registrada"
             ];
         } else {
             return [
@@ -216,6 +218,24 @@ class BankReconciliationController extends Controller
         ->records($records)
         ->download('Punteo_Contable' . '.xlsx');
 
+    }
+
+    public function pdf($id)
+    {
+        $records = BankReconciliation::where('id',$id)->get();
+        Log::info('records1 - '.$records);
+        $company = Company::first();
+        $usuario_log = Auth::user();
+        $fechaActual = date('d/m/Y');
+        $user = User::where('id', $records[0]->user_id)->first();
+        $account = AccountMovement::where('id', $records[0]->account_id)->first();
+        $entries = AccountingEntryItems::where('bank_reconciliation_id', $records[0]->id)->with('account')->get();
+
+        $pdf = PDF::loadView('account::bank_reconciliation.pdf', compact("records", "company", "fechaActual", "usuario_log", "user", "account", "entries"));
+
+        $filename = 'Bank_Reconciliation_' .  date('YmdHis');
+
+        return $pdf->download($filename . '.pdf');
     }
 
     public function movements(Request $request){
