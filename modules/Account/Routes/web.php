@@ -56,6 +56,7 @@ if($hostname) {
                 Route::get('reconciliate/{id}', 'BankReconciliationController@reconciliate');
                 Route::get('unconciliate/{id}', 'BankReconciliationController@unconciliate');
                 Route::get('excel', 'BankReconciliationController@excel');
+                Route::get('pdf/{id}', 'BankReconciliationController@pdf');
                 Route::post('movements', 'BankReconciliationController@movements');
                 Route::post('', 'BankReconciliationController@store');
                 Route::get('record/{id}', 'BankReconciliationController@record');

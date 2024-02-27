@@ -291,6 +291,7 @@
                                             :controls="false"
                                             :min="0"
                                             :precision="precision"
+                                            :disabled="form.records_id !== '03'"
                                         ></el-input-number>
 
                                         <small
@@ -298,6 +299,17 @@
                                             class="form-control-feedback"
                                             v-text="errors.imperfect[0]"
                                         ></small>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                    <div class="form-group">
+                                        <el-checkbox
+                                            v-model="form.custom_quantity"
+                                            label="Usar cantidad a descargar?"
+                                            size="large"
+                                            :disabled="form.records_id !== '03'"
+                                        />
                                     </div>
                                 </div>
 
@@ -318,6 +330,7 @@
                                                 :min="0"
                                                 :precision="precision"
                                                 @change="quantityControl"
+                                                :disabled="form.records_id !== '03'"
                                             ></el-input-number>
                                             <small
                                                 v-if="errors.samples"
@@ -363,7 +376,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                <!-- <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div
                                         :class="{
                                             'has-danger': errors.item_extra_data
@@ -395,9 +408,98 @@
                                             v-text="errors.item_extra_data[0]"
                                         ></small>
                                     </div>
+                                </div> -->
+                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                    <div class="form-group">
+                                        <label class="control-label">Número Personas</label>
+                                        <el-input v-model="form.num_personas"></el-input>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Presentación Solicitada</label>
+                                        <el-input v-model="form.presentacion"></el-input>
+                                    </div>
+                                    <div class="form-group">
+                                        <label class="control-label">Observaciones</label>
+                                        <el-input v-model="form.observaciones2"></el-input>
+                                    </div>
                                 </div>
 
-                                <hr />
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="bordered-container">
+                                        <label class="control-label">Muestras</label>
+                                        <div class="form-group">
+                                            <label class="control-label">Muestra 1</label>
+                                            <el-input v-model="form.muestra1" :disabled="form.records_id !== '03'"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Muestra 2</label>
+                                            <el-input v-model="form.muestra2" :disabled="form.records_id !== '03'"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Muestra 3</label>
+                                            <el-input v-model="form.muestra3" :disabled="form.records_id !== '03'"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Muestra 4</label>
+                                            <el-input v-model="form.muestra4" :disabled="form.records_id !== '03'"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Muestra 5</label>
+                                            <el-input v-model="form.muestra5" :disabled="form.records_id !== '03'"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="bordered-container">
+                                        <div class="form-group">
+                                            <label class="control-label">Revisión</label>
+                                            <el-switch v-model="form.revision"></el-switch>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Enviado a:</label>
+                                            <el-input v-model="form.enviado"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Verificación Nombre</label>
+                                            <el-switch v-model="form.verificacion_nombre"></el-switch>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Verificación Fecha Emisión</label>
+                                            <el-switch v-model="form.verificacion_date_issue"></el-switch>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Verificación Fecha Vencimiento</label>
+                                            <el-switch v-model="form.verificacion_date_end"></el-switch>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                    <div class="bordered-container">
+                                        <div class="form-group">
+                                            <label class="control-label">PH</label>
+                                            <el-input v-model="form.ph"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Color</label>
+                                            <el-input v-model="form.color"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Olor</label>
+                                            <el-input v-model="form.olor"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Sabor</label>
+                                            <el-input v-model="form.sabor"></el-input>
+                                        </div>
+                                        <div class="form-group">
+                                            <label class="control-label">Solubilidad</label>
+                                            <el-input v-model="form.solubilidad"></el-input>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <hr/>
                                 <div class="col-12 mt-3">
                                     <div class="form-group">
                                         <label class="control-label">
@@ -1057,7 +1159,26 @@ export default {
                     color: null
                 },
                 samples: 0,
-                destination_warehouse_id: null
+                destination_warehouse_id: null,
+                num_personas: null,
+                presentacion: null,
+                muestra1: null,
+                muestra2: null,
+                muestra3: null,
+                muestra4: null,
+                muestra5: null,
+                ph: null,
+                color: null,
+                olor: null,
+                sabor: null,
+                solubilidad: null,
+                revision: 0,
+                enviado: null,
+                verificacion_nombre: 0,
+                verificacion_date_issue: 0,
+                verificacion_date_end: 0,
+                observaciones2: null,
+                custom_quantity: false,
             },
             selectSupply: {
                 supply_id: null,
@@ -1412,6 +1533,11 @@ export default {
                 return this.$message.error("La cantidad debe ser mayor a 0");
             }
 
+            if(this.form.custom_quantity == true)
+            {
+                this.form.quantity = this.totalManualDescargar
+            }
+
             this.loading_submit = true;
             this.form.supplies = this.supplies;
             //console.log('form.supplies', this.form.supplies)
@@ -1537,7 +1663,7 @@ export default {
                 return;
             }
             //console.log('form', this.form)
-            if(this.form.records_id !== '03' || this.form.records_id !== '04')
+            if(this.form.records_id !== '01' || this.form.records_id !== '03' || this.form.records_id !== '04')
             {
                 this.supply_difference = false
                 this.$http
@@ -1572,7 +1698,7 @@ export default {
             }else{
                 return
             }
-            if(this.form.records_id == '03')
+            if(this.form.records_id == '03' || this.form.records_id == '01' )
             {
                 this.supply_difference = true
             }
