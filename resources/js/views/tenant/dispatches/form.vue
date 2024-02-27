@@ -500,7 +500,7 @@
                                 <td>{{ row.model }}</td>
                                 <td>{{ row.internal_id }}</td>
                                 <td>{{ row.factory_code }}</td>
-                                <td>{{ row.lot_code }}</td>
+                                <td>{{ row.lote }}</td>
                                 <template v-if="!filterIndex(index)">
                                     <td class="text-right">{{ row.quantity }}</td>
                                 </template>

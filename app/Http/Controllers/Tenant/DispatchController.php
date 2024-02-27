@@ -181,6 +181,7 @@ class DispatchController extends Controller
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
                         'factory_code' => $item->item->factory_code,
+                        'IdLoteSelected' => $item->item->IdLoteSelected,
                     ];
                 }
             } else {
@@ -218,6 +219,7 @@ class DispatchController extends Controller
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
                         'factory_code' => $item->item->factory_code,
+
                     ];
                 }
 
@@ -227,20 +229,22 @@ class DispatchController extends Controller
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                 $lotes = '';
-                foreach($item->item->IdLoteSelected as $lot){
-                    $lotes .= 'Cod. Lote: '. $lot . ', ';
+                if(isset($item->item->IdLoteSelected)){
+                    foreach($item->item->IdLoteSelected as $lot){
+                        $lotes .= 'Cod. Lote: '. $lot->code . ', ';
+                    }
                 }
                 $items[] = [
                     'item_id' => $item->item_id,
                     'item' => $item,
                     'quantity' => $item->quantity,
                     'description' => $item->item->description,
-                    'name' => $item->item->name,
+                    'name' => (isset($item->item->name))?$item->item->name:'-',
                     'name_product_pdf' => $name_product_pdf,
                     'lote' => $lotes,
                     'internal_id' => $item->item->internal_id,
                     'model' =>  $item->item->model,
-                    'factory_code' => $item->item->factory_code,
+                    'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
                 ];
             }
         }
