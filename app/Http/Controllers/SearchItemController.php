@@ -188,7 +188,6 @@
                 }
             }
 
-
             if ($bySerie === null) {
                 if ($items_id != null) {
                     $item->whereIn('id', $items_id);
@@ -255,6 +254,7 @@
                 $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
+                $whereItem[] = ['model', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['description', 'like', '%' .  str_replace(' ','%',$input) . '%'];
 

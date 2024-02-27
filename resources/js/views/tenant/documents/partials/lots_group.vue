@@ -44,7 +44,7 @@
                             <tr
                                 v-for="(row, index) in lotsGroupOrdered"
                                 :key="index"
-                                v-show="row.quantity > 0"
+                                v-show="row.quantity > 0" v-if="row.expired == false"
                             >
                                 <!--<th align="center">
                                     <el-checkbox
@@ -94,6 +94,7 @@ export default {
     },
     computed: {
         lotsGroupOrdered() {
+        console.log('lotsGroupOrdered',this.lots_group_ )
             return _.orderBy(this.lots_group_, 'date_of_due', this.orderT)
         },
         quantityCompleted(){

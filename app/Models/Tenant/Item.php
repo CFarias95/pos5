@@ -1065,14 +1065,24 @@ class Item extends ModelTenant
             // se listaran atributos necesarios en pdf de otra forma
             'attributes'     => $this->getAttributesAttribute($this->attributes['attributes']),
             'lots_group'     => collect($lots_grp)->transform(function ($lots_group) {
+                $date = date('Y-m-d');
+                $timestamp1 = strtotime($lots_group->date_of_due);
+                $timestamp2 = strtotime($date);
+                $expired = false;
+                if ($timestamp1 < $timestamp2) {
+                    $expired = true;
+                }
+
                 return [
                     'id'          => $lots_group->id,
                     'code'        => $lots_group->code,
                     'quantity'    => $lots_group->quantity,
+                    'date_today' => $date,
                     'date_of_due' => $lots_group->date_of_due,
                     'warehouse_id' => $lots_group->warehouse_id,
                     'checked'     => false,
-                    'compromise_quantity' => 0
+                    'compromise_quantity' => 0,
+                    'expired' => $expired,
                 ];
             }),
             'lots'           => $lots,

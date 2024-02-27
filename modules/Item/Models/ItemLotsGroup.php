@@ -28,6 +28,7 @@ class ItemLotsGroup extends ModelTenant
         'old_quantity',
         'warehouse_id'
     ];
+    
 
     public function item()
     {
