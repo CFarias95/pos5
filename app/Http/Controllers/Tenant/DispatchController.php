@@ -166,13 +166,21 @@ class DispatchController extends Controller
             if ($type != 't') {
                 foreach ($document->items as $item) {
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
+                    $lotes = '';
+                    foreach($item->item->IdLoteSelected as $lot){
+                        $lotes .= 'Cod. Lote: '. $lot . ', ';
+                    }
                     $items[] = [
                         'item_id' => $item->item_id,
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
                         'name' => ($item->item->name != null) ? $item->item->name : ' ',
-                        'name_product_pdf' => $name_product_pdf
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $lotes,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => $item->item->factory_code,
                     ];
                 }
             } else {
@@ -205,20 +213,34 @@ class DispatchController extends Controller
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
                         'name' => $item->item->name,
-                        'name_product_pdf' => $name_product_pdf
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $item->lot_code,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => $item->item->factory_code,
                     ];
                 }
+
+                $document->items = $items;
             }
         } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
+                $lotes = '';
+                foreach($item->item->IdLoteSelected as $lot){
+                    $lotes .= 'Cod. Lote: '. $lot . ', ';
+                }
                 $items[] = [
                     'item_id' => $item->item_id,
                     'item' => $item,
                     'quantity' => $item->quantity,
                     'description' => $item->item->description,
                     'name' => $item->item->name,
-                    'name_product_pdf' => $name_product_pdf
+                    'name_product_pdf' => $name_product_pdf,
+                    'lote' => $lotes,
+                    'internal_id' => $item->item->internal_id,
+                    'model' =>  $item->item->model,
+                    'factory_code' => $item->item->factory_code,
                 ];
             }
         }
