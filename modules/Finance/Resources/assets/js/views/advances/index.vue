@@ -22,6 +22,7 @@
                         <th class="text-center">Valor usado</th>
                         <th class="text-center">Valor libre</th>
                         <th class="text-center">Notas</th>
+                        <th class="text-center">Fecha Creaciòn</th>
                         <th class="text-center">Documento</th>
                         <th class="text-center">Editar</th>
                         <th class="text-center">PDF</th>
@@ -35,6 +36,7 @@
                         <td class="text-center">{{ row.used }}</td>
                         <td class="text-center">{{ row.free }}</td>
                         <td class="text-center">{{ row.observation }}</td>
+                        <td class="text-center">{{ formatDate(row.created_at) }}</td>
                         <td class="text-center">
                             <el-popover placement="right" width="400" trigger="click">
                                 <el-table :data="row.documents">
@@ -92,6 +94,10 @@ export default {
     created() {
     },
     methods: {
+        formatDate(dateTimeString) {
+            const date = new Date(dateTimeString);
+            return `${date.getDate()}/${date.getMonth() + 1}/${date.getFullYear()}`;
+        },
         clickCreate(recordId = null) {
             this.recordId = recordId
             this.showDialog = true

@@ -707,7 +707,7 @@ class ProductionController extends Controller
                     }
                     //Log::info('Pasa el foreach de costoT');
                     $production->cost_supplies = $costoT;
-                    Log::info('produccion - '.$production);
+                    //Log::info('produccion - '.$production);
                     $production->save();
 
                     $item = Item::where('id', $production->item_id)->first();
