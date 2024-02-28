@@ -42,7 +42,7 @@
                         <div class="col-3">
                             <label> Categoría</label>
                             <el-cascader v-model="form.categorie_id" :options="categories" checkStrictly='true'
-                                :show-all-levels="false" expandTrigger='hover' @change="getRecords"
+                                :show-all-levels="false" @change="getRecords"
                                 change-on-select></el-cascader>
                         </div>
                         <div class="col-3">
