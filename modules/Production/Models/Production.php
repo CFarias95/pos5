@@ -134,6 +134,7 @@ class Production extends ModelTenant
         'verificacion_date_end',
         'observaciones2',
         'samples',
+        'custom_quantity',
     ];
 
     /**

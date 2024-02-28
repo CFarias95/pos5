@@ -305,11 +305,18 @@
                                 <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div class="form-group">
                                         <el-checkbox
-                                            v-model="form.custom_quantity"
+                                            v-model="form.custom_quantity_check"
                                             label="Usar cantidad a descargar?"
                                             size="large"
-                                            :disabled="form.records_id !== '03'"
+                                            :disabled="form.records_id !== '02'"
                                         />
+                                        <el-input-number
+                                            v-model="form.custom_quantity"
+                                            :controls="false"
+                                            :min="0"
+                                            :precision="precision"
+                                            disabled
+                                        ></el-input-number>
                                     </div>
                                 </div>
 
@@ -1178,7 +1185,8 @@ export default {
                 verificacion_date_issue: 0,
                 verificacion_date_end: 0,
                 observaciones2: null,
-                custom_quantity: false,
+                custom_quantity_check: false,
+                custom_quantity: 0,
             },
             selectSupply: {
                 supply_id: null,
@@ -1249,14 +1257,10 @@ export default {
             }
         },
         updateTotalDescargar() {
-            if(this.supplies.length > 0)
+            if(this.supplies.length > 0 && this.records[0].description === "Registrado")
             {
                 let total = 0;
-                //console.log('this.supplies', this.supplies)
                 this.supplies.forEach(supply => {
-                    //console.log('suplpy', supply)
-                    //console.log('suplpyD', supply.description)
-                    //console.log('suplpyDI', supply.description.indexOf('(Empaque)'))
                     if(supply.description.indexOf('(Empaque)') < 0)
                     {
                         total += parseFloat(supply.quantityD) || 0;
@@ -1472,6 +1476,7 @@ export default {
         async getTable() {
             await this.$http.get(`/${this.resource}/tables`).then(response => {
                 let data = response.data;
+                console.log('data - ', data)
                 this.warehouses = data.warehouses;
                 this.items = data.items;
                 //console.log("itemsss", this.items);
@@ -1533,9 +1538,9 @@ export default {
                 return this.$message.error("La cantidad debe ser mayor a 0");
             }
 
-            if(this.form.custom_quantity == true)
+            if(this.form.custom_quantity_check == true)
             {
-                this.form.quantity = this.totalManualDescargar
+                this.form.custom_quantity = this.totalManualDescargar
             }
 
             this.loading_submit = true;
