@@ -380,7 +380,7 @@ class UnpaidController extends Controller
         $configuration = Configuration::first();
 
         $base_template = 'default';
-        $user_log = User::find($seat[0]->user_id);//auth()->user();
+        $user_log = User::find($seat->user_id);//auth()->user();
         $establishment = Establishment::find(auth()->user()->establishment_id);
 
         $html = $template->pdf1($base_template, "unpaid", $company, $payments, $establishment, $format_pdf,$seat,$user_log);
