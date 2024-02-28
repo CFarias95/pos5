@@ -309,6 +309,7 @@
                                             label="Usar cantidad a descargar?"
                                             size="large"
                                             :disabled="form.records_id !== '02'"
+                                            @change="checkedCustom"
                                         />
                                         <el-input-number
                                             v-model="form.custom_quantity"
@@ -1518,7 +1519,10 @@ export default {
                 return this.$message.error("La cantidad debe ser mayor a 0");
             }
         },
-
+        checkedCustom()
+        {
+            this.form.custom_quantity = this.totalManualDescargar;
+        },
         async searchRemoteItems(search) {
             this.loading_search = true;
             this.items = [];
@@ -1538,10 +1542,10 @@ export default {
                 return this.$message.error("La cantidad debe ser mayor a 0");
             }
 
-            if(this.form.custom_quantity_check == true)
+            /*if(this.form.custom_quantity_check == true)
             {
                 this.form.custom_quantity = this.totalManualDescargar
-            }
+            }*/
 
             this.loading_submit = true;
             this.form.supplies = this.supplies;
