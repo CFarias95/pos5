@@ -7,7 +7,7 @@ use App\CoreFacturalo\WS\Response\BillResult;
 /**
  * Class BillSender.
  */
-class BillSender extends BaseSunat
+class BillSender1 extends BaseSunat
 {
     /**
      * @param string $filename
