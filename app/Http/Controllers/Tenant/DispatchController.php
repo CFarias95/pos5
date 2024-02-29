@@ -169,7 +169,7 @@ class DispatchController extends Controller
                     $lotes = '';
                     if(isset($item->item->IdLoteSelected )){
                         foreach($item->item->IdLoteSelected as $lot){
-                            $lotes .= 'Cod. Lote: '. $lot . ', ';
+                            $lotes .= 'Cod. Lote: '. $lot->code . ', ';
                         }
                     }
 
