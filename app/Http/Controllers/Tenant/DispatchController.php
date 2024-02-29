@@ -167,9 +167,12 @@ class DispatchController extends Controller
                 foreach ($document->items as $item) {
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $lotes = '';
-                    foreach($item->item->IdLoteSelected as $lot){
-                        $lotes .= 'Cod. Lote: '. $lot . ', ';
+                    if(isset($item->item->IdLoteSelected )){
+                        foreach($item->item->IdLoteSelected as $lot){
+                            $lotes .= 'Cod. Lote: '. $lot . ', ';
+                        }
                     }
+
                     $items[] = [
                         'item_id' => $item->item_id,
                         'item' => $item,
