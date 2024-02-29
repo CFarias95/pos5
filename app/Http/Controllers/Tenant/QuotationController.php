@@ -997,6 +997,8 @@ class QuotationController extends Controller
         $data = file_get_contents($temp);
 
         Storage::disk('tenant')->put('quotation/'.$file->getClientOriginalName(),$data);
+        Storage::disk('tenant')->put('quotation/pdf/'.$file->getClientOriginalName(),$data);
+
         return [
             'success' => true,
             'data' => [

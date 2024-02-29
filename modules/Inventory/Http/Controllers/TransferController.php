@@ -345,7 +345,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                             }
                         }
-                    }elseif($it['series_enabled'] == true){
+                    }elseif(isset($it['series_enabled']) && $it['series_enabled'] == true){
                         //si tienes series
                         $inventory = new Inventory();
                         $inventory->type = 2;

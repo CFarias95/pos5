@@ -106,9 +106,9 @@ trait StorageDocument
         $this->_folder = ($root)?$root.DIRECTORY_SEPARATOR.$file_type:$file_type;
     }
 
-        
+
     /**
-     * 
+     *
      * Validar si existe archivo
      *
      * @param  string $filename
@@ -121,5 +121,5 @@ trait StorageDocument
         $this->setData($filename, $file_type, $root);
         return Storage::disk('tenant')->exists($this->_folder.DIRECTORY_SEPARATOR.$this->_filename);
     }
-    
+
 }
