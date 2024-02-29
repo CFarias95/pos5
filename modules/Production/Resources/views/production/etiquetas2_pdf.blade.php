@@ -278,7 +278,7 @@
         </tr>
         <tr>
             <th colspan="2">Merma</th>
-            <td>{{ $produccion->imperfect }}</td>
+            <td>{{ number_format($produccion->imperfect, 4) }}</td>
             <td>{{ $porcentaje_merma }}%</td>
         </tr>
     </tbody>
@@ -303,7 +303,7 @@
                     </tr>
                     <tr>
                         <th>Muestra Testigo (KG):</th>
-                        <td>{{ $produccion->samples }}</td>
+                        <td>{{ number_format($produccion->samples, 4) }}</td>
                         <th>Muestra 2:</th>
                         <td>{{ $produccion->muestra2 }}</td>
                     </tr>
