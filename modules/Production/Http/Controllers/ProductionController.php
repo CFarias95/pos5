@@ -908,7 +908,7 @@ class ProductionController extends Controller
             $inventory_it->description = $inventory_transaction_item->name;
             $inventory_it->item_id = $production->item_id;
             $inventory_it->warehouse_id = $production->warehouse_id;
-            $inventory_it->quantity = (float) $production->quantity;
+            $inventory_it->quantity = $production->custom_quantity > 0 ? (float) $production->custom_quantity : (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
             $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
             $inventory_it->production_id = $production->id;
@@ -985,11 +985,18 @@ class ProductionController extends Controller
                             }
                         }
                     } else {
-
-                        $qty = $item['quantity'] ?? 0;
+                        /*if($produccion->custom_quantity > 0)
+                        {
+                            $qty = $item['custom_quantity'];
+                        }else{
+                            $qty = $item['quantity'] ?? 0;
+                        }*/
+                        //Log::info('item -- '.$item);
+                        
                         $inventory_it = new Inventory();
                         $inventory_it->type = null;
                         $inventory_it->description = $inventory_transaction_item->name;
+                        //Log::info('$inventory_transaction_item->name - '.$inventory_transaction_item->name);
                         $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
                         $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
                         $inventory_it->quantity = (float) ($qty);

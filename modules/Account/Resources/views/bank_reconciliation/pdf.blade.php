@@ -1,6 +1,6 @@
 @php
 $logo = "storage/uploads/logos/{$company->logo}";
-//Log::info('entries - '.json_encode($entries));
+//Log::info('data - '.json_encode($data1));
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -9,7 +9,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="Content-Type" content="application/pdf; charset=utf-8" />
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
-        <title>Reconciliación bancaria</title>
+        <title>Conciliación bancaria</title>
         <style>
             html {
                 font-family: sans-serif;
@@ -88,7 +88,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
         </div>
         <hr>
         <div>
-            <h2 align="center" class="title"><strong>Reconciliación bancaria</strong></h2>
+            <h2 align="center" class="title"><strong>Conciliación bancaria</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
             
@@ -134,6 +134,10 @@ $logo = "storage/uploads/logos/{$company->logo}";
             @if(!empty($entries))
                 <div class="">
                     <div class=" ">
+                        <div>
+                            <h2 align="center" class="title"><strong>Conciliados</strong></h2>
+                        </div>
+                        <div style="margin-top:20px; margin-bottom:20px;">
                         <table class="">
                             <thead>
                                 <tr>
@@ -154,6 +158,47 @@ $logo = "storage/uploads/logos/{$company->logo}";
                                         <td class="celda">{{$entry->account->comment}}</td> 
                                         <td class="celda">{{$entry->debe}}</td> 
                                         <td class="celda">{{$entry->haber}}</td> 
+                                    </tr>
+                                @endforeach
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            @else
+                <div class="callout callout-info">
+                    <p>No se encontraron registros asociados.</p>
+                </div>
+            @endif
+            <br>
+            <br>
+            <br>
+            @if(!empty($data1))
+                <div class="">
+                    <div class=" ">
+                        <div>
+                            <h2 align="center" class="title"><strong>Sin Conciliar</strong></h2>
+                        </div>
+                        <div style="margin-top:20px; margin-bottom:20px;">
+                        <table class="">
+                            <thead>
+                                <tr>
+                                    <th class="text-center">#</th>
+                                    <th class="text-center">Asiento</th>
+                                    <th class="text-center">Fecha</th>
+                                    <th class="text-center">Commentario</th>
+                                    <th class="text-center">Debe</th>
+                                    <th class="text-center">Haber</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                @foreach($data1 as $entry1)
+                                    <tr>
+                                        <td class="celda">{{$entry1->account->id}}</td> 
+                                        <td class="celda">{{$entry1->account->filename}}</td> 
+                                        <td class="celda">{{$entry1->account->seat_date}}</td> 
+                                        <td class="celda">{{$entry1->account->comment}}</td> 
+                                        <td class="celda">{{$entry1->debe}}</td> 
+                                        <td class="celda">{{$entry1->haber}}</td> 
                                     </tr>
                                 @endforeach
                             </tbody>

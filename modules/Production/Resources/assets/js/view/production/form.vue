@@ -1515,6 +1515,7 @@ export default {
                         row.quantityD = Math.floor((value * row.quantity) * 10000) / 10000;
                     }
                 });
+                this.updateTotalDescargar()
             } else {
                 return this.$message.error("La cantidad debe ser mayor a 0");
             }
@@ -1684,7 +1685,7 @@ export default {
                         difference: response.data.stock - this.supplies[index].quantityD
                     });
                     //console.log('stock', response.data.stock)
-                    if (this.supplies[index].difference <= 0) {
+                    if (this.supplies[index].difference <= 0 && this.records[0].description === "Registrado") {
                         this.supply_difference = true
                         this.$message.error(
                             "Tiene productos sin stock suficiente en ese almacen!"

@@ -223,15 +223,55 @@ class BankReconciliationController extends Controller
     public function pdf($id)
     {
         $records = BankReconciliation::where('id',$id)->get();
-        Log::info('records1 - '.$records);
+        $monthDate = substr($records->first()->month, 0, -3);
+        $startDate = date('Y-m-01', strtotime("$monthDate +1 month"));
+        //Log::info('monthDate - '.$monthDate);
+        //Log::info('startDate - '.$startDate);
         $company = Company::first();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
         $user = User::where('id', $records[0]->user_id)->first();
         $account = AccountMovement::where('id', $records[0]->account_id)->first();
         $entries = AccountingEntryItems::where('bank_reconciliation_id', $records[0]->id)->with('account')->get();
+        
+        $data = AccountingEntryItems::query();
 
-        $pdf = PDF::loadView('account::bank_reconciliation.pdf', compact("records", "company", "fechaActual", "usuario_log", "user", "account", "entries"));
+        if($account->id){
+            $data->where('account_movement_id',$account->id);
+        }
+
+        if($monthDate){
+
+            $startDate = date('Y-m-31', strtotime($monthDate));
+
+            $mov = AccountingEntries::where('seat_date', '<=', $startDate)->orderBy('seat_date','asc')->get()->transform(function($row){
+                return[
+                    'id' =>$row->id
+                ];
+            });
+            //Log::info('mov - '.$mov);
+
+            $data->whereIn('accounting_entrie_id',$mov);
+            //Log::info('data1 - '.json_encode($data->get()));
+        }
+
+        $data->orderBy('accounting_entrie_id', 'asc')->get()->transform(function($row){
+            $accountingEntrie = AccountingEntries::find($row->accounting_entrie_id);
+            return[
+                'entry' => $accountingEntrie->filename,
+                'date' => $accountingEntrie->seat_date,
+                'comment' => $accountingEntrie->comment,
+                'debe' => round($row->debe,2),
+                'haber' => round($row->haber,2),
+                'bank_reconciliated' => $row->bank_reconciliated,
+                'id' => $row->id,
+            ];
+        });
+        
+        $data1 = $data->get();
+        //Log::info('data - '.json_encode($data1));
+
+        $pdf = PDF::loadView('account::bank_reconciliation.pdf', compact("records", "company", "fechaActual", "usuario_log", "user", "account", "entries", "data1"));
 
         $filename = 'Bank_Reconciliation_' .  date('YmdHis');
 
