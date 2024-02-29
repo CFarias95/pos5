@@ -174,7 +174,7 @@
                                             <tbody>
                                             <tr v-for="(row, index) in document_affected.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
-                                                <td>{{ row.item.description }}</td>
+                                                <td>{{ row.item.name }}/{{ row.item.description }}</td>
                                                 <td>{{ row.quantity }}</td>
                                                 <td>{{ row.unit_price }}</td>
                                                 <td>{{ row.total_discount }}</td>
@@ -228,9 +228,7 @@
                                     <tbody>
                                     <tr v-for="(row, index) in form.items" :key="index">
                                         <td>{{ index + 1 }}</td>
-                                        <td>{{
-                                                row.item.description
-                                            }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
+                                        <td>{{ row.item.name }}/{{ row.item.description }}<br/><small>{{ row.affectation_igv_type.description }}</small></td>
                                         <td class="text-center">{{ row.item.unit_type_id }}</td>
                                         <td class="text-right">{{ row.quantity }}</td>
                                         <td class="text-right">{{ currency_type.symbol }} {{ row.unit_price }}</td>
