@@ -567,6 +567,9 @@
                 <p class="text-right" v-if="form.total_igv > 0">
                   IVA: {{ currency_type.symbol }} {{ form.total_igv }}
                 </p>
+                <p class="text-right" v-if="form.total_discount > 0">
+                  DESCUENTO: {{ currency_type.symbol }} {{ form.total_discount }}
+                </p>
                 <h3 class="text-right" v-if="form.total > 0">
                   <b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}
                 </h3>

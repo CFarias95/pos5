@@ -847,10 +847,23 @@ class QuotationController extends Controller
         $client = Person::find($request->customer_id);
         $quotation = Quotation::find($request->id);
         $customer_email = $request->input('customer_email');
+        $email = trim($request->input('customer_email'));
+        $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
+        $mails = [];
+        if (!empty($mail) && count($mail) > 0) {
+            foreach ($mail as $email) {
+                $email = trim($email);
+                if (!empty($email)) {
+                    $mails[] = $email;
+                }
+            }
+            $email= implode(';',$mails);
+        }
+        $email = explode(';',$email);
 
         // $this->reloadPDF($quotation, "a4", $quotation->filename);
 
-        $email = $customer_email;
+        //$email = $customer_email;
         $mailable = new QuotationEmail($client, $quotation);
         $id = (int)$request->id;
 
@@ -862,8 +875,6 @@ class QuotationController extends Controller
         $mailer = new Swift_Mailer($transport);
         Mail::setSwiftMailer($mailer);
         Mail::to($email)->send($mailable);
-
-
         return [
             'success' => true
         ];
@@ -985,7 +996,7 @@ class QuotationController extends Controller
         $mime = mime_content_type($temp);
         $data = file_get_contents($temp);
 
-        Storage::disk('tenant')->put('quotation/pdf/'.$file->getClientOriginalName(),$data);
+        Storage::disk('tenant')->put('quotation/'.$file->getClientOriginalName(),$data);
         return [
             'success' => true,
             'data' => [
@@ -995,6 +1006,7 @@ class QuotationController extends Controller
             ]
         ];
     }
+
     public function downloadUploadPdf($id)
     {
         $retention = Quotation::find($id);

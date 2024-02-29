@@ -219,7 +219,7 @@ Log::info('documents-items'.json_encode($document->seller));
             <td class="text-left">
 
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
-                {{ $row->item->name_product_pdf }}
+                {{ strip_tags($row->item->name_product_pdf) }}
                 @else
                 {{ $row->item->name }} / {{ $row->item->description }}
                 @endif
@@ -267,10 +267,10 @@ Log::info('documents-items'.json_encode($document->seller));
                     @endphp
                     {{ number_format($total_discount_line, 2) }}
                 @else
-                0
+
                 @endif
             </td>
-            <td class="text-right">{{ number_format(($row->quantity * $row->unit_value), 2) }}</td>
+            <td class="text-right">{{ number_format(($row->total), 2) }}</td>
         </tr>
         <tr>
             <td colspan="8" class="border-bottom"></td>
@@ -374,17 +374,19 @@ Log::info('documents-items'.json_encode($document->seller));
 
 Si desea realizar alguna consulta con respecto a la cotización, pongase en contacto con: <b>
     @if ($document->seller->name)
+    <br>
         {{ $document->seller->name }}
     @else
+    <br>
         {{ $document->user->name }}
     @endif
-    , 
+    <br>
     @if ($document->seller->corporate_cell_phone)
         {{ $document->seller->corporate_cell_phone }}
     @endif
-    , 
+    <br>
     @if ($document->seller->email)
-        {{ $document->seller->email }}    
+        {{ $document->seller->email }}
     @endif
 
 </b>
@@ -401,19 +403,19 @@ Si desea realizar alguna consulta con respecto a la cotización, pongase en cont
         <tr class="font-sm">
             <td class="p-1" width="30%"></td>
             <td class="p-1"  width="8%"></td>
-            
+
              <td class="text-center p-1 font-sm" width="30%">
                 <p style="font-size: large"><b>Gracias por preferirnos</b></p>
                 <br>
                 <br>
                 <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="max-width: 200px;">
                 {{--<b>
-                    Elaborado por: 
+                    Elaborado por:
                 </b>
                 {{$document->user->name}}
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
                 {{$document->user->number}} --}}
             </td>
