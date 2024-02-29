@@ -178,12 +178,12 @@ class DispatchController extends Controller
                         'item' => $item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
-                        'name' => ($item->item->name != null) ? $item->item->name : ' ',
+                        'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
                         'name_product_pdf' => $name_product_pdf,
                         'lote' => $lotes,
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
-                        'factory_code' => $item->item->factory_code,
+                        'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
                         'IdLoteSelected' => $item->item->IdLoteSelected,
                     ];
                 }
@@ -216,12 +216,12 @@ class DispatchController extends Controller
                         'item' => $item->item,
                         'quantity' => $item->quantity,
                         'description' => $item->item->description,
-                        'name' => $item->item->name,
+                        'name' => (isset($item->item->name)) ? $item->item->name : '',
                         'name_product_pdf' => $name_product_pdf,
                         'lote' => $item->lot_code,
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
-                        'factory_code' => $item->item->factory_code,
+                        'factory_code' => (isset($item->item->factory_code)) ? $item->item->factory_code : '',
 
                     ];
                     $items[0]['IdLoteSelected'][]  = [
