@@ -868,8 +868,9 @@ class ProductionController extends Controller
                 $transferRequest['client_id'] = $client_id;
                 $transferRequest['created_at'] = $created_at->toDateTimeString();
                 //Log::info('compromise_quantity - ' . $compromise_quantity);
+                $transferRequest['compromise_quantity'] = $compromise_quantity;
                 $transferRequest['quantity'] = $compromise_quantity;
-                //Log::info('tranfer Request - ' . json_encode($transferRequest));
+                Log::info('tranfer Request - ' . json_encode($transferRequest));
                 return $transfers->store($transferRequest);
             }
         } catch (Exception $ex) {
