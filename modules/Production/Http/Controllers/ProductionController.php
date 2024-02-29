@@ -804,8 +804,8 @@ class ProductionController extends Controller
                 $transferRequest = new TransferRequest();
 
                 $items = [];
-                //Log::info('Production item before loop: ' . json_encode($production->item));
-                //Log::info('$production - ' . $production);
+                Log::info('Production item before loop: ' . json_encode($production->item));
+                Log::info('$production - ' . $production);
 
                 if (isset($production->item)) {
                     if (is_array($production->item)) {
