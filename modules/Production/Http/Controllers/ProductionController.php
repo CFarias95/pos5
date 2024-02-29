@@ -576,6 +576,7 @@ class ProductionController extends Controller
             $production->fill($request->all());
             $production->warehouse_id = $warehouse_id;
             $production->quantity = $quantity;
+
             $production->state_type_id = $new_state_type_id;
             $informative = ($request->informative) ?: false;
             $production->user_id = auth()->user()->id;
@@ -585,7 +586,7 @@ class ProductionController extends Controller
             $costoT = 0;
             $samples = 0;
 
-            
+
 
             if ($old_state_type_id == '01' && $new_state_type_id == '02' && !$informative) {
                 //Log::info("Actualiza a elaboracion");
@@ -687,6 +688,9 @@ class ProductionController extends Controller
                                 ];
                             }
                         }
+                    }
+                    if($request->custom_quantity_check == true || $request->custom_quantity_check == 'true' && $request->custom_quantity){
+                        $production->quantity = $request->custom_quantity;
                     }
                     $production->cost_supplies = $costoT;
                     $production->save();
@@ -908,7 +912,7 @@ class ProductionController extends Controller
             $inventory_it->description = $inventory_transaction_item->name;
             $inventory_it->item_id = $production->item_id;
             $inventory_it->warehouse_id = $production->warehouse_id;
-            $inventory_it->quantity = $production->custom_quantity > 0 ? (float) $production->custom_quantity : (float) $production->quantity;
+            $inventory_it->quantity = (float) $production->quantity;
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
             $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
             $inventory_it->production_id = $production->id;
@@ -992,14 +996,14 @@ class ProductionController extends Controller
                             $qty = $item['quantity'] ?? 0;
                         }*/
                         //Log::info('item -- '.$item);
-                        
+
                         $inventory_it = new Inventory();
                         $inventory_it->type = null;
                         $inventory_it->description = $inventory_transaction_item->name;
                         //Log::info('$inventory_transaction_item->name - '.$inventory_transaction_item->name);
                         $inventory_it->item_id = (isset($item['item_id'])) ? $item['item_id'] : $item['individual_item_id'];
                         $inventory_it->warehouse_id = (isset($item['warehouse_id'])) ? $item['warehouse_id'] : $production->warehouse_id;
-                        $inventory_it->quantity = (float) ($qty);
+                        $inventory_it->quantity = (float) ($item['quantity'] );
                         $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                         $inventory_it->save();
                     }
@@ -1577,9 +1581,9 @@ class ProductionController extends Controller
         $production_items = [];
         $empaque_items = [];
         $inventories = null;
-        
+
         $inventarios = Inventory::where('production_id', $produccion->id)->where('inventory_transaction_id', '101')->get();
-        
+
         $inventarios->transform(function ($row) use (&$empaque_items, &$production_items) {
             $attributes = collect($row->item->attributes);
             $hasEMAttribute = $attributes->contains(function ($attribute) {
