@@ -195,8 +195,8 @@
                 'total_producir' => $this->total_producir,
                 'lugar_produccion' => $this->lugar_produccion,
                 'purchase_mean_cost' => $this->purchase_mean_cost,
-                'validity' => $this->validity
-
+                'validity' => $this->validity,
+                'item_for' => $this->item_for,
             ];
         }
     }

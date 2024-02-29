@@ -203,6 +203,7 @@ class Item extends ModelTenant
         'category_id_array',
         'purchase_mean_cost',
         'validity',
+        'item_for',
     ];
 
     protected $casts = [
@@ -225,6 +226,7 @@ class Item extends ModelTenant
         'income_cta' => 'integer',
         'sale_cost_cta' => 'integer',
         'purchase_cta' => 'integer',
+        'item_for' => 'integer',
 
     ];
 
@@ -1109,6 +1111,7 @@ class Item extends ModelTenant
             'tariff_id' => $this->tariff_id,
             'concept_id' => $this->concept_id,
             'name' => $this->name,
+            'item_for' => $this->item_for,
 
         ];
 
@@ -1313,6 +1316,7 @@ class Item extends ModelTenant
             'lugar_produccion' => $this->lugar_produccion,
             'purchase_mean_cost' => $this->purchase_mean_cost,
             'validity' => $this->validity,
+            'item_for' => $this->item_for,
 
         ];
     }

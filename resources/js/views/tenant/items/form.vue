@@ -130,6 +130,21 @@
               </div>
             </div>
             <div class="col-md-3">
+              <div :class="{ 'has-danger': errors.item_for }" class="form-group">
+                <label class="control-label">Destinado para</label>
+                <el-select v-model="form.item_for" dusk="item_for">
+                  <el-option :key="0" label="Compra y Venta" :value="0"></el-option>
+                  <el-option :key="1" label="Compra" :value="1"></el-option>
+                  <el-option :key="2" label="Venta" :value="2"></el-option>
+                </el-select>
+                <small
+                  v-if="errors.item_for"
+                  class="form-control-feedback"
+                  v-text="errors.item_for[0]"
+                ></small>
+              </div>
+            </div>
+            <div class="col-md-3">
               <div :class="{ 'has-danger': errors.currency_type_id }" class="form-group">
                 <label class="control-label">Moneda</label>
                 <el-select v-model="form.currency_type_id" dusk="currency_type_id">
@@ -2200,6 +2215,7 @@ export default {
         category_id_array: [],
         purchase_mean_cost: null,
         validity: 0,
+        item_for: 0,
       };
 
       this.show_has_igv = true;

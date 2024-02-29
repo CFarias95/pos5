@@ -200,7 +200,7 @@ class ItemController extends Controller
         }
 
         //$records = $records->orderBy('internal_id', 'asc');
-        
+
         return $records;
     }
 
