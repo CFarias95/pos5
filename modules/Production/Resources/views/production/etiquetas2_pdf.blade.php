@@ -26,9 +26,49 @@
     }
     $logo = "storage/uploads/logos/{$company->logo}";
     //Log::info('');
+   
+
+    $empacado =  $totalKg - $produccion->imperfect - $produccion->samples;
+
+    $producido_global = floatval($produccion->color);
+    $merma_global = floatval($produccion->olor);
+
     $porcentaje_merma = 0;
-    $multiplicacion = $produccion->imperfect * 100;
-    $porcentaje_merma = $multiplicacion / $totalKg;
+    $multiplicacion1 = $produccion->imperfect * 100;
+    $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
+
+    $porcentaje_merma_global = 0;
+    $multiplicacion = $merma_global * 100;
+    $porcentaje_merma_global = round($multiplicacion / $producido_global, 2);
+
+    $rango = null;
+    $color = null;
+    $olor = null;
+    $sabor = null;
+    $soluble = null;
+
+    foreach ($producido->attributes as $attribute) {
+        if($attribute->attribute_type_id == 'OPC')
+        {
+            $color = $attribute->description;
+        }
+        if($attribute->attribute_type_id == 'OPL')
+        {
+            $olor = $attribute->description;
+        }
+        if($attribute->attribute_type_id == 'OPS')
+        {
+            $sabor = $attribute->description;
+        }
+        if($attribute->attribute_type_id == 'OPSL')
+        {
+            $soluble = $attribute->description;
+        }
+        if($attribute->attribute_type_id == 'ET04')
+        {
+            $rango = $attribute->description;
+        }
+    }
 @endphp
 
 <table>
@@ -50,27 +90,27 @@
         <td><center>REV. 06</center></td>
     </tr>
 </table>
-<br>
+
 <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
     <tr>
         <td style="width: 48%; vertical-align: top;">
             <table border="1" style="width: 100%; border-collapse: collapse;">
                 <tbody>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Fecha</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->date_end }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Fecha</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->date_end }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">N° Orden Conversión</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->id }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">N° Orden Conversión</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->id }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">N° Solicitud Producción</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->production_order }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">N° Solicitud Producción</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->name }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Cantidad a Producir</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $totalKg }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Cantidad a Producir</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $totalKg }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -80,18 +120,18 @@
             <table border="1" style="width: 100%; border-collapse: collapse;">
                 <tbody>
                     <tr>
-                        <th colspan="2" style="border: 1px solid #ddd; padding: 2px;"><center>DEP. PRODUCCIÓN</center></th>
+                        <th colspan="2" style="border: 1px solid #ddd; padding: 1px;"><center>DEP. PRODUCCIÓN</center></th>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Nombre Producto</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $producido->name }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Nombre Producto</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $producido->name }}-{{$producido->description}}</td>
                     </tr>
                 </tbody>
             </table>
         </td>
     </tr>
 </table>
-<br>
+
 <table>
     <thead>
         <tr>
@@ -135,7 +175,7 @@
         </tr>
     </tbody>
 </table>
-<br>
+
 <table>
     <thead>
         <tr>
@@ -183,17 +223,16 @@
 <br>
 <br>
 <br>
-<br>
 
-<div style="width: 100%; text-align: center; margin-bottom: 5px;">
+<div style="width: 100%; text-align: center; margin-bottom: 3px;">
     <div style="margin: 0 auto; width: 90%;">
-        <div style="display: inline-block; width: 45%; text-align: center; margin-right: 15px; font-size: 6px;">
+        <div style="display: inline-block; width: 45%; text-align: center; margin-right: 15px; font-size: 8px;">
             <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
             <strong>Colaborador de Producción</strong>
             <div>{{ $produccion->production_collaborator ? $produccion->production_collaborator : 'N/A' }}</div>
         </div>
 
-        <div style="display: inline-block; width: 45%; text-align: center; font-size: 6px;">
+        <div style="display: inline-block; width: 45%; text-align: center; font-size: 8px;">
             <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
             <strong>Colaborador de Mezcla</strong>
             <div>{{ $produccion->mix_collaborator ? $produccion->mix_collaborator : 'N/A' }}</div>
@@ -201,7 +240,7 @@
     </div>
 </div>
 
-<table style="width: 100%; margin-bottom: 10px;">
+<table style="width: 100%; margin-bottom: 3px;">
     <thead>
         <tr>
             <th colspan="2"><center>Comentario</center></th>
@@ -215,7 +254,7 @@
         </tr>
     </tbody>
 </table>
-<br>
+
 <table>
     <thead>
         <tr>
@@ -244,8 +283,8 @@
         </tr>
     </tbody>
 </table>
-<br>
-<table style="margin: 0 auto;">
+
+<table>
     <thead>
         <tr>
             <td colspan="2"><strong><center>Producto</center></strong></td>
@@ -253,7 +292,7 @@
     </thead>
     <tbody>
         <tr>
-            <td><strong>Producto:</strong> {{ $producido->name }}</td>
+            <td><strong>Producto:</strong> {{ $producido->name }}-{{$producido->description}}</td>
             <td><strong>Lote asignado:</strong> {{ $produccion->lot_code }}</td>
         </tr>
         <tr>
@@ -261,8 +300,8 @@
         </tr>
     </tbody>
 </table>
-<br>
-<table border="1" style="width:100%">
+
+<table>
     <thead>
         <tr>
             <th colspan="2"></th>
@@ -283,7 +322,7 @@
         </tr>
     </tbody>
 </table>
-<br>
+
 <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
     <tr>
         <td style="width: 48%; vertical-align: top;">
@@ -297,7 +336,7 @@
                 <tbody>
                     <tr>
                         <th>Cantidad Empacada (KG):</th>
-                        <td>{{ $totalKg + $totalKgEM }}</td>
+                        <td>{{ $empacado }}</td>
                         <th>Muestra 1:</th>
                         <td>{{ $produccion->muestra1 }}</td>
                     </tr>
@@ -343,22 +382,22 @@
                     </tr>
                     <tr>
                         <th>Cantidad Producida Global</th>
-                        <td>{{ $totalKg }}</td>
+                        <td>{{ $producido_global }}</td>
                         <td>100%</td>
                     </tr>
                     <tr>
                         <th>Merma Total (KG)</th>
-                        <td>{{ $produccion->imperfect }}</td>
-                        <td>{{ $porcentaje_merma }}</td>
+                        <td>{{ $merma_global }}</td>
+                        <td>{{ $porcentaje_merma_global }}</td>
                     </tr>
                     <tr>
                         <th>Muestra Testigo (KG)</th>
-                        <td>{{ $produccion->samples }}</td>
+                        <td>{{ $produccion->sabor }}</td>
                         <td></td>
                     </tr>
                     <tr>
                         <th>Sobrante Total (KG)</th>
-                        <td></td>
+                        <td>{{ $produccion->solubilidad }}</td>
                         <td></td>
                     </tr>
                 </tbody>
@@ -366,38 +405,38 @@
         </td>
     </tr>
 </table>
-<br>
+
 <table style="width: 100%; border-collapse: collapse; border: 1px solid #000000;">
     <tr>
         <td style="width: 48%; vertical-align: top;">
             <table border="1" style="width: 100%; border-collapse: collapse;">
                 <tbody>
                     <tr>
-                        <th colspan="2" style="border: 1px solid #ddd; padding: 2px;"><center>Control de Calidad</center></th>
+                        <th colspan="2" style="border: 1px solid #ddd; padding: 1px;"><center>Control de Calidad</center></th>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">RANGO PH</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;"></td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">RANGO PH</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $rango }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">PH</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->ph }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">PH</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->ph }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">COLOR</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->color }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">COLOR</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $color }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">OLOR</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->olor }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">OLOR</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $olor }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">SABOR</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->sabor }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">SABOR</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $sabor }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">SOLUBILIDAD</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->solubilidad }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">SOLUBILIDAD</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $soluble }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -407,30 +446,30 @@
             <table border="1" style="width: 100%; border-collapse: collapse;">
                 <tbody>
                     <tr>
-                        <th colspan="2" style="border: 1px solid #ddd; padding: 2px;"><center>Certificado de Calidad</center></th>
+                        <th colspan="2" style="border: 1px solid #ddd; padding: 1px;"><center>Certificado de Calidad</center></th>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Revisión de Información:</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->revision == 1 ? 'Si' : 'No' }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Revisión de Información:</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->revision == 1 ? 'Si' : 'No' }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Enviado a:</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->enviado }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Enviado a:</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->enviado }}</td>
                     </tr>
                     <tr>
-                        <th colspan="2" style="border: 1px solid #ddd; padding: 2px;"><center>Información de Etiqueta</center></th>
+                        <th colspan="2" style="border: 1px solid #ddd; padding: 1px;"><center>Información de Etiqueta</center></th>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Verificación de Nombre y Lote:</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->verificacion_nombre == 1 ? 'Si' : 'No' }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Verificación de Nombre y Lote:</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->verificacion_nombre == 1 ? 'Si' : 'No' }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Verificación de Fecha Elab.:</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->verificacion_date_issue == 1 ? 'Si' : 'No' }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Verificación de Fecha Elab.:</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->verificacion_date_issue == 1 ? 'Si' : 'No' }}</td>
                     </tr>
                     <tr>
-                        <th style="border: 1px solid #ddd; padding: 2px;">Verificación de Fecha Ven.:</th>
-                        <td style="border: 1px solid #ddd; padding: 2px;">{{ $produccion->verificacion_date_end == 1 ? 'Si' : 'No' }}</td>
+                        <th style="border: 1px solid #ddd; padding: 1px;">Verificación de Fecha Ven.:</th>
+                        <td style="border: 1px solid #ddd; padding: 1px;">{{ $produccion->verificacion_date_end == 1 ? 'Si' : 'No' }}</td>
                     </tr>
                 </tbody>
             </table>
@@ -439,31 +478,7 @@
 
 </table>
 
-<br>
-<br>
-<br>
-<br>
-
-<div style="width: 100%; text-align: center; margin-bottom: 1px;">
-    <div style="margin: 0 auto; width: 90%;">
-        <div style="display: inline-block; width: 30%; text-align: center; margin-right: 15px; font-size: 6px;">
-            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
-            <strong>F. Producción</strong>
-        </div>
-
-        <div style="display: inline-block; width: 30%; text-align: center; margin-right: 15px; font-size: 6px;">
-            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
-            <strong>F. Calidad</strong>
-        </div>
-
-        <div style="display: inline-block; width: 30%; text-align: center; font-size: 6px;">
-            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
-            <strong>F. Bodega</strong>
-        </div>
-    </div>
-</div>
-
-<table style="width: 100%; margin-bottom: 10px;">
+<table style="width: 100%; margin-bottom: 3px;">
     <thead>
         <tr>
             <th colspan="2"><center>Observaciones</center></th>
@@ -478,17 +493,40 @@
     </tbody>
 </table>
 
+<br>
+<br>
+<br>
+
+<div style="width: 100%; text-align: center; margin-bottom: 1px;">
+    <div style="margin: 0 auto; width: 90%;">
+        <div style="display: inline-block; width: 30%; text-align: center; margin-right: 15px; font-size: 8px;">
+            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
+            <strong>F. Producción</strong>
+        </div>
+
+        <div style="display: inline-block; width: 30%; text-align: center; margin-right: 15px; font-size: 8px;">
+            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
+            <strong>F. Calidad</strong>
+        </div>
+
+        <div style="display: inline-block; width: 30%; text-align: center; font-size: 8px;">
+            <div style="border-bottom: 1px solid #000; margin-bottom: 1px;"></div>
+            <strong>F. Bodega</strong>
+        </div>
+    </div>
+</div>
+
 <style>
     table {
         border-collapse: collapse;
         width: 100%;
-        font-size: 6px;    
+        font-size: 8px; 
+        margin-bottom: 3px;   
     }
 
     th, td {
         border: 1px solid #dddddd;
         text-align: left;
-        padding: 1px;
     }
 
     .img-container {

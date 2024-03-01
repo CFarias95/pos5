@@ -489,20 +489,20 @@
                                             <el-input v-model="form.ph"></el-input>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label">Color</label>
-                                            <el-input v-model="form.color"></el-input>
+                                            <label class="control-label">Cantidad Producida Global</label>
+                                            <el-input-number v-model="form.color"></el-input-number>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label">Olor</label>
-                                            <el-input v-model="form.olor"></el-input>
+                                            <label class="control-label">Merma Total</label>
+                                            <el-input-number v-model="form.olor"></el-input-number>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label">Sabor</label>
-                                            <el-input v-model="form.sabor"></el-input>
+                                            <label class="control-label">Muestra Testigo Total</label>
+                                            <el-input-number v-model="form.sabor"></el-input-number>
                                         </div>
                                         <div class="form-group">
-                                            <label class="control-label">Solubilidad</label>
-                                            <el-input v-model="form.solubilidad"></el-input>
+                                            <label class="control-label">Sobrante Total</label>
+                                            <el-input-number v-model="form.solubilidad"></el-input-number>
                                         </div>
                                     </div>
                                 </div>
