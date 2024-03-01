@@ -84,14 +84,14 @@
                   v-text="errors.currency_type_id[0]"></small>
               </div>
             </div>
-            <div class="col-lg-2" v-if="form.currency_type_id != configuration.currency_type_id">
+            <div class="col-lg-2">
               <div :class="{ 'has-danger': errors.exchange_rate_sale }" class="form-group">
                 <label class="control-label">Tipo de cambio
                   <el-tooltip class="item" content="Tipo de cambio del día" effect="dark" placement="top-end">
                     <i class="fa fa-info-circle"></i>
                   </el-tooltip>
                 </label>
-                <el-input v-model="form.exchange_rate_sale" disabled></el-input>
+                <el-input v-model="form.exchange_rate_sale"></el-input>
                 <small v-if="errors.exchange_rate_sale" class="form-control-feedback"
                   v-text="errors.exchange_rate_sale[0]"></small>
               </div>
