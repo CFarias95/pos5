@@ -172,8 +172,8 @@
                     })->take(1);
 
                     //Busca el item con relacion al almacen
-                    self::SetWarehouseToUser($item);
-                    self::SetWarehouseToUser($ItemToSearchBySeries);
+                    //self::SetWarehouseToUser($item);
+                    //self::SetWarehouseToUser($ItemToSearchBySeries);
                     $bySerie = $ItemToSearchBySeries->first();
                     if ($bySerie !== null) {
                         //Si existe un dato, devuelve la busqueda por serie.
