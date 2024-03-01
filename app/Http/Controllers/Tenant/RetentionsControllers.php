@@ -91,91 +91,98 @@ class RetentionsControllers extends Controller
 
     private function prepareDocument($id){
 
-        $purchaseL = Purchase::findOrFail($id);
-        $retencionL = RetentionsEC::where('idDocumento', $id)->where('status_id',['01'])->get();
-        if($retencionL->count() > 0 ){
-            $establecimiento = Establishment::findOrFail($purchaseL->establishment_id);
-            $retencioneDetallesL = RetentionsDetailEC::where('idRetencion',$retencionL[0]->idRetencion)->get();
-            $formasPago = PurchasePayment::where('purchase_id',$id)->get();
+        try{
+            $purchaseL = Purchase::findOrFail($id);
+            $retencionL = RetentionsEC::where('idDocumento', $id)->where('status_id',['01'])->get();
 
-            $clave = "" . date('dmY', strtotime($retencionL[0]->created_at)) . "07" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".substr($retencionL[0]->idRetencion,1)."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
-            $digito_verificador_clave = $this->validar_clave($clave);
-            $this->clave_acceso = $clave . "" . $digito_verificador_clave . "";
-            $retencion = null;
+            if($retencionL->count() > 0 ){
 
-            if($purchaseL && $purchaseL->count() > 0 ){
+                $establecimiento = Establishment::findOrFail($purchaseL->establishment_id);
+                $retencioneDetallesL = RetentionsDetailEC::where('idRetencion',$retencionL[0]->idRetencion)->get();
+                $formasPago = PurchasePayment::where('purchase_id',$id)->get();
 
-                $retencion = [
-                    'ambiente'=>$this->ambienteLocal,
-                    'emision' => 1,
-                    'razonSocial' => $this->company->name,
-                    'nombreComercial' => $this->company->trade_name,
-                    'ruc' => $this->company->number,
-                    'claveAcceso' => $this->clave_acceso,
-                    'codDoc' => '07',
-                    'establecimiento' => $retencionL[0]->establecimiento,
-                    'ptoEmision'=> substr($retencionL[0]->ptoEmision,1),
-                    'secuencial'=>substr($retencionL[0]->idRetencion,7),
-                    'dirMatriz' => $establecimiento->address,
-                    'fechaEmision' => $retencionL[0]->created_at->format('d/m/Y'),
-                    'disEstablecimiento' => $establecimiento->address,
-                    'contribuyenteEspecial' => $this->company->contribuyente_especial_num,
-                    'obligadoContabilidad' => ($this->company->obligado_contabilidad > 0 ) ? 'SI':'NO',
-                    'tipoIdentificacionSujetoRetenido' => str_pad($purchaseL->supplier->identity_document_type_id, '2', '0', STR_PAD_LEFT),
-                    'parteRel' => 'NO',
-                    'razonSocialSujetoRetenido' => $purchaseL->supplier->name,
-                    'identificacionSujetoRetenido' => $purchaseL->supplier->number,
-                    'periodoFiscal'=> $retencionL[0]->created_at->format('m/Y'),
-                    'codSustento' => $purchaseL->codSustento,
-                    'codDocSustento' => $purchaseL->document_type_id,
-                    'numDocSustento' => $purchaseL->sequential_number,
-                    'fechaEmisionDocSustento' => $retencionL[0]->created_at->format('d/m/Y'),
-                    'numAutDocSustento' => $purchaseL->auth_number,
-                    'pagoLocExt' => '01',
-                    'totalSinImpuestos' => $purchaseL->total_value,
-                    'importeTotal' => $purchaseL->total,
+                $clave = "" . date('dmY', strtotime($retencionL[0]->created_at)) . "07" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".substr($retencionL[0]->idRetencion,1)."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
+                $digito_verificador_clave = $this->validar_clave($clave);
+                $this->clave_acceso = $clave . "" . $digito_verificador_clave . "";
+                $retencion = null;
 
-                    'baseImponible0' => ($purchaseL->total_unaffected) ? $purchaseL->total_unaffected :0,
-                    'baseImponible12' => ($purchaseL->total_taxed)? $purchaseL->total_taxed:0,
-                    'valorIva12' => ($purchaseL->total_igv) ? $purchaseL->total_igv:0,
+                if($purchaseL && $purchaseL->count() > 0 ){
 
-                    'retenciones' => $retencioneDetallesL->transform(function($row, $key) {
-                        $retentionDescrip = RetentionType::where('code',$row->codRetencion)->get();
-                        return [
-                            'codigo' => intval($retentionDescrip[0]->type_id),
-                            'codigoRetencion' => ($retentionDescrip[0]->code2)? $retentionDescrip[0]->code2 : $row->codRetencion,
-                            'baseImponible' => $row->baseRet,
-                            'porcentajeRetener' => $row->porcentajeRet,
-                            'valorRetenido' => $row->valorRet,
-                        ];
-                    }),
-                    'fpagos' => ($formasPago->count() > 0 )? $formasPago->transform(function($row, $key) {
-                        $pagoSRI = PaymentMethodType::find($row->payment_method_type_id);
-                        return [
-                            'formaPago' => $pagoSRI->pago_sri,
-                            'total' => $row->payment,
-                        ];
-                    }): [],
+                    $retencion = [
+                        'ambiente'=>$this->ambienteLocal,
+                        'emision' => 1,
+                        'razonSocial' => $this->company->name,
+                        'nombreComercial' => $this->company->trade_name,
+                        'ruc' => $this->company->number,
+                        'claveAcceso' => $this->clave_acceso,
+                        'codDoc' => '07',
+                        'establecimiento' => $retencionL[0]->establecimiento,
+                        'ptoEmision'=> substr($retencionL[0]->ptoEmision,1),
+                        'secuencial'=>substr($retencionL[0]->idRetencion,7),
+                        'dirMatriz' => $establecimiento->address,
+                        'fechaEmision' => $retencionL[0]->created_at->format('d/m/Y'),
+                        'disEstablecimiento' => $establecimiento->address,
+                        'contribuyenteEspecial' => $this->company->contribuyente_especial_num,
+                        'obligadoContabilidad' => ($this->company->obligado_contabilidad > 0 ) ? 'SI':'NO',
+                        'tipoIdentificacionSujetoRetenido' => str_pad($purchaseL->supplier->identity_document_type_id, '2', '0', STR_PAD_LEFT),
+                        'parteRel' => 'NO',
+                        'razonSocialSujetoRetenido' => $purchaseL->supplier->name,
+                        'identificacionSujetoRetenido' => $purchaseL->supplier->number,
+                        'periodoFiscal'=> $retencionL[0]->created_at->format('m/Y'),
+                        'codSustento' => $purchaseL->codSustento,
+                        'codDocSustento' => $purchaseL->document_type_id,
+                        'numDocSustento' => $purchaseL->sequential_number,
+                        'fechaEmisionDocSustento' => $retencionL[0]->created_at->format('d/m/Y'),
+                        'numAutDocSustento' => $purchaseL->auth_number,
+                        'pagoLocExt' => '01',
+                        'totalSinImpuestos' => $purchaseL->total_value,
+                        'importeTotal' => $purchaseL->total,
+
+                        'baseImponible0' => ($purchaseL->total_unaffected) ? $purchaseL->total_unaffected :0,
+                        'baseImponible12' => ($purchaseL->total_taxed)? $purchaseL->total_taxed:0,
+                        'valorIva12' => ($purchaseL->total_igv) ? $purchaseL->total_igv:0,
+
+                        'retenciones' => $retencioneDetallesL->transform(function($row, $key) {
+                            $retentionDescrip = RetentionType::where('code',$row->codRetencion)->get();
+                            return [
+                                'codigo' => intval($retentionDescrip[0]->type_id),
+                                'codigoRetencion' => ($retentionDescrip[0]->code2)? $retentionDescrip[0]->code2 : $row->codRetencion,
+                                'baseImponible' => $row->baseRet,
+                                'porcentajeRetener' => $row->porcentajeRet,
+                                'valorRetenido' => $row->valorRet,
+                            ];
+                        }),
+                        'fpagos' => ($formasPago->count() > 0 )? $formasPago->transform(function($row, $key) {
+                            $pagoSRI = PaymentMethodType::find($row->payment_method_type_id);
+                            return [
+                                'formaPago' => $pagoSRI->pago_sri,
+                                'total' => $row->payment,
+                            ];
+                        }): [],
 
 
 
-                ];
+                    ];
+                }
+                $qr = $this->getQr($this->clave_acceso);
+
+                $retencionL[0]->update([
+
+                    'claveAcceso'=>$this->clave_acceso,
+                    'filename'=>$this->clave_acceso,
+                    'external_id'=>$this->clave_acceso,
+                    'status_id' => Self::GENERADA,
+                    'barCode' => $qr,
+
+                ]);
+
+                return $retencion;
+            }else{
+                Log::info('No se encontro en RetencionesEC idDocumento', $id);
+                return false;
             }
-            $qr = $this->getQr($this->clave_acceso);
-
-            $retencionL[0]->update([
-
-                'claveAcceso'=>$this->clave_acceso,
-                'filename'=>$this->clave_acceso,
-                'external_id'=>$this->clave_acceso,
-                'status_id' => Self::GENERADA,
-                'barCode' => $qr,
-
-            ]);
-
-            return $retencion;
-        }else{
-            return false;
+        }catch(Exception $ex){
+            Log::error('Error prepareDocument '.$ex->getMessage() );
         }
 
     }
@@ -726,11 +733,13 @@ class RetentionsControllers extends Controller
     public function createXML($id){
 
         $documento = $this->prepareDocument($id);
+
         if($documento){
             $template = new Template();
             $this->xmlUnsigned = XmlFormat::format($template->xml($this->type, $this->company, $documento,null));
             $nombre = "unsigned/" . $this->clave_acceso . ".xml";
             Storage::disk('tenant')->put($nombre, $this->xmlUnsigned);
+
             $this->firmarXML();
             $nombre2 = "signed/" . $this->clave_acceso . ".xml";
             Storage::disk('tenant')->put($nombre2, $this->xmlSigned);
