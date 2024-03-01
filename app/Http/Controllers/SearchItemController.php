@@ -66,7 +66,7 @@
          *
          * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
          */
-        public static function getNotServiceItem(Request $request = null, $id = 0)
+        public static function getNotServiceItem(Request $request = null, $id = 0, $types = [0])
         {
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
@@ -74,7 +74,7 @@
             $item = self::getAllItemBase($request, false, $id);
             self::SetWarehouseToUser($item);
 
-            return $item->orderBy('id')->get();
+            return $item->whereIn('item_for',$types)->orderBy('id')->get();
         }
 
 
@@ -87,13 +87,13 @@
          *
          * @return \Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection
          */
-        public static function getNotServiceItemWithOutWarehouse(Request $request = null, $id = 0)
+        public static function getNotServiceItemWithOutWarehouse(Request $request = null, $id = 0, $types = [0])
         {
 
             self::validateRequest($request);
             $item = self::getAllItemBase($request, false, $id);
 
-            return $item->orderBy('id')->get();
+            return $item->whereIn('item_for',$types)->orderBy('id')->get();
         }
 
         /**
@@ -296,7 +296,7 @@
          *
          * @return Item[]|\Illuminate\Database\Eloquent\Builder[]|\Illuminate\Database\Eloquent\Collection|Builder[]|Collection|mixed
          */
-        public static function getServiceItem(Request $request = null, $id = 0)
+        public static function getServiceItem(Request $request = null, $id = 0, $types = [0])
         {
             self::validateRequest($request);
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
@@ -308,7 +308,7 @@
                 self::SetWarehouseToUser($item);
             }
 
-            return $item->orderBy('id')->get();
+            return $item->whereIn('item_for',$types)->orderBy('id')->get();
         }
 
         /**
@@ -512,8 +512,8 @@
          */
         public static function getItemsToDocuments(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItem($request, $id);
-            $items_services = self::getServiceItem($request, $id);
+            $items_not_services = self::getNotServiceItem($request, $id, [0,1]);
+            $items_services = self::getServiceItem($request, $id, [0,1]);
             //$prueba1 = $items_not_services->merge($items_services);
             //Log::info('prueba'.$prueba1);
             return self::TransformToModal($items_not_services->merge($items_services));
@@ -986,9 +986,9 @@
          */
         public static function getItemToPurchase(Request $request = null, $id = 0)
         {
-            $items_not_services = self::getNotServiceItemWithOutWarehouse($request, $id);
-            // $items_not_services = self::getNotServiceItem($request, $id);
-            $items_services = self::getServiceItem($request, $id);
+            $items_not_services = self::getNotServiceItemWithOutWarehouse($request, $id, [0,2]);
+            $items_services = self::getServiceItem($request, $id,  [0,2]);
+
             $establishment_id = auth()->user()->establishment_id;
             $warehouse = Warehouse::where('establishment_id', $establishment_id)->first();
 
