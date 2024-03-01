@@ -134,8 +134,8 @@
                 <label class="control-label">Destinado para</label>
                 <el-select v-model="form.item_for" dusk="item_for">
                   <el-option :key="0" label="Compra y Venta" :value="0"></el-option>
-                  <el-option :key="1" label="Compra" :value="1"></el-option>
-                  <el-option :key="2" label="Venta" :value="2"></el-option>
+                  <el-option :key="1" label="Venta" :value="1"></el-option>
+                  <el-option :key="2" label="Compra" :value="2"></el-option>
                 </el-select>
                 <small
                   v-if="errors.item_for"
