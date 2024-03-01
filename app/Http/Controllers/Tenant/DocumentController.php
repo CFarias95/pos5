@@ -2154,7 +2154,7 @@ class DocumentController extends Controller
     public function getItems()
     {
 
-        $items = Item::orderBy('description')->take(20)->get()->transform(function ($row) {
+        $items = Item::orderBy('description')->whereIn('item_for',[0,1])->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
                 'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
