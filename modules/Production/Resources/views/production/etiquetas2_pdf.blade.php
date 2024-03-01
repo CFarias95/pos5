@@ -517,6 +517,9 @@
 </div>
 
 <style>
+    @page {
+        margin: 10px 1cm;
+    }
     table {
         border-collapse: collapse;
         width: 100%;
