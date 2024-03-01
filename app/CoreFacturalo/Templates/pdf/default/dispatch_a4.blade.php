@@ -161,12 +161,15 @@
         <th class="border-top-bottom text-center">Código</th>
         <th class="border-top-bottom text-left">Descripción</th>
         <th class="border-top-bottom text-left">Modelo</th>
+        <th class="border-top-bottom text-left">Lote</th>
         <th class="border-top-bottom text-center">Unidad</th>
         <th class="border-top-bottom text-right">Cantidad</th>
     </tr>
     </thead>
     <tbody>
     @foreach($document->items as $row)
+        @if($row->IdLoteSelected)
+        @foreach($row->IdLoteSelected as $lot)
         <tr>
             <td class="text-center">{{ $loop->iteration }}</td>
             <td class="text-center">{{ $row->item->internal_id }}</td>
@@ -203,6 +206,49 @@
                 @endif
             </td>
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
+            <td class="text-left">{{ $lot->code ?? '' }}</td>
+            <td class="text-center">{{ $row->item->unit_type_id }}</td>
+            <td class="text-right">{{ number_format($lot->compromise_quantity, 0) }}</td>
+        </tr>
+        @endforeach
+        @else
+        <tr>
+            <td class="text-center">{{ $loop->iteration }}</td>
+            <td class="text-center">{{ $row->item->internal_id }}</td>
+            <td class="text-left">
+                @if($row->name_product_pdf)
+                    {!!$row->name_product_pdf!!}
+                @else
+                    {!!$row->item->description!!}
+                @endif
+
+                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+
+                @if($row->attributes)
+                    @foreach($row->attributes as $attr)
+                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
+                    @endforeach
+                @endif
+                @if($row->discounts)
+                    @foreach($row->discounts as $dtos)
+                        <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
+                    @endforeach
+                @endif
+                @if($row->relation_item->is_set == 1)
+                    <br>
+                    @inject('itemSet', 'App\Services\ItemSetService')
+                    @foreach ($itemSet->getItemsSet($row->item_id) as $item)
+                        {{$item}}<br>
+                    @endforeach
+                @endif
+
+                @if($document->has_prepayment)
+                    <br>
+                    *** Pago Anticipado ***
+                @endif
+            </td>
+            <td class="text-left">{{ $row->item->model ?? '' }}</td>
+            <td class="text-left"></td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
             <td class="text-right">
                 @if(((int)$row->quantity != $row->quantity))
@@ -212,6 +258,7 @@
                 @endif
             </td>
         </tr>
+        @endif
     @endforeach
     </tbody>
 </table>

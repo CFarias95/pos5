@@ -72,7 +72,7 @@
             $search_by_barcode = $request->has('search_by_barcode') && (bool)$request->search_by_barcode;
             $input = self::setInputByRequest($request);
             $item = self::getAllItemBase($request, false, $id);
-            self::SetWarehouseToUser($item);
+            //self::SetWarehouseToUser($item);
 
             return $item->whereIn('item_for',$types)->orderBy('id')->get();
         }
@@ -172,8 +172,8 @@
                     })->take(1);
 
                     //Busca el item con relacion al almacen
-                    self::SetWarehouseToUser($item);
-                    self::SetWarehouseToUser($ItemToSearchBySeries);
+                    //self::SetWarehouseToUser($item);
+                    //self::SetWarehouseToUser($ItemToSearchBySeries);
                     $bySerie = $ItemToSearchBySeries->first();
                     if ($bySerie !== null) {
                         //Si existe un dato, devuelve la busqueda por serie.

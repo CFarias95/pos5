@@ -695,7 +695,7 @@ class UnpaidController extends Controller
 
             }
 
-            $comment = 'Multipago '.$documentsSequentials;
+            $comment = ' | Multipago '.$documentsSequentials;
 
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -709,7 +709,7 @@ class UnpaidController extends Controller
             $cabeceraC->seat_general = $lista->seat + 1;
             $cabeceraC->seat_date = $request->date_of_payment;
             $cabeceraC->types_accounting_entrie_id = 4;
-            $cabeceraC->comment = $comment;
+            $cabeceraC->comment = $request->reference.$comment;
             $cabeceraC->serie = 'MULTICOBROS';
             $cabeceraC->number = $lista->seat + 1;
             $cabeceraC->total_debe = $request->payment + $debeAdicional;

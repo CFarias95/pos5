@@ -299,10 +299,10 @@ class DocumentController extends Controller
         // $cat_payment_method_types = CatPaymentMethodType::whereActive()->get();
         // $detraction_types = DetractionType::whereActive()->get();
 
-//        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
-//                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
-//                       'discount_types', 'charge_types', 'company', 'document_type_03_filter',
-//                       'document_types_guide');
+        //        return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
+        //                       'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',
+        //                       'discount_types', 'charge_types', 'company', 'document_type_03_filter',
+        //                       'document_types_guide');
 
         // return compact('customers', 'establishments', 'series', 'document_types_invoice', 'document_types_note',
         //                'note_credit_types', 'note_debit_types', 'currency_types', 'operation_types',

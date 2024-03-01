@@ -474,7 +474,7 @@ class ToPayController extends Controller
 
             }
 
-            $comment = 'Multipago '.$documentsSequentials;
+            $comment = ' | Multipago '.$documentsSequentials;
 
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -488,7 +488,7 @@ class ToPayController extends Controller
             $cabeceraC->seat_general = ($lista && $lista->seat)? $lista->seat + 1 : 1;
             $cabeceraC->seat_date = $request->date_of_payment;
             $cabeceraC->types_accounting_entrie_id = 5;
-            $cabeceraC->comment = $comment;
+            $cabeceraC->comment = $request->reference.$comment;
             $cabeceraC->serie = 'MULTIPAGOS';
             $cabeceraC->number = ($lista && $lista->seat)? $lista->seat + 1 : 1;
             $cabeceraC->total_debe = $request->payment + $debeAdicional;
