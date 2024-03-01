@@ -178,7 +178,7 @@ class RetentionsControllers extends Controller
 
                 return $retencion;
             }else{
-                Log::info('No se encontro en RetencionesEC idDocumento', $id);
+                Log::info('No se encontro en RetencionesEC idDocumento'. $id);
                 return false;
             }
         }catch(Exception $ex){
