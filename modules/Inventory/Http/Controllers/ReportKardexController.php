@@ -25,8 +25,11 @@ use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 use Modules\Inventory\Models\Devolution;
 use App\Models\Tenant\Dispatch;
+use App\Models\Tenant\Warehouse as TenantWarehouse;
+use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Inventory\Http\Resources\ReportKardexCollection2;
 
 class ReportKardexController extends Controller
 {
@@ -114,9 +117,17 @@ class ReportKardexController extends Controller
 
     public function records(Request $request)
     {
-        $records = $this->getRecords($request->all());
+
+        $records = $this->getDatBySp($request->all());
         //Log::info($records);
-        return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
+        //return new ReportKardexCollection($records->paginate(config('tenant.items_per_page')));
+        $collection = collect($records);
+        $per_page = (config('tenant.items_per_page'));
+        $page = request()->query('page') ?? 1;
+        $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
+        $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
+        return new ReportKardexCollection2($paginatedCollection);
+
     }
 
     public function records_lots()
@@ -146,10 +157,23 @@ class ReportKardexController extends Controller
         Log::info('start'.$date_start);
         Log::info('end'.$date_end);*/
 
-        $records = $this->data($item_id, $warehouse_id, $date_start, $date_end);
-        //Log::info(json_encode($records));
 
+        //$records = $this->data($item_id, $warehouse_id, $date_start, $date_end);
+        $records = $this->getDatBySp($item_id, $warehouse_id);
         return $records;
+
+    }
+
+    public function getDatBySp($request){
+
+        $warehouse = $request['warehouse_id'];
+        $item = $request['item_id'];
+
+        if($warehouse == 'all'){
+            $warehouse = 0;
+        }
+       $data = DB::connection('tenant')->select('CALL SP_ReportKardex(?,?)',[$item,$warehouse]);
+       return $data;
 
     }
 
@@ -202,6 +226,7 @@ class ReportKardexController extends Controller
         $data
             ->orderBy('item_id')
             ->orderBy('id');
+
         return $data;
 
     }
@@ -271,10 +296,13 @@ class ReportKardexController extends Controller
      */
     public function pdf(Request $request)
     {
-        $data = $this->getData($request);
+        $records = $this->getDatBySp($request);
+        $company = Company::active();
+        $item = Item::find($request['item_id']);
+        $warehouse = Warehouse::find($request['warehouse_id']);
+        $establishment = $warehouse->establishment;
 
-
-        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', $data);
+        $pdf = PDF::loadView('inventory::reports.kardex.report_pdf', compact('company','item','establishment','records'))->setPaper('a4', 'landscape');
         $filename = 'Reporte_Kardex' . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
@@ -287,18 +315,18 @@ class ReportKardexController extends Controller
      */
     public function excel(Request $request)
     {
-        $data = $this->getData($request);
+        $data = $this->getDatBySp($request);
+        $company = Company::active();
+        $item = Item::find($request['item_id']);
+        $warehouse = Warehouse::find($request['warehouse_id']);
         $kardexExport = new KardexExport();
         $kardexExport
-            ->balance($data['balance'])
-            ->item_id($data['item_id'])
-            ->records($data['records'])
-            ->models($data['models'])
-            ->company($data['company'])
-            ->establishment($data['establishment'])
-            ->item($data['item']);
+            ->records($data)
+            ->company($company)
+            ->establishment($warehouse->establishment)
+            ->item($item);
 
-        return $kardexExport->download('ReporteKar' . Carbon::now() . '.xlsx');
+        return $kardexExport->download('ReporteKardexGeneral' . Carbon::now() . '.xlsx');
     }
 
     public function getRecords2($request)

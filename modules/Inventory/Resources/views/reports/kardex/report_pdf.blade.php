@@ -105,73 +105,20 @@
         <div class=" ">
             <table class="">
                 <thead>
-                <tr>
-                    <th>#</th>
-                    @if(!$item_id)
-                        <th>Producto</th>
-                    @endif
-                    <th>Fecha y hora transacción</th>
-                    <th>Tipo transacción</th>
-                    <th>Número</th>
-                    <th>NV. Asociada</th>
-                    <th>Pedido</th>
-                    <th>CPE. Asociado</th>
-                    <th>Feha emisión</th>
-                    <th>Costo</th>
-                    <th>Entrada</th>
-                    <th>Salida</th>
-                    @if($item_id)
-                        <th>Saldo</th>
-                    @endif
-                </tr>
+                    <tr>
+                    @foreach($records[0] as $title => $val)
+
+                        <th>{{ $title }}</th>
+
+                    @endforeach
+                     </tr>
                 </thead>
                 <tbody>
-                <?php $balance = 0; ?>
-                @foreach($records as $key => $value)
-                    <?php
-                    /** @var \Modules\Inventory\Models\InventoryKardex $value */
-                    $itemKardex = $value->getKardexReportCollection($balance);
-                    ?>
+                @foreach($records as $value)
                     <tr>
-                        <td class="celda">{{$loop->iteration}}
-                        </td>
-                        @if(!$item_id)
-                            <td class="celda">{{$itemKardex['item_name']}}</td>
-                        @endif
-                        <td class="celda">{{$itemKardex['date_time']}}
-                        </td>
-                        <td class="celda">{{$itemKardex['type_transaction']}}</td>
-                        <td class="celda">{{$itemKardex['number']}}</td>
-                        <td class="celda">
-                            {{$itemKardex['sale_note_asoc']}}
-                        </td>
-                        <td class="celda">
-                            {{$itemKardex['order_note_asoc']}}
-                        </td>
-                        <td class="celda">
-                            {{$itemKardex['doc_asoc']}}
-                        </td>
-
-                        <td class="celda">
-                            {{$itemKardex['date_of_issue']}}
-                        </td>
-                        <td class="celda">
-                            {{$itemKardex['cost']}}
-                        </td>
-                        <td class="celda">
-                            {{$itemKardex['input']}}
-                        </td>
-                        <td class="celda">
-                            {{$itemKardex['output']}}
-                        </td>
-                        {{-- @php
-                            $balance += $value->quantity;
-                        @endphp --}}
-
-                        @if($item_id)
-                            <td class="celda">{{number_format($itemKardex['balance'], 4)}}</td>
-                            {{-- <td class="celda">{{number_format($balance, 4)}}</td> --}}
-                        @endif
+                        @foreach($value as $k => $v)
+                        <td>{{$v}}</td>
+                        @endforeach
                     </tr>
                 @endforeach
                 </tbody>
@@ -179,7 +126,7 @@
         </div>
     </div>
 @else
-    <div class="callout callout-info">
+    <div>
         <p>No se encontraron registros.</p>
     </div>
 @endif
