@@ -38,6 +38,16 @@ foreach ($atributos as $key => $value) {
 $date =  new DateTime($fechas->date_end.' '.$fechas->time_end);
 $fechaCaducidad = date_add($date, date_interval_create_from_date_string($records['validity']." days"));
 
+$quantity = 0;
+if($production->custom_quantity > 0)
+{
+    $quantity = $production->custom_quantity;
+}else{
+    $quantity = $production->quantity;
+}
+
+$peso_neto = $quantity - $production->samples - $production->imperfect;
+
 @endphp
 <!DOCTYPE html>
 <html lang="en">
@@ -124,7 +134,7 @@ $fechaCaducidad = date_add($date, date_interval_create_from_date_string($records
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
         <div>
-            <label><strong>Producto:</strong> {{$records->description}}</label>
+            <label><strong>Producto:</strong> {{$records->name}} - {{$records->description}}</label>
             <br>
             <label><strong>Lote:</strong> {{$fechas->lot_code}}</label>
             <br>
@@ -192,7 +202,7 @@ $fechaCaducidad = date_add($date, date_interval_create_from_date_string($records
             <br>
             <label><strong>Empaque:</strong>{{$em}}</label>
             <br>
-            <label><strong>Peso Neto:</strong>{{$psn}}</label>
+            <label><strong>Peso Neto:</strong>{{$peso_neto}}</label>
             <br>
             <br>
             <br>
@@ -201,7 +211,7 @@ $fechaCaducidad = date_add($date, date_interval_create_from_date_string($records
             <br>
             <div>
                 <p alignment="center">________________________</p>
-                <p alignment="center">Ing. Leonardo Cajiao</p>
+                <p alignment="center">{{ $usuario_log->name }}</p>
                 <p alignment="center">DEPARTAMENTO CALIDAD</p>
                 <p alignment="center">{{$company->name}}</p>
             </div>

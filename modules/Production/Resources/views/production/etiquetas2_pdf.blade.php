@@ -33,13 +33,20 @@
     $producido_global = floatval($produccion->color);
     $merma_global = floatval($produccion->olor);
 
-    $porcentaje_merma = 0;
-    $multiplicacion1 = $produccion->imperfect * 100;
-    $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
+    if($producido_global > 0)
+    {
+        $porcentaje_merma = 0;
+        $multiplicacion1 = $produccion->imperfect * 100;
+        $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
 
-    $porcentaje_merma_global = 0;
-    $multiplicacion = $merma_global * 100;
-    $porcentaje_merma_global = round($multiplicacion / $producido_global, 2);
+        $porcentaje_merma_global = 0;
+        $multiplicacion = $merma_global * 100;
+        $porcentaje_merma_global = round($multiplicacion / $producido_global, 2);
+    }else{
+        $producido_global = 0;
+        //$merma_global = 0;
+    }
+    
 
     $rango = null;
     $color = null;

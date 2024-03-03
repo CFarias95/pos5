@@ -1540,13 +1540,14 @@ class ProductionController extends Controller
         $records = Item::find($fechas->item_id);
 
         $usuario_log = Auth::user();
+        Log::info('usuario_log - '.$usuario_log);
         $fechaActual = date('d/m/Y');
+        Log::info('records - '.$records);
 
-        //$insumos = ItemSupply::where('item_id', '=', $fechas->item_id)
-        //    ->leftJoin('items', 'item_supplies.individual_item_id','=','items.id')->get();
-        //Log::info($fechas);
+        //$production = Production::where()->find();
+        $production =  Production::find($recordId);
 
-        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "fechas"));
+        $pdf = PDF::loadView('production::production.pdf_atributos', compact("records", "company", "usuario_log", "recordId", "fechas", "production"));
 
         $filename = 'Certifiicado_Calidad_' . date('YmdHis');
 
