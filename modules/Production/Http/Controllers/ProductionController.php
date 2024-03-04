@@ -1563,10 +1563,11 @@ class ProductionController extends Controller
         $fechaActual = date('d/m/Y');
 
         //Log::info("rtiquetas".json_encode($produccion->warehouse));
-        //Log::info("rtiquetas".json_encode($produccion->warehouse->establishment));
+        Log::info("district".json_encode($produccion->warehouse->establishment->district->description));
+        Log::info("province".json_encode($produccion->warehouse->establishment->province->description));
         $recordId = $produccion->item_id;
         $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
-
+        $pdf->setPaper([0, 0, 378, 245], 'portrait');
         $filename = 'Etiquetas_' . $produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
