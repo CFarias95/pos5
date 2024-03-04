@@ -25,7 +25,8 @@
         }
     }
     $logo = "storage/uploads/logos/{$company->logo}";
-    //Log::info('');
+    //Log::info('production_items - '.json_encode($production_items));
+    //Log::info('empaque_items - '.json_encode($empaque_items));
    
 
     $empacado =  $totalKg - $produccion->imperfect - $produccion->samples;
@@ -33,13 +34,14 @@
     $producido_global = floatval($produccion->color);
     $merma_global = floatval($produccion->olor);
 
+    $porcentaje_merma = 0;
+    $porcentaje_merma_global = 0;
+
     if($producido_global > 0)
     {
-        $porcentaje_merma = 0;
         $multiplicacion1 = $produccion->imperfect * 100;
         $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
 
-        $porcentaje_merma_global = 0;
         $multiplicacion = $merma_global * 100;
         $porcentaje_merma_global = round($multiplicacion / $producido_global, 2);
     }else{
@@ -174,6 +176,23 @@
                 @endforeach
             </tr>
         @endforeach
+        {{-- @foreach($production_items as ($supplies, $index))
+            <tr>
+                <td>{{ $supplies->name }}</td>
+                @foreach($inventarios as $inventario)
+                    @if($inventario->item_id == $supplies->id)
+                        <td>{{ $inventario[$index]->quantity }}</td>
+                        <td>{{ $inventario[$index]->lot_code }}</td>
+                        
+                    @endif
+                @endforeach
+                @foreach ($produccion->production_supplies as $supply)
+                        @if ($supplies->id == $supply->item_supply_original_id)
+                            <td>{{ $supply->checked ? 'Sí' : 'No' }}</td>
+                        @endif
+                    @endforeach
+            </tr>
+        @endforeach --}}
         <tr>
             <th>Total Solicitado</th>
             <td>{{ $totalKg }}</td>
