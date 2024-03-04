@@ -4,7 +4,8 @@
 
     use App\Http\Controllers\Controller;
     use App\Http\Controllers\SearchItemController;
-    use Barryvdh\DomPDF\Facade as PDF;
+use App\Models\Tenant\Item;
+use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
     use Illuminate\Http\Request;
     use Illuminate\Support\Facades\DB;
@@ -283,6 +284,7 @@ use Modules\Item\Models\ItemLotsGroup;
                 $row->save();
 
                 foreach ($request->items as $it) {
+                    $item = Item::find($it['id']);
                     if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
                         // si tiene Lotes se crea el kardex por lotes
                         foreach ($it['lots'] as $key => $value) {
@@ -303,6 +305,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->lot_code = $value['code'];
                                 //Log::info('Inventory antes de guardar');
+                                $inventory->precio_perso = $item->purchase_mean_cost;
                                 $inventory->save();
                                 //Log::info('inventory guardado');
 
@@ -327,7 +330,6 @@ use Modules\Item\Models\ItemLotsGroup;
                                     //Log::info('LotDestif - ');
                                     $lotDest->quantity+= $value['compromise_quantity'];
                                     $lotDest->save();
-
 
                                 }else{
                                     ItemLotsGroup::create([
@@ -355,6 +357,7 @@ use Modules\Item\Models\ItemLotsGroup;
                         $inventory->warehouse_destination_id = $request->warehouse_destination_id;
                         $inventory->quantity = $it['quantity'];
                         $inventory->inventories_transfer_id = $row->id;
+                        $inventory->precio_perso = $item->purchase_mean_cost;
                         $inventory->save();
 
                         foreach ($it['lots'] as $lot) {
@@ -378,6 +381,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             $inventory->warehouse_destination_id = $request->warehouse_destination_id;
                             $inventory->quantity = $it['quantity'];
                             $inventory->inventories_transfer_id = $row->id;
+                            $inventory->precio_perso = $item->purchase_mean_cost;
                             $inventory->save();
                         }
 
@@ -431,7 +435,6 @@ use Modules\Item\Models\ItemLotsGroup;
                 ];
             }
         }
-
 
         public function searchItems(Request  $request)
         {

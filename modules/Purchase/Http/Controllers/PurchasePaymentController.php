@@ -138,7 +138,7 @@ class PurchasePaymentController extends Controller
 
             foreach ($fee as $cuotas) {
 
-                $sequential = PurchasePayment::latest('id')->first();
+                $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
 
                 $pago = PurchasePayment::where('fee_id', $cuotas->id)->get();
                 $pagado = $pago->sum('payment');
@@ -230,7 +230,7 @@ class PurchasePaymentController extends Controller
             }
         } else {
             $data = DB::connection('tenant')->transaction(function () use ($id, $request) {
-                $sequential = PurchasePayment::latest('id')->first();
+                $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
                 $record = PurchasePayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
                 $record->sequential = $sequential->sequential + 1;
@@ -478,7 +478,7 @@ class PurchasePaymentController extends Controller
 
         $payment = PurchasePayment::find($id);
         $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%PurchasePayment')->first();
-        $sequential = PurchasePayment::latest('id')->first();
+        $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
 
         if(isset($payment) && $payment->multipay == 'NO'){
             Log::info('Sin MULTIPAGO');
@@ -518,7 +518,7 @@ class PurchasePaymentController extends Controller
             Log::info('Sin MULTIPAGO');
             $multiPays = PurchasePayment::where('sequential',$payment->sequential)->get();
             $paymentsIds = '';
-            $sequential = PurchasePayment::latest('id')->first();
+            $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
 
             foreach ($multiPays as $value) {
                 $paymentM = PurchasePayment::find($value->id);
