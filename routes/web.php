@@ -30,7 +30,8 @@ if ($hostname) {
 
         //TEMPORAL CERATE SALDOS INICIALES
 
-        Route::get('purchases/create/inicial', 'Tenant\PurchaseInitialSController@create');
+        Route::get('purchases/create/inicialP', 'Tenant\PurchaseInitialSController@create');
+        Route::get('purchases/create/inicialD', 'Tenant\PurchaseInitialSController@createDocumnets');
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');
