@@ -168,7 +168,7 @@ class DocumentPaymentController extends Controller
 
                     $valorCuota = $cuotas->amount - $pagado;
                     $cuotaid = $cuotas->id;
-                    $sequential = DocumentPayment::latest('id')->first();
+                    $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
 
                     if(isset($fee_id) && $cuotaid == $fee_id){
                         if( $valorPagar > 0 && $valorPagar >= $valorCuota){
@@ -259,7 +259,7 @@ class DocumentPaymentController extends Controller
         }else{
 
             $data = DB::connection('tenant')->transaction(function() use ($id, $request) {
-                $sequential = DocumentPayment::latest('id')->first();
+                $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
                 $record = DocumentPayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
                 $record->sequential = $sequential->sequential + 1;
@@ -959,7 +959,7 @@ class DocumentPaymentController extends Controller
 
         $payment = DocumentPayment::find($id);
         $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
-        $sequential = DocumentPayment::latest('id')->first();
+        $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
 
         if(isset($payment) && $payment->multipay == 'NO'){
 
@@ -998,7 +998,7 @@ class DocumentPaymentController extends Controller
 
             $multiPays = DocumentPayment::where('sequential',$payment->sequential)->get();
             $paymentsIds = '';
-            $sequential = DocumentPayment::latest('id')->first();
+            $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
             foreach ($multiPays as $value) {
                 $paymentM = DocumentPayment::find($value->id);
                 $globalPayment = GlobalPayment::where('payment_id',$id)->where('payment_type','like','%DocumentPayment')->first();
