@@ -1583,7 +1583,6 @@ class ProductionController extends Controller
 
         $production_items = [];
         $empaque_items = [];
-        $inventories = null;
 
         $inventarios = Inventory::where('production_id', $produccion->id)->where('inventory_transaction_id', '101')->get();
 
@@ -1594,9 +1593,9 @@ class ProductionController extends Controller
             });
 
             if ($hasEMAttribute) {
-                $empaque_items[] = $row->item;
+                $empaque_items[] = $row;
             } else {
-                $production_items[] = $row->item;
+                $production_items[] = $row;
             }
             return $row;
         });

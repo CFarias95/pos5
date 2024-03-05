@@ -5,24 +5,14 @@
     $date_end_object->modify("+$validity days");
     $formatted_date_end = $date_end_object->format('Y-m-d');
     $totalKg = 0;
-    foreach ($inventarios as $inventario) {
-        foreach($production_items as $supplies)
-        {
-            if($inventario->item_id == $supplies->id)
-            {
-                $totalKg += $inventario->quantity;
-            }
-        }
+    foreach($production_items as $supplies)
+    {
+        $totalKg += $supplies->quantity;
     }
     $totalKgEM = 0;
-    foreach ($inventarios as $inventario) {
-        foreach($empaque_items as $empaques)
-        {
-            if($inventario->item_id == $empaques->id)
-            {
-                $totalKgEM += $inventario->quantity;
-            }
-        }
+    foreach($production_items as $supplies)
+    {
+        $totalKgEM += $supplies->quantity;
     }
     $logo = "storage/uploads/logos/{$company->logo}";
     //Log::info('production_items - '.json_encode($production_items));
@@ -32,6 +22,7 @@
     $empacado =  $totalKg - $produccion->imperfect - $produccion->samples;
 
     $producido_global = floatval($produccion->color);
+    Log::info('producido_global - '.$producido_global);
     $merma_global = floatval($produccion->olor);
 
     $porcentaje_merma = 0;
@@ -158,41 +149,16 @@
     <tbody>
         @foreach ($production_items as $supplies)
             <tr>
-                <td>{{ $supplies->name }}</td>
-                @foreach($inventarios as $inventario)
-                    @if($inventario->item_id == $supplies->id)
-                        <td>{{ $inventario->quantity }}</td>
-                    @endif
-                @endforeach
-                @foreach($inventarios as $inventario)
-                    @if($inventario->item_id == $supplies->id)
-                        <td>{{ $inventario->lot_code }}</td>
-                    @endif
-                @endforeach
+                <td>{{ $supplies->item->name }}</td>
+                <td>{{ $supplies->quantity }}</td>
+                <td>{{ $supplies->lot_code }}</td>
                 @foreach ($produccion->production_supplies as $supply)
-                    @if ($supplies->id == $supply->item_supply_original_id)
+                    @if ($supplies->item->id == $supply->item_supply_original_id)
                         <td>{{ $supply->checked ? 'Sí' : 'No' }}</td>
                     @endif
                 @endforeach
             </tr>
         @endforeach
-        {{-- @foreach($production_items as ($supplies, $index))
-            <tr>
-                <td>{{ $supplies->name }}</td>
-                @foreach($inventarios as $inventario)
-                    @if($inventario->item_id == $supplies->id)
-                        <td>{{ $inventario[$index]->quantity }}</td>
-                        <td>{{ $inventario[$index]->lot_code }}</td>
-                        
-                    @endif
-                @endforeach
-                @foreach ($produccion->production_supplies as $supply)
-                        @if ($supplies->id == $supply->item_supply_original_id)
-                            <td>{{ $supply->checked ? 'Sí' : 'No' }}</td>
-                        @endif
-                    @endforeach
-            </tr>
-        @endforeach --}}
         <tr>
             <th>Total Solicitado</th>
             <td>{{ $totalKg }}</td>
@@ -219,19 +185,11 @@
     <tbody>
         @foreach ($empaque_items as $empaques)
             <tr>
-                <td>{{ $empaques->name }}</td>
-                @foreach($inventarios as $inventario)
-                    @if($inventario->item_id == $empaques->id)
-                        <td>{{ $inventario->quantity }}</td>
-                    @endif
-                @endforeach
-                @foreach($inventarios as $inventario)
-                    @if($inventario->item_id == $empaques->id)
-                        <td>{{ $inventario->lot_code }}</td>
-                    @endif
-                @endforeach
+                <td>{{ $empaques->item->name }}</td>
+                <td>{{ $empaques->quantity }}</td>
+                <td>{{ $empaques->lot_code }}</td>
                 @foreach ($produccion->production_supplies as $supply)
-                    @if ($supplies->id == $supply->item_supply_original_id)
+                    @if ($supplies->item->id == $supply->item_supply_original_id)
                         <td>{{ $supply->checked ? 'Sí' : 'No' }}</td>
                     @endif
                 @endforeach
