@@ -189,15 +189,13 @@ class InventoryController extends Controller
 
 			$item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id,
 				'warehouse_id'                                        => $warehouse_id]);
-			if ($item_warehouse->id) {
+
+                if ($item_warehouse->id) {
 				return [
 					'success' => false,
 					'message' => 'El producto ya se encuentra registrado en el almacén indicado.'
 				];
 			}
-
-			// $item_warehouse->stock = $quantity;
-			// $item_warehouse->save();
 
 			$inventory = new Inventory();
 			$inventory->type = 1;

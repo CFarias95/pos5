@@ -32,6 +32,8 @@ if ($hostname) {
 
         Route::get('purchases/create/inicialP', 'Tenant\PurchaseInitialSController@create');
         Route::get('purchases/create/inicialD', 'Tenant\PurchaseInitialSController@createDocumnets');
+        Route::get('purchases/create/inicialI', 'Tenant\PurchaseInitialSController@createInventory');
+
 
         Route::middleware(['auth', 'redirect.module', 'locked.tenant'])->group(function () {
             // Route::get('catalogs', 'Tenant\CatalogController@index')->name('tenant.catalogs.index');

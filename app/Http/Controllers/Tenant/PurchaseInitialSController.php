@@ -60,6 +60,7 @@ use Symfony\Component\HttpFoundation\StreamedResponse;
 use Throwable;
 use App\Models\Tenant\GeneralPaymentCondition;
 use App\Models\Tenant\Imports;
+use App\Models\Tenant\Inventory;
 use App\Models\Tenant\PurchaseDocumentTypes2;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\Retention;
@@ -71,6 +72,7 @@ use App\Models\Tenant\TypeDocsPurchase;
 use App\Models\Tenant\UserDefaultDocumentType;
 use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Illuminate\Support\Facades\Log;
+use Modules\Item\Models\ItemLot;
 use Modules\Sale\Models\SaleOpportunity;
 
 class PurchaseInitialSController extends Controller
@@ -215,6 +217,7 @@ class PurchaseInitialSController extends Controller
                 $document->has_xml = 0;
                 $document->has_pdf = 0;
                 $document->is_editable = 0;
+                $document->reference_data = $numDoc;
                 $document->save();
 
                 $item = Item::find(1); //cambiar al ID del ITEM basico
@@ -248,6 +251,51 @@ class PurchaseInitialSController extends Controller
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
             }
+        }
+    }
+
+    public function createInventory(){
+        $data = DB::connection('tenant')->select('SELECT * FROM inventarioinicial ');
+        foreach ($data as $value) {
+            $item = Item::where('internal_id',$value->internal_id)->first();
+
+            ItemWarehouse::firstOrNew(['item_id' => $item->id,
+				'warehouse_id'=> $value->warehouse]);
+
+            $inventory = new Inventory();
+			$inventory->type = 1;
+			$inventory->description = 'Stock inicial';
+			$inventory->item_id = $item->id;
+			$inventory->warehouse_id = $value->warehouse;
+			$inventory->quantity = $value->quantity;
+			$inventory->inventory_transaction_id = null;
+			$inventory->lot_code = $value->code;
+			$inventory->comments = 'Creacion de stock por plantilla inicial';
+			$inventory->precio_perso = $value->price;
+			$inventory->production_id= null;
+            $inventory->save();
+
+            if($item->lots_enabled){
+
+                ItemLotsGroup::create([
+                    'code' => $value->code,
+                    'quantity' => $value->quantity,
+                    'date_of_due' =>$value->date_of_due,
+                    'warehouse_id' => $value->warehouse,
+                    'item_id' => $item->id
+                ]);
+            }
+            if($item->series_enabled){
+                ItemLot::create([
+                    'date'         => $value->date_of_due,
+                    'series'       => $value->code,
+                    'item_id'      => $item->id,
+                    'warehouse_id' => $value->warehouse,
+                    'has_sale'     => false,
+                    'state'        => 'Activo',
+                ]);
+            }
+
         }
     }
 }
