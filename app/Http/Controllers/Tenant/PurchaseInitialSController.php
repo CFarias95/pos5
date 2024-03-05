@@ -188,7 +188,7 @@ class PurchaseInitialSController extends Controller
                 $customer = Person::where('number', $CI)->first();
 
                 $document = new Document();
-                $document->user_id = 1; //28
+                $document->user_id = 28; //28
                 $document->external_id = Str::uuid()->toString();
                 $document->clave_SRI = $numDoc;
                 $document->establishment_id = 1;
