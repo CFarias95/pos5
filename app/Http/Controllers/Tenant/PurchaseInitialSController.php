@@ -157,7 +157,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseFee->number = 1; //Monto de la
                 $purchaseFee->save();
 
-                echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
+                //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
@@ -188,9 +188,9 @@ class PurchaseInitialSController extends Controller
                 $customer = Person::where('number', $CI)->first();
 
                 $document = new Document();
-                $document->user_id = 28;
+                $document->user_id = 1; //28
                 $document->external_id = Str::uuid()->toString();
-                $document->clave_SRI = null;
+                $document->clave_SRI = $numDoc;
                 $document->establishment_id = 1;
                 $document->establishment = $establishment;
                 $document->soap_type_id = '01';
@@ -227,11 +227,14 @@ class PurchaseInitialSController extends Controller
                 $documentItem->item = $item;
                 $documentItem->quantity = 1;
                 $documentItem->unit_value = $importe;
+                $documentItem->unit_price = $importe;
                 $documentItem->affectation_igv_type_id = '30';
                 $documentItem->total_base_igv = $importe;
                 $documentItem->percentage_igv = 0;
                 $documentItem->total_igv = 0;
                 $documentItem->total_value = $importe;
+                $documentItem->total_taxes = 0;
+                $documentItem->price_type_id = '01';
                 $documentItem->total = $importe;
                 $documentItem->warehouse_id = 1;
                 $documentItem->name_product_pdf = 'SI CUENTAS POR COBRAR/SI CUENTAS POR COBRAR';
@@ -245,57 +248,63 @@ class PurchaseInitialSController extends Controller
                 $documentFee->number = 1;
                 $documentFee->save();
 
-                echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
+                //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
 
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
+                //echo $ex->getMessage(). "</br>";
             }
         }
     }
 
     public function createInventory(){
-        $data = DB::connection('tenant')->select('SELECT * FROM inventarioinicial ');
+        $data = DB::connection('tenant')->select('SELECT * FROM inventarioinicial');
         foreach ($data as $value) {
-            $item = Item::where('internal_id',$value->internal_id)->first();
+            try{
+                $item = Item::where('internal_id',$value->internal_id)->first();
 
-            ItemWarehouse::firstOrNew(['item_id' => $item->id,
-				'warehouse_id'=> $value->warehouse]);
+                ItemWarehouse::firstOrNew(['item_id' => $item->id,
+                    'warehouse_id'=> $value->warehouse]);
 
-            $inventory = new Inventory();
-			$inventory->type = 1;
-			$inventory->description = 'Stock inicial';
-			$inventory->item_id = $item->id;
-			$inventory->warehouse_id = $value->warehouse;
-			$inventory->quantity = $value->quantity;
-			$inventory->inventory_transaction_id = null;
-			$inventory->lot_code = $value->code;
-			$inventory->comments = 'Creacion de stock por plantilla inicial';
-			$inventory->precio_perso = $value->price;
-			$inventory->production_id= null;
-            $inventory->save();
+                $inventory = new Inventory();
+                $inventory->type = 1;
+                $inventory->description = 'Stock inicial';
+                $inventory->item_id = $item->id;
+                $inventory->warehouse_id = $value->warehouse;
+                $inventory->quantity = $value->quantity;
+                $inventory->inventory_transaction_id = null;
+                $inventory->lot_code = $value->code;
+                $inventory->comments = 'Creacion de stock por plantilla inicial';
+                $inventory->precio_perso = $value->price;
+                $inventory->production_id= null;
+                $inventory->save();
 
-            if($item->lots_enabled){
+                if($item->lots_enabled){
 
-                ItemLotsGroup::create([
-                    'code' => $value->code,
-                    'quantity' => $value->quantity,
-                    'date_of_due' =>$value->date_of_due,
-                    'warehouse_id' => $value->warehouse,
-                    'item_id' => $item->id
-                ]);
+                    ItemLotsGroup::create([
+                        'code' => $value->code,
+                        'quantity' => $value->quantity,
+                        'date_of_due' =>$value->date_of_due,
+                        'warehouse_id' => $value->warehouse,
+                        'item_id' => $item->id
+                    ]);
+                }
+                if($item->series_enabled){
+                    ItemLot::create([
+                        'date'         => $value->date_of_due,
+                        'series'       => $value->code,
+                        'item_id'      => $item->id,
+                        'warehouse_id' => $value->warehouse,
+                        'has_sale'     => false,
+                        'state'        => 'Activo',
+                    ]);
+                }
+
+            }catch(Exception $ex){
+                echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
+                //echo $ex->getMessage(). "</br>";
             }
-            if($item->series_enabled){
-                ItemLot::create([
-                    'date'         => $value->date_of_due,
-                    'series'       => $value->code,
-                    'item_id'      => $item->id,
-                    'warehouse_id' => $value->warehouse,
-                    'has_sale'     => false,
-                    'state'        => 'Activo',
-                ]);
-            }
-
         }
     }
 }
