@@ -98,6 +98,7 @@ class PurchaseInitialSController extends Controller
         foreach ($data as $item) {
 
             try {
+
                 $CI = $item->CI;
                 $numDoc = $item->documento;
                 $fechaDoc = date($item->fecha);
@@ -134,7 +135,8 @@ class PurchaseInitialSController extends Controller
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
                 $purchase->save();
 
-                sleep(3);
+                sleep(10);
+                Log::info('ID PURCHASE: '.$purchase->id);
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->purchase_id = $purchase->id;
