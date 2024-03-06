@@ -162,6 +162,8 @@ class PurchaseInitialSController extends Controller
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
+                echo $ex->getMessage();
+
                 Log::error("No Se pudo generar el saldo INICIAL PURCHASES para " . $CI . " con fecha : " . $fecha . " valor de " . $importe);
                 Log::error($ex->getMessage());
             }
