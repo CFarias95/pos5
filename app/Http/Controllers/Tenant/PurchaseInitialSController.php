@@ -76,6 +76,8 @@ use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\ItemLot;
 use Modules\Sale\Models\SaleOpportunity;
 
+set_time_limit(0);
+
 class PurchaseInitialSController extends Controller
 {
 
