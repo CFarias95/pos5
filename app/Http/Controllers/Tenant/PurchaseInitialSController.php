@@ -93,7 +93,7 @@ class PurchaseInitialSController extends Controller
     {
         $configuration = Configuration::first();
         $compani = Company::first();
-        $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales limit 10');
+        $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales');
         $itemP = Item::find(1);
         foreach ($data as $item) {
 
