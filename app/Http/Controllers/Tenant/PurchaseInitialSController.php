@@ -61,6 +61,7 @@ use Throwable;
 use App\Models\Tenant\GeneralPaymentCondition;
 use App\Models\Tenant\Imports;
 use App\Models\Tenant\Inventory;
+use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\PurchaseDocumentTypes2;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\Retention;
@@ -264,15 +265,16 @@ class PurchaseInitialSController extends Controller
             try{
                 $item = Item::where('internal_id',$value->internal_id)->first();
 
-                ItemWarehouse::firstOrNew(['item_id' => $item->id,
+                $iw = ItemWarehouse::firstOrNew(['item_id' => $item->id,
                     'warehouse_id'=> $value->warehouse]);
+
 
                 $inventory = new Inventory();
                 $inventory->type = 1;
                 $inventory->description = 'Stock inicial';
                 $inventory->item_id = $item->id;
                 $inventory->warehouse_id = $value->warehouse;
-                $inventory->quantity = $value->quantity;
+                $inventory->quantity = floatVal($value->quantity);
                 $inventory->inventory_transaction_id = null;
                 $inventory->lot_code = $value->code;
                 $inventory->comments = 'Creacion de stock por plantilla inicial';
@@ -280,11 +282,20 @@ class PurchaseInitialSController extends Controller
                 $inventory->production_id= null;
                 $inventory->save();
 
+                $inventoryKardex = new InventoryKardex();
+                $inventoryKardex->date_of_issue = date('Y-m-d');
+                $inventoryKardex->item_id = $item->id;
+                $inventoryKardex->inventory_kardexable_id = $inventory->id;
+                $inventoryKardex->inventory_kardexable_type = 'Modules\Inventory\Models\Inventory';
+                $inventoryKardex->warehouse_id = $value->warehouse;
+                $inventoryKardex->quantity = floatVal($value->quantity);
+                $inventoryKardex->save();
+
                 if($item->lots_enabled){
 
                     ItemLotsGroup::create([
                         'code' => $value->code,
-                        'quantity' => $value->quantity,
+                        'quantity' => floatVal($value->quantity),
                         'date_of_due' =>$value->date_of_due,
                         'warehouse_id' => $value->warehouse,
                         'item_id' => $item->id
@@ -298,12 +309,17 @@ class PurchaseInitialSController extends Controller
                         'warehouse_id' => $value->warehouse,
                         'has_sale'     => false,
                         'state'        => 'Activo',
+                        'item_loteable_type' => 'App\Models\Tenant\Item',
+                        'item_loteable_id' => $item->id,
                     ]);
                 }
 
+                $iw->stock += floatVal($value->quantity);
+                $iw->save();
+
             }catch(Exception $ex){
                 echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
-                //echo $ex->getMessage(). "</br>";
+                echo $ex->getMessage(). "</br>";
             }
         }
     }
