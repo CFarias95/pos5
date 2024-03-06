@@ -137,6 +137,7 @@ class PurchaseInitialSController extends Controller
 
                 sleep(10);
                 Log::info('ID PURCHASE: '.$purchase->id);
+                Log::info('ITEM ID '.$itemP->id);
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->purchase_id = $purchase->id;
