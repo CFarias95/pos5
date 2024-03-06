@@ -61,6 +61,7 @@ use Throwable;
 use App\Models\Tenant\GeneralPaymentCondition;
 use App\Models\Tenant\Imports;
 use App\Models\Tenant\Inventory;
+use App\Models\Tenant\InventoryKardex;
 use App\Models\Tenant\PurchaseDocumentTypes2;
 use App\Models\Tenant\PurchaseFee;
 use App\Models\Tenant\Retention;
@@ -74,6 +75,8 @@ use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\ItemLot;
 use Modules\Sale\Models\SaleOpportunity;
+
+set_time_limit(0);
 
 class PurchaseInitialSController extends Controller
 {
@@ -89,13 +92,13 @@ class PurchaseInitialSController extends Controller
     public function create()
     {
         $configuration = Configuration::first();
-        //$configuration = $configuration->getCollectionData();
-
         $compani = Company::first();
-        $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales ');
+        $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales');
+        $itemP = Item::find(1);
         foreach ($data as $item) {
 
             try {
+
                 $CI = $item->CI;
                 $numDoc = $item->documento;
                 $fechaDoc = date($item->fecha);
@@ -105,6 +108,7 @@ class PurchaseInitialSController extends Controller
                 $importe =  floatval(str_replace(',', '.', $item->importe));
                 $numero = Purchase::where('establishment_id', 1)->where('series', 'CC')->get()->max('number');
                 $supplier = Person::where('number', $CI)->first();
+
                 $purchase = new Purchase();
                 $purchase->user_id = 1;
                 $purchase->external_id = Str::uuid()->toString();
@@ -131,14 +135,26 @@ class PurchaseInitialSController extends Controller
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
                 $purchase->save();
 
-                $item = Item::find(1); //cambiar al ID del ITEM basico
+                sleep(5);
+
+                Log::error('ID PURCHASE: '.$purchase->id);
+                Log::error('ITEM ID '.$itemP->id);
+
+                $purchaseFee = new PurchaseFee();
+                $purchaseFee->purchase_id = $purchase->id;
+                $purchaseFee->date = $fechaVenci;
+                $purchaseFee->currency_type_id = $configuration->currency_type_id;
+                $purchaseFee->amount = $importe;
+                $purchaseFee->number = 1; //Monto de la
+                $purchaseFee->save();
+
                 $purchaseItem = new PurchaseItem();
                 $purchaseItem->purchase_id = $purchase->id;
-                $purchaseItem->item_id = $item->id;
-                $purchaseItem->item = $item;
+                $purchaseItem->item_id = $itemP->id;
+                $purchaseItem->item = $itemP;
                 $purchaseItem->quantity = 1;
                 $purchaseItem->unit_value = $importe;
-                $purchaseItem->affectation_igv_type_id = $item->purchase_affectation_igv_type_id;
+                $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
                 $purchaseItem->total_base_igv = $importe;
                 $purchaseItem->percentage_igv = 0;
                 $purchaseItem->total_igv = $importe;
@@ -149,18 +165,15 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->total = $importe;
                 $purchaseItem->save();
 
-                $purchaseFee = new PurchaseFee();
-                $purchaseFee->purchase_id = $purchase->id;
-                $purchaseFee->date = $fechaVenci;
-                $purchaseFee->currency_type_id = $configuration->currency_type_id;
-                $purchaseFee->amount = $importe;
-                $purchaseFee->number = 1; //Monto de la
-                $purchaseFee->save();
 
-                echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
+                //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
+                echo $ex->getMessage();
+
+                Log::error("No Se pudo generar el saldo INICIAL PURCHASES para " . $CI . " con fecha : " . $fecha . " valor de " . $importe);
+                Log::error($ex->getMessage());
             }
         }
     }
@@ -173,6 +186,7 @@ class PurchaseInitialSController extends Controller
         $compani = Company::first();
         $data = DB::connection('tenant')->select('SELECT * FROM cuentasporcobrarlocales;');
         $establishment = Establishment::find(1);
+        $itemP = Item::find(1); //cambiar al ID del ITEM basico
         foreach ($data as $item) {
 
             try {
@@ -188,9 +202,9 @@ class PurchaseInitialSController extends Controller
                 $customer = Person::where('number', $CI)->first();
 
                 $document = new Document();
-                $document->user_id = 28;
+                $document->user_id = 28; //28
                 $document->external_id = Str::uuid()->toString();
-                $document->clave_SRI = null;
+                $document->clave_SRI = $numDoc;
                 $document->establishment_id = 1;
                 $document->establishment = $establishment;
                 $document->soap_type_id = '01';
@@ -220,18 +234,25 @@ class PurchaseInitialSController extends Controller
                 $document->reference_data = $numDoc;
                 $document->save();
 
-                $item = Item::find(1); //cambiar al ID del ITEM basico
+                sleep(5);
+                Log::error('ID PURCHASE: '.$document->id);
+                Log::error('ITEM ID '.$itemP->id);
+
+
                 $documentItem = new DocumentItem();
                 $documentItem->document_id = $document->id;
-                $documentItem->item_id = $item->id;
-                $documentItem->item = $item;
+                $documentItem->item_id = $itemP->id;
+                $documentItem->item = $itemP;
                 $documentItem->quantity = 1;
                 $documentItem->unit_value = $importe;
+                $documentItem->unit_price = $importe;
                 $documentItem->affectation_igv_type_id = '30';
                 $documentItem->total_base_igv = $importe;
                 $documentItem->percentage_igv = 0;
                 $documentItem->total_igv = 0;
                 $documentItem->total_value = $importe;
+                $documentItem->total_taxes = 0;
+                $documentItem->price_type_id = '01';
                 $documentItem->total = $importe;
                 $documentItem->warehouse_id = 1;
                 $documentItem->name_product_pdf = 'SI CUENTAS POR COBRAR/SI CUENTAS POR COBRAR';
@@ -245,57 +266,80 @@ class PurchaseInitialSController extends Controller
                 $documentFee->number = 1;
                 $documentFee->save();
 
-                echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
+                //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
 
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
+                Log::error("No Se pudo generar el saldo INICIAL DOCUMENTS para " . $CI . " con fecha : " . $fecha . " valor de " . $importe);
+                Log::error($ex->getMessage());
             }
         }
     }
 
     public function createInventory(){
-        $data = DB::connection('tenant')->select('SELECT * FROM inventarioinicial ');
+        $data = DB::connection('tenant')->select('SELECT * FROM inventarioinicial');
         foreach ($data as $value) {
-            $item = Item::where('internal_id',$value->internal_id)->first();
+            try{
+                $item = Item::where('internal_id',$value->internal_id)->first();
 
-            ItemWarehouse::firstOrNew(['item_id' => $item->id,
-				'warehouse_id'=> $value->warehouse]);
+                $iw = ItemWarehouse::firstOrNew(['item_id' => $item->id,
+                    'warehouse_id'=> $value->warehouse]);
 
-            $inventory = new Inventory();
-			$inventory->type = 1;
-			$inventory->description = 'Stock inicial';
-			$inventory->item_id = $item->id;
-			$inventory->warehouse_id = $value->warehouse;
-			$inventory->quantity = $value->quantity;
-			$inventory->inventory_transaction_id = null;
-			$inventory->lot_code = $value->code;
-			$inventory->comments = 'Creacion de stock por plantilla inicial';
-			$inventory->precio_perso = $value->price;
-			$inventory->production_id= null;
-            $inventory->save();
 
-            if($item->lots_enabled){
+                $inventory = new Inventory();
+                $inventory->type = 1;
+                $inventory->description = 'Stock inicial';
+                $inventory->item_id = $item->id;
+                $inventory->warehouse_id = $value->warehouse;
+                $inventory->quantity = floatVal($value->quantity);
+                $inventory->inventory_transaction_id = null;
+                $inventory->lot_code = $value->code;
+                $inventory->comments = 'Creacion de stock por plantilla inicial';
+                $inventory->precio_perso = $value->price;
+                $inventory->production_id= null;
+                $inventory->save();
 
-                ItemLotsGroup::create([
-                    'code' => $value->code,
-                    'quantity' => $value->quantity,
-                    'date_of_due' =>$value->date_of_due,
-                    'warehouse_id' => $value->warehouse,
-                    'item_id' => $item->id
-                ]);
+                $inventoryKardex = new InventoryKardex();
+                $inventoryKardex->date_of_issue = date('Y-m-d');
+                $inventoryKardex->item_id = $item->id;
+                $inventoryKardex->inventory_kardexable_id = $inventory->id;
+                $inventoryKardex->inventory_kardexable_type = 'Modules\Inventory\Models\Inventory';
+                $inventoryKardex->warehouse_id = $value->warehouse;
+                $inventoryKardex->quantity = floatVal($value->quantity);
+                $inventoryKardex->save();
+
+                if($item->lots_enabled){
+
+                    ItemLotsGroup::create([
+                        'code' => $value->code,
+                        'quantity' => floatVal($value->quantity),
+                        'date_of_due' =>$value->date_of_due,
+                        'warehouse_id' => $value->warehouse,
+                        'item_id' => $item->id
+                    ]);
+                }
+                if($item->series_enabled){
+                    ItemLot::create([
+                        'date'         => $value->date_of_due,
+                        'series'       => $value->code,
+                        'item_id'      => $item->id,
+                        'warehouse_id' => $value->warehouse,
+                        'has_sale'     => false,
+                        'state'        => 'Activo',
+                        'item_loteable_type' => 'App\Models\Tenant\Item',
+                        'item_loteable_id' => $item->id,
+                    ]);
+                }
+
+                $iw->stock += floatVal($value->quantity);
+                $iw->save();
+
+            }catch(Exception $ex){
+                echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
+                Log::error("No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse);
+                Log::error($ex->getMessage());
             }
-            if($item->series_enabled){
-                ItemLot::create([
-                    'date'         => $value->date_of_due,
-                    'series'       => $value->code,
-                    'item_id'      => $item->id,
-                    'warehouse_id' => $value->warehouse,
-                    'has_sale'     => false,
-                    'state'        => 'Activo',
-                ]);
-            }
-
         }
     }
 }
