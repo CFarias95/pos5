@@ -136,8 +136,8 @@ class PurchaseInitialSController extends Controller
                 $purchase->save();
 
                 sleep(10);
-                Log::info('ID PURCHASE: '.$purchase->id);
-                Log::info('ITEM ID '.$itemP->id);
+                Log::error('ID PURCHASE: '.$purchase->id);
+                Log::error('ITEM ID '.$itemP->id);
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->purchase_id = $purchase->id;
