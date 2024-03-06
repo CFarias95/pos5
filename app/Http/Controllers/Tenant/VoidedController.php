@@ -12,10 +12,13 @@ use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tenant\VoidedRequest;
 use Carbon\Carbon;
 use App\Models\Tenant\{
+    AccountingEntries,
     Document,
-    Configuration
+    Configuration,
+    DocumentPayment,
+    VoidedDocument
 };
-
+use Illuminate\Support\Facades\Log;
 
 class VoidedController extends Controller
 {
@@ -128,6 +131,12 @@ class VoidedController extends Controller
             $facturalo->statusSummary($document->ticket);
             return $facturalo;
         });
+
+        $voided_doc = VoidedDocument::where('id', $voided_id)->first();
+        
+        AccountingEntries::where('document_id', 'F'.$voided_doc->document_id)->delete();
+        $doc_payment_seat = DocumentPayment::where('document_id', $voided_doc->document_id)->first();
+        AccountingEntries::where('document_id', 'CF'.$doc_payment_seat->id)->delete();
 
         $response = $fact->getResponse();
 

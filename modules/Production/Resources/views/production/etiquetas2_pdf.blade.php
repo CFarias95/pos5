@@ -22,7 +22,7 @@
     $empacado =  $totalKg - $produccion->imperfect - $produccion->samples;
 
     $producido_global = floatval($produccion->color);
-    Log::info('producido_global - '.$producido_global);
+    //Log::info('producido_global - '.$producido_global);
     $merma_global = floatval($produccion->olor);
 
     $porcentaje_merma = 0;
