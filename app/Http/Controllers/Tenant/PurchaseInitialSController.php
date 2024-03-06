@@ -135,7 +135,7 @@ class PurchaseInitialSController extends Controller
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
                 $purchase->save();
 
-                sleep(10);
+                sleep(5);
 
                 Log::error('ID PURCHASE: '.$purchase->id);
                 Log::error('ITEM ID '.$itemP->id);
@@ -186,6 +186,7 @@ class PurchaseInitialSController extends Controller
         $compani = Company::first();
         $data = DB::connection('tenant')->select('SELECT * FROM cuentasporcobrarlocales;');
         $establishment = Establishment::find(1);
+        $itemP = Item::find(1); //cambiar al ID del ITEM basico
         foreach ($data as $item) {
 
             try {
@@ -233,11 +234,15 @@ class PurchaseInitialSController extends Controller
                 $document->reference_data = $numDoc;
                 $document->save();
 
-                $item = Item::find(1); //cambiar al ID del ITEM basico
+                sleep(5);
+                Log::error('ID PURCHASE: '.$document->id);
+                Log::error('ITEM ID '.$itemP->id);
+
+
                 $documentItem = new DocumentItem();
                 $documentItem->document_id = $document->id;
-                $documentItem->item_id = $item->id;
-                $documentItem->item = $item;
+                $documentItem->item_id = $itemP->id;
+                $documentItem->item = $itemP;
                 $documentItem->quantity = 1;
                 $documentItem->unit_value = $importe;
                 $documentItem->unit_price = $importe;
