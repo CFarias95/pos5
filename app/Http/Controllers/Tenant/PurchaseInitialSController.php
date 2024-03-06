@@ -92,10 +92,9 @@ class PurchaseInitialSController extends Controller
     public function create()
     {
         $configuration = Configuration::first();
-        //$configuration = $configuration->getCollectionData();
-
         $compani = Company::first();
         $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales ');
+        $item = Item::find(1);
         foreach ($data as $item) {
 
             try {
@@ -134,31 +133,33 @@ class PurchaseInitialSController extends Controller
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
                 $purchase->save();
 
-                $item = Item::find(1); //cambiar al ID del ITEM basico
-                $purchaseItem = new PurchaseItem();
-                $purchaseItem->purchase_id = $purchase->id;
-                $purchaseItem->item_id = $item->id;
-                $purchaseItem->item = $item;
-                $purchaseItem->quantity = 1;
-                $purchaseItem->unit_value = $importe;
-                $purchaseItem->affectation_igv_type_id = $item->purchase_affectation_igv_type_id;
-                $purchaseItem->total_base_igv = $importe;
-                $purchaseItem->percentage_igv = 0;
-                $purchaseItem->total_igv = $importe;
-                $purchaseItem->total_taxes = 0;
-                $purchaseItem->price_type_id = '01';
-                $purchaseItem->unit_price = $importe;
-                $purchaseItem->total_value = $importe;
-                $purchaseItem->total = $importe;
-                $purchaseItem->save();
+                if($purchase->id){
+                    $purchaseItem = new PurchaseItem();
+                    $purchaseItem->purchase_id = $purchase->id;
+                    $purchaseItem->item_id = $item->id;
+                    $purchaseItem->item = $item;
+                    $purchaseItem->quantity = 1;
+                    $purchaseItem->unit_value = $importe;
+                    $purchaseItem->affectation_igv_type_id = $item->purchase_affectation_igv_type_id;
+                    $purchaseItem->total_base_igv = $importe;
+                    $purchaseItem->percentage_igv = 0;
+                    $purchaseItem->total_igv = $importe;
+                    $purchaseItem->total_taxes = 0;
+                    $purchaseItem->price_type_id = '01';
+                    $purchaseItem->unit_price = $importe;
+                    $purchaseItem->total_value = $importe;
+                    $purchaseItem->total = $importe;
+                    $purchaseItem->save();
 
-                $purchaseFee = new PurchaseFee();
-                $purchaseFee->purchase_id = $purchase->id;
-                $purchaseFee->date = $fechaVenci;
-                $purchaseFee->currency_type_id = $configuration->currency_type_id;
-                $purchaseFee->amount = $importe;
-                $purchaseFee->number = 1; //Monto de la
-                $purchaseFee->save();
+                    $purchaseFee = new PurchaseFee();
+                    $purchaseFee->purchase_id = $purchase->id;
+                    $purchaseFee->date = $fechaVenci;
+                    $purchaseFee->currency_type_id = $configuration->currency_type_id;
+                    $purchaseFee->amount = $importe;
+                    $purchaseFee->number = 1; //Monto de la
+                    $purchaseFee->save();
+
+                }
 
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
             } catch (Exception $ex) {
