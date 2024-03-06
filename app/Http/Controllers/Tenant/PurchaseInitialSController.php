@@ -94,7 +94,7 @@ class PurchaseInitialSController extends Controller
         $configuration = Configuration::first();
         $compani = Company::first();
         $data = DB::connection('tenant')->select('SELECT * FROM cuentasporpagarlocales ');
-        $item = Item::find(1);
+        $itemP = Item::find(1);
         foreach ($data as $item) {
 
             try {
@@ -107,6 +107,7 @@ class PurchaseInitialSController extends Controller
                 $importe =  floatval(str_replace(',', '.', $item->importe));
                 $numero = Purchase::where('establishment_id', 1)->where('series', 'CC')->get()->max('number');
                 $supplier = Person::where('number', $CI)->first();
+
                 $purchase = new Purchase();
                 $purchase->user_id = 1;
                 $purchase->external_id = Str::uuid()->toString();
@@ -134,13 +135,14 @@ class PurchaseInitialSController extends Controller
                 $purchase->save();
 
                 if($purchase->id){
+
                     $purchaseItem = new PurchaseItem();
                     $purchaseItem->purchase_id = $purchase->id;
-                    $purchaseItem->item_id = $item->id;
-                    $purchaseItem->item = $item;
+                    $purchaseItem->item_id = $itemP->id;
+                    $purchaseItem->item = $itemP;
                     $purchaseItem->quantity = 1;
                     $purchaseItem->unit_value = $importe;
-                    $purchaseItem->affectation_igv_type_id = $item->purchase_affectation_igv_type_id;
+                    $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
                     $purchaseItem->total_base_igv = $importe;
                     $purchaseItem->percentage_igv = 0;
                     $purchaseItem->total_igv = $importe;
