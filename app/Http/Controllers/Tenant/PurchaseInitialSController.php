@@ -162,6 +162,8 @@ class PurchaseInitialSController extends Controller
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
+                Log::error("No Se pudo generar el saldo INICIAL PURCHASES para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>");
+                Log::error($ex->getMessage());
             }
         }
     }
@@ -254,7 +256,8 @@ class PurchaseInitialSController extends Controller
             } catch (Exception $ex) {
 
                 echo "No Se pudo generar el saldo INICIAL para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>";
-                //echo $ex->getMessage(). "</br>";
+                Log::error("No Se pudo generar el saldo INICIAL DOCUMENTS para " . $CI . " con fecha : " . $fecha . " valor de " . $importe . "</br>");
+                Log::error($ex->getMessage());
             }
         }
     }
@@ -319,7 +322,8 @@ class PurchaseInitialSController extends Controller
 
             }catch(Exception $ex){
                 echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
-                echo $ex->getMessage(). "</br>";
+                Log::error("No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>");
+                Log::error($ex->getMessage());
             }
         }
     }
