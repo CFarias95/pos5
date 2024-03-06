@@ -235,7 +235,7 @@ class PurchaseInitialSController extends Controller
                 $document->save();
 
                 sleep(5);
-                Log::error('ID PURCHASE: '.$document->id);
+                Log::error('ID document: '.$document->id);
                 Log::error('ITEM ID '.$itemP->id);
 
 
