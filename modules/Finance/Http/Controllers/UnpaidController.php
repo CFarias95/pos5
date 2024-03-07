@@ -703,15 +703,16 @@ class UnpaidController extends Controller
             }
 
             $lista = AccountingEntries::where('user_id', '=', auth()->user()->id)->latest('id')->first();
+
             $cabeceraC = new AccountingEntries();
             $cabeceraC->user_id = auth()->user()->id;
-            $cabeceraC->seat = $lista->seat + 1;
-            $cabeceraC->seat_general = $lista->seat + 1;
+            $cabeceraC->seat = ($lista && $lista->seat )? $lista->seat + 1: 1;
+            $cabeceraC->seat_general = ($lista && $lista->seat )? $lista->seat + 1: 1;
             $cabeceraC->seat_date = $request->date_of_payment;
             $cabeceraC->types_accounting_entrie_id = 4;
             $cabeceraC->comment = $request->reference.$comment;
             $cabeceraC->serie = 'MULTICOBROS';
-            $cabeceraC->number = $lista->seat + 1;
+            $cabeceraC->number = ($lista && $lista->seat )? $lista->seat + 1: 1;
             $cabeceraC->total_debe = $request->payment + $debeAdicional;
             $cabeceraC->total_haber = $request->payment + $haberAdicional;
             $cabeceraC->revised1 = 0;
@@ -775,7 +776,7 @@ class UnpaidController extends Controller
 
             return[
                 'success' => true,
-                'message' => 'Multi pago generado exitosamente!'
+                'message' => 'Multi cobro generado exitosamente!'
             ];
         }catch(Exception $ex){
 
@@ -788,7 +789,7 @@ class UnpaidController extends Controller
             }
             return[
                 'success' => false,
-                'message' => 'Multi pago NO generado, '.$ex->getMessage()
+                'message' => 'Multi cobro NO generado, '.$ex->getMessage()
             ];
 
         }
