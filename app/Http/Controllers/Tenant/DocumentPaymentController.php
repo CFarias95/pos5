@@ -168,7 +168,7 @@ class DocumentPaymentController extends Controller
 
                     $valorCuota = $cuotas->amount - $pagado;
                     $cuotaid = $cuotas->id;
-                    $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
+                    $sequential = DocumentPayment::orderBy('sequential', 'desc')->first() ?? 0;
 
                     if(isset($fee_id) && $cuotaid == $fee_id){
                         if( $valorPagar > 0 && $valorPagar >= $valorCuota){

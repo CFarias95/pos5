@@ -16,7 +16,6 @@
                         Nuevo
                     </button>
                 </template>
-
                 <button class="btn btn-custom btn-sm  mt-2 mr-2" type="button" @click.prevent="clickImport()"><i
                         class="fa fa-upload"></i> Importar
                 </button>
