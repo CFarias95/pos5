@@ -374,7 +374,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 }
                             }
                         }else{
-                            if(isset($it['quantity']) && $it['quantity'] > 0){
+                            if(isset($it['compromise_quantity']) && $it['compromise_quantity'] > 0){
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado';
