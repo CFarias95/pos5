@@ -867,12 +867,15 @@ class ProductionController extends Controller
                 $transferRequest['items'] = $items;
                 $transferRequest['client_id'] = $client_id;
                 $transferRequest['created_at'] = $created_at->toDateTimeString();
+                $transferRequest['date_of_issue'] = date('y-m-d');
+                $transferRequest['time_of_issue'] = date('h:s:i');
                 //Log::info('compromise_quantity - ' . $compromise_quantity);
                 $transferRequest['compromise_quantity'] = $compromise_quantity;
                 $transferRequest['quantity'] = $compromise_quantity;
                 Log::info('tranfer Request - ' . json_encode($transferRequest));
                 return $transfers->store($transferRequest);
             }
+
         } catch (Exception $ex) {
             Log::error("Error Transfer samples: " . $ex->getMessage());
         }
