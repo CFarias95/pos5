@@ -252,7 +252,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                <!-- <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div
                                         :class="{ 'has-danger': errors.agreed }"
                                         class="form-group"
@@ -273,7 +273,7 @@
                                             v-text="errors.agreed[0]"
                                         ></small>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div
@@ -490,19 +490,19 @@
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Cantidad Producida Global</label>
-                                            <el-input-number v-model="form.color"></el-input-number>
+                                            <el-input v-model="form.color"></el-input>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Merma Total</label>
-                                            <el-input-number v-model="form.olor"></el-input-number>
+                                            <el-input v-model="form.olor"></el-input>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Muestra Testigo Total</label>
-                                            <el-input-number v-model="form.sabor"></el-input-number>
+                                            <el-input v-model="form.sabor"></el-input>
                                         </div>
                                         <div class="form-group">
                                             <label class="control-label">Sobrante Total</label>
-                                            <el-input-number v-model="form.solubilidad"></el-input-number>
+                                            <el-input v-model="form.solubilidad"></el-input>
                                         </div>
                                     </div>
                                 </div>
@@ -796,7 +796,7 @@
                                         />
                                     </div>
                                 </div>
-                                <div class="col-sm-12 col-md-3">
+                                <!-- <div class="col-sm-12 col-md-3">
                                     <label class="control-label">
                                         Ficha Informativa
                                         <el-tooltip
@@ -826,7 +826,7 @@
                                         >
                                         </small>
                                     </div>
-                                </div>
+                                </div> -->
 
                                 <div
                                     class="col-sm-12 col-md-9"

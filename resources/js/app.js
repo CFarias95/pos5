@@ -61,6 +61,7 @@ Vue.component('tenant-documents-invoice', require('./views/tenant/documents/invo
 Vue.component('tenant-documents-invoice-generate', require('./views/tenant/documents/invoice_generate'));
 Vue.component('tenant-documents-invoicetensu', require('./views/tenant/documents/invoicetensu.vue'));
 Vue.component('tenant-documents-note', require('./views/tenant/documents/note.vue'));
+Vue.component('tenant-documents-note-edit', require('./views/tenant/documents/note_edit.vue'));
 
 //imports
 Vue.component('tenant-imports-index', require('./views/tenant/imports/index.vue'));

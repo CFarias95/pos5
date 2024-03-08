@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Tenant;
 use App\Http\Controllers\Controller;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Configuration;
+use App\Models\Tenant\Note;
+use Illuminate\Support\Facades\Log;
 
 class NoteController extends Controller
 {
@@ -17,6 +19,7 @@ class NoteController extends Controller
 
     public function record($document_id)
     {
+        Log::info('document id - '.$document_id);
         $record = Document::find($document_id);
 
         return $record;
@@ -47,6 +50,22 @@ class NoteController extends Controller
             'success' => false,
             'data' => []
         ];
+
+    }
+
+    public function edit($document_id)
+    {
+        //$document_affected = Document::find($document_id);
+        //Log::info('document_affected - '.json_encode($document_affected));
+        $configuration = Configuration::first();
+        $note = Note::where('document_id', $document_id)->get();
+        Log::info('note - '.json_encode($note));
+
+        return view('tenant.documents.note_edit', compact(/*'document_affected',*/ 'configuration', 'note'));
+    }
+
+    public function update()
+    {
 
     }
 
