@@ -872,7 +872,7 @@ class ProductionController extends Controller
                 //Log::info('compromise_quantity - ' . $compromise_quantity);
                 $transferRequest['compromise_quantity'] = $compromise_quantity;
                 $transferRequest['quantity'] = $compromise_quantity;
-                Log::info('tranfer Request - ' . json_encode($transferRequest));
+                Log::info('tranfer Request - ' . json_encode($transferRequest->all()));
                 return $transfers->store($transferRequest);
             }
 
