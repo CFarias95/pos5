@@ -271,12 +271,28 @@
                                 </button>
                                 <div class="dropdown-menu" aria-labelledby="dropdownMenuButton">
                                     <div v-if="configuration.permission_to_edit_cpe">
+                                        <!-- <a :href="`/documents/note/${row.id}/edit`" class="dropdown-item"
+                                            v-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userPermissionEditCpe && row.is_editable && row.document_type_id === '07'">
+                                            Editar Nota
+                                        </a>
+                                        <a :href="`/documents/${row.id}/edit`" class="dropdown-item"
+                                            v-else-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userPermissionEditCpe && row.is_editable">
+                                            Editar
+                                        </a> -->
                                         <a :href="`/documents/${row.id}/edit`" class="dropdown-item"
                                             v-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userPermissionEditCpe && row.is_editable">
                                             Editar
                                         </a>
                                     </div>
                                     <div v-else>
+                                        <!-- <a :href="`/documents/note/${row.id}/edit`" class="dropdown-item"
+                                            v-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userId == row.user_id && row.is_editable && row.document_type_id === '07'">
+                                            Editar Nota
+                                        </a>
+                                        <a :href="`/documents/${row.id}/edit`" class="dropdown-item"
+                                            v-else-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userId == row.user_id && row.is_editable">
+                                            Editar
+                                        </a> -->
                                         <a :href="`/documents/${row.id}/edit`" class="dropdown-item"
                                             v-if="row.state_type_id != '05' && row.state_type_id != '11' && row.state_type_id != '07' && userId == row.user_id && row.is_editable">
                                             Editar

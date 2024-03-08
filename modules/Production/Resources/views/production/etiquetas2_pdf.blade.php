@@ -50,23 +50,23 @@
     foreach ($producido->attributes as $attribute) {
         if($attribute->attribute_type_id == 'OPC')
         {
-            $color = $attribute->description;
+            $color = $attribute->value;
         }
-        if($attribute->attribute_type_id == 'OPL')
+        if($attribute->attribute_type_id == 'OPOL')
         {
-            $olor = $attribute->description;
+            $olor = $attribute->value;
         }
         if($attribute->attribute_type_id == 'OPS')
         {
-            $sabor = $attribute->description;
+            $sabor = $attribute->value;
         }
         if($attribute->attribute_type_id == 'OPSL')
         {
-            $soluble = $attribute->description;
+            $soluble = $attribute->value;
         }
-        if($attribute->attribute_type_id == 'ET04')
+        if($attribute->attribute_type_id == 'ET07')
         {
-            $rango = $attribute->description;
+            $rango = $attribute->value;
         }
     }
 @endphp

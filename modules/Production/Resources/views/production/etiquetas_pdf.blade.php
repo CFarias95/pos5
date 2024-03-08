@@ -6,11 +6,11 @@ if(isset($company->logo)){
     $logo = "storage/uploads/logos/$company->logo";
 }
 
-$ingredientes = "";
+$ingredientes = $records['second_name'] ?? 'N/A';
 
-foreach ($records['supplies'] as $ingre) {
+/*foreach ($records['supplies'] as $ingre) {
     $ingredientes .= $ingre['individual_item']['second_name']. ",";
-}
+}*/
 
 $atributos = $records['supplies'][0]['item']['attributes'];
 $bpm = null;
@@ -108,7 +108,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         </style>
     </head>
     <body>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -169,7 +169,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             </thead>
         </table>
         <br>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -230,7 +230,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             </thead>
         </table>
         <br>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -291,7 +291,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             </thead>
         </table>
         <br>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -352,7 +352,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             </thead>
         </table>
         <br>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -413,7 +413,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             </thead>
         </table>
         <br>
-        <table class="table card" style="border: 1px solid black;" width="75%">
+        <table class="table card" style="border: 1px solid black;" width="100%">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
