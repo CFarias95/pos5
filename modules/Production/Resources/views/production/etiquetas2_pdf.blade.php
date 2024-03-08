@@ -27,11 +27,11 @@
     $porcentaje_merma = 0;
     $porcentaje_merma_global = 0;
 
+    $multiplicacion1 = $produccion->imperfect * 100;
+    $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
+
     if($producido_global > 0)
     {
-        $multiplicacion1 = $produccion->imperfect * 100;
-        $porcentaje_merma = round($multiplicacion1 / $totalKg, 2);
-
         $multiplicacion = $merma_global * 100;
         $porcentaje_merma_global = round($multiplicacion / $producido_global, 2);
     }else{

@@ -417,6 +417,7 @@ export default {
             note_debit_types: [],
             user: {},
             document: {},
+            note: {},
             operation_types: [],
             is_contingency: false,
             affected_documents: [],
@@ -428,6 +429,7 @@ export default {
     },
     async created() {
         this.document = this.document_affected
+        this.note = this.note
         //JOINSOFTWARE
         //this.loadConfiguration()
         //this.$store.commit('setConfiguration', this.configuration)
