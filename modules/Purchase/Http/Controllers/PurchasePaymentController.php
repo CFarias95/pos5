@@ -155,7 +155,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorCuota;
                             $record->fee_id = $cuotaid;
-                            $record->sequential = $sequential->sequential +1;
+                            $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -175,7 +175,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorPagar;
                             $record->fee_id = $cuotaid;
-                            $record->sequential = $sequential->sequential + 1;
+                            $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -195,7 +195,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorCuota;
                             $record->fee_id = $cuotaid;
-                            $record->sequential = $sequential->sequential + 1;
+                            $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -215,7 +215,7 @@ class PurchasePaymentController extends Controller
                             $record->fill($request->all());
                             $record->payment = $valorPagar;
                             $record->fee_id = $cuotaid;
-                            $record->sequential = $sequential->sequential + 1;
+                            $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                             $record->save();
 
                             $this->createGlobalPayment($record, $request->all());
@@ -233,7 +233,7 @@ class PurchasePaymentController extends Controller
                 $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
                 $record = PurchasePayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
-                $record->sequential = $sequential->sequential + 1;
+                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'purchases');
@@ -494,7 +494,7 @@ class PurchasePaymentController extends Controller
             //$newPayment->payment_received = $payment->payment_received;
             $newPayment->fee_id = $payment->fee_id;
             $newPayment->postdated = $payment->postdated;
-            $newPayment->sequential = $sequential->sequential + 1;
+            $newPayment->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
             $newPayment->save();
 
             $newGlobalPayment = new GlobalPayment();
@@ -537,7 +537,7 @@ class PurchasePaymentController extends Controller
                 //$newPayment->payment_received = $paymentM->payment_received;
                 $newPayment->fee_id = $paymentM->fee_id;
                 $newPayment->postdated = $paymentM->postdated;
-                $newPayment->sequential = $sequential->sequential + 1;
+                $newPayment->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                 $newPayment->multipay = 'SI';
                 $newPayment->save();
 

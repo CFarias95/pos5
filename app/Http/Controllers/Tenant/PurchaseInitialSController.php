@@ -292,7 +292,7 @@ class PurchaseInitialSController extends Controller
                 $inventory->description = 'Stock inicial';
                 $inventory->item_id = $item->id;
                 $inventory->warehouse_id = $value->warehouse;
-                $inventory->quantity = floatVal($value->quantity);
+                $inventory->quantity = floatVal(str_replace(',','.',$value->quantity));
                 $inventory->inventory_transaction_id = null;
                 $inventory->lot_code = $value->code;
                 $inventory->comments = 'Creacion de stock por plantilla inicial';
@@ -306,14 +306,14 @@ class PurchaseInitialSController extends Controller
                 $inventoryKardex->inventory_kardexable_id = $inventory->id;
                 $inventoryKardex->inventory_kardexable_type = 'Modules\Inventory\Models\Inventory';
                 $inventoryKardex->warehouse_id = $value->warehouse;
-                $inventoryKardex->quantity = floatVal($value->quantity);
+                $inventoryKardex->quantity = floatVal(str_replace(',','.',$value->quantity));
                 $inventoryKardex->save();
 
                 if($item->lots_enabled){
 
                     ItemLotsGroup::create([
                         'code' => $value->code,
-                        'quantity' => floatVal($value->quantity),
+                        'quantity' => floatVal(str_replace(',','.',$value->quantity)),
                         'date_of_due' =>$value->date_of_due,
                         'warehouse_id' => $value->warehouse,
                         'item_id' => $item->id
@@ -332,7 +332,7 @@ class PurchaseInitialSController extends Controller
                     ]);
                 }
 
-                $iw->stock += floatVal($value->quantity);
+                $iw->stock += floatVal(str_replace(',','.',$value->quantity));
                 $iw->save();
 
             }catch(Exception $ex){

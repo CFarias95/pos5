@@ -165,6 +165,7 @@ class DispatchController extends Controller
 
             if ($type != 't') {
                 foreach ($document->items as $item) {
+                    
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $lotes = '';
                     if(isset($item->item->IdLoteSelected )){

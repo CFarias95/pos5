@@ -177,7 +177,7 @@ class DocumentPaymentController extends Controller
 
                                 $record = DocumentPayment::firstOrNew(['id' => $id]);
                                 $record->fill($request->all());
-                                $record->sequential = $sequential->sequential + 1;
+                                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                                 $record->payment = $valorCuota;
                                 $record->fee_id = $cuotaid;
                                 $record->save();
@@ -200,7 +200,7 @@ class DocumentPaymentController extends Controller
                                 $record->fill($request->all());
                                 $record->payment = $valorPagar;
                                 $record->fee_id = $cuotaid;
-                                $record->sequential = $sequential->sequential + 1;
+                                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                                 $record->save();
 
                                 $this->createGlobalPayment($record, $request->all());
@@ -221,7 +221,7 @@ class DocumentPaymentController extends Controller
                                 $record->fill($request->all());
                                 $record->payment = $valorCuota;
                                 $record->fee_id = $cuotaid;
-                                $record->sequential = $sequential->sequential + 1;
+                                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                                 $record->save();
 
                                 $this->createGlobalPayment($record, $request->all());
@@ -242,7 +242,7 @@ class DocumentPaymentController extends Controller
                                 $record->fill($request->all());
                                 $record->payment = $valorPagar;
                                 $record->fee_id = $cuotaid;
-                                $record->sequential = $sequential->sequential + 1;
+                                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                                 $record->save();
 
                                 $this->createGlobalPayment($record, $request->all());
@@ -262,7 +262,7 @@ class DocumentPaymentController extends Controller
                 $sequential = DocumentPayment::orderBy('sequential', 'desc')->first();
                 $record = DocumentPayment::firstOrNew(['id' => $id]);
                 $record->fill($request->all());
-                $record->sequential = $sequential->sequential + 1;
+                $record->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                 $record->save();
                 $this->createGlobalPayment($record, $request->all());
                 $this->saveFiles($record, $request, 'documents');
@@ -975,7 +975,7 @@ class DocumentPaymentController extends Controller
             $newPayment->payment_received = $payment->payment_received;
             $newPayment->fee_id = $payment->fee_id;
             $newPayment->postdated = $payment->postdated;
-            $newPayment->sequential = $sequential->sequential + 1;
+            $newPayment->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
             $newPayment->save();
 
             $newGlobalPayment = new GlobalPayment();
@@ -1015,7 +1015,7 @@ class DocumentPaymentController extends Controller
                 $newPayment->payment_received = $paymentM->payment_received;
                 $newPayment->fee_id = $paymentM->fee_id;
                 $newPayment->postdated = $paymentM->postdated;
-                $newPayment->sequential = $sequential->sequential + 1;
+                $newPayment->sequential = ($sequential && $sequential->sequential) ? $sequential->sequential + 1 : 1;
                 $newPayment->multipay = 'SI';
                 $newPayment->save();
 
