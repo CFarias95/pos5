@@ -286,6 +286,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                     foreach ($request->items as $it) {
                         $item = Item::find($it['id']);
+
                         if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
                             // si tiene Lotes se crea el kardex por lotes
                             foreach ($it['lots'] as $key => $value) {
@@ -356,7 +357,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             $inventory->item_id = $it['id'];
                             $inventory->warehouse_id = $request->warehouse_id;
                             $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                            $inventory->quantity = $it['quantity'];
+                            $inventory->quantity = $it['compromise_quantity'];
                             $inventory->inventories_transfer_id = $row->id;
                             $inventory->precio_perso = $item->purchase_mean_cost;
                             $inventory->save();
@@ -380,7 +381,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 $inventory->item_id = $it['id'];
                                 $inventory->warehouse_id = $request->warehouse_id;
                                 $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                                $inventory->quantity = $it['quantity'];
+                                $inventory->quantity = $it['compromise_quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->precio_perso = $item->purchase_mean_cost;
                                 $inventory->save();
