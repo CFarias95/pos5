@@ -270,112 +270,89 @@ use Modules\Item\Models\ItemLotsGroup;
 
         public function store(TransferRequest $request)
         {
-            $result = DB::connection('tenant')->transaction(function () use ($request) {
-                $created_at = Carbon::parse($request->created_at);
-                //Log::info('date'.$created_at);
-                $row = InventoryTransfer::create([
-                    'description' => $request->description,
-                    'warehouse_id' => $request->warehouse_id,
-                    'warehouse_destination_id' => $request->warehouse_destination_id,
-                    'quantity' => count($request->items),
-                    'client_id' => $request->client_id,
-                ]);
-                $row->created_at = $created_at;
-                $row->save();
+            try{
+                $result = DB::connection('tenant')->transaction(function () use ($request) {
+                    $created_at = Carbon::parse($request->created_at);
+                    //Log::info('date'.$created_at);
+                    $row = InventoryTransfer::create([
+                        'description' => $request->description,
+                        'warehouse_id' => $request->warehouse_id,
+                        'warehouse_destination_id' => $request->warehouse_destination_id,
+                        'quantity' => count($request->items),
+                        'client_id' => $request->client_id,
+                    ]);
+                    $row->created_at = $created_at;
+                    $row->save();
 
-                foreach ($request->items as $it) {
-                    $item = Item::find($it['id']);
-                    if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
-                        // si tiene Lotes se crea el kardex por lotes
-                        foreach ($it['lots'] as $key => $value) {
-                            //Log::info('Entro foreach - '.json_encode($value));
-                            # code...
-                            if ($value['checked'] == true && $value['compromise_quantity'] && $value['compromise_quantity'] > 0) {
-                                //Log::info('entro al if de value checked - '.json_encode($value));
-                                $inventory = new Inventory();
-                                $inventory->type = 2;
-                                $inventory->description = 'Traslado Lotes';
-                                $inventory->item_id = $it['id'];
-                                //Log::info('before');
-                                $inventory->warehouse_id = $value['warehouse_id'];
-                                //Log::info('inventory warehouse');
-                                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                                //Log::info('inventory warehouse destination');
-                                $inventory->quantity = $value['compromise_quantity'];
-                                $inventory->inventories_transfer_id = $row->id;
-                                $inventory->lot_code = $value['code'];
-                                //Log::info('Inventory antes de guardar');
-                                $inventory->precio_perso = $item->purchase_mean_cost;
-                                $inventory->save();
-                                //Log::info('inventory guardado');
+                    foreach ($request->items as $it) {
+                        $item = Item::find($it['id']);
+                        if($it['lots_enabled'] == true || $it['lots_enabled'] == 1){
+                            // si tiene Lotes se crea el kardex por lotes
+                            foreach ($it['lots'] as $key => $value) {
+                                //Log::info('Entro foreach - '.json_encode($value));
+                                # code...
+                                if ($value['checked'] == true && $value['compromise_quantity'] && $value['compromise_quantity'] > 0) {
+                                    //Log::info('entro al if de value checked - '.json_encode($value));
+                                    $inventory = new Inventory();
+                                    $inventory->type = 2;
+                                    $inventory->description = 'Traslado Lotes';
+                                    $inventory->item_id = $it['id'];
+                                    //Log::info('before');
+                                    $inventory->warehouse_id = $value['warehouse_id'];
+                                    //Log::info('inventory warehouse');
+                                    $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                                    //Log::info('inventory warehouse destination');
+                                    $inventory->quantity = $value['compromise_quantity'];
+                                    $inventory->inventories_transfer_id = $row->id;
+                                    $inventory->lot_code = $value['code'];
+                                    //Log::info('Inventory antes de guardar');
+                                    $inventory->precio_perso = $item->purchase_mean_cost;
+                                    $inventory->save();
+                                    //Log::info('inventory guardado');
 
-                                //lotes origen
-                                $lotOrigin = ItemLotsGroup::where('item_id',$it['id'])
-                                ->where('code',$value['code'])
-                                ->where('warehouse_id', $value['warehouse_id'])
-                                ->first();
-                                //Log::info('$lotOrigin - '.json_encode($lotOrigin));
-                                //$cantOrigin=$lotOrigin->quantity;
+                                    //lotes origen
+                                    $lotOrigin = ItemLotsGroup::where('item_id',$it['id'])
+                                    ->where('code',$value['code'])
+                                    ->where('warehouse_id', $value['warehouse_id'])
+                                    ->first();
+                                    //Log::info('$lotOrigin - '.json_encode($lotOrigin));
+                                    //$cantOrigin=$lotOrigin->quantity;
 
-                                //comprobar existencia producto
-                                $lotDest = ItemLotsGroup::where('item_id',$it['id'])
-                                ->where('code',$value['code'])
-                                ->where('warehouse_id', $request->warehouse_destination_id)
-                                ->first();
-                                //Log::info('$lotDest - '.json_encode($lotDest));
+                                    //comprobar existencia producto
+                                    $lotDest = ItemLotsGroup::where('item_id',$it['id'])
+                                    ->where('code',$value['code'])
+                                    ->where('warehouse_id', $request->warehouse_destination_id)
+                                    ->first();
+                                    //Log::info('$lotDest - '.json_encode($lotDest));
 
-                                if(isset($lotDest) && $lotDest != ''){
+                                    if(isset($lotDest) && $lotDest != ''){
 
-                                    //$cantDest=$lotOrigin->quantity;
-                                    //Log::info('LotDestif - ');
-                                    $lotDest->quantity+= $value['compromise_quantity'];
-                                    $lotDest->save();
+                                        //$cantDest=$lotOrigin->quantity;
+                                        //Log::info('LotDestif - ');
+                                        $lotDest->quantity+= $value['compromise_quantity'];
+                                        $lotDest->save();
 
-                                }else{
-                                    ItemLotsGroup::create([
-                                        'code' => $value['code'],
-                                        'quantity' => $value['compromise_quantity'],
-                                        'date_of_due' => $lotOrigin->date_of_due,
-                                        'warehouse_id' => $request->warehouse_destination_id,
-                                        'item_id' => $it['id']
-                                    ]);
+                                    }else{
+                                        ItemLotsGroup::create([
+                                            'code' => $value['code'],
+                                            'quantity' => $value['compromise_quantity'],
+                                            'date_of_due' => $lotOrigin->date_of_due,
+                                            'warehouse_id' => $request->warehouse_destination_id,
+                                            'item_id' => $it['id']
+                                        ]);
+
+                                    }
+
+                                    $lotOrigin->quantity -= $value['compromise_quantity'];
+                                    $lotOrigin->save();
 
                                 }
-
-                                $lotOrigin->quantity -= $value['compromise_quantity'];
-                                $lotOrigin->save();
-
                             }
-                        }
-                    }elseif(isset($it['series_enabled']) && $it['series_enabled'] == true){
-                        //si tienes series
-                        $inventory = new Inventory();
-                        $inventory->type = 2;
-                        $inventory->description = 'Traslado Serie';
-                        $inventory->item_id = $it['id'];
-                        $inventory->warehouse_id = $request->warehouse_id;
-                        $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                        $inventory->quantity = $it['quantity'];
-                        $inventory->inventories_transfer_id = $row->id;
-                        $inventory->precio_perso = $item->purchase_mean_cost;
-                        $inventory->save();
-
-                        foreach ($it['lots'] as $lot) {
-
-                            if (isset($lot['checked']) && $lot['checked'] == true) {
-                                $item_lot = ItemLot::findOrFail($lot['id']);
-                                $item_lot->warehouse_id = $inventory->warehouse_destination_id;
-                                $item_lot->update();
-
-                                $inventory->lot_code = $item_lot->series;
-                                $inventory->save();
-                            }
-                        }
-                    }else{
-                        if(isset($it['quantity']) && $it['quantity'] > 0){
+                        }elseif(isset($it['series_enabled']) && $it['series_enabled'] == true){
+                            //si tienes series
                             $inventory = new Inventory();
                             $inventory->type = 2;
-                            $inventory->description = 'Traslado';
+                            $inventory->description = 'Traslado Serie';
                             $inventory->item_id = $it['id'];
                             $inventory->warehouse_id = $request->warehouse_id;
                             $inventory->warehouse_destination_id = $request->warehouse_destination_id;
@@ -383,17 +360,49 @@ use Modules\Item\Models\ItemLotsGroup;
                             $inventory->inventories_transfer_id = $row->id;
                             $inventory->precio_perso = $item->purchase_mean_cost;
                             $inventory->save();
+
+                            foreach ($it['lots'] as $lot) {
+
+                                if (isset($lot['checked']) && $lot['checked'] == true) {
+                                    $item_lot = ItemLot::findOrFail($lot['id']);
+                                    $item_lot->warehouse_id = $inventory->warehouse_destination_id;
+                                    $item_lot->update();
+
+                                    $inventory->lot_code = $item_lot->series;
+                                    $inventory->save();
+                                }
+                            }
+                        }else{
+                            if(isset($it['quantity']) && $it['quantity'] > 0){
+                                $inventory = new Inventory();
+                                $inventory->type = 2;
+                                $inventory->description = 'Traslado';
+                                $inventory->item_id = $it['id'];
+                                $inventory->warehouse_id = $request->warehouse_id;
+                                $inventory->warehouse_destination_id = $request->warehouse_destination_id;
+                                $inventory->quantity = $it['quantity'];
+                                $inventory->inventories_transfer_id = $row->id;
+                                $inventory->precio_perso = $item->purchase_mean_cost;
+                                $inventory->save();
+                            }
+
                         }
-
                     }
-                }
 
-                return [
-                    'success' => true,
-                    'message' => 'Traslado creado con éxito'
-                ];
-            });
-            return $result;
+                    return [
+                        'success' => true,
+                        'message' => 'Traslado creado con éxito'
+                    ];
+                });
+
+                return $result;
+
+            } catch (Exception $e) {
+                //DB::rollback();
+                Log::info('Error al generar traslado ');
+                Log::error($e->getMessage());
+            }
+
         }
 
         public function reverse($id){
