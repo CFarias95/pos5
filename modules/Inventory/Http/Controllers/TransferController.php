@@ -374,14 +374,14 @@ use Modules\Item\Models\ItemLotsGroup;
                                 }
                             }
                         }else{
-                            if(isset($it['compromise_quantity']) && $it['compromise_quantity'] > 0){
+                            if(isset($it['quantity']) && $it['quantity'] > 0){
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
                                 $inventory->description = 'Traslado';
                                 $inventory->item_id = $it['id'];
                                 $inventory->warehouse_id = $request->warehouse_id;
                                 $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                                $inventory->quantity = $it['compromise_quantity'];
+                                $inventory->quantity = $it['quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->precio_perso = $item->purchase_mean_cost;
                                 $inventory->save();

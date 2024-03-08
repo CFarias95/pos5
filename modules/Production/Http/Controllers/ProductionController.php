@@ -844,7 +844,7 @@ class ProductionController extends Controller
                         ];
                         $item_data = [
                             'id' => $production->item->id,
-                            'lots_enabled' => $production->item->lots_enabled,
+                            'lots_enabled' => true,//$production->item->lots_enabled,
                             'lots' => $lots,
                             'warehouse_id' => $warehouse_id,
                             'warehouse_destination_id' => $warehouse_destination_id
