@@ -1574,7 +1574,7 @@ class ProductionController extends Controller
         //Log::info("province".json_encode($produccion->warehouse->establishment->province->description));
         $recordId = $produccion->item_id;
         $pdf = PDF::loadView('production::production.etiquetas_pdf', compact("records", "company", "recordId", "produccion"));
-        $pdf->setPaper([0, 0, 378, 245], 'portrait');
+        $pdf->setPaper([0, 0, 283, 181], 'portrait');
         $filename = 'Etiquetas_' . $produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
@@ -1611,7 +1611,7 @@ class ProductionController extends Controller
 
         $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items", "inventarios"));
 
-        $filename = 'Etiquetas2_' . $produccion->production_order . date('YmdHis');
+        $filename = 'Orden_Produccion_' . $produccion->production_order . date('YmdHis');
 
         return $pdf->download($filename . '.pdf');
     }

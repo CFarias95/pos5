@@ -70,7 +70,7 @@
                                        v-text="errors['note.note_description'][0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-2 col-md-6">
+                        <!-- <div class="col-lg-2 col-md-6">
                             <div class="form-group">
                                 <label class="control-label">Formato de PDF</label>
                                 <el-select v-model="form.actions.format_pdf">
@@ -78,7 +78,7 @@
                                     <el-option key="ticket" value="ticket" label="Tamaño Ticket"></el-option>
                                 </el-select>
                             </div>
-                        </div>
+                        </div> -->
                     </div>
                     <div class="row">
                         <div class="col-md-6">
@@ -208,7 +208,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row" v-if="form.items.length > 0">
+                    <!-- <div class="row" v-if="form.items.length > 0">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table">
@@ -279,9 +279,9 @@
                         </div>
                         <div class="col-md-8"></div>
 
-                        <div class="col-md-4" hidden>
+                        <div class="col-md-4" hidden>-->
                             <!-- Crédito -->
-                            <template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
+                            <!--<template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
                                 <table v-if="form.fee.length>0"
                                        class="text-left"
                                        width="100%">
@@ -334,9 +334,9 @@
                                 </table>
                             </template>
                         </div>
-                    </div>
+                    </div> -->
                 </div>
-                <div class="form-actions text-right mt-4">
+                <!-- <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
                     <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
@@ -348,29 +348,10 @@
                                    v-if="form.items.length > 0 && form.total > 0">Generar
                         </el-button>
                     </template>
-                </div>
+                </div> -->
             </form>
         </div>
 
-        <document-form-item :showDialog.sync="showDialogAddItem"
-                            :recordItem="recordItem"
-                            :isEditItemNote="isEditItemNote"
-                            :documentTypeId="form.document_type_id"
-                            :noteCreditOrDebitTypeId="form.note_credit_or_debit_type_id"
-                            :operation-type-id="form.operation_type_id"
-                            :currency-type-id-active="form.currency_type_id"
-                            :typeUser="user"
-                            :authUser="authUser"
-                            :exchange-rate-sale="form.exchange_rate_sale"
-                            :configuration="configuration"
-                            :editNameProduct="configuration.edit_name_product"
-                            :percentage-igv="percentage_igv"
-                            :isCreditNoteAndType03="isCreditNoteAndType03"
-                            @add="addRow"></document-form-item>
-
-        <document-options :showDialog.sync="showDialogOptions"
-                          :recordId="documentNewId"
-                          :showClose="false"></document-options>
     </div>
 </template>
 
@@ -679,9 +660,9 @@ export default {
             this.form.items = this.document.items
             this.form.affected_document_id = this.document.id
             this.form.note_description = null
-            this.form.actions = {
+            /*this.form.actions = {
                 format_pdf: 'a4'
-            }
+            }*/
             // this.form.operation_type_id= null
             this.form.hotel = {}
             this.form.charges = this.document.charges ? Object.values(this.document.charges) : null
@@ -735,11 +716,11 @@ export default {
                 affected_document_id: this.document.id,
                 note_credit_or_debit_type_id: null,
                 note_description: null,
-                actions: {
+                /*actions: {
                     format_pdf: 'a4'
-                },
+                },*/
                 // operation_type_id: null,
-                operation_type_id: this.document.invoice.operation_type_id, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
+                //operation_type_id: this.document.invoice.operation_type_id, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
                 hotel: {},
                 charges: this.document.charges ? Object.values(this.document.charges) : null,
                 payment_condition_id: null,

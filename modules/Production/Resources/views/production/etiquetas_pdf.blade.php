@@ -65,26 +65,26 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         <title>Etiquetas</title>
         <style>
             @page {
-                margin: 0.3cm 0.3cm;
+                margin: 0.05cm 0.05cm;
             }
             html {
                 font-family: monospace;
-                font-size: 10px;
+                font-size: 7px;
             }
             .title {
                 font-weight: bold;
-                padding: 5px;
-                font-size: 14px !important;
+                padding: 1px;
+                font-size: 9px !important;
                 text-decoration: underline;
             }
 
             p>strong {
-                margin-left: 5px;
-                font-size: 11px;
+                margin-left: 1px;
+                font-size: 7px;
             }
             p {
                 text-align:center;
-                font-size: 10px;
+                font-size: 7px;
             }
             img {
 
@@ -92,10 +92,11 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
             }
             .card {
                 
-                padding: 10px 10px;
-                width: 455px;
-                height: 255px;
-                margin: 0 auto; 
+                padding: 1px 1px;
+                width: 9.75cm;
+                height: 5.9cm;
+                max-width: 9.75cm;
+                max-height: 5.9cm;
             }
             .card img {
                 display: block;
@@ -106,16 +107,19 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 justify-content: center;
                 align-items: center;
             }
+            .table {
+                align-content: center;
+            }
         </style>
     </head>
     <body>
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
                 <thead style="align-content: center; text-align: center;">
                     <tr>
                         <th>
                         @if(isset($logo) && $logo != '' )
-                            <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                            <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 2px; max-width: 100px" >
                         @endif
                         </th>
                         <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -148,12 +152,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                         </th>
                     </tr>
                     <tr>
-                        <th style="text-align: left;">
-                            <h5>
-                            <br>
+                        <th style="text-align: center;">
+                            
                             {{-- {{$produccion->warehouse->description }}<br/> --}}
                             {{$produccion->warehouse->establishment->address }}<br/>
                             {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -161,23 +165,20 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                             {{$produccion->warehouse->establishment->department->description }},
                             {{$produccion->warehouse->establishment->country->description }}<br/>
                             Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                            </h5>
+                            
                         </th>
-                        <th style="text-align: left;">
-                            <h5>
-                            <br>
+                        <th style="text-align: center;">
+                            
                             INDUSTRIA ECUATORIANA<br/>
-                            ELABORADO POR {{$company->name}}<br/>
-                            </h5>
+                            ELABORADO POR {{$company->name}}
+                            
                         </th>
                     </tr>
-
                 </thead>
             </table>
         </center>
-        <br>
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -215,12 +216,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                     </th>
                 </tr>
                 <tr>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         {{-- {{$produccion->warehouse->description }}<br/> --}}
                         {{$produccion->warehouse->establishment->address }}<br/>
                         {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -228,23 +229,22 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         {{$produccion->warehouse->establishment->department->description }},
                         {{$produccion->warehouse->establishment->country->description }}<br/>
                         Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                        </h5>
+                        
                     </th>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         INDUSTRIA ECUATORIANA<br/>
                         ELABORADO POR {{$company->name}}<br/>
-                        </h5>
+                        
                     </th>
                 </tr>
 
             </thead>
         </table>
         </center>
-        <br>
+        
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -282,12 +282,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                     </th>
                 </tr>
                 <tr>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         {{-- {{$produccion->warehouse->description }}<br/> --}}
                         {{$produccion->warehouse->establishment->address }}<br/>
                         {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -295,14 +295,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         {{$produccion->warehouse->establishment->department->description }},
                         {{$produccion->warehouse->establishment->country->description }}<br/>
                         Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                        </h5>
+                        
                     </th>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         INDUSTRIA ECUATORIANA<br/>
                         ELABORADO POR {{$company->name}}<br/>
-                        </h5>
+                        
                     </th>
                 </tr>
 
@@ -310,9 +309,9 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         </table>
         </center>
         
-        <br>
+        
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -350,12 +349,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                     </th>
                 </tr>
                 <tr>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         {{-- {{$produccion->warehouse->description }}<br/> --}}
                         {{$produccion->warehouse->establishment->address }}<br/>
                         {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -363,14 +362,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         {{$produccion->warehouse->establishment->department->description }},
                         {{$produccion->warehouse->establishment->country->description }}<br/>
                         Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                        </h5>
+                        
                     </th>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         INDUSTRIA ECUATORIANA<br/>
                         ELABORADO POR {{$company->name}}<br/>
-                        </h5>
+                        
                     </th>
                 </tr>
 
@@ -378,9 +376,9 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         </table>
         </center>
         
-        <br>
+        
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -418,12 +416,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                     </th>
                 </tr>
                 <tr>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         {{-- {{$produccion->warehouse->description }}<br/> --}}
                         {{$produccion->warehouse->establishment->address }}<br/>
                         {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -431,14 +429,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         {{$produccion->warehouse->establishment->department->description }},
                         {{$produccion->warehouse->establishment->country->description }}<br/>
                         Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                        </h5>
+                        
                     </th>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         INDUSTRIA ECUATORIANA<br/>
                         ELABORADO POR {{$company->name}}<br/>
-                        </h5>
+                        
                     </th>
                 </tr>
 
@@ -446,9 +443,9 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         </table>
         </center>
         
-        <br>
+        
         <center>
-            <table class="table card" width="100%">
+            <table class="table card">
             <thead style="align-content: center; text-align: center;">
                 <tr>
                     <th>
@@ -486,12 +483,12 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     @if($codigoBPM != null)
                         Código único BPM: {{ $codigoBPM }} <br/><br/>
                         @endif
+                        <br>
                     </th>
                 </tr>
                 <tr>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         {{-- {{$produccion->warehouse->description }}<br/> --}}
                         {{$produccion->warehouse->establishment->address }}<br/>
                         {{-- {{$produccion->warehouse->establishment->district->description }}, --}}
@@ -499,14 +496,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         {{$produccion->warehouse->establishment->department->description }},
                         {{$produccion->warehouse->establishment->country->description }}<br/>
                         Telf. {{$produccion->warehouse->establishment->telephone }}<br/>
-                        </h5>
+                        
                     </th>
-                    <th style="text-align: left;">
-                        <h5>
-                            <br>
+                    <th style="text-align: center;">
+                        
                         INDUSTRIA ECUATORIANA<br/>
                         ELABORADO POR {{$company->name}}<br/>
-                        </h5>
+                        
                     </th>
                 </tr>
 
@@ -514,6 +510,6 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
         </table>
         </center>
         
-        <br>
+        
     </body>
 </html>
