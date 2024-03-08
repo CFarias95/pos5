@@ -9,7 +9,7 @@
             <form autocomplete="off" @submit.prevent="submit">
                 <div class="form-body">
                     <div class="row">
-                        <div class="col-lg-9">
+                        <div class="col-lg-12">
                             <div class="row">
                                 <div class="col-sm-12 col-md-3 col-lg-3">
                                     <div
@@ -97,6 +97,28 @@
                                             v-if="errors.quantity"
                                             class="form-control-feedback"
                                             v-text="errors.quantity[0]"
+                                        ></small>
+                                    </div>
+                                </div>
+                                
+                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                    <div
+                                        :class="{ 'has-danger': errors.records_id }"
+                                        class="form-group"
+                                    >
+                                        <label class="control-label"><strong>Estado</strong></label>
+                                        <el-select v-model="form.records_id" filterable>
+                                            <el-option
+                                                v-for="option in records"
+                                                :key="option.id"
+                                                :label="option.description"
+                                                :value="option.id"
+                                            ></el-option>
+                                        </el-select>
+                                        <small
+                                            v-if="errors.records_id"
+                                            class="form-control-feedback"
+                                            v-text="errors.records_id[0]"
                                         ></small>
                                     </div>
                                 </div>
@@ -417,7 +439,7 @@
                                         ></small>
                                     </div>
                                 </div> -->
-                                <div class="col-sm-12 col-md-3 col-lg-3">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="form-group">
                                         <label class="control-label">Número Personas</label>
                                         <el-input v-model="form.num_personas"></el-input>
@@ -432,9 +454,9 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="bordered-container">
-                                        <label class="control-label">Muestras</label>
+                                        <label class="control-label">Control de Peso Producto Terminado</label>
                                         <div class="form-group">
                                             <label class="control-label">Muestra 1</label>
                                             <el-input v-model="form.muestra1" :disabled="form.records_id !== '03'"></el-input>
@@ -457,7 +479,7 @@
                                         </div>
                                     </div>
                                 </div>
-                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="bordered-container">
                                         <div class="form-group">
                                             <label class="control-label">Revisión</label>
@@ -482,7 +504,7 @@
                                     </div>
                                 </div>
 
-                                <div class="col-sm-12 col-md-6 col-lg-6">
+                                <div class="col-sm-12 col-md-12 col-lg-12">
                                     <div class="bordered-container">
                                         <div class="form-group">
                                             <label class="control-label">PH</label>
@@ -851,27 +873,6 @@
                                         ></small>
                                     </div>
                                 </div>
-                            </div>
-                        </div>
-                        <div class="col-lg-3">
-                            <div
-                                :class="{ 'has-danger': errors.records_id }"
-                                class="form-group"
-                            >
-                                <label class="control-label">Estado</label>
-                                <el-select v-model="form.records_id" filterable>
-                                    <el-option
-                                        v-for="option in records"
-                                        :key="option.id"
-                                        :label="option.description"
-                                        :value="option.id"
-                                    ></el-option>
-                                </el-select>
-                                <small
-                                    v-if="errors.records_id"
-                                    class="form-control-feedback"
-                                    v-text="errors.records_id[0]"
-                                ></small>
                             </div>
                         </div>
                     </div>
