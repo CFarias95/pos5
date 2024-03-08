@@ -10,7 +10,7 @@
         $totalKg += $supplies->quantity;
     }
     $totalKgEM = 0;
-    foreach($production_items as $supplies)
+    foreach($empaque_items as $supplies)
     {
         $totalKgEM += $supplies->quantity;
     }
@@ -22,7 +22,6 @@
     $empacado =  $totalKg - $produccion->imperfect - $produccion->samples;
 
     $producido_global = floatval($produccion->color);
-    //Log::info('producido_global - '.$producido_global);
     $merma_global = floatval($produccion->olor);
 
     $porcentaje_merma = 0;
@@ -372,7 +371,7 @@
                     <tr>
                         <th>Merma Total (KG)</th>
                         <td>{{ $merma_global }}</td>
-                        <td>{{ $porcentaje_merma_global }}</td>
+                        <td>{{ $porcentaje_merma_global }}%</td>
                     </tr>
                     <tr>
                         <th>Muestra Testigo (KG)</th>

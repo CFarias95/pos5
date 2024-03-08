@@ -211,7 +211,7 @@ $peso_neto = $quantity - $production->samples - $production->imperfect;
             <br>
             <div>
                 <p alignment="center">________________________</p>
-                <p alignment="center">{{ $usuario_log->name }}</p>
+                <p alignment="center">Angélica Toaquiza</p>
                 <p alignment="center">DEPARTAMENTO CALIDAD</p>
                 <p alignment="center">{{$company->name}}</p>
             </div>
