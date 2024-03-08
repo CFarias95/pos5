@@ -99,7 +99,7 @@ if ($current_hostname) {
                     Route::get('/tables', 'PlanCuentasController@tables')
                         ->name('tenant.plan_cuentas.tables');
                     Route::get('/columns', 'PlanCuentasController@columns');*/
-                    
+
                 });
 
 

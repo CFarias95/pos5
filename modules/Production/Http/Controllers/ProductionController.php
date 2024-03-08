@@ -887,6 +887,7 @@ class ProductionController extends Controller
         if (isset($production->imperfect) && $production->imperfect > 0) {
             try {
 
+                $item = Item::find($production->item_id);
                 $inventory_it = new Inventory();
                 $inventory_it->type = null;
                 $inventory_it->description = $inventory_transaction_item->name;
@@ -895,6 +896,7 @@ class ProductionController extends Controller
                 $inventory_it->quantity = (float) $production->imperfect;
                 $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
                 $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
+                $inventory_it->precio_perso = $item->purchase_mean_cost;
                 $inventory_it->save();
             } catch (Exception $ex) {
 
@@ -908,6 +910,7 @@ class ProductionController extends Controller
         try {
             //esta función creará el inventario del producto terminado
             //Log::info("production: ".json_encode($production));
+            $item = Item::find($production->item_id);
             $inventory_it = new Inventory();
             $inventory_it->type = null;
             $inventory_it->description = $inventory_transaction_item->name;
@@ -917,6 +920,7 @@ class ProductionController extends Controller
             $inventory_it->inventory_transaction_id = $inventory_transaction_item->id;
             $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
             $inventory_it->production_id = $production->id;
+            $inventory_it->precio_perso = $item->purchase_mean_cost;
             $inventory_it->save();
 
             if (isset($production->lot_code) && $production->lot_code != "") {
