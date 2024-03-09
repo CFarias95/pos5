@@ -149,9 +149,7 @@ $peso_neto = $quantity - $production->samples - $production->imperfect;
         </div>
         <div>
             <label><strong>Ingregientes/Insumos: </strong></label>
-            @foreach($records['supplies'] as $ingre)
-                <label>{{$ingre['individual_item']['second_name']}};</label>
-            @endforeach
+            <label>{{$records['second_name']}}</label>
         </div>
         </div>
         @if(!empty($records))
