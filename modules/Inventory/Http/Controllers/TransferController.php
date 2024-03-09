@@ -381,7 +381,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 $inventory->item_id = $it['id'];
                                 $inventory->warehouse_id = $request->warehouse_id;
                                 $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                                $inventory->quantity = $it['compromise_quantity'];
+                                $inventory->quantity = $it['quantity'];
                                 $inventory->inventories_transfer_id = $row->id;
                                 $inventory->precio_perso = $item->purchase_mean_cost;
                                 $inventory->save();
