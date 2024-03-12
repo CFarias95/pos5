@@ -350,6 +350,12 @@ use Modules\Item\Models\ItemLotsGroup;
                                 }
                             }
                         }elseif(isset($it['series_enabled']) && $it['series_enabled'] == true){
+                            $quantity = null;
+                            if(isset($it['quantity'])){
+                                $quantity = $it['quantity'];
+                            }elseif(isset($it['compromise_quantity'])){
+                                $quantity = $it['compromise_quantity'];
+                            }
                             //si tienes series
                             $inventory = new Inventory();
                             $inventory->type = 2;
@@ -357,7 +363,7 @@ use Modules\Item\Models\ItemLotsGroup;
                             $inventory->item_id = $it['id'];
                             $inventory->warehouse_id = $request->warehouse_id;
                             $inventory->warehouse_destination_id = $request->warehouse_destination_id;
-                            $inventory->quantity = $it['compromise_quantity'];
+                            $inventory->quantity = $quantity;
                             $inventory->inventories_transfer_id = $row->id;
                             $inventory->precio_perso = $item->purchase_mean_cost;
                             $inventory->save();

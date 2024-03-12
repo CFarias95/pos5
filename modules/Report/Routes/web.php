@@ -452,6 +452,15 @@ if ($current_hostname) {
                     Route::get('/pdf-simple', 'ReporteComprasPagosController@pdfSimple');
                 });
 
+                 // REPORTE DE ATS
+                 Route::prefix('ats')->group(function () {
+                    Route::get('', 'ATSController@index')
+                        ->name('tenant.reports.ats.index')
+                        ->middleware('tenant.internal.mode');
+                    Route::post('/report', 'ATSController@generateReport');
+
+                });
+
 
                 Route::prefix('plan_cuentas')->group(function () {
                     Route::get('', 'PlanCuentasController@index')

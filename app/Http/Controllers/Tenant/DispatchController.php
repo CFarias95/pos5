@@ -165,7 +165,7 @@ class DispatchController extends Controller
 
             if ($type != 't') {
                 foreach ($document->items as $item) {
-                    
+
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $lotes = '';
                     if(isset($item->item->IdLoteSelected )){
@@ -223,12 +223,16 @@ class DispatchController extends Controller
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
                         'factory_code' => (isset($item->item->factory_code)) ? $item->item->factory_code : '',
-
+                        'IdLoteSelected' => array([
+                            "code" => $item->lot_code,
+                            "compromise_quantity" => $item->quantity,
+                        ]),
                     ];
+                    /*
                     $items[0]['IdLoteSelected'][]  = [
                         "code" => $item->lot_code,
                         "compromise_quantity" => $item->quantity,
-                    ];
+                    ];*/
 
                 }
 
