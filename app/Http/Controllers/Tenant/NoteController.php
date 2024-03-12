@@ -55,13 +55,13 @@ class NoteController extends Controller
 
     public function edit($document_id)
     {
-        $document_affected = Document::find($document_id);
-        //Log::info('document_affected - '.json_encode($document_affected));
+        //$document_affected = Document::find($document_id);
         $configuration = Configuration::first();
-        $note = Note::where('document_id', $document_id)->get();
+        $document_affected = Note::where('document_id', $document_id)->first();
+        Log::info('document_affected - '.json_encode($document_affected));
         //Log::info('note - '.json_encode($note));
 
-        return view('tenant.documents.note_edit', compact('document_affected', 'configuration', 'note'));
+        return view('tenant.documents.note_edit', compact('document_affected', 'configuration'));
     }
 
     public function update()

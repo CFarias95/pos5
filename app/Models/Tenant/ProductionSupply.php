@@ -21,4 +21,9 @@ class ProductionSupply extends ModelTenant
     {
         return $this->belongsTo(ItemSupply::class);
     }
+
+    public function item()
+    {
+        return $this->belongsTo(Item::class, 'item_supply_original_id');
+    }
 }

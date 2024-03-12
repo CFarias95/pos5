@@ -653,7 +653,7 @@ class ProductionController extends Controller
                             $production_supply->cost_per_unit = (isset($item['cost_per_unit'])) ? $item['cost_per_unit'] : null;
                             $production_supply->checked = isset($item['checked']) ? $item['checked'] : 0;
                             $production_supply->item_supply_original_id = $item['individual_item_id'];
-
+                            Log::info('production_supply - '.json_encode($production_supply));
                             $production_supply->save();
 
                             $costoT += ($qty * $production_supply->cost_per_unit);
@@ -1399,16 +1399,24 @@ class ProductionController extends Controller
     public function updateStockWarehouses($warehouseId, $itemId)
     {
         //Log::info('warehouse - item : '.$warehouseId.'-'.$itemId);
-        $warehouseItem = ItemWarehouse::where('warehouse_id', $warehouseId)
-            ->where('item_id', $itemId)
-            ->first();
-
-        if (!$warehouseItem) {
+        $item = Item::find($itemId);
+        if($item['unit_type_id'] !== 'ZZ')
+        {
+            $warehouseItem = ItemWarehouse::where('warehouse_id', $warehouseId)
+                ->where('item_id', $itemId)
+                ->first();
+        }else{
             return response()->json(['stock' => 0]);
         }
+        
+        /*if (!$warehouseItem) {
+            return response()->json(['stock' => 0]);
+        }*/
         //Log::info('warehouseItem - '.$warehouseItem);
 
         $stock = $warehouseItem->stock;
+
+        //Log::info('Item id es '.$itemId.' con stock '.$stock);
 
         return response()->json(['stock' => $stock]);
     }
@@ -1607,9 +1615,24 @@ class ProductionController extends Controller
             return $row;
         });
 
+        $prod_supplies = ProductionSupply::where('production_id', $produccion->id)->get();
+        //Log::info('$produccion->id - '.json_encode($produccion->id));
+        //Log::info('prod_supplies - '.json_encode($prod_supplies));
+        $servicios = [];
+
+        $prod_supplies->transform(function($row) use (&$servicios){
+            if ($row->item->unit_type_id == 'ZZ') {
+                //Log::info('row - '.json_encode($row->item));
+                $servicios[] = $row;
+            }
+            return $row;
+        });
+
+        //Log::info('servicios - '.json_encode($servicios));
+
         //$atributo = AttributeType::where('description', 'Empaque')->get();
 
-        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items", "inventarios"));
+        $pdf = PDF::loadView('production::production.etiquetas2_pdf', compact("producido", "company", "recordId", "produccion", "production_items", "empaque_items", "inventarios", "servicios"));
 
         $filename = 'Orden_Produccion_' . $produccion->production_order . date('YmdHis');
 
