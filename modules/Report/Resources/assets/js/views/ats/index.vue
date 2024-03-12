@@ -24,7 +24,8 @@
                                 value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
                         <div class="col-4">
-                            <label>Generar ATS</label>
+                            <label>Generar Reporte ATS</label>
+                            <br>
                             <el-button class="submit" icon="el-icon-search" type="primary"
                                     @click.prevent="getRecords">Generar
                             </el-button>

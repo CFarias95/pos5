@@ -223,11 +223,10 @@ class DispatchController extends Controller
                         'internal_id' => $item->item->internal_id,
                         'model' =>  $item->item->model,
                         'factory_code' => (isset($item->item->factory_code)) ? $item->item->factory_code : '',
-                        'IdLoteSelected' => [
+                        'IdLoteSelected' => array([
                             "code" => $item->lot_code,
                             "compromise_quantity" => $item->quantity,
-                        ],
-
+                        ]),
                     ];
                     /*
                     $items[0]['IdLoteSelected'][]  = [
