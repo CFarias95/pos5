@@ -208,7 +208,7 @@
             <td class="text-left">{{ $row->item->model ?? '' }}</td>
             <td class="text-left">{{ $lot->code ?? '' }}</td>
             <td class="text-center">{{ $row->item->unit_type_id }}</td>
-            <td class="text-right">{{ number_format($lot->compromise_quantity, 0) }}</td>
+            <td class="text-right">{{ number_format($lot->compromise_quantity, 4) }}</td>
         </tr>
         @endforeach
         @else
@@ -254,7 +254,7 @@
                 @if(((int)$row->quantity != $row->quantity))
                     {{ $row->quantity }}
                 @else
-                    {{ number_format($row->quantity, 0) }}
+                    {{ number_format($row->quantity, 4) }}
                 @endif
             </td>
         </tr>

@@ -46,6 +46,10 @@ class ATSController extends Controller
         return new PlanCuentasCollection($paginatedCollection);
     }
 
+    public function generateReport(Request $request){
+
+        return 
+    }
     public function pdf(Request $request)
     {
 
