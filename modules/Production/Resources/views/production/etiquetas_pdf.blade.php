@@ -80,7 +80,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
 
             p>strong {
                 margin-left: 1px;
-                font-size: 7px;
+                font-size: 9px;
             }
             p {
                 text-align:center;
@@ -119,7 +119,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     <tr>
                         <th>
                         @if(isset($logo) && $logo != '' )
-                            <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 2px; max-width: 100px" >
+                            <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                         @endif
                         </th>
                         <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -129,7 +129,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     </tr>
 
                     <tr>
-                        <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                        <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                     </tr>
 
                     <tr>
@@ -183,7 +183,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 <tr>
                     <th>
                     @if(isset($logo) && $logo != '' )
-                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                     @endif
                     </th>
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -193,7 +193,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -249,7 +249,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 <tr>
                     <th>
                     @if(isset($logo) && $logo != '' )
-                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                     @endif
                     </th>
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -259,7 +259,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -316,7 +316,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 <tr>
                     <th>
                     @if(isset($logo) && $logo != '' )
-                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                     @endif
                     </th>
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -326,7 +326,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -383,7 +383,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 <tr>
                     <th>
                     @if(isset($logo) && $logo != '' )
-                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                     @endif
                     </th>
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -393,7 +393,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                 </tr>
 
                 <tr>
@@ -450,7 +450,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 <tr>
                     <th>
                     @if(isset($logo) && $logo != '' )
-                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 10px; max-width: 100px" >
+                        <img src="data:{{mime_content_type(public_path("storage/uploads/logos/{$company->logo}"))}};base64, {{base64_encode(file_get_contents(public_path("storage/uploads/logos/{$company->logo}")))}}" alt="{{$company->name}}" class="company_logo" style="padding-top: 1px; max-width: 130px" >
                     @endif
                     </th>
                     <th style="text-align: left;"><p><strong>{{$company->name}}</strong></p></th>
@@ -460,7 +460,7 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                 </tr>
 
                 <tr>
-                    <th colspan="2"><strong>{{$records['description']}}</strong></th>
+                    <th colspan="2" style="font-size: 9px;"><strong>{{$records['description']}}</strong></th>
                 </tr>
 
                 <tr>
