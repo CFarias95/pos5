@@ -626,7 +626,6 @@ class PurchasePaymentController extends Controller
                     $itemNuevo->haber = $itemActual->debe;
                     $itemNuevo->save();
                 }
-
             }catch(Exception $ex){
 
                 Log::error('Error al intentar generar el asiento contable');
