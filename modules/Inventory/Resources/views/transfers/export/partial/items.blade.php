@@ -36,7 +36,7 @@
             <thead>
                 <tr>
                     <th class="five-width text-center">ITEM</th>
-                    <!--<th class="ten-width text-left">CODIGO INTERNO</th>-->
+                    <th class="ten-width text-left">CODIGO FABRICA</th>
                     <th class="fourteen-width text-left">DESCRIPCIÓN PRODUCTO</th>
                     <th class="ten-width">UNIDAD</th>
                     <th class="eight-width">CANT</th>
@@ -63,7 +63,7 @@
                     ?>
                     <tr>
                         <td class="celda text-center">{{ $index + 1 }}</td>
-                        <!--<td class="celda text-left"></td>-->
+                        <td class="celda text-left">{{ $inventory->item->factory_code ?? '' }}</td>
                         <td class="celda text-left">{{ ($inventory->item->name)?$inventory->item->name.' / ':'' }}{{ $inventory->item->description }}</td>
                         <td class="celda">{{ $inventory->item->unit_type->description }}</td>
                         <td class="celda">{{ $inventory->quantity }}</td>
