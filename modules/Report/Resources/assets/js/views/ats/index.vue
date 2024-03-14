@@ -124,8 +124,8 @@ export default {
                 console.log('data', response)
                 this.form.print_a4 = response.data
                 this.loading_submit = false
+                window.open(this.form.print_a4, '_blank');
             });
-            window.open(this.form.print_a4,'_blank')
         },
         getQueryParameters() {
             return queryString.stringify({
