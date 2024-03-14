@@ -1165,9 +1165,7 @@
                 $search_by_barcode = $params['search_by_barcode'];
             }
 
-
             $data = self::getItemToTrasferCollection($warehouse_id);
-
 
             if(!empty($input)) {
                 $whereItem[] = ['name', 'like', '%' . $input . '%'];

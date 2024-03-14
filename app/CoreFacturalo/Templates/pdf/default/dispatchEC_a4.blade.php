@@ -261,6 +261,7 @@
                                     <tr>
                                         <th class="border-top-bottom text-center">Item</th>
                                         <th class="border-top-bottom text-center">Código</th>
+                                        <th class="border-top-bottom text-center">Cód Fabrica</th>
                                         <th class="border-top-bottom text-left">Descripción</th>
                                         <th class="border-top-bottom text-left">Modelo</th>
                                         <th class="border-top-bottom text-left">Lote</th>
@@ -275,6 +276,7 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $row->item->internal_id }}</td>
+                                        <td class="text-center">{{ $row->item->factory_code ?? '' }}</td>
                                         <td class="text-left">
                                             @if($row->name_product_pdf)
                                                 {!!$row->name_product_pdf!!}
@@ -317,6 +319,7 @@
                                     <tr>
                                         <td class="text-center">{{ $loop->iteration }}</td>
                                         <td class="text-center">{{ $row->item->internal_id }}</td>
+                                        <td class="text-center">{{ $row->item->factory_code ?? '' }}</td>
                                         <td class="text-left">
                                             @if($row->name_product_pdf)
                                                 {!!$row->name_product_pdf!!}
