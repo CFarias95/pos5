@@ -13,27 +13,32 @@ use App\Models\Tenant\Item;
 use Carbon\Carbon;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Item\Models\ItemLotsGroup;
-use Modules\Item\Models\ItemLot; 
+use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Helpers\InventoryKardexSeries;
- 
+
 
 class ReportKardexSeriesController extends Controller
-{ 
-    
+{
+
     public function getRecords($request){
 
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data($item_id, $date_start, $date_end);
+        if($warehouse_id == 'all'){
+            $warehouse_id = null;
+        }
+
+        $records = $this->data($warehouse_id, $item_id, $date_start, $date_end);
 
         return $records;
 
     }
 
 
-    private function data($item_id, $date_start, $date_end)
+    private function data($warehouse_id,$item_id, $date_start, $date_end)
     {
 
 
@@ -51,12 +56,15 @@ class ReportKardexSeriesController extends Controller
             $data = $data->where('item_id', $item_id);
         }
 
+        if(isset($warehouse_id) && $warehouse_id != ''){
+            $data = $data->where('warehouse_id', $warehouse_id);
+        }
 
         return $data;
 
     }
 
- 
+
     public function pdf(Request $request) {
 
         $records = InventoryKardexSeries::transformRecords($this->getRecords($request->all())->get());
@@ -70,7 +78,7 @@ class ReportKardexSeriesController extends Controller
 
     }
 
-    
+
     public function excel(Request $request) {
 
         $company = Company::first();
@@ -85,5 +93,5 @@ class ReportKardexSeriesController extends Controller
 
     }
 
- 
+
 }

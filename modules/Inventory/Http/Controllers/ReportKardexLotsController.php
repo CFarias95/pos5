@@ -21,25 +21,30 @@ use Modules\Item\Models\ItemLot;
 use Modules\Inventory\Http\Resources\ReportKardexLotsGroupCollection;
 use Modules\Inventory\Http\Resources\ReportKardexItemLotCollection;
 use Modules\Inventory\Helpers\InventoryKardexLots;
- 
+
 
 class ReportKardexLotsController extends Controller
-{ 
- 
+{
+
     public function getRecords($request){
 
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data($item_id, $date_start, $date_end);
+        if($warehouse_id == 'all'){
+            $warehouse_id = null;
+        }
+
+        $records = $this->data($warehouse_id,$item_id, $date_start, $date_end);
 
         return $records;
 
     }
 
 
-    private function data($item_id, $date_start, $date_end)
+    private function data($warehouse_id, $item_id, $date_start, $date_end)
     {
 
         if($date_start && $date_end){
@@ -52,6 +57,10 @@ class ReportKardexLotsController extends Controller
             $data = ItemLotsGroup::orderBy('item_id')->orderBy('id');
         }
 
+        if(isset($warehouse_id) && $warehouse_id != ''){
+            $data = $data->where('warehouse_id', $warehouse_id);
+        }
+
         if($item_id){
             $data = $data->where('item_id', $item_id);
         }
@@ -60,7 +69,7 @@ class ReportKardexLotsController extends Controller
 
     }
 
- 
+
     public function pdf(Request $request) {
 
         $records = InventoryKardexLots::transformRecords($this->getRecords($request->all())->get());
@@ -74,7 +83,7 @@ class ReportKardexLotsController extends Controller
 
     }
 
-    
+
     public function excel(Request $request) {
 
         $company = Company::first();
@@ -89,5 +98,5 @@ class ReportKardexLotsController extends Controller
 
     }
 
- 
+
 }
