@@ -733,7 +733,7 @@ class DocumentController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_of_issue;
@@ -1018,7 +1018,7 @@ class DocumentController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_of_issue;
@@ -1313,7 +1313,7 @@ class DocumentController extends Controller
                     $comment = 'Cobro Factura F'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
 
                     $cabeceraC = new AccountingEntries();
-                    $cabeceraC->user_id = $document->user_id;
+                    $cabeceraC->user_id = auth()->user()->id;
                     $cabeceraC->seat = $seat;
                     $cabeceraC->seat_general = $seat_general;
                     $cabeceraC->seat_date = $document->date_of_issue;
@@ -1400,7 +1400,7 @@ class DocumentController extends Controller
                     $comment = 'Pago Nota de crédito'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
 
                     $cabeceraC = new AccountingEntries();
-                    $cabeceraC->user_id = $document->user_id;
+                    $cabeceraC->user_id = auth()->user()->id;
                     $cabeceraC->seat = $seat;
                     $cabeceraC->seat_general = $seat_general;
                     $cabeceraC->seat_date = $document->date_of_issue;

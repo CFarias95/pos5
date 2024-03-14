@@ -278,7 +278,7 @@ class ProductionController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_start;
@@ -413,7 +413,7 @@ class ProductionController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $document->date_end;
@@ -476,7 +476,7 @@ class ProductionController extends Controller
                     $total_haber = 0;
 
                     $cabeceraC = new AccountingEntries();
-                    $cabeceraC->user_id = $document->user_id;
+                    $cabeceraC->user_id = auth()->user()->id;
                     $cabeceraC->seat = ($seat + 1);
                     $cabeceraC->seat_general = ($seat_general + 1);
                     $cabeceraC->seat_date = $document->date_end;
@@ -1408,7 +1408,7 @@ class ProductionController extends Controller
         }else{
             return response()->json(['stock' => 0]);
         }
-        
+
         /*if (!$warehouseItem) {
             return response()->json(['stock' => 0]);
         }*/

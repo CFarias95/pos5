@@ -419,7 +419,7 @@ class DocumentPaymentController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = $request->date_of_payment;
@@ -609,7 +609,7 @@ class DocumentPaymentController extends Controller
                 $total_haber = 0;
 
                 $cabeceraC = new AccountingEntries();
-                $cabeceraC->user_id = $document->user_id;
+                $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
                 $cabeceraC->seat_date = date('y-m-d');

@@ -348,24 +348,6 @@ class ReportKardexController extends Controller
 
     private function data2($warehouse_id,$item_id, $date_start, $date_end)
     {
-
-        // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
-        /*
-        if ($date_start && $date_end) {
-
-            $data = ItemLotsGroup::whereBetween('date_of_due', [$date_start, $date_end])
-                ->orderBy('item_id')->orderBy('id');
-
-        } else {
-
-            $data = ItemLotsGroup::orderBy('item_id')->orderBy('id');
-        }
-        if ($item_id) {
-            $data = $data->where('item_id', $item_id);
-        }
-        return $data;
-        */
-
         $data = ItemLotsGroup::query();
 
         if(isset($warehouse_id) && $warehouse_id != ''){
