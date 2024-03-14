@@ -7,13 +7,6 @@
             <form autocomplete="off" @submit.prevent="submit">
                 <div class="form-body">
                     <div class="row">
-                        <div class="col-md-12 text-right">
-                            <el-checkbox v-model="is_contingency" @change="changeDocumentType">¿Es comprobante de
-                                contigencia?
-                            </el-checkbox>
-                        </div>
-                    </div>
-                    <div class="row">
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                                 <label class="control-label">Tipo comprobante</label>
@@ -172,7 +165,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-for="(row, index) in document_affected.items" :key="index">
+                                            <tr v-for="(row, index) in note.document_affected.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.item.name }}/{{ row.item.description }}</td>
                                                 <td>{{ row.quantity }}</td>
@@ -208,7 +201,7 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row" v-if="form.items.length > 0">
+                    <div class="row" v-if="form.items.length > 0">
                         <div class="col-md-12">
                             <div class="table-responsive">
                                 <table class="table">
@@ -279,9 +272,9 @@
                         </div>
                         <div class="col-md-8"></div>
 
-                        <div class="col-md-4" hidden>-->
+                        <div class="col-md-4" hidden>
                             <!-- Crédito -->
-                            <!--<template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
+                            <template v-if="form.payment_condition_id === '02' && isCreditNoteAndType13">
                                 <table v-if="form.fee.length>0"
                                        class="text-left"
                                        width="100%">
@@ -334,21 +327,21 @@
                                 </table>
                             </template>
                         </div>
-                    </div> -->
+                    </div>
                 </div>
-                <!-- <div class="form-actions text-right mt-4">
+                <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
                     <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
-                                   v-if="form.items.length > 0">Generar
+                                   v-if="form.items.length > 0">Actualizar
                         </el-button>
                     </template>
                     <template v-else>
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
-                                   v-if="form.items.length > 0 && form.total > 0">Generar
+                                   v-if="form.items.length > 0 && form.total > 0">Actualizar
                         </el-button>
                     </template>
-                </div> -->
+                </div>
             </form>
         </div>
 
@@ -370,6 +363,7 @@ export default {
     props: [
         'document_affected',
         'configuration',
+        //'note',
         //JOINSOFTWARE
         //'authUser',
     ],
@@ -398,7 +392,7 @@ export default {
             note_debit_types: [],
             user: {},
             document: {},
-            note: {},
+            //note: [],
             operation_types: [],
             is_contingency: false,
             affected_documents: [],
@@ -410,7 +404,7 @@ export default {
     },
     async created() {
         this.document = this.document_affected
-        this.note = this.note
+        //this.note = this.note
         //JOINSOFTWARE
         //this.loadConfiguration()
         //this.$store.commit('setConfiguration', this.configuration)
@@ -419,18 +413,13 @@ export default {
             .then(response => {
                 this.document_types = response.data.document_types_note
                 this.currency_types = response.data.currency_types
-                //JOINSOFTWARE
-                //this.$store.commit('setAllSeries', response.data.series)
-                //JOINSOFTWARE
                 this.all_series = response.data.series
-                // this.customers = response.data.customers
                 this.note_credit_types = response.data.note_credit_types
                 this.note_debit_types = response.data.note_debit_types
                 this.operation_types = response.data.operation_types
                 this.user = response.data.user;
                 //JOINSOFTWARE
                 this.authUser = response.data.authUser;
-
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
                 // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
@@ -442,7 +431,7 @@ export default {
             })
         await this.getPercentageIgv();
         this.getCustomer()
-        this.getHasDocuments()
+        //this.getHasDocuments()
 
 
     },
@@ -522,7 +511,7 @@ export default {
 
             //si el cpe relacionado tiene descuentos, se asigna los items para que pueda recalcular a monto 0
             if (this.hasDiscounts && this.form.items.length == 0) {
-                this.form.items = this.document.items
+                this.form.items = note.document_affected.items
             }
 
             await this.onPrepareItems(this.form.items).forEach((row) => {
@@ -657,8 +646,9 @@ export default {
             this.form.total_taxes = this.document.total_taxes
             this.form.total_value = this.document.total_value
             this.form.total = this.document.total
-            this.form.items = this.document.items
+            this.form.items = this.document.document_affected.items
             this.form.affected_document_id = this.document.id
+            console.log('affected doc id', this.form.affected_document_id)
             this.form.note_description = null
             /*this.form.actions = {
                 format_pdf: 'a4'
@@ -712,7 +702,7 @@ export default {
                 total_taxes: this.document.total_taxes,
                 total_value: this.document.total_value,
                 total: this.document.total,
-                items: this.document.items,
+                items: this.document.document_affected.items,
                 affected_document_id: this.document.id,
                 note_credit_or_debit_type_id: null,
                 note_description: null,
@@ -726,7 +716,7 @@ export default {
                 payment_condition_id: null,
                 fee: [],
             }
-
+            console.log('affected doc id', this.form.affected_document_id)
 
             await this.form.items.forEach((item) => {
                 item.input_unit_price_value = item.unit_price

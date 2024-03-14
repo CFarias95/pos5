@@ -194,6 +194,14 @@
                 @endforeach
             </tr>
         @endforeach
+        @foreach($servicios as $servicio)
+            <tr>
+                <td>{{ $servicio->item_supply_name }}</td>
+                <td>{{ $servicio->quantity }}</td>
+                <td>N/A</td>
+                <td>{{ $servicio->checked ? 'Sí' : 'No' }}</td>
+            </tr>
+        @endforeach
         <tr>
             <th>Total Solicitado</th>
             <td>{{ $totalKgEM }}</td>

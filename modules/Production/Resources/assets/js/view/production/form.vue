@@ -1685,8 +1685,8 @@ export default {
                         stock: response.data.stock,
                         difference: response.data.stock - this.supplies[index].quantityD
                     });
-                    //console.log('stock', response.data.stock)
-                    if (this.supplies[index].difference <= 0 && this.records[0].description === "Registrado") {
+                    console.log('unidad_medida', this.supplies[index].unit_type)
+                    if (this.supplies[index].difference < 0 && this.records[0].description === "Registrado" && this.supplies[index].unit_type !== "Servicio") {
                         this.supply_difference = true
                         this.$message.error(
                             "Tiene productos sin stock suficiente en ese almacen!"
@@ -1695,13 +1695,13 @@ export default {
                         this.supply_difference = false
                     }
 
-                    let allHaveStock = this.supplies.every(supply => supply.difference >= 0)
+                    /*let allHaveStock = this.supplies.every(supply => supply.difference >= 0 || supply.unit_type !== "Servicio")
                     if(!allHaveStock)
                     {
                         this.supply_difference = true
                     }else{
                         this.supply_difference = false
-                    }
+                    }*/
                 })
                 .catch(error => {
                     console.error("Error al actualizar el stock", error);
