@@ -21,12 +21,12 @@
                         <div class="col-4">
                             <label> Al</label>
                             <el-date-picker v-model="form.date_end" :clearable="false" format="dd/MM/yyyy" type="date"
-                                value-format="yyyy-MM-dd"></el-date-picker>
+                                value-format="yyyy-MM-dd" :picker-options="pickerOptionsDates"></el-date-picker>
                         </div>
                         <div class="col-4">
                             <label>Generar Reporte ATS</label>
                             <br>
-                            <el-button class="submit" icon="el-icon-search" type="primary"
+                            <el-button class="submit" icon="el-icon-download" type="primary"
                                     @click.prevent="getRecords">Generar
                             </el-button>
                         </div>
@@ -35,11 +35,13 @@
             </div>
             <br>
             <br>
-            <div class="col-md-12 col-lg-12 col-xl-12">
-                <div class="form-body el-dialog__body_custom">
-                    <el-tab-pane label="Imprimir A4" name="quarter">
+            <div class="form-body el-dialog__body_custom">
+                <div class="col-md-12 m-bottom">
+                    <el-tabs v-model="activeName">
+                        <!-- <el-tab-pane label="Imprimir A4" name="first">
                             <embed :src="form.print_a4" type="application/xml" width="100%" height="450px"/>
-                    </el-tab-pane>
+                        </el-tab-pane> -->
+                    </el-tabs>
                 </div>
             </div>
         </div>
@@ -48,11 +50,13 @@
 
 <script>
 
+import { now } from 'moment'
 import queryString from 'query-string'
 export default {
     data() {
         return {
-            resource: 'reports/stock',
+            resource: 'reports/ats',
+            activeName: 'first',
             form: {
                 warehouse_id: '0',
                 item_id: '0',
@@ -70,6 +74,11 @@ export default {
             almacenList: [],
             brands: [],
             categories: [],
+            pickerOptionsDates: {
+            disabledDate: (time) => {
+                time = moment(time).format("YYYY-MM-DD");
+                return this.form.date_start > time;
+            },},
         }
     },
     created() {
@@ -80,7 +89,7 @@ export default {
     },
 
     async mounted() {
-        await this.getRecords();
+        //await this.getRecords();
     },
     methods: {
         clickDownloadPDF() {
@@ -92,23 +101,10 @@ export default {
         },
 
         initForm() {
-
-            this.$http.get(`/${this.resource}/tables`).then((response) => {
-                this.warehouses = response.data.warehouses
-                this.items = response.data.items
-                this.brands = response.data.brands
-                this.categories = response.data.categories
-            });
-
             this.form = {
-                warehouse_id: '0',
-                item_id: '0',
-                categorie_id: 0,
-                brand_id: '0',
-                linea: 'NA',
-            }
-            this.search = {
-                //value: null
+                date_start: moment().format("YYYY-MM-DD"),
+                date_end: moment().format("YYYY-MM-DD"),
+                print_a4: null
             }
         },
         customIndex(index) {
@@ -122,16 +118,14 @@ export default {
 
         },
         getRecords() {
-            return this.$http.get(`/${this.resource}/datosSP?${this.getQueryParameters()}`).then((response) => {
-                this.records = response.data.data
-                //console.log('data', this.records)
-                this.almacenList = this.records[this.records.length - 1]
-                let len = this.records.length
-                this.records.splice(len - 1, 1)
-                this.pagination = response.data.meta
-                this.pagination.per_page = parseInt(response.data.meta.per_page)
+            this.loading_submit = true
+            return this.$http.post(`/${this.resource}/generate`,this.form).then((response) => {
+
+                console.log('data', response)
+                this.form.print_a4 = response.data
                 this.loading_submit = false
             });
+            window.open(this.form.print_a4,'_blank')
         },
         getQueryParameters() {
             return queryString.stringify({

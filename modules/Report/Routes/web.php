@@ -457,7 +457,8 @@ if ($current_hostname) {
                     Route::get('', 'ATSController@index')
                         ->name('tenant.reports.ats.index')
                         ->middleware('tenant.internal.mode');
-                    Route::post('/report', 'ATSController@generateReport');
+                    Route::post('/generate', 'ATSController@generateReport');
+                    Route::get('/print', 'ATSController@getFile');
 
                 });
 

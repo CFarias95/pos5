@@ -69,7 +69,7 @@
 
                         {{-- Actividades del sistema --}}
                         <li>
-                            <a href="#">
+                            <a href="{{route('tenant.reports.ats.index')}}">
                                 Reporte ATS
                             </a>
                         </li>

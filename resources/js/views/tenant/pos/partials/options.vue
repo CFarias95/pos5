@@ -257,6 +257,7 @@
             },
             create() {
                 this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
+                    console.log('data to sqhow ',response.data.data)
                     this.form = response.data.data;
                     this.titleDialog = 'Comprobante: '+this.form.number;
                 });

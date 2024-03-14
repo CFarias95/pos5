@@ -69,16 +69,12 @@ class DownloadController extends Controller
      */
     public function toPrint($model, $external_id, $format = 'a4') {
         $document_type = $model;
-
         $model = "App\\Models\\Tenant\\".ucfirst($model);
-
         $document = $model::where('external_id', $external_id)->first();
         //Log::info('Document - '.$document);
-
         if (!$document) {
             throw new Exception("El código {$external_id} es inválido, no se encontro documento relacionado");
         }
-
         if ($document_type == 'quotation'){
             // Las cotizaciones tienen su propio controlador, si se generan por este medio, dará error
             $quotation = new QuotationController();
@@ -99,19 +95,11 @@ class DownloadController extends Controller
         }
 
         $this->reloadPDF($document, $type, $format);
-
         $temp = tempnam(sys_get_temp_dir(), 'pdf');
-
         file_put_contents($temp, $this->getStorage($document->filename, 'pdf'));
 
-        /*
-        $headers = [
-            'Content-Type' => 'application/pdf',
-            'Content-Disposition' => 'inline; filename="'.$document->filename.'.pdf'.'"'
-        ];
-        */
-
         return response()->file($temp, $this->generalPdfResponseFileHeaders($document->filename));
+
     }
 
     public function toTicket($model, $external_id, $format = null) {
