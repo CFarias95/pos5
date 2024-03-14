@@ -335,17 +335,22 @@ class ReportKardexController extends Controller
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data2($item_id, $date_start, $date_end);
+        if($warehouse_id == 'all'){
+            $warehouse_id = null;
+        }
+
+        $records = $this->data2($warehouse_id,$item_id, $date_start, $date_end);
 
         return $records;
     }
 
-    private function data2($item_id, $date_start, $date_end)
+    private function data2($warehouse,$item_id, $date_start, $date_end)
     {
 
         // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
-
+        /*
         if ($date_start && $date_end) {
 
             $data = ItemLotsGroup::whereBetween('date_of_due', [$date_start, $date_end])
@@ -355,14 +360,35 @@ class ReportKardexController extends Controller
 
             $data = ItemLotsGroup::orderBy('item_id')->orderBy('id');
         }
-
         if ($item_id) {
             $data = $data->where('item_id', $item_id);
         }
+        return $data;
+        */
 
+        $data = ItemLotsGroup::query();
+
+        if(isset($warehouse_id) && $warehouse_id != ''){
+
+            $data->where('warehouse_id', $warehouse_id);
+        }
+
+        if($item_id){
+
+            $data->where('item_id', $item_id);
+        }
+
+        if($date_start && $date_end){
+
+            $data->whereBetween('date_of_due', [$date_start, $date_end])
+                        ->orderBy('item_id')->orderBy('id');
+
+        }else{
+
+            $data->orderBy('item_id')->orderBy('id');
+        }
 
         return $data;
-
     }
 
     public function records_lots_kardex(Request $request)
@@ -381,36 +407,41 @@ class ReportKardexController extends Controller
         $item_id = $request['item_id'];
         $date_start = $request['date_start'];
         $date_end = $request['date_end'];
+        $warehouse_id = $request['warehouse_id'];
 
-        $records = $this->data3($item_id, $date_start, $date_end);
+        if($warehouse_id == 'all'){
+            $warehouse_id = null;
+        }
+
+        $records = $this->data3($warehouse_id,$item_id, $date_start, $date_end);
 
         return $records;
 
     }
 
 
-    private function data3($item_id, $date_start, $date_end)
+    private function data3($warehouse,$item_id, $date_start, $date_end)
     {
 
-        // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
-
+        $data = ItemLot::query();
         if ($date_start && $date_end) {
 
-            $data = ItemLot::whereBetween('date', [$date_start, $date_end])
+            $data->whereBetween('date', [$date_start, $date_end])
                 ->orderBy('item_id')->orderBy('id');
 
         } else {
-
-            $data = ItemLot::orderBy('item_id')->orderBy('id');
+            $data->orderBy('item_id')->orderBy('id');
         }
 
         if ($item_id) {
-            $data = $data->where('item_id', $item_id);
+            $data->where('item_id', $item_id);
         }
 
+        if ($warehouse) {
+            $data->where('warehouse_id', $warehouse);
+        }
 
         return $data;
-
     }
 
     public function records_series_kardex(Request $request)
