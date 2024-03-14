@@ -346,7 +346,7 @@ class ReportKardexController extends Controller
         return $records;
     }
 
-    private function data2($warehouse,$item_id, $date_start, $date_end)
+    private function data2($warehouse_id,$item_id, $date_start, $date_end)
     {
 
         // $warehouse = Warehouse::where('establishment_id', auth()->user()->establishment_id)->first();
