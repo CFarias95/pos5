@@ -195,7 +195,7 @@
             </tr>
         @endforeach
         @foreach($servicios as $servicio)
-            @if($servicio > 0)
+            @if($servicio->quantity > 0)
                 <tr>
                     <td>{{ $servicio->item_supply_name }}</td>
                     <td>{{ $servicio->quantity }}</td>
