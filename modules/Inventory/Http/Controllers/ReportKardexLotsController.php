@@ -47,22 +47,26 @@ class ReportKardexLotsController extends Controller
     private function data($warehouse_id, $item_id, $date_start, $date_end)
     {
 
+        $data = ItemLotsGroup::query();
+
+        if(isset($warehouse_id) && $warehouse_id != ''){
+
+            $data->where('warehouse_id', $warehouse_id);
+        }
+
+        if($item_id){
+
+            $data->where('item_id', $item_id);
+        }
+
         if($date_start && $date_end){
 
-            $data = ItemLotsGroup::whereBetween('date_of_due', [$date_start, $date_end])
+            $data->whereBetween('date_of_due', [$date_start, $date_end])
                         ->orderBy('item_id')->orderBy('id');
 
         }else{
 
-            $data = ItemLotsGroup::orderBy('item_id')->orderBy('id');
-        }
-
-        if(isset($warehouse_id) && $warehouse_id != ''){
-            $data = $data->where('warehouse_id', $warehouse_id);
-        }
-
-        if($item_id){
-            $data = $data->where('item_id', $item_id);
+            $data->orderBy('item_id')->orderBy('id');
         }
 
         return $data;
