@@ -94,7 +94,7 @@ class AccountingEntriesController extends Controller
         $query = AccountingEntries::query();
 
         if (!is_null($search)) {
-            $query->where('comment', 'like', "%{$search}%");
+            $query->where('comment', 'like', "%{$search}%")->orWhere('filename', 'like', "%{$search}%");
         }
 
         if (!is_null($typeid) && $typeid>0) {

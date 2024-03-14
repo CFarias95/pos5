@@ -1166,95 +1166,28 @@
             }
 
             $data = self::getItemToTrasferCollection($warehouse_id);
-
             if(!empty($input)) {
+                $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
                 $whereItem[] = ['name', 'like', '%' . $input . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
-                $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
                 $whereItem[] = ['barcode', '=', $input];
                 $whereExtra[] = ['description', 'like', '%' . $input . '%'];
             }
 
             if(!empty($whereItem)) {
+                /*
                 $data = func_filter_items($data, $input);
-//                $data
-//                    ->selectRaw(
-//                            'match(text_filter) against(? in natural language mode) as score',
-//                            [$params['input']]
-//                        )
-//                        ->whereRaw(
-//                            'match(text_filter) against(? in natural language mode) > 0.0000001',
-//                            [$params['input']]
-//                        );
-//                        ->orderBy('score', 'desc');
-//                });
-
-//                $data->when($params['input'], function ($query, $search) {
-//                    $query->select('id', 'description', 'text_filter')
-//                        ->selectRaw(
-//                            'match(text_filter) against(? in natural language mode) as score',
-//                            [$search]
-//                        )
-//                        ->whereRaw(
-//                            'match(text_filter) against(? in natural language mode) > 0.0000001',
-//                            [$search]
-//                        )
-//                        ->orderBy('score', 'desc');
-//                });
-
-//                $items = Item::query()->when($params['input'], function ($query, $search) {
-//                    return $query->select('id', 'text_filter')
-//                        ->selectRaw('match(text_filter) against(? in natural language mode) as score', [$search])
-//                        ->whereRaw('match(text_filter) against(? in natural language mode) > 0.0000001', [$search]);
-//                })->get();
-//
-//                dd($items);
-
-//                $data->whereRaw('match(text_filter) against(? in natural language mode) > 0.0000001', [$input]);
-//                });
-//                $items = Item::query()
-//                    ->select('id', 'text_filter')
-//                    ->selectRaw('match(text_filter) against(? in natural language mode) as score')
-//                    ->having('score', '>', 0)
-//
-//                    ->setBindings([$input])
-//                    ->orderBy('score', 'desc')
-//                ->get();
-
-//                $items = Item::query()
-//                    ->select('id', 'text_filter')
-//                    ->whereRaw('MATCH(text_filter) AGAINST(? IN BOOLEAN MODE)', ['radio%2080'])
-////                    ->having('score', '>', 0)
-////
-////                    ->setBindings([$input])
-////                    ->orderBy('score', 'desc')
-//                    ->get();
-//
-//                dd($items);
-//                $data->whereRaw('match(text_filter)
-//                    against(? in natural language mode) > 0.0000001
-//                ', [$input]);
-
-//                foreach ($whereItem as $index => $wItem) {
-//                    if ($index < 1) {
-//                        $data->Where([$wItem]);
-//                    } else {
-//                        $data->orWhere([$wItem]);
-//                    }
-//                }
-//
-//                if ( !empty($whereExtra)) {
-//                    $data
-//                        ->orWhereHas('brand', function ($query) use ($whereExtra) {
-//                            $query->where($whereExtra);
-//                        })
-//                        ->orWhereHas('category', function ($query) use ($whereExtra) {
-//                            $query->where($whereExtra);
-//                        });
-//                }
-//                $data->OrWhereJsonContains('attributes', ['value' => $input]);
                 // Limita la cantidad de productos en la busqueda a 250, puede modificarse en el .env con NUMBER_SEARCH_ITEMS
                 $data->take(\Config('extra.number_items_in_search'));
+                */
+                foreach ($whereItem as $index => $wItem) {
+                    if ($index < 1) {
+                        $data->Where([$wItem]);
+                    } else {
+                        $data->orWhere([$wItem]);
+                    }
+                }
+
             }else{
                 // Inicia con 20 productos, puede añadirse en el env la variable NUMBER_ITEMS
                 $data->take(\Config('extra.number_items_at_start'));
