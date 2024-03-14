@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-0" v-loading="loading">
         <div class="card-header bg-info">
-            Editar Nota ({{ document.series }}-{{ document.number }})
+            Editar Nota ({{ document.affected_document.series }}-{{ document.affected_document.number }})
         </div>
         <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">
@@ -30,11 +30,10 @@
                             </div>
                         </div>
                         <div class="col-md-2">
-                            <template v-if="form.document_type_id === '08'">
+                            <!-- <template v-if="form.document_type_id === '08'">
                                 <div class="form-group" :class="{'has-danger': errors['note.note_debit_type_id']}">
                                     <label class="control-label">Tipo nota de débito</label>
-                                    <el-select v-model="form.note_credit_or_debit_type_id"
-                                               @change="changeNoteDebitType">
+                                    <el-select v-model="form.note_credit_or_debit_type_id">
                                         <el-option v-for="option in note_debit_types" :key="option.id"
                                                    :value="option.id" :label="option.description"></el-option>
                                     </el-select>
@@ -47,6 +46,17 @@
                                     <label class="control-label">Tipo nota de crédito</label>
                                     <el-select v-model="form.note_credit_or_debit_type_id"
                                                @change="changeNoteCreditType">
+                                        <el-option v-for="option in note_credit_types" :key="option.id"
+                                                   :value="option.id" :label="option.description"></el-option>
+                                    </el-select>
+                                    <small class="form-control-feedback" v-if="errors['note.note_credit_type_id']"
+                                           v-text="errors['note.note_credit_type_id'][0]"></small>
+                                </div>
+                            </template> -->
+                            <template>
+                                <div class="form-group" :class="{'has-danger': errors['note.note_credit_type_id']}">
+                                    <label class="control-label">Tipo nota de crédito</label>
+                                    <el-select v-model="form.note_credit_or_debit_type_id">
                                         <el-option v-for="option in note_credit_types" :key="option.id"
                                                    :value="option.id" :label="option.description"></el-option>
                                     </el-select>
@@ -113,7 +123,7 @@
                                        v-text="errors.purchase_order[0]"></small>
                             </div>
                         </div>
-                        <div class="col-lg-2 align-self-end" v-if=" ! configuration.send_auto">
+                        <!-- <div class="col-lg-2 align-self-end" v-if=" ! configuration.send_auto">
                                 <div :class="{'has-danger': errors.aproved}"
                                      class="form-group">
                                     <label class="control-label">Mandar a Autorizar? </label>
@@ -129,7 +139,7 @@
                                            class="form-control-feedback"
                                            v-text="errors.aproved[0]"></small>
                                 </div>
-                            </div>
+                            </div> -->
                         <!-- JOINSOFTWARE
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.exchange_rate_sale}">
@@ -165,7 +175,7 @@
                                             </tr>
                                             </thead>
                                             <tbody>
-                                            <tr v-for="(row, index) in note.document_affected.items" :key="index">
+                                            <tr v-for="(row, index) in form.items" :key="index">
                                                 <td>{{ index + 1 }}</td>
                                                 <td>{{ row.item.name }}/{{ row.item.description }}</td>
                                                 <td>{{ row.quantity }}</td>
@@ -261,11 +271,15 @@
                                 {{ form.total_charge }}</p>
                             <p class="text-right" v-if="form.total_discount > 0">DESCUENTO: {{ currency_type.symbol }}
                                 {{ form.total_discount }}</p>
-                            <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
+                            <!-- <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                                 <h3 class="text-right"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}
                                 </h3>
                             </template>
                             <template v-else>
+                                <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A
+                                    PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
+                            </template> -->
+                            <template>
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A
                                     PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </template>
@@ -412,6 +426,8 @@ export default {
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.document_types = response.data.document_types_note
+                console.log('response', response)
+                console.log('this.doc.types', this.document_types)
                 this.currency_types = response.data.currency_types
                 this.all_series = response.data.series
                 this.note_credit_types = response.data.note_credit_types
@@ -422,14 +438,14 @@ export default {
                 this.authUser = response.data.authUser;
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
-                // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                //this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
 
-                this.changeDocumentType()
-                this.changeDateOfIssue()
+                //this.changeDocumentType()
+                //this.changeDateOfIssue()
                 //JOINSOFTWARE
-                this.setDefaultDocumentType();
+                //this.setDefaultDocumentType();
             })
-        await this.getPercentageIgv();
+        //await this.getPercentageIgv();
         this.getCustomer()
         //this.getHasDocuments()
 
@@ -550,8 +566,6 @@ export default {
                 row.amount = amount;
             })
         },
-        changeNoteDebitType() {
-        },
         changeNoteCreditType() {
 
             if (this.isCreditNoteAndType13) {
@@ -595,7 +609,7 @@ export default {
 
                     this.form.payment_condition_id = null
                     this.form.fee = []
-                    await this.getNote()
+                    //await this.getNote()
                     await this.initFormCreditNoteAndType13()
                     // this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
                     // this.form.document_type_id = (this.document_types.length > 0)?this.document_types[0].id:null
@@ -619,43 +633,43 @@ export default {
 
             this.errors = {}
 
-            this.form.establishment_id = this.document.establishment_id
-            // this.form.document_type_id= null
-            // this.form.series_id= null
+            this.form.establishment_id = this.document.affected_document.establishment_id
+            this.form.document_type_id= this.document.affected_document.document_type_id
+            this.form.series_id= this.document.affected_document.series
             this.form.number = '#'
             // this.form.date_of_issue= moment().format('YYYY-MM-DD')
             // this.form.time_of_issue= moment().format('HH:mm:ss')
-            this.form.customer_id = this.document.customer_id
-            this.form.currency_type_id = this.document.currency_type_id
+            this.form.customer_id = this.document.affected_document.customer_id
+            this.form.currency_type_id = this.document.affected_document.currency_type_id
             this.form.purchase_order = null
-            this.form.exchange_rate_sale = this.document.exchange_rate_sale
-            this.form.total_prepayment = this.document.total_prepayment
-            this.form.total_charge = this.document.total_charge
-            this.form.total_discount= this.document.total_discount
-            this.form.total_exportation = this.document.total_exportation
-            this.form.total_free = this.document.total_free
-            this.form.total_taxed = this.document.total_taxed
-            this.form.total_unaffected = this.document.total_unaffected
-            this.form.total_exonerated = this.document.total_exonerated
-            this.form.total_igv = this.document.total_igv
-            this.form.total_base_isc = this.document.total_base_isc
-            this.form.total_isc = this.document.total_isc
-            this.form.total_base_other_taxes = this.document.total_base_other_taxes
-            this.form.total_other_taxes = this.document.total_other_taxes
-            this.form.total_plastic_bag_taxes = this.document.total_plastic_bag_taxes
-            this.form.total_taxes = this.document.total_taxes
-            this.form.total_value = this.document.total_value
-            this.form.total = this.document.total
-            this.form.items = this.document.document_affected.items
-            this.form.affected_document_id = this.document.id
+            this.form.exchange_rate_sale = this.document.affected_document.exchange_rate_sale
+            this.form.total_prepayment = this.document.affected_document.total_prepayment
+            this.form.total_charge = this.document.affected_document.total_charge
+            this.form.total_discount= this.document.affected_document.total_discount
+            this.form.total_exportation = this.document.affected_document.total_exportation
+            this.form.total_free = this.document.affected_document.total_free
+            this.form.total_taxed = this.document.affected_document.total_taxed
+            this.form.total_unaffected = this.document.affected_document.total_unaffected
+            this.form.total_exonerated = this.document.affected_document.total_exonerated
+            this.form.total_igv = this.document.affected_document.total_igv
+            this.form.total_base_isc = this.document.affected_document.total_base_isc
+            this.form.total_isc = this.document.affected_document.total_isc
+            this.form.total_base_other_taxes = this.document.affected_document.total_base_other_taxes
+            this.form.total_other_taxes = this.document.affected_document.total_other_taxes
+            this.form.total_plastic_bag_taxes = this.document.affected_document.total_plastic_bag_taxes
+            this.form.total_taxes = this.document.affected_document.total_taxes
+            this.form.total_value = this.document.affected_document.total_value
+            this.form.total = this.document.affected_document.total
+            this.form.items = this.document.affected_document.items
+            this.form.affected_document_id = this.document.affected_document.id
             console.log('affected doc id', this.form.affected_document_id)
-            this.form.note_description = null
+            this.form.note_description = this.document.note_description
             /*this.form.actions = {
                 format_pdf: 'a4'
             }*/
-            // this.form.operation_type_id= null
+            this.form.operation_type_id= this.document.affected_document.invoice.operation_type_id
             this.form.hotel = {}
-            this.form.charges = this.document.charges ? Object.values(this.document.charges) : null
+            this.form.charges = this.document.affected_document.charges ? Object.values(this.document.affected_document.charges) : null
             this.form.payment_condition_id = null
             this.form.fee = []
 
@@ -674,45 +688,45 @@ export default {
 
             this.errors = {}
             this.form = {
-                establishment_id: this.document.establishment_id,
+                establishment_id: this.document.affected_document.establishment_id,
                 document_type_id: null,
                 series_id: null,
                 number: '#',
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
-                customer_id: this.document.customer_id,
+                customer_id: this.document.affected_document.customer_id,
                 // JOINSOFTWARE
-                currency_type_id: this.document.currency_type_id,
+                currency_type_id: this.document.affected_document.currency_type_id,
                 purchase_order: null,
                 exchange_rate_sale: 0,
-                total_prepayment: this.document.total_prepayment,
-                total_charge: this.document.total_charge,
-                total_discount: this.document.total_discount,
-                total_exportation: this.document.total_exportation,
-                total_free: this.document.total_free,
-                total_taxed: this.document.total_taxed,
-                total_unaffected: this.document.total_unaffected,
-                total_exonerated: this.document.total_exonerated,
-                total_igv: this.document.total_igv,
-                total_base_isc: this.document.total_base_isc,
-                total_isc: this.document.total_isc,
-                total_base_other_taxes: this.document.total_base_other_taxes,
-                total_other_taxes: this.document.total_other_taxes,
-                total_plastic_bag_taxes: this.document.total_plastic_bag_taxes,
-                total_taxes: this.document.total_taxes,
-                total_value: this.document.total_value,
-                total: this.document.total,
-                items: this.document.document_affected.items,
+                total_prepayment: this.document.affected_document.total_prepayment,
+                total_charge: this.document.affected_document.total_charge,
+                total_discount: this.document.affected_document.total_discount,
+                total_exportation: this.document.affected_document.total_exportation,
+                total_free: this.document.affected_document.total_free,
+                total_taxed: this.document.affected_document.total_taxed,
+                total_unaffected: this.document.affected_document.total_unaffected,
+                total_exonerated: this.document.affected_document.total_exonerated,
+                total_igv: this.document.affected_document.total_igv,
+                total_base_isc: this.document.affected_document.total_base_isc,
+                total_isc: this.document.affected_document.total_isc,
+                total_base_other_taxes: this.document.affected_document.total_base_other_taxes,
+                total_other_taxes: this.document.affected_document.total_other_taxes,
+                total_plastic_bag_taxes: this.document.affected_document.total_plastic_bag_taxes,
+                total_taxes: this.document.affected_document.total_taxes,
+                total_value: this.document.affected_document.total_value,
+                total: this.document.affected_document.total,
+                items: this.document.affected_document.items,
                 affected_document_id: this.document.id,
-                note_credit_or_debit_type_id: null,
-                note_description: null,
+                note_credit_or_debit_type_id: this.document.note_credit_type_id,
+                note_description: this.document.note_description,
                 /*actions: {
                     format_pdf: 'a4'
                 },*/
                 // operation_type_id: null,
                 //operation_type_id: this.document.invoice.operation_type_id, //se asigna el t. operacion del documento relacionado para filtrar en form item el tipo de afectacion
                 hotel: {},
-                charges: this.document.charges ? Object.values(this.document.charges) : null,
+                charges: this.document.affected_document.charges ? Object.values(this.document.affected_document.charges) : null,
                 payment_condition_id: null,
                 fee: [],
             }
@@ -795,7 +809,7 @@ export default {
 
                         this.affected_documents = response.data.data
 
-                        let message = `<strong>El CPE ${this.document.series}-${this.document.number} ya tiene notas generadas</strong><br/>`
+                        let message = `<strong>El CPE ${this.document.affected_document.series}-${this.document.affected_document.number} ya tiene notas generadas</strong><br/>`
 
                         this.affected_documents.forEach(document => {
                             message += `${document.document_type_description}: ${document.description}<br/>`
@@ -837,8 +851,8 @@ export default {
 
             if(this.authUser.multiple_default_document_types) return
 
-            this.default_series_type = this.document.user.serie;
-            this.default_document_type = this.document.user.document_id;
+            this.default_series_type = this.document.affected_document.user.serie;
+            this.default_document_type = this.document.affected_document.user.document_id;
             // if (this.default_document_type === undefined) this.default_document_type = null;
             // if (this.default_series_type === undefined) this.default_series_type = null;
 
@@ -1030,7 +1044,7 @@ export default {
         getCustomer() {
             this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {
                 this.customers = response.data.customers
-                this.form.customer_id = this.document.customer_id
+                this.form.customer_id = this.document.affected_document.customer_id
             })
         },
         close() {

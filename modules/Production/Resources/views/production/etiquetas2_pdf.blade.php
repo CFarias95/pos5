@@ -195,12 +195,14 @@
             </tr>
         @endforeach
         @foreach($servicios as $servicio)
-            <tr>
-                <td>{{ $servicio->item_supply_name }}</td>
-                <td>{{ $servicio->quantity }}</td>
-                <td>N/A</td>
-                <td>{{ $servicio->checked ? 'Sí' : 'No' }}</td>
-            </tr>
+            @if($servicio > 0)
+                <tr>
+                    <td>{{ $servicio->item_supply_name }}</td>
+                    <td>{{ $servicio->quantity }}</td>
+                    <td>N/A</td>
+                    <td>{{ $servicio->checked ? 'Sí' : 'No' }}</td>
+                </tr>
+            @endif
         @endforeach
         <tr>
             <th>Total Solicitado</th>

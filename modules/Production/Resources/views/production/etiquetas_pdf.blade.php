@@ -22,11 +22,11 @@ $array1 = [];
 $array2 = [];
 foreach ($atributos as $key => $value) {
 
-    if($value->attribute_type_id == 'BPM')
+    if($value->attribute_type_id == '8081')
     {
         $bpm = $value->value;
     }
-    if($value->attribute_type_id == 'CBPM')
+    if($value->attribute_type_id == 'BPM')
     {
         $codigoBPM = $value->value;
     }
