@@ -18,6 +18,8 @@ $psn = null;
 $em = null;
 $codigoBPM = null;
 $nfu = null;
+$nt = null;
+$opc1 = null;
 $array1 = [];
 $array2 = [];
 foreach ($atributos as $key => $value) {
@@ -41,6 +43,14 @@ foreach ($atributos as $key => $value) {
     if($value->attribute_type_id == 'NFU')
     {
         $nfu = $value->value;
+    }
+    if($value->attribute_type_id == 'NT')
+    {
+        $nt = $value->value;
+    }
+    if($value->attribute_type_id == 'OPC-1')
+    {
+        $opc1 = $value->value;
     }
     if(starts_with($value->attribute_type_id, 'ET'))
     {
@@ -150,7 +160,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                         Fecha de Producción: {{$produccion->date_start}} <br/>
                         Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                         @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                        Código único BPM: {{ $codigoBPM }} <br/>
+                        @endif
+                        @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                         </th>
@@ -214,7 +230,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    @endif
+                    @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                     </th>
@@ -280,7 +302,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    @endif
+                    @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                     </th>
@@ -347,7 +375,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    Código único BPM: {{ $codigoBPM }} <br/><br/>
+                    @endif
+                    @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                     </th>
@@ -414,7 +448,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                        Código único BPM: {{ $codigoBPM }} <br/>
+                        @endif
+                        @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                     </th>
@@ -481,7 +521,13 @@ $fechaCaducudad = date_add($date, date_interval_create_from_date_string($records
                     Fecha de Producción: {{$produccion->date_start}} <br/>
                     Fecha de Caducidad: {{date_format($fechaCaducudad, "Y-m-d")}} <br/>
                     @if($codigoBPM != null)
-                        Código único BPM: {{ $codigoBPM }} <br/><br/>
+                        Código único BPM: {{ $codigoBPM }} <br/>
+                        @endif
+                        @if($nt != null)
+                        Peso Neto: {{ $nt }} <br/>
+                        @endif
+                        @if($opc1 != null)
+                        Color: {{ $opc1 }} <br/>
                         @endif
                         <br>
                     </th>

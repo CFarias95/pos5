@@ -1,7 +1,7 @@
 <template>
     <div class="card mb-0" v-loading="loading">
         <div class="card-header bg-info">
-            Editar Nota ({{ document.affected_document.series }}-{{ document.affected_document.number }})
+            Editar Nota ({{ document.doc_original.series }}-{{ document.doc_original.number }})
         </div>
         <div class="card-body">
             <form autocomplete="off" @submit.prevent="submit">
@@ -10,7 +10,7 @@
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.document_type_id}">
                                 <label class="control-label">Tipo comprobante</label>
-                                <el-select v-model="form.document_type_id" @change="changeDocumentType">
+                                <el-select v-model="form.document_type_id" @change="changeDocumentType" :disabled="true">
                                     <el-option v-for="option in document_types" :key="option.id" :value="option.id"
                                                :label="option.description"></el-option>
                                 </el-select>
@@ -21,7 +21,7 @@
                         <div class="col-md-2">
                             <div class="form-group" :class="{'has-danger': errors.series_id}">
                                 <label class="control-label">Serie</label>
-                                <el-select v-model="form.series_id">
+                                <el-select v-model="form.series_id" :disabled="true">
                                     <el-option v-for="option in series" :key="option.id" :value="option.id"
                                                :label="option.number"></el-option>
                                 </el-select>
@@ -110,7 +110,7 @@
                             <div class="form-group" :class="{'has-danger': errors.date_of_issue}">
                                 <label class="control-label">Fec. Emisión</label>
                                 <el-date-picker v-model="form.date_of_issue" type="date" value-format="yyyy-MM-dd"
-                                                :clearable="false" @change="changeDateOfIssue"></el-date-picker>
+                                                :clearable="false" @change="changeDateOfIssue"  :disabled="true"></el-date-picker>
                                 <small class="form-control-feedback" v-if="errors.date_of_issue"
                                        v-text="errors.date_of_issue[0]"></small>
                             </div>
@@ -202,7 +202,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="row">
+                    <!-- <div class="row">
                         <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
                             <div class="form-group">
                                 <button type="button" class="btn waves-effect waves-light btn-primary"
@@ -210,7 +210,7 @@
                                 </button>
                             </div>
                         </div>
-                    </div>
+                    </div> -->
                     <div class="row" v-if="form.items.length > 0">
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -345,12 +345,17 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
+                    <!-- <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
                                    v-if="form.items.length > 0">Actualizar
                         </el-button>
                     </template>
                     <template v-else>
+                        <el-button type="primary" native-type="submit" :loading="loading_submit"
+                                   v-if="form.items.length > 0 && form.total > 0">Actualizar
+                        </el-button>
+                    </template> -->
+                    <template>
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
                                    v-if="form.items.length > 0 && form.total > 0">Actualizar
                         </el-button>
@@ -406,6 +411,7 @@ export default {
             note_debit_types: [],
             user: {},
             document: {},
+            doc_original: {},
             //note: [],
             operation_types: [],
             is_contingency: false,
@@ -426,10 +432,11 @@ export default {
         await this.$http.get(`/${this.resource}/tables`)
             .then(response => {
                 this.document_types = response.data.document_types_note
-                console.log('response', response)
-                console.log('this.doc.types', this.document_types)
+                //console.log('response', response)
+                //console.log('this.doc.types', this.document_types)
                 this.currency_types = response.data.currency_types
                 this.all_series = response.data.series
+                this.series = response.data.series
                 this.note_credit_types = response.data.note_credit_types
                 this.note_debit_types = response.data.note_debit_types
                 this.operation_types = response.data.operation_types
@@ -662,7 +669,7 @@ export default {
             this.form.total = this.document.affected_document.total
             this.form.items = this.document.affected_document.items
             this.form.affected_document_id = this.document.affected_document.id
-            console.log('affected doc id', this.form.affected_document_id)
+            //console.log('affected doc id', this.form.affected_document_id)
             this.form.note_description = this.document.note_description
             /*this.form.actions = {
                 format_pdf: 'a4'
@@ -690,14 +697,14 @@ export default {
             this.form = {
                 establishment_id: this.document.affected_document.establishment_id,
                 document_type_id: null,
-                series_id: null,
+                series_id: this.document.doc_original.series,
                 number: '#',
                 date_of_issue: moment().format('YYYY-MM-DD'),
                 time_of_issue: moment().format('HH:mm:ss'),
-                customer_id: this.document.affected_document.customer_id,
+                customer_id: null,
                 // JOINSOFTWARE
                 currency_type_id: this.document.affected_document.currency_type_id,
-                purchase_order: null,
+                purchase_order: this.document.doc_original.purchase_order,
                 exchange_rate_sale: 0,
                 total_prepayment: this.document.affected_document.total_prepayment,
                 total_charge: this.document.affected_document.total_charge,
@@ -730,7 +737,7 @@ export default {
                 payment_condition_id: null,
                 fee: [],
             }
-            console.log('affected doc id', this.form.affected_document_id)
+            //console.log('affected doc id', this.form.affected_document_id)
 
             await this.form.items.forEach((item) => {
                 item.input_unit_price_value = item.unit_price
@@ -1013,16 +1020,20 @@ export default {
 
             await this.checkPercentageIgvDebitNote()
 
-            if (this.isCreditNote && this.hasDiscounts && this.form.total > this.document.total) {
+            if (this.isCreditNote && this.hasDiscounts && this.form.total > this.document.affected_document.total) {
+                return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)
+            }
+
+            if (this.isCreditNote && this.form.total > this.document.affected_document.total) {
                 return this.$message.error(`El monto total de la nota de credito debe ser menor o igual al monto del documento relacionado (${this.document.total})`)
             }
 
             this.loading_submit = true
-            await this.$http.post(`/${this.resource}`, this.form)
+            await this.$http.post(`/${this.resource}/note/${this.document.document_id}/edit`, this.form)
                 .then(response => {
                     if (response.data.success) {
-                        this.resetForm()
-                        this.documentNewId = response.data.data.id
+                        //this.resetForm()
+                        //this.documentNewId = response.data.data.id
                         this.showDialogOptions = true
                     } else {
                         this.$message.error(response.data.message)
@@ -1042,9 +1053,11 @@ export default {
                 })
         },
         getCustomer() {
-            this.$http.get(`/${this.resource}/search/customer/${this.document.customer_id}`).then((response) => {
+            this.$http.get(`/${this.resource}/search/customer/${this.document.affected_document.customer_id}`).then((response) => {
                 this.customers = response.data.customers
+                //console.log('customers', response);
                 this.form.customer_id = this.document.affected_document.customer_id
+                //console.log('this.form.customer_id', this.form.customer_id);
             })
         },
         close() {

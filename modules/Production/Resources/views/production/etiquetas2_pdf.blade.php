@@ -188,7 +188,7 @@
                 <td>{{ $empaques->quantity }}</td>
                 <td>{{ $empaques->lot_code }}</td>
                 @foreach ($produccion->production_supplies as $supply)
-                    @if ($supplies->item->id == $supply->item_supply_original_id)
+                    @if ($empaques->item->id == $supply->item_supply_original_id)
                         <td>{{ $supply->checked ? 'Sí' : 'No' }}</td>
                     @endif
                 @endforeach
