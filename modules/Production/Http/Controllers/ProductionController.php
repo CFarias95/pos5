@@ -925,13 +925,17 @@ class ProductionController extends Controller
             $inventory_it->precio_perso = $item->purchase_mean_cost;
             $inventory_it->save();
 
+            $dias_vencimiento = $item->validity;
+            $fecha_vencimiento = $production->date_end;
+            $nueva_fecha_vencimiento = date('Y-m-d', strtotime($fecha_vencimiento . ' + ' . $dias_vencimiento . ' days'));
+
             if (isset($production->lot_code) && $production->lot_code != "") {
 
                 $item_lots_group = new ItemLotsGroup();
                 $item_lots_group->code = $production->lot_code;
                 $item_lots_group->quantity = $production->quantity;
                 $item_lots_group->item_id = $production->item_id;
-                $item_lots_group->date_of_due = $production->date_end;
+                $item_lots_group->date_of_due = $nueva_fecha_vencimiento;
                 $item_lots_group->warehouse_id = $production->warehouse_id;
                 $item_lots_group->save();
             }
