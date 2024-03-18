@@ -39,6 +39,7 @@
                                         :disabled="recordItem != null"
                                         :loading="loading_search"
                                         :remote-method="searchRemoteItems"
+                                        :no-match-text = "'No se encontraron resultados'"
                                         filterable
                                         placeholder="Buscar"
                                         popper-class="el-select-items"
@@ -953,7 +954,7 @@ export default {
         },
         async searchRemoteItems(input) {
 
-            if (input.length > 2)
+            if (input.length > 3)
             {
                 this.loading_search = true
                 const params = {

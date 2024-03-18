@@ -81,7 +81,7 @@ class VoidedController extends Controller
         ];
     }
 
-    
+
     /**
      * Validaciones previas
      *
@@ -96,12 +96,12 @@ class VoidedController extends Controller
 
         if($configuration->restrict_voided_send)
         {
-            foreach ($request->documents as $row) 
+            foreach ($request->documents as $row)
             {
                 $document = Document::whereFilterWithOutRelations()->select('date_of_issue')->findOrFail($row['document_id']);
-    
+
                 $difference_days = $configuration->shipping_time_days_voided - $document->getDiffInDaysDateOfIssue($voided_date_of_issue);
-    
+
                 if($difference_days < 0)
                 {
                     return [
@@ -131,13 +131,10 @@ class VoidedController extends Controller
             $facturalo->statusSummary($document->ticket);
             return $facturalo;
         });
-
         $voided_doc = VoidedDocument::where('id', $voided_id)->first();
-        
-        AccountingEntries::where('document_id', 'F'.$voided_doc->document_id)->delete();
         $doc_payment_seat = DocumentPayment::where('document_id', $voided_doc->document_id)->first();
         AccountingEntries::where('document_id', 'CF'.$doc_payment_seat->id)->delete();
-
+        AccountingEntries::where('document_id', 'F'.$voided_doc->document_id)->delete();
         $response = $fact->getResponse();
 
         return [

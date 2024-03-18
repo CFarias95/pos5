@@ -126,7 +126,6 @@ class ProductionController extends Controller
             $production->soap_type_id = $this->getCompanySoapTypeId();
             $production->save();
 
-
             if ($informative !== true) {
                 $items_supplies = $request->supplies;
                 foreach ($items_supplies as $item) {
