@@ -238,7 +238,7 @@ class ReportsFinancesController extends Controller
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
         $agrupado = FunctionController::InArray($request, 'agrupado');
-        if($agrupado == true){
+        if($agrupado === true || $agrupado === 'true'){
             $agrupado = 1;
         }else{
             $agrupado = 0;
@@ -248,6 +248,7 @@ class ReportsFinancesController extends Controller
         $codcliente = FunctionController::InArray($request, 'codcliente');
         //$codproveedor = FunctionController::InArray($request, 'codproveedor');
         $codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $importe = FunctionController::InArray($request, 'importe');
 
         $d_start = null;
         $d_end = null;
@@ -271,8 +272,45 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
+        if(isset($importe)){
+
+            if(str_contains($importe,';')){
+                $arayIm = explode(';',$importe);
+                $condicion = $arayIm[0];
+                $valor  = floatval($arayIm[1]);
+            }else{
+                $condicion = '>=';
+                $valor  = floatval($importe);
+            }
+
+        }
+
+        Log::info('agrupado: '. $agrupado);
+
         $records = DB::connection('tenant')->select('CALL SP_toCollect_statement(?, ?, ?, ?, ?, ?)', [$d_start, $agrupado, $codcliente, $fini, $ffin, $codvendedor]);
-        //Log::info('sppp'.json_encode($records));
+
+        if(isset($condicion)){
+            $records = collect($records)->filter(function ($value, $key) use($condicion,$valor) {
+                if($condicion == '>'){
+                    return $value->total > $valor;
+                }
+                if($condicion == '>='){
+                    return $value->total >= $valor;
+                }
+                if($condicion == '<='){
+                    return $value->total <= $valor;
+                }
+                if($condicion == '<'){
+                    return $value->total < $valor;
+                }
+                if($condicion == '='){
+                    return $value->total = $valor;
+                }
+            })->toArray();
+        }
+
+        //Log::info('records filtered', $records);
+
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;

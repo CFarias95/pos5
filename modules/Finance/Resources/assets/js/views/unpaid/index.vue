@@ -229,6 +229,11 @@
                                             <span size="small">Saldo pendiente</span>
                                         </el-badge>
                                     </div>
+                                    <div class="col-md-2 mt-5 text-right">
+                                        <el-badge :value="getCurrentBalanceMultipayUsd" class="item" type="warning">
+                                            <span size="small">MultiCobros</span>
+                                        </el-badge>
+                                    </div>
 
                                     <div class="col-md-12 table-responsive">
                                         <table class="table">
@@ -703,6 +708,21 @@ export default {
                     return item.total_to_pay > 0 && item.currency_type_id == "USD";
                 });
             }
+
+            return _.sumBy(source, function (item) {
+                return parseFloat(item.total_to_pay);
+            }).toFixed(2);
+        },
+        getCurrentBalanceMultipayUsd(){
+            const self = this;
+            let source = [];
+
+            source = _.filter(self.records, function (item) {
+                return (
+                    item.total_to_pay > 0 &&
+                    item.selected == true
+                );
+            });
 
             return _.sumBy(source, function (item) {
                 return parseFloat(item.total_to_pay);

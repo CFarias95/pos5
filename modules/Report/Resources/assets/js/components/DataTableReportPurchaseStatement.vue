@@ -29,7 +29,8 @@
                     </template>
                     <template v-if="form.period === 'date' || form.period === 'between_dates'">
                         <div class="col-md-3" v-if="show_periodo">
-                            <label class="control-label">Fecha del</label>
+                            <label  v-if="show_agrupado" class="control-label">Fecha Corte</label>
+                            <label  v-else class="control-label">Fecha del</label>
                             <el-date-picker v-model="form.date_start" :clearable="false" format="dd/MM/yyyy" type="date"
                                 value-format="yyyy-MM-dd" @change="changeDisabledDates"></el-date-picker>
                         </div>
@@ -86,10 +87,15 @@
                             <el-option v-for="row in suppliers" :key="row.id" :label="row.name" :value="row.id"></el-option>
                         </el-select>
                     </div>
+                    <div class="col-md-3" v-if="show_agrupado">
+                        <label class="control-label">Importe</label>
+                        <el-input v-model="form.importe"></el-input>
+                    </div>
 
                     <div class="col-md-3" v-if="show_agrupado">
                         <label class="control-label">Agrupado</label>
-                        <el-checkbox v-model="form.agrupado"></el-checkbox>
+                        <br>
+                        <el-switch v-model="form.agrupado"></el-switch>
                     </div>
 
                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
@@ -433,7 +439,7 @@ export default {
                 page: this.pagination.current_page,
                 limit: this.limit,
                 ...this.form,
-                
+
             })
             delete (parameters.user_id)
             delete (parameters.document_type_id)
