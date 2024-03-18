@@ -5,8 +5,10 @@
 function ItemOptionDescription(item) {
     let data = '';
 
-    if (item !== undefined && item.full_description !== undefined ) {
-        data += item.full_description ;
+    if (item !== undefined && isset(item.full_description)) {
+        data += item.full_description;
+    }else{
+        data += item.name + '/'+item.description;
     }
 
     return data;

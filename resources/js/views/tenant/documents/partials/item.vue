@@ -1363,8 +1363,6 @@ export default {
             await this.comprobarDescuento();
             this.getLastPriceItem();
             this.calculateTotal();
-
-
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
