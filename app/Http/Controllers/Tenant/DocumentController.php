@@ -592,7 +592,7 @@ class DocumentController extends Controller
             $stock = '';
         }
 
-        $desc = "{$desc} - {$brand}";
+        $desc = "{$desc} / {$brand}";
 
         return [
             'full_description' => $desc,

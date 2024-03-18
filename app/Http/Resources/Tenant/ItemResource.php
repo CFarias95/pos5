@@ -150,7 +150,7 @@
                 'lots_enabled' => (bool)$this->lots_enabled,
                 'individual_items' => $this->sets->transform(function ($row, $key) {
 
-                    $full_description = ($row->individual_item->internal_id) ? $row->individual_item->internal_id . ' - ' . $row->individual_item->description : $row->individual_item->description;
+                    $full_description = ($row->individual_item->internal_id) ? $row->individual_item->internal_id . ' / ' . $row->individual_item->description : $row->individual_item->description;
 
                     return [
                         'id' => $row->id,

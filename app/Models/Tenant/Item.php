@@ -808,9 +808,9 @@ class Item extends ModelTenant
             $stock = '';
         }
         if ($extended == false) {
-            $desc = "{$this->name} - {$this->interenal_id}";
+            $desc = "{$this->name} / {$this->interenal_id}";
         } else {
-            $desc = "{$this->name} - {$this->description} - {$this->model} - {$this->internal_id}";
+            $desc = "{$this->name} / {$this->description} / {$this->model} / {$this->internal_id} / {$this->factory_code}";
         }
         return [
             'full_description'      => $desc,
