@@ -7,7 +7,7 @@
             </ol>
         </div>
         <div class="card-header bg-info">
-            <h3 class="my-0">Reporte Cobros Defectuosos</h3>
+            <h3 class="my-0">Reporte Cobros Efectuados</h3>
         </div>
         <div class="card mb-0">
             <div class="card-body">
