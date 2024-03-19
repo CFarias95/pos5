@@ -135,7 +135,6 @@ class DispatchController extends Controller
 
     public function create($document_id = null, $type = null, $dispatch_id = null)
     {
-
         if ($type == 'q') {
             $document = Quotation::find($document_id);
         } elseif ($type == 'on') {
@@ -152,20 +151,16 @@ class DispatchController extends Controller
             $type = null;
             $document = null;
         }
-
         if (!$document && !$dispatch_id) {
             return view('tenant.dispatches.create');
         }
-
         $configuration = Configuration::query()->first();
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
         if (isset($document)) {
-            //Log::info('Log dispatch - '.json_encode($document));
 
             if ($type != 't') {
                 foreach ($document->items as $item) {
-
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $lotes = '';
                     if(isset($item->item->IdLoteSelected)){
@@ -186,11 +181,11 @@ class DispatchController extends Controller
                             'IdLoteSelected' => $item->item->IdLoteSelected,
                         ];
                     }
-                    if(isset($item->item->lots)){
+                    elseif(isset($item->item->lots) && count($item->item->lots) > 0 ){
+
                         foreach($item->item->lots as $lot){
                             $lotes .= $lot->series . ' ';
                         }
-
                         $items[] = [
                             'item_id' => $item->item_id,
                             'item' => $item,
@@ -204,6 +199,21 @@ class DispatchController extends Controller
                             'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
                             'lots' => $item->item->lots,
                             'IdLoteSelected' => $item->item->lots,
+                        ];
+                    }
+                    else{
+                        $items[] = [
+                            'item_id' => $item->item_id,
+                            'item' => $item,
+                            'quantity' => $item->quantity,
+                            'description' => $item->item->description,
+                            'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
+                            'name_product_pdf' => $name_product_pdf,
+                            'lote' => '',
+                            'internal_id' => $item->item->internal_id,
+                            'model' =>  $item->item->model,
+                            'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
+                            'IdLoteSelected' => $item->item->IdLoteSelected,
                         ];
                     }
                 }
@@ -261,24 +271,60 @@ class DispatchController extends Controller
                     foreach($item->item->IdLoteSelected as $lot){
                         $lotes .= 'Cod. Lote: '. $lot->code . ', ';
                     }
+                    $items[] = [
+                        'item_id' => $item->item_id,
+                        'item' => $item,
+                        'quantity' => $item->quantity,
+                        'description' => $item->item->description,
+                        'name' => (isset($item->item->name))?$item->item->name:'-',
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $lotes,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
+                        'IdLoteSelected' => $item->item->IdLoteSelected,
+                    ];
                 }
-                $items[] = [
-                    'item_id' => $item->item_id,
-                    'item' => $item,
-                    'quantity' => $item->quantity,
-                    'description' => $item->item->description,
-                    'name' => (isset($item->item->name))?$item->item->name:'-',
-                    'name_product_pdf' => $name_product_pdf,
-                    'lote' => $lotes,
-                    'internal_id' => $item->item->internal_id,
-                    'model' =>  $item->item->model,
-                    'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
-                    'IdLoteSelected' => $item->item->IdLoteSelected,
-                ];
+                elseif(isset($item->item->lots) && count($item->item->lots) > 0 ){
+
+                    foreach($item->item->lots as $lot){
+                        $lotes .= $lot->series . ' ';
+                    }
+                    $items[] = [
+                        'item_id' => $item->item_id,
+                        'item' => $item,
+                        'quantity' => $item->quantity,
+                        'description' => $item->item->description,
+                        'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => $lotes,
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
+                        'lots' => $item->item->lots,
+                        'IdLoteSelected' => $item->item->lots,
+                    ];
+                }
+                else{
+                    $items[] = [
+                        'item_id' => $item->item_id,
+                        'item' => $item,
+                        'quantity' => $item->quantity,
+                        'description' => $item->item->description,
+                        'name' => (isset($item->item->name))?$item->item->name:'-',
+                        'name_product_pdf' => $name_product_pdf,
+                        'lote' => '',
+                        'internal_id' => $item->item->internal_id,
+                        'model' =>  $item->item->model,
+                        'factory_code' => (isset($item->item->factory_code))?$item->item->factory_code:' - ',
+                        'IdLoteSelected' => $item->item->IdLoteSelected,
+                    ];
+                }
+
             }
         }
 
-        Log::info(json_encode($document));
+        Log::info('Items: '.json_encode($items));
         return view('tenant.dispatches.form', compact('document', 'items', 'type', 'dispatch'));
     }
 
