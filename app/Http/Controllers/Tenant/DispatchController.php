@@ -203,6 +203,7 @@ class DispatchController extends Controller
                             'model' =>  $item->item->model,
                             'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
                             'lots' => $item->item->lots,
+                            'IdLoteSelected' => $item->item->lots,
                         ];
                     }
 
