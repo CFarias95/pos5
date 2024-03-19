@@ -173,6 +173,11 @@ class DispatchController extends Controller
                             $lotes .= 'Cod. Lote: '. $lot->code . ', ';
                         }
                     }
+                    if(isset($item->item->lots )){
+                        foreach($item->item->lots as $lot){
+                            $lotes .= $lot->series . ' ';
+                        }
+                    }
 
                     $items[] = [
                         'item_id' => $item->item_id,
