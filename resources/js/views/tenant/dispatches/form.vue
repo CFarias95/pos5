@@ -679,6 +679,7 @@ export default {
             if(this.document != null){
 
                 console.log("A partir de DOCUMENTO: ",this.document)
+                console.log("document Items: ", this.documentItems)
 
                 this.form.establishment_id = this.document.establishment_id
                 this.form.date_of_issue = this.document.date_of_issue
