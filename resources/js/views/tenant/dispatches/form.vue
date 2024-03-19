@@ -677,7 +677,8 @@ export default {
 
         }).then(() => {
             if(this.document != null){
-                //console.log("existe un documento",this.document)
+
+                console.log("A partir de DOCUMENTO: ",this.document)
 
                 this.form.establishment_id = this.document.establishment_id
                 this.form.date_of_issue = this.document.date_of_issue
@@ -687,9 +688,11 @@ export default {
                 this.form.transfer_reason_type_id = this.document.transfer_reason_type_id?this.document.transfer_reason_type_id:'01'
                 this.form.transfer_reason_description = this.document.transfer_reason_description?this.document.transfer_reason_description:''
                 this.form.transport_mode_type_id = '02'
-                this.form.items = this.document.items
+
                 if(this.documentItems !== undefined){
                     this.form.items = this.documentItems
+                }else{
+                    this.form.items = this.document.items
                 }
                 this.form.origin.country_id = this.document.establishment.country_id
 

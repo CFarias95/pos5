@@ -161,7 +161,7 @@ class DispatchController extends Controller
         $items = [];
         $dispatch = Dispatch::find($dispatch_id);
         if (isset($document)) {
-            Log::info('Log dispatch - '.json_encode($document));
+            //Log::info('Log dispatch - '.json_encode($document));
 
             if ($type != 't') {
                 foreach ($document->items as $item) {
@@ -252,6 +252,7 @@ class DispatchController extends Controller
 
                 $document->items = $items;
             }
+
         } elseif (isset($dispatch)) {
             foreach ($dispatch->items as $item) {
                 $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
