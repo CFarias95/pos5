@@ -168,9 +168,9 @@ class DispatchController extends Controller
 
                     $name_product_pdf = ($configuration->show_pdf_name) ? strip_tags($item->name_product_pdf) : null;
                     $lotes = '';
-                    if(isset($item->item->IdLoteSelected )){
+                    if(isset($item->item->IdLoteSelected)){
                         foreach($item->item->IdLoteSelected as $lot){
-                            $lotes .= 'Cod. Lote: '. $lot->code . ', ';
+                            $lotes .= $lot->code;
                         }
                         $items[] = [
                             'item_id' => $item->item_id,
@@ -186,7 +186,7 @@ class DispatchController extends Controller
                             'IdLoteSelected' => $item->item->IdLoteSelected,
                         ];
                     }
-                    if(isset($item->item->lots )){
+                    if(isset($item->item->lots)){
                         foreach($item->item->lots as $lot){
                             $lotes .= $lot->series . ' ';
                         }
@@ -206,8 +206,6 @@ class DispatchController extends Controller
                             'IdLoteSelected' => $item->item->lots,
                         ];
                     }
-
-
                 }
             } else {
                 $origin = [];
@@ -249,11 +247,6 @@ class DispatchController extends Controller
                             "compromise_quantity" => $item->quantity,
                         ]),
                     ];
-                    /*
-                    $items[0]['IdLoteSelected'][]  = [
-                        "code" => $item->lot_code,
-                        "compromise_quantity" => $item->quantity,
-                    ];*/
 
                 }
 

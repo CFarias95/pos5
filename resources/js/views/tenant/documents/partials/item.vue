@@ -1297,7 +1297,7 @@ export default {
         async changeItem() {
 
             this.clearExtraInfoItem()
-
+            console.log('ITEMS DISPONIBLES: ',this.items)
             this.form.item = _.find(this.items, {'id': this.form.item_id});
             this.form.item = this.setExtraFieldOfitem(this.form.item)
             this.form.item_unit_types = _.find(this.items, {'id': this.form.item_id}).item_unit_types
@@ -1327,7 +1327,6 @@ export default {
             this.form.has_isc = this.form.item.has_isc
             this.form.percentage_isc = this.form.item.percentage_isc
             this.form.system_isc_type_id = this.form.item.system_isc_type_id
-
 
             if (this.hasAttributes()) {
                 const contex = this
@@ -1363,6 +1362,7 @@ export default {
             await this.comprobarDescuento();
             this.getLastPriceItem();
             this.calculateTotal();
+
         },
         focusTotalItem(change) {
             if (!change && this.form.item.calculate_quantity) {
