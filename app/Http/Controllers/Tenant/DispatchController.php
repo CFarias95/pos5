@@ -172,26 +172,41 @@ class DispatchController extends Controller
                         foreach($item->item->IdLoteSelected as $lot){
                             $lotes .= 'Cod. Lote: '. $lot->code . ', ';
                         }
+                        $items[] = [
+                            'item_id' => $item->item_id,
+                            'item' => $item,
+                            'quantity' => $item->quantity,
+                            'description' => $item->item->description,
+                            'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
+                            'name_product_pdf' => $name_product_pdf,
+                            'lote' => $lotes,
+                            'internal_id' => $item->item->internal_id,
+                            'model' =>  $item->item->model,
+                            'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
+                            'IdLoteSelected' => $item->item->IdLoteSelected,
+                        ];
                     }
                     if(isset($item->item->lots )){
                         foreach($item->item->lots as $lot){
                             $lotes .= $lot->series . ' ';
                         }
+
+                        $items[] = [
+                            'item_id' => $item->item_id,
+                            'item' => $item,
+                            'quantity' => $item->quantity,
+                            'description' => $item->item->description,
+                            'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
+                            'name_product_pdf' => $name_product_pdf,
+                            'lote' => $lotes,
+                            'internal_id' => $item->item->internal_id,
+                            'model' =>  $item->item->model,
+                            'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
+                            'lots' => $item->item->lots,
+                        ];
                     }
 
-                    $items[] = [
-                        'item_id' => $item->item_id,
-                        'item' => $item,
-                        'quantity' => $item->quantity,
-                        'description' => $item->item->description,
-                        'name' => (isset($item->item->name) && $item->item->name != null) ? $item->item->name : ' ',
-                        'name_product_pdf' => $name_product_pdf,
-                        'lote' => $lotes,
-                        'internal_id' => $item->item->internal_id,
-                        'model' =>  $item->item->model,
-                        'factory_code' => isset($item->item->factory_code) ?  $item->item->factory_code : '',
-                        'IdLoteSelected' => $item->item->IdLoteSelected,
-                    ];
+
                 }
             } else {
                 $origin = [];
