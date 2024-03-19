@@ -364,6 +364,21 @@
             </form>
         </div>
 
+        <document-form-item :showDialog.sync="showDialogAddItem"
+                            :recordItem="recordItem"
+                            :isEditItemNote="isEditItemNote"
+                            :documentTypeId="form.document_type_id"
+                            :noteCreditOrDebitTypeId="form.note_credit_or_debit_type_id"
+                            :operation-type-id="form.operation_type_id"
+                            :currency-type-id-active="form.currency_type_id"
+                            :typeUser="user"
+                            :exchange-rate-sale="form.exchange_rate_sale"
+                            :configuration="configuration"
+                            :editNameProduct="configuration.edit_name_product"
+                            :percentage-igv="percentage_igv"
+                            :isCreditNoteAndType03="isCreditNoteAndType03"
+                            @add="addRow"></document-form-item>
+
     </div>
 </template>
 
@@ -781,6 +796,7 @@ export default {
             }
 
             row.indexi = index
+            //this.authUser = this.authUser
             this.recordItem = row
             this.isEditItemNote = true
             this.showDialogAddItem = true
