@@ -264,7 +264,7 @@
                                         <th class="border-top-bottom text-center">Cód Fabrica</th>
                                         <th class="border-top-bottom text-left">Descripción</th>
                                         <th class="border-top-bottom text-left">Modelo</th>
-                                        <th class="border-top-bottom text-left">Lote</th>
+                                        <th class="border-top-bottom text-left">Lote/Serie</th>
                                         <th class="border-top-bottom text-center">Unidad</th>
                                         <th class="border-top-bottom text-right">Cantidad</th>
                                     </tr>
