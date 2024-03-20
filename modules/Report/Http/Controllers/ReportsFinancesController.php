@@ -127,6 +127,8 @@ class ReportsFinancesController extends Controller
         $period = FunctionController::InArray($request, 'period');
         $date_start = FunctionController::InArray($request, 'date_start');
         $date_end = FunctionController::InArray($request, 'date_end');
+        Log::info('date_start - '.$date_start);
+        Log::info('date_end - '.$date_end);
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');
@@ -155,7 +157,7 @@ class ReportsFinancesController extends Controller
                 break;
             case 'date':
                 $d_start = $date_start;
-                $d_end = $date_start;
+                $d_end = null;
                 break;
             case 'between_dates':
                 $d_start = $date_start;
@@ -163,7 +165,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?)', [$d_start, $codcliente, $codvendedor]);
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?)', [$d_start, $d_end ,$codcliente, $codvendedor]);
         //Log::info('recie'.json_encode($records));
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));

@@ -311,9 +311,15 @@ export default {
             this.dates_array = [
                 {
                     'key':'date',
-                    'name': 'Por fecha',
+                    'name': 'Por Fecha Vencimiento',
                     'value': 'date'
-                }
+                },
+                {
+                    'key':'between_dates',
+                    'name': 'Entre Fechas',
+                    'value': 'between_dates'
+                },
+
             ]
             this.form.period = 'date'
         }else if(this.resource == 'reports/topay'){
