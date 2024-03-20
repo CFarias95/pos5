@@ -32,6 +32,7 @@ class AccountingEntryItems extends ModelTenant
         'reconciliation',
         'reconciliation_date',
         'audit_date',
+        'comment',
     ];
 
     protected $casts = [

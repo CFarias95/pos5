@@ -628,7 +628,6 @@ class UnpaidController extends Controller
     {
         $this->uploadStorage($filename, $file_content, $file_type);
     }
-
     //agregado 18-10-23
     public function PosDatedShow($document_id, $fee_id) {
         $record = DocumentFee::where('id','=',$fee_id)
@@ -662,7 +661,8 @@ class UnpaidController extends Controller
             $documentIds = '';
             $documentsSequentials = '';
             $haber = [];
-            $sequential = DocumentPayment::latest('id')->first();
+            $sequential = DocumentPayment::orderBy('sequential','desc')->first();
+            $secu = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
             $debeAdicional = 0;
             $haberAdicional = 0;
             $totalDebe = 0;
@@ -691,11 +691,10 @@ class UnpaidController extends Controller
 
                 $documentIds .= 'CF'.$payment->id.';';
                 $customer = Person::find($value['customer_id']);
-                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount'=>$value['amount']]);
-
+                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
             }
 
-            $comment = ' | Multipago '.$documentsSequentials;
+            $comment = ' | '.$documentsSequentials. ' | Multicobro '.$secu;
 
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -749,7 +748,8 @@ class UnpaidController extends Controller
                 $detalle->account_movement_id = $value['account'];
                 $detalle->seat_line = $line;
                 $detalle->debe = 0;
-                $detalle->haber = $value['amount'] ;
+                $detalle->haber = $value['amount'];
+                $detalle->comment = $value['secuential'] ;
                 $detalle->save();
                 $line += 1;
 
@@ -778,6 +778,7 @@ class UnpaidController extends Controller
                 'success' => true,
                 'message' => 'Multi cobro generado exitosamente!'
             ];
+
         }catch(Exception $ex){
 
             $explode = explode(';',$documentIds);

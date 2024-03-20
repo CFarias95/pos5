@@ -439,7 +439,8 @@ class ToPayController extends Controller
             $documentIds = '';
             $documentsSequentials = '';
             $haber = [];
-            $sequential = PurchasePayment::latest('id')->first();
+            $sequential = PurchasePayment::orderBy('sequential','desc')->first();
+            $secu = ($sequential && $sequential->sequential)? $sequential->sequential + 1 : 1;
             $debeAdicional = 0;
             $haberAdicional = 0;
             $totalDebe = 0;
@@ -470,11 +471,11 @@ class ToPayController extends Controller
                 $customer = Person::find($value['customer_id']);
                 //Log::info($customer);
                 Log::info($config);
-                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount']]);
+                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
 
             }
 
-            $comment = ' | Multipago '.$documentsSequentials;
+            $comment = ' | '.$documentsSequentials. ' | Multipago '.$secu;
 
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -530,7 +531,8 @@ class ToPayController extends Controller
                 $detalle->account_movement_id = $value['account'];
                 $detalle->seat_line = $line;
                 $detalle->haber = 0;
-                $detalle->debe = $value['amount'] ;
+                $detalle->debe = $value['amount'];
+                $detalle->comment = $value['secuential'];
                 $detalle->save();
                 $line += 1;
 

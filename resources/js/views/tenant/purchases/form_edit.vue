@@ -1037,7 +1037,7 @@ export default {
 
           console.log("FORM ITEMS: ", this.form.items);
           this.changeCurrencyType();
-          this.calculateTotal();
+          //this.calculateTotal();
         });
     },
 
@@ -1318,7 +1318,7 @@ export default {
             row,
             this.form.currency_type_id,
             this.form.exchange_rate_sale,
-            this.percentage_igv * 100
+            this.percentage_igv * 100,
           )
         );
       });
@@ -1609,9 +1609,10 @@ export default {
       };
     },
     async ediItem(row, index) {
-      row.indexi = index;
-      this.recordItem = row;
-      this.showDialogAddItem = true;
+        console.log('Item a editar: ',row)
+        row.indexi = index;
+        this.recordItem = row;
+        this.showDialogAddItem = true;
     },
     validarEntradas() {
       let total = this.form.total;
