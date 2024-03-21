@@ -24,7 +24,7 @@ class ReporteCobrosDefectuososController extends Controller
 
     public function datosSP(Request $request)
     {
-        $sp = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?);", [$request->client_id, $request->date_start, $request->date_end]);
+        $sp = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $asiento]);
         //Log::info($sp);
         $total = 0;
         $sp1 = array();
@@ -75,7 +75,7 @@ class ReporteCobrosDefectuososController extends Controller
     public function pdf(Request $request)
     {
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?);", [$request->client_id, $request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento]);
         
         $sp1 = array();
         $sp2 = [];
@@ -102,7 +102,7 @@ class ReporteCobrosDefectuososController extends Controller
     public function excel(Request $request)
     {
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?);", [$request->client_id, $request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento]);
         
         $sp1 = array();
         $sp2 = [];

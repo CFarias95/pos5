@@ -35,6 +35,10 @@
                             <el-date-picker v-model="form.date_end" :clearable="false" format="dd/MM/yyyy" type="date"
                                 value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Asiento Contable</label>
+                            <el-input v-model="form.asiento" :clearable="true"></el-input>
+                        </div >
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
                                 @click.prevent="getRecordsByFilter">Buscar
@@ -111,6 +115,7 @@ export default {
                 client_id: null,
                 date_start: null,
                 date_end: null,
+                asiento: null,
             },
             loading_submit: false,
             clients: [],
