@@ -8,8 +8,8 @@
                             <thead>
                                 <tr>
                                     <th>#</th>
-                                    <th>Fecha de pago</th>
-                                    <th>Método de pago <span class="text-danger">*</span></th>
+                                    <th>Fecha de cobro</th>
+                                    <th>Método de cobro <span class="text-danger">*</span></th>
                                     <th>Destino <span class="text-danger">*</span></th>
                                     <th class="text-center">Monto <span class="text-danger">*</span></th>
                                     <!-- <th>Referencia</th> -->
@@ -24,7 +24,7 @@
                             <tbody>
                                 <tr v-for="(row, index) in records" :key="index"   :class="{ 'text-danger border-left border-danger': (row.payment < 0), }">
                                     <template v-if="row.id">
-                                        <td>{{ (row.multi_pay && row.multi_pay == 'SI')?'MULTIPAGO':'PAGO'}}-{{ row.sequential }}</td>
+                                        <td>{{ (row.multi_pay && row.multi_pay == 'SI')?'MULTICOBRO':'COBRO'}}-{{ row.sequential }}</td>
                                         <td>{{ row.date_of_payment }}</td>
                                         <td>{{ row.payment_method_type_description }}</td>
                                         <td>{{ row.destination_description }}</td>
@@ -32,7 +32,7 @@
                                             }}
                                         </td>
                                         <td class="text-left">
-                                            <!-- pagos que no cuenten con la opcion pago recibido -->
+                                            <!-- pagos que no cuenten con la opcion cobro recibido -->
                                             <template v-if="row.payment_received === null">
                                                 <span class="d-block" v-if="row.reference"><b>Referencia:</b> {{
                                                     row.reference }}</span>
@@ -42,7 +42,7 @@
                                                     <i class="fas fa-fw fa-file-download"></i>
                                                     Descargar voucher
                                                 </button>
-                                                <!-- <el-button type="primary" @click="showDialogLinkPayment(row)">Link de pago</el-button> -->
+                                                <!-- <el-button type="primary" @click="showDialogLinkPayment(row)">Link de cobro</el-button> -->
                                             </template>
                                             <!-- nuevo flujo -->
                                             <template v-else>
@@ -66,7 +66,7 @@
                                                     <button type="button" class="btn btn-sm btn-primary"
                                                         @click="showDialogLinkPayment(row)">
                                                         <i class="fas fa-fw fa-link"></i>
-                                                        Link de pago
+                                                        Link de cobro
                                                     </button>
                                                 </template>
 
@@ -206,14 +206,14 @@
                                                         <template v-if="row.payment_received == '1'">
                                                             <el-button type="info" class="btn btn-sm">
                                                                 <i class="fas fa-fw fa-link"></i>
-                                                                Link de pago
+                                                                Link de cobro
                                                             </el-button>
                                                         </template>
                                                         <template v-else>
                                                             <button type="button" class="btn btn-sm btn-primary"
                                                                 @click="showDialogLinkPayment(row)">
                                                                 <i class="fas fa-fw fa-link"></i>
-                                                                Link de pago
+                                                                Link de cobro
                                                             </button>
                                                         </template>
                                                     </div>
@@ -340,10 +340,10 @@
                 </el-dialog>
             </template>
             <template #default>
-                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showReverse" title="Generar el reverso del pago" append-to-body
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showReverse" title="Generar el reverso del cobro" append-to-body
                     align-center>
                     <el-form>
-                        <el-form-item label="Pago a reversar">
+                        <el-form-item label="Cobro a reversar">
                             <el-input v-model="formSubmit.id" autocomplete="off" readonly />
                         </el-form-item>
                         <el-form-item label="Motivo">
@@ -361,10 +361,10 @@
                 </el-dialog>
             </template>
             <template #default>
-                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showExpense" title="Generar gasto del pago" append-to-body
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="false" :visible="this.showExpense" title="Generar gasto del cobro" append-to-body
                     align-center>
                     <el-form>
-                        <el-form-item label="Gasto al pago">
+                        <el-form-item label="Gasto al cobro">
                             <el-input v-model="formSubmit.id" autocomplete="off" readonly />
                         </el-form-item>
                         <el-form-item label="Valor extra">
@@ -415,9 +415,9 @@ export default {
     data() {
         return {
             title: null,
-            title1: 'TOTAL PAGADO',
+            title1: 'TOTAL COBRADO',
             title2: 'TOTAL A PAGAR',
-            title3: 'PENDIENTE DE PAGO',
+            title3: 'PENDIENTE DE COBRO',
             resource: 'document_payments',
             records: [],
             payment_destinations: [],
@@ -494,7 +494,7 @@ export default {
                     this.retentions = response.data.retentions;
                 }
             )
-            
+
             this.$http.get(`/cnp/list/${this.customerId}`).then(
                 response => {
                     this.credits = response.data.credits;
@@ -530,7 +530,7 @@ export default {
 
             if (!row.payment_destination_id) return this.getObjectResponse(false, 'El campo destino es obligatorio.')
 
-            if (!row.payment_method_type_id) return this.getObjectResponse(false, 'El campo método de pago es obligatorio.')
+            if (!row.payment_method_type_id) return this.getObjectResponse(false, 'El campo método de cobro es obligatorio.')
 
             if (!row.payment || row.payment <= 0 || isNaN(row.payment)) return this.getObjectResponse(false, 'El campo monto es obligatorio y debe ser mayor que 0.')
 
@@ -594,9 +594,9 @@ export default {
         async getData() {
             this.initForm();
             if (this.documentFeeId) {
-                this.title1 = "TOTAL PAGADO CUOTA"
+                this.title1 = "TOTAL COBRADO CUOTA"
                 this.title2 = "TOTAL DOCUMENTO"
-                this.title3 = "PENDIENTE DE PAGO CUOTA"
+                this.title3 = "PENDIENTE DE COBRO CUOTA"
             }
             await this.$http.get(`/${this.resource}/records/${this.documentId}/${this.documentFeeId}`)
                 .then(response => {
@@ -608,7 +608,7 @@ export default {
                         .then(response => {
                             console.log(`/${this.resource}/document/${this.documentId}/${this.documentFeeId}`, response.data);
                             this.document = response.data;
-                            this.title = 'Pagos del comprobante: ' + this.document.number_full;
+                            this.title = 'Cobros del comprobante: ' + this.document.number_full;
                         })
                 );
 
@@ -648,7 +648,7 @@ export default {
             this.formSubmit.overPaymentAccount = null;
             this.indexSelected = index;
             this.showOverPayment = true;
-            console.log('El valor de pago adicional es de: ', this.formSubmit.overPaymentValue)
+            console.log('El valor de cobro adicional es de: ', this.formSubmit.overPaymentValue)
 
             //this.records[index].payment = parseFloat(this.document.total_difference)
         },

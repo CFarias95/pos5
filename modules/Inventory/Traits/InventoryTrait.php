@@ -698,7 +698,6 @@ trait InventoryTrait
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
 
-
                 // factor de lista de precios
                 $presentation_quantity = (isset($purchase_item->item->presentation->quantity_unit)) ? $purchase_item->item->presentation->quantity_unit : 1;
 
