@@ -196,7 +196,7 @@
                                         <el-button v-if="records.length > 0" class="submit" type="warning"
                                             @click.prevent="clickMultiPay()">
                                             <i class="fa fa-check-square-o"></i>
-                                            Generar Pago Multiple
+                                            Generar Cobro Multiple
                                         </el-button>
 
                                     </div>
@@ -239,7 +239,7 @@
                                         <table class="table">
                                             <thead>
                                                 <tr>
-                                                    <th>P. Multi</th>
+                                                    <th>C. Multi</th>
                                                     <th>#</th>
                                                     <th>F.Emisión</th>
                                                     <th>F.Vencimiento</th>
@@ -257,7 +257,7 @@
                                                     <th v-if="columns.purchase_order.visible">Orden de compra</th>
                                                     <th>Ver Cartera</th>
                                                     <th>Moneda</th>
-                                                    <th>Tiene Pago multiple</th>
+                                                    <th>Cobro multiple</th>
                                                     <th class="text-right">Por cobrar</th>
                                                     <th class="text-right">T. Nota Crédito</th>
                                                     <th class="text-right">Total documento</th>

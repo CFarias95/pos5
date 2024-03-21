@@ -710,11 +710,18 @@ export default {
                 this.form.income
                 this.form.retention_type_id_income = this.recordItem.retention_type_id_income
                 this.form.retention_type_id_iva = this.recordItem.retention_type_id_iva
+                if(this.recordItem.lot_code != ''){
+                    this.lot_code = this.recordItem.lot_code
+                }
+
+                if(this.recordItem.date_of_due){
+
+                    console.log("FECHA LOTE: ", this.recordItem.date_of_due)
+                    this.date_of_due = this.recordItem.date_of_due + ' 00:00:00';
+                    this.form.date_of_due = this.recordItem.date_of_due;
+                }
 
                 this.form.quantity = this.recordItem.quantity
-                //this.form.unit_price_value = this.recordItem.unit_price
-                //this.form.unit_price = this.recordItem.unit_price
-
                 this.calculateQuantity()
             }
 
@@ -1114,6 +1121,7 @@ export default {
 
             let date_of_due = this.form.date_of_due
             if (this.date_of_due != null && this.form.update_date_of_due && !this.form.item.lots_enabled) {
+
                 date_of_due = this.date_of_due;
             }
 

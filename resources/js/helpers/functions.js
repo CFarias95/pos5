@@ -36,6 +36,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         import: row_old.import,
         currency_type_id: currency_type_id_new,
         quantity: row_old.quantity,
+        date_of_due: row_old.date_of_due ?? '',
+        lot_code: row_old.lot_code ?? '',
         unit_value: (row_old.unit_value)?row_old.unit_value:0,
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,

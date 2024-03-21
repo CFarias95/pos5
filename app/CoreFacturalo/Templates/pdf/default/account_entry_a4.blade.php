@@ -1,7 +1,7 @@
 @php
     $establishment = $document->establishment;
     $customer = $document->person;
-    
+
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
 
     $logo = "storage/uploads/logos/{$company->logo}";
@@ -14,8 +14,8 @@
 <head>
     {{--<title>{{ $tittle }}</title>--}}
     {{--<link href="{{ $path_style }}" rel="stylesheet" />--}}
-   
-        
+
+
 </head>
 
 <body>
@@ -33,7 +33,7 @@
             </td>
         @endif
         <td  class="border-bottom">
-               
+
         </td >
         <td width="35%" class="pl-0 m-0 border-bottom text-right align-middle">
             <div class="text-right">
@@ -43,14 +43,14 @@
                 <p class="text-sm"> Fecha de impresión : {{ \Carbon\Carbon::now()->format('d/m/Y H:i') }}</p>
             </div>
         </td>
-      
+
     </tr>
     <tr >
         <td   colspan="3" class="text-center pt-4">
                 <h4 class="font-bold">Asiento Contable</h4>
                 <h6 >{{ $tittle }}</h6>
         </td >
-     
+
     </tr>
 </table>
 
@@ -67,7 +67,7 @@
         </td>
         <td width="85%">{{ $document->filename}} -- {{$document->type_account->name}} </td>
     </tr>
-   
+
     <tr class="mt-4">
         <td width="20%" class="font-bold">
             Comentario:
@@ -109,6 +109,9 @@
             <th class="border-box text-left p-1">
                 Centro de Costo
             </th>
+            <th class="border-box text-left p-1">
+                Comentario
+            </th>
         </tr>
     </thead>
     <tbody class="font-sm">
@@ -123,6 +126,7 @@
             <td class="border-box text-right p-1">${{number_format($value->debe, 2, '.', ',')}} </td>
             <td class="border-box text-right p-1">${{number_format($value->haber, 2, '.', ',')}} </td>
             <td class="border-box text-left p-1">{{$value->seat_cost}} </td>
+            <td class="border-box text-left p-1">{{$value->comment}} </td>
         </tr>
         @endforeach
         <tr class="font-sm">
@@ -146,36 +150,36 @@
         <tr class="font-sm">
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Elaborado por: 
+                    Elaborado por:
                 </b>
                 {{$document->user->name}}
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
                 {{$document->user->number}}
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Aprobado por: 
+                    Aprobado por:
                 </b>
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Revisado por: 
+                    Revisado por:
                 </b>
                 <br>
                 <b>
-                    Cédula por: 
+                    Cédula por:
                 </b>
-                
+
             </td>
          </tr>
     </tbody>

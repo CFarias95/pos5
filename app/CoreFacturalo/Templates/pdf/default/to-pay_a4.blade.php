@@ -170,6 +170,9 @@
                 <th width="20%" class="border-box text-center p-1">
                     Haber
                 </th>
+                <th width="20%" class="border-box text-center p-1">
+                    Comentario
+                </th>
             </tr>
         </thead>
         <tbody class="font-sm">
@@ -185,6 +188,7 @@
 
                     <td class="border-box text-center p-1">${{ number_format($value->debe, 2, '.', ',') }} </td>
                     <td class="border-box text-center p-1">${{ number_format($value->haber, 2, '.', ',') }} </td>
+                    <td class="border-box text-center p-1">{{ $value->comment }} </td>
 
                 </tr>
             @endforeach
