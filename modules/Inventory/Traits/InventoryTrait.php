@@ -706,7 +706,7 @@ trait InventoryTrait
                 if ((int)$lot_group->quantity != (int) ($purchase_item->quantity * $presentation_quantity)) {
                     throw new Exception("Los productos del lote {$purchase_item->lot_code} han sido vendidos!");
                 }
-                *?
+                */
             }
         }
     }
