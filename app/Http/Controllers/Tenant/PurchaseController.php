@@ -1368,7 +1368,6 @@ class PurchaseController extends Controller
                     }
 
                     $comment = 'Pago factura de compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
-
                     $total_debe = $payment->payment;
                     $total_haber = $payment->payment;
 
@@ -1652,16 +1651,6 @@ class PurchaseController extends Controller
                 foreach ($doc->items as $it) {
 
                     $p_i = PurchaseItem::findOrFail($it->id);
-                    /*
-                    if($p_i->lot_code){
-
-                        $this->restoreStockInWarehouseLotGroup($p_i->item_id, $p_i->warehouse_id, $p_i->quantity,$p_i->lot_code);
-
-                    }else{
-
-                        $this->restoreStockInWarehpuse($p_i->item_id, $p_i->warehouseid, $p_i->quantity);
-                    }
-                    */
                     $p_i->delete();
                 }
 
@@ -2052,11 +2041,14 @@ class PurchaseController extends Controller
                         break;
                     }
 
+
+                    /*
                     if ((int)$lot_group->quantity != (int)$element->quantity) {
                         $message = "Los productos del lote {$element->lot_code} han sido vendidos!";
                         $validated = false;
                         break;
                     }
+                    */
                 }
             }
         }
