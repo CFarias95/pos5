@@ -676,7 +676,7 @@ class ReportsFinancesController extends Controller
                 break;
             case 'date':
                 $d_start = $date_start;
-                $d_end = $date_start;
+                $d_end = null;
                 break;
             case 'between_dates':
                 $d_start = $date_start;
@@ -684,7 +684,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?)', [$d_start, $codcliente, $codvendedor]);
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?)', [$d_start, $d_end, $codcliente, $codvendedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
