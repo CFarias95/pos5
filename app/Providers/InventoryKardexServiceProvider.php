@@ -59,9 +59,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
             $inventory_kardex = $this->saveInventoryKardex($purchase_item->purchase, $purchase_item->item_id, $purchase_item->purchase->establishment_id, $purchase_item->quantity);
 
             if($this->getItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id)){
+                Log('Actualiza stock de item en compra, recupera stock por bodega');
                 $this->updateStock($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity, false);
             }else{
+                Log('Actualiza stock de item en compra, crea stock por bodega');
                 $this->saveItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity);
+                $this->updateStock($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity, false);
+
             }
 
 
