@@ -71,10 +71,12 @@ use Modules\Inventory\Models\InventoryConfiguration;
 use App\Models\Tenant\ItemRate;
 use App\Models\Tenant\Person;
 use Illuminate\Support\Facades\Log;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class ItemController extends Controller
 {
     use OfflineTrait;
+    use SystemActivityTrait;
 
     public function index()
     {
