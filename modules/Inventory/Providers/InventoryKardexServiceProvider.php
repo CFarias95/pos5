@@ -56,15 +56,13 @@ class InventoryKardexServiceProvider extends ServiceProvider
     private function purchase() {
         PurchaseItem::created(function (PurchaseItem $purchase_item) {
 
-            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
-
-            $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
-            // $warehouse = $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id);
-            // $warehouse = $this->findWarehouse();
-            //$this->createInventory($purchase_item->item_id, $purchase_item->quantity, $warehouse->id);
-            $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, /*$purchase_item->quantity*/ ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
-            $this->updateStock($purchase_item->item_id, ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
-        });
+            if($purchase_item->purchase->document_type2->stock == 1 || $purchase_item->purchase->document_type2->stock ==  true){
+                $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+                $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+                $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, /*$purchase_item->quantity*/ ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
+                $this->updateStock($purchase_item->item_id, ($purchase_item->quantity * $presentationQuantity), $warehouse->id);
+            }
+           });
     }
 
     /**
@@ -552,20 +550,19 @@ class InventoryKardexServiceProvider extends ServiceProvider
     {
         PurchaseItem::deleted(function (PurchaseItem $purchase_item) {
 
+            if($purchase_item->purchase->document_type2->stock == 1 || $purchase_item->purchase->document_type2->stock ==  true){
 
-            $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+                $presentationQuantity = (!empty($purchase_item->item->presentation)) ? $purchase_item->item->presentation->quantity_unit : 1;
+                $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
+                $this->verifyHasSaleLots($purchase_item);
+                $this->verifyHasSaleLotsGroup($purchase_item);
+                $this->deleteItemSeriesAndGroup($purchase_item);
+                $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, (-1 * ($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+                // $this->updateStock($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
+                $this->updateStockPurchase($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
 
-            $warehouse = ($purchase_item->warehouse_id) ? $this->findWarehouse($this->findWarehouseById($purchase_item->warehouse_id)->establishment_id) : $this->findWarehouse();
 
-            $this->verifyHasSaleLots($purchase_item);
-            $this->verifyHasSaleLotsGroup($purchase_item);
-
-            $this->deleteItemSeriesAndGroup($purchase_item);
-
-            $this->createInventoryKardex($purchase_item->purchase, $purchase_item->item_id, (-1 * ($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
-            // $this->updateStock($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
-            $this->updateStockPurchase($purchase_item->item_id, (-1 *($purchase_item->quantity * $presentationQuantity)), $warehouse->id);
-
+            }
         });
     }
 
