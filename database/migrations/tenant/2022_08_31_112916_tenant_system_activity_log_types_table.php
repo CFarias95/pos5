@@ -18,7 +18,7 @@ class TenantSystemActivityLogTypesTable extends Migration
             $table->string('id')->primary();
             $table->string('description');
         });
-        
+
         DB::table('system_activity_log_types')->insert([
 
             ['id' => 'failed', 'description' => 'Error de inicio de sesión'],
@@ -36,6 +36,9 @@ class TenantSystemActivityLogTypesTable extends Migration
 
             ['id' => 'module_access_error', 'description' => 'Error de acceso al módulo (no tiene permiso)'],
             ['id' => 'level_module_access_error', 'description' => 'Error de acceso al submódulo (no tiene permiso)'],
+
+            ['id' => 'item_create', 'description' => 'Creacion de un nuevo item'],
+            ['id' => 'item_update', 'description' => 'Edicion de un item'],
 
         ]);
     }

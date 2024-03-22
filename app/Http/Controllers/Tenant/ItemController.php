@@ -746,6 +746,12 @@ class ItemController extends Controller
             */
         // }
 
+        if($id){
+            $this->saveGeneralSystemActivity(auth()->user(), 'item_create', 'items/'.$item->id);
+        }else{
+            $this->saveGeneralSystemActivity(auth()->user(), 'item_update', 'items/edit/'.$item->id);
+        }
+
         return [
             'success' => true,
             'message' => ($id) ? 'Producto editado con éxito' : 'Producto registrado con éxito',
