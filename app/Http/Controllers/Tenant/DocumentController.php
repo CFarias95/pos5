@@ -1310,7 +1310,9 @@ class DocumentController extends Controller
                         $seat_general = $ultimo->seat_general + 1;
                     }
 
-                    $comment = 'Cobro Factura F'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                    $comment = $payment->reference . '| Factura F'. $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                    $pay = DocumentPayment::find($payment->id);
+                    $comment.= " | Cobro ".$pay->sequential;
 
                     $cabeceraC = new AccountingEntries();
                     $cabeceraC->user_id = auth()->user()->id;
