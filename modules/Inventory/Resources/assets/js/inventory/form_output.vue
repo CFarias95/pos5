@@ -245,7 +245,12 @@ export default {
         .filter((obj) => obj.warehouse_id !== undefined && obj.warehouse_id !== null)
         .map((obj) => obj.warehouse_id)
         .sort();
-      this.warehouses_filter = this.warehouses.filter((obj) => idlots.includes(obj.id));
+      //this.warehouses_filter = this.warehouses.filter((obj) => idlots.includes(obj.id));
+      if (idlots.length === 0) {
+          this.warehouses_filter = this.warehouses;
+      } else {
+          this.warehouses_filter = this.warehouses.filter((obj) => idlots.includes(obj.id));
+      }
       this.form.lots_enabled = item.lots_enabled;
       let lots = _.filter(item.lots, { warehouse_id: this.form.warehouse_id });
       this.form.lots = lots;
