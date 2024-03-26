@@ -58,6 +58,7 @@ use Throwable;
 use App\Models\Tenant\GeneralPaymentCondition;
 use App\Models\Tenant\Imports;
 use App\Models\Tenant\PurchaseDocumentTypes2;
+use App\Models\Tenant\PurchasePayment;
 use App\Models\Tenant\Retention;
 use App\Models\Tenant\RetentionTypePurchase;
 use App\Models\Tenant\RetentionsDetailEC;
@@ -1367,7 +1368,10 @@ class PurchaseController extends Controller
                         $seat_general = $ultimo->seat_general + 1;
                     }
 
-                    $comment = 'Pago factura de compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                    $comment = 'Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' | ' . $document->supplier->name;
+                    $pay = PurchasePayment::find($payment->id);
+                    $comment.= " | Pago ".$pay->sequential;
+
                     $total_debe = $payment->payment;
                     $total_haber = $payment->payment;
 

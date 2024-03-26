@@ -296,7 +296,9 @@ class PurchasePaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = $payment->reference.' | Pago factura de compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' ' . $document->supplier->name;
+                $comment = $payment->reference.' | Compra ' . substr($document->series, 0) . str_pad($document->number, '9', '0', STR_PAD_LEFT) . ' | ' . $document->supplier->name;
+                $pay = PurchasePayment::find($payment->id);
+                $comment.= " | Pago ".$pay->sequential;
 
                 $total_debe = $payment->payment;
                 $total_haber = $payment->payment;

@@ -71,10 +71,12 @@ use Modules\Inventory\Models\InventoryConfiguration;
 use App\Models\Tenant\ItemRate;
 use App\Models\Tenant\Person;
 use Illuminate\Support\Facades\Log;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class ItemController extends Controller
 {
     use OfflineTrait;
+    use SystemActivityTrait;
 
     public function index()
     {
@@ -745,6 +747,12 @@ class ItemController extends Controller
             }
             */
         // }
+
+        if($id){
+            $this->saveGeneralSystemActivity(auth()->user(), 'item_create', 'items/'.$item->id);
+        }else{
+            $this->saveGeneralSystemActivity(auth()->user(), 'item_update', 'items/edit/'.$item->id);
+        }
 
         return [
             'success' => true,

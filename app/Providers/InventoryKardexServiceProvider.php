@@ -56,15 +56,17 @@ class InventoryKardexServiceProvider extends ServiceProvider
 
         PurchaseItem::created(function ($purchase_item) {
 
-            $inventory_kardex = $this->saveInventoryKardex($purchase_item->purchase, $purchase_item->item_id, $purchase_item->purchase->establishment_id, $purchase_item->quantity);
-
-            if($this->getItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id)){
-                $this->updateStock($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity, false);
-            }else{
-                $this->saveItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity);
+            if($purchase_item->purchase->document_type2->stock == 1 || $purchase_item->purchase->document_type2->stock ==  true){
+                $inventory_kardex = $this->saveInventoryKardex($purchase_item->purchase, $purchase_item->item_id, $purchase_item->purchase->establishment_id, $purchase_item->quantity);
+                if($this->getItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id)){
+                    Log('Actualiza stock de item en compra, recupera stock por bodega');
+                    $this->updateStock($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity, false);
+                }else{
+                    Log('Actualiza stock de item en compra, crea stock por bodega');
+                    $this->saveItemWarehouse($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity);
+                    $this->updateStock($purchase_item->item_id, $purchase_item->purchase->establishment_id, $inventory_kardex->quantity, false);
+                }
             }
-
-
         });
     }
 

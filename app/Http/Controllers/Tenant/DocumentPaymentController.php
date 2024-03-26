@@ -413,8 +413,9 @@ class DocumentPaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = (($document->document_type_id == '03')?$request->reference.' | Cobro '.substr($document->series,0,1):$request->reference.' | Cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
-
+                $comment = (($document->document_type_id == '03')?$request->reference.' | Cobro '.substr($document->series,0,1):$request->reference.' | Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                $pay = DocumentPayment::find($request->id);
+                $comment.= " | Cobro ".$pay->sequential;
                 $total_debe = 0;
                 $total_haber = 0;
 
