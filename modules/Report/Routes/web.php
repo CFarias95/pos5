@@ -287,13 +287,7 @@ if ($current_hostname) {
                     ->name('tenant.reports.document_hotels.records');
 
 
-                /**
-                 * reports/commissions
-                 * reports/commissions/pdf
-                 * reports/commissions/excel
-                 * reports/commissions/filter
-                 * reports/commissions/records
-                 */
+                
                 Route::prefix('stock')->group(function () {
                     Route::get('/', 'ReportStockAlmacenController@index')
                         ->name('tenant.reports.stock.index');
@@ -304,6 +298,21 @@ if ($current_hostname) {
                     Route::get('tables', 'ReportStockAlmacenController@tables');
                 });
 
+                Route::prefix('stock_fecha')->group(function () {
+                    Route::get('/', 'ReportStockFechaController@index')
+                        ->name('tenant.reports.stock_fecha.index');
+                    Route::get('excel', 'ReportStockFechaController@excel');
+                    Route::get('pdf', 'ReportStockFechaController@pdf');
+                    Route::get('datosSP', 'ReportStockFechaController@datosSP');
+                });
+
+                /**
+                 * reports/commissions
+                 * reports/commissions/pdf
+                 * reports/commissions/excel
+                 * reports/commissions/filter
+                 * reports/commissions/records
+                 */
                 Route::get('commissions', 'ReportCommissionController@index')
                     ->name('tenant.reports.commissions.index');
                 Route::get('commissions/pdf', 'ReportCommissionController@pdf')

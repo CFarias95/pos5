@@ -96,6 +96,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{route('tenant.reports.stock_fecha.index')}}">
+                                Stock por fecha por Lote/Serie
+                            </a>
+                        </li>
+                        <li>
                             <a href="{{route('tenant.recetas_kits.index')}}">
                                 Reporte Recetas - Kits
                             </a>

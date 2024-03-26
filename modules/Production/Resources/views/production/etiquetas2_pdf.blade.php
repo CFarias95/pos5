@@ -259,7 +259,7 @@
     <tbody>
         <tr>
             <td colspan="2"><strong>Fecha</strong></td>
-            <td colspan="2">{{ $produccion->date_end->format('d-m-Y') }}</td>
+            <td colspan="2">{{ $produccion->date_end }}</td>
         </tr>
         <tr>
             <td colspan="2"><strong>N° Personas</strong></td>

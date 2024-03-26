@@ -222,6 +222,9 @@ Vue.component('tenant-plan_cuentas-excel', require('../../modules/Report/Resourc
 //Stock Almacen
 Vue.component('tenant-stock-index', require('../../modules/Report/Resources/assets/js/views/stock/index.vue'));
 
+//Stock Fecha Lote/Serie
+Vue.component('tenant-stock_fecha-index', require('../../modules/Report/Resources/assets/js/views/stock_fecha/index.vue'));
+
 //Reporte Compra base e impuestos
 Vue.component('tenant-base_impuestos-index', require('../../modules/Report/Resources/assets/js/views/base_impuestos/index.vue'));
 

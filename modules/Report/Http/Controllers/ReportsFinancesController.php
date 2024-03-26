@@ -127,8 +127,8 @@ class ReportsFinancesController extends Controller
         $period = FunctionController::InArray($request, 'period');
         $date_start = FunctionController::InArray($request, 'date_start');
         $date_end = FunctionController::InArray($request, 'date_end');
-        Log::info('date_start - '.$date_start);
-        Log::info('date_end - '.$date_end);
+        //Log::info('date_start - '.$date_start);
+        //Log::info('date_end - '.$date_end);
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');
