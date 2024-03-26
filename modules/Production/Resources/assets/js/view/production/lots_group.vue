@@ -187,10 +187,10 @@ export default {
       //validar cantidad comprometida igual a cantidad pedida
       let compromise_quantity = this.lots_group_
         .filter((x) => x.compromise_quantity > 0)
-        .reduce((accum, item) => accum + Number(item.compromise_quantity), 0);
+        .reduce((accum, item) => accum + Number(item.compromise_quantity), 4);
       if (compromise_quantity != this.quantity) {
         return this.$message.warning(
-          "La suma de cantidades comprometidas de los lotes debe der igual a la cantidad pedida."
+          "La suma de cantidades comprometidas de los lotes"+compromise_quantity +" debe der igual a la cantidad pedida."+this.quantity
         );
       }
 
