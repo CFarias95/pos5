@@ -536,30 +536,30 @@
                             <td>OP.GRATUITAS:</td>
                             <td>{{ currency_type.symbol }} {{ form.total_free }}</td>
                           </tr>
-                          <tr v-if="form.total_unaffected > 0">
+                          <!-- <tr v-if="form.total_unaffected > 0">
                             <td>SUBTOTAL 0%:</td>
                             <td>
                               {{ currency_type.symbol }} {{ form.total_unaffected }}
                             </td>
-                          </tr>
+                          </tr> -->
                           <tr v-if="form.total_exonerated > 0">
                             <td>OP.EXONERADAS:</td>
                             <td>
                               {{ currency_type.symbol }} {{ form.total_exonerated }}
                             </td>
                           </tr>
-                          <tr v-if="form.total_taxed > 0">
-                            <td>SUBTOTAL 12%:</td>
-                            <td>{{ currency_type.symbol }} {{ form.total_taxed }}</td>
+                          <tr v-if="form.total_taxed > 0" v-for="value in totales" :key="value.index">
+                            <td>SUBTOTAL {{ value.index }} %</td>
+                            <td>{{ currency_type.symbol }} {{ value.taxed }}</td>
                           </tr>
                           <tr v-if="form.total_prepayment > 0">
                             <td>ANTICIPOS:</td>
                             <td>{{ currency_type.symbol }} {{ form.total_discount }}</td>
                             <!-- <td>{{ currency_type.symbol }} {{ form.total_prepayment }}</td> -->
                           </tr>
-                          <tr v-if="form.total_igv > 0">
-                            <td>IVA:</td>
-                            <td>{{ currency_type.symbol }} {{ form.total_igv }}</td>
+                          <tr v-if="form.total_igv > 0" v-for="value in totales" :key="value.index">
+                            <td>IVA {{ value.index }} %</td>
+                            <td>{{ currency_type.symbol }} {{ value.igv }}</td>
                           </tr>
                           <tr v-if="form.total_isc > 0">
                             <td>ISC:</td>
@@ -3919,7 +3919,7 @@ export default {
         }
 
         this.totales.forEach((item)=>{
-            if (item.index === row.affectation_igv_type.percentage) {
+            if (item.index === _.round(parseFloat(row.affectation_igv_type.percentage),0)) {
                 total_exist = true;
                 item.taxed += (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2);
                 item.igv += (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2);
@@ -3928,7 +3928,7 @@ export default {
 
         if(total_exist == false){
             this.totales.push({
-                index : row.affectation_igv_type.percentage,
+                index : _.round(parseFloat(row.affectation_igv_type.percentage),0),
                 taxed : (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2),
                 igv : (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2),
             });
