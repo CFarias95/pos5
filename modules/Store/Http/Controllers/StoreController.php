@@ -159,6 +159,6 @@ class StoreController extends Controller
             }
         }
 
-        return 0.12;
+        //return false;
     }
 }

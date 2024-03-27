@@ -1,7 +1,7 @@
 import { isArray, isSet, round } from "lodash";
 
 function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pigv = null, currency_type_id_def = null, change_currency = 0) {
-    //console.log("porcentage ICG: "+pigv);
+    console.log("porcentage ICG: "+pigv);
     //pigv = 0.12;
     console.log("OLD ROW: ", row_old);
 
@@ -28,8 +28,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let has_isc = row_old.has_isc
 
-    console.log("OLD ROW 2: ", row_old);
-
     let row = {
         item_id: row_old.item.id,
         item: row_old.item,
@@ -42,7 +40,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         affectation_igv_type_id: row_old.affectation_igv_type_id,
         affectation_igv_type: row_old.affectation_igv_type,
         total_base_igv: 0,
-        percentage_igv: pigv,
+        percentage_igv: (pigv && pigv != '')? pigv: row_old.affectation_igv_type.percentage,
         total_igv: 0,
         has_igv: (row_old.has_igv == true || row_old.has_igv == false) ? row_old.has_igv : row_old.purchase_has_igv,
         system_isc_type_id: has_isc ? row_old.system_isc_type_id : null,
@@ -90,54 +88,54 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
     let percentage_igv_a = pigv;
 
-    console.log("percentage_igv: " + pigv);
+    console.log("percentage_igv: " + row.percentage_igv);
 
-    if (pigv == null || row.affectation_igv_type_id) {
+    // if (pigv == null || row.affectation_igv_type_id) {
 
-        if (row.affectation_igv_type_id === '11') {
+    //     if (row.affectation_igv_type_id === '11') {
 
-            row.percentage_igv = 8;
+    //         row.percentage_igv = 8;
 
-        } else if (row.affectation_igv_type_id === '12') {
+    //     } else if (row.affectation_igv_type_id === '12') {
 
-            row.percentage_igv = 14;
+    //         row.percentage_igv = 14;
 
-        } else if (row.affectation_igv_type_id === '10') {
+    //     } else if (row.affectation_igv_type_id === '10') {
 
-            row.percentage_igv = 12;
-        }
-        else if (row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20') {
+    //         row.percentage_igv = 12;
+    //     }
+    //     else if (row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20') {
 
-            row.percentage_igv = 0;
+    //         row.percentage_igv = 0;
 
-        } else {
+    //     } else {
 
-            row.percentage_igv = 18;
-        }
+    //         row.percentage_igv = 18;
+    //     }
 
-    } else {
+    // } else {
 
-        if (percentage_igv_a === 8) {
+    //     if (percentage_igv_a === 8) {
 
-            row.affectation_igv_type_id = '11';
-        }
+    //         row.affectation_igv_type_id = '11';
+    //     }
 
-        if (percentage_igv_a === 14) {
+    //     if (percentage_igv_a === 14) {
 
-            row.affectation_igv_type_id = '12';
-        }
+    //         row.affectation_igv_type_id = '12';
+    //     }
 
-        if (percentage_igv_a === 12) {
+    //     if (percentage_igv_a === 12) {
 
-            row.affectation_igv_type_id = '10';
-        }
+    //         row.affectation_igv_type_id = '10';
+    //     }
 
-        if (percentage_igv_a === 0) {
+    //     if (percentage_igv_a === 0) {
 
-            row.affectation_igv_type_id = '30';
-        }
+    //         row.affectation_igv_type_id = '30';
+    //     }
 
-    }
+    // }
 
     let unit_value = row.unit_value
 
@@ -303,19 +301,15 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
 
-    console.log(total_base_igv, (row.percentage_igv / 100))
-    console.log(row.affectation_igv_type_id)
+    //console.log(total_base_igv, (row.percentage_igv / 100))
+    //console.log(row.affectation_igv_type_id)
 
     let total_igv = 0
 
-    if (row.affectation_igv_type_id === '10' || row.affectation_igv_type_id === '11' || row.affectation_igv_type_id === '12') {
-        total_igv = (total_base_igv * (row.percentage_igv / 100))
-    }
-    if (row.affectation_igv_type_id === '20') { //Exonerated
-        total_igv = 0
-    }
     if (row.affectation_igv_type_id === '30') { //Unaffected
         total_igv = 0
+    }else{
+        total_igv = (total_base_igv * (row.percentage_igv / 100))
     }
 
     console.log("TOTAL IGV: ", total_igv)
