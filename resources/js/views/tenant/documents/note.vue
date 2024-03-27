@@ -253,15 +253,14 @@
                                 {{ currency_type.symbol }} {{ form.total_exportation }}</p>
                             <p class="text-right" v-if="form.total_free > 0">OP.GRATUITAS: {{ currency_type.symbol }}
                                 {{ form.total_free }}</p>
-                            <p class="text-right" v-if="form.total_unaffected > 0">SUBTOTAL 0%: {{
-                                    currency_type.symbol
-                                }} {{ form.total_unaffected }}</p>
                             <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS:
                                 {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
-                            <p class="text-right" v-if="form.total_taxed > 0">SUBTOTAL 12%: {{ currency_type.symbol }}
-                                {{ form.total_taxed }}</p>
-                            <p class="text-right" v-if="form.total_igv > 0">IVA: {{ currency_type.symbol }}
-                                {{ form.total_igv }}</p>
+                            <p class="text-right" v-if="form.total_taxed > 0" v-for="value in totales" :key="value.index">
+                                SUBTOTAL {{ value.index }} %:  {{ currency_type.symbol }} {{ value.taxed }}
+                            </p>
+                            <p class="text-right" v-if="form.total_igv > 0" v-for="value in totales" :key="value.index">
+                                IVA {{ value.index }} %: {{ currency_type.symbol }} {{ value.igv }}
+                            </p>
                             <p class="text-right" v-if="form.total_isc > 0">ISC: {{ currency_type.symbol }}
                                 {{ form.total_isc }}</p>
                             <p class="text-right" v-if="form.total_charge > 0">OTROS CARGOS: {{ currency_type.symbol }}
@@ -394,6 +393,7 @@ export default {
     ],
     data() {
         return {
+            totales:[],
             recordItem: null,
             isEditItemNote: false,
             showDialogAddItem: false,
@@ -424,6 +424,7 @@ export default {
             selected_credit_note_type_13: false,
             apply_change_has_discounts: false,
             selected_credit_note_type_03: false,
+            authUser : null,
         }
     },
     async created() {
@@ -693,13 +694,14 @@ export default {
             })
 
             this.temp_total = this.form.total
-
+            this.calculateTotal()
         },
         async initForm() {
 
             // console.log(this.hasDiscounts)
 
             this.errors = {}
+            this.totales = []
             this.form = {
                 establishment_id: this.document.establishment_id,
                 document_type_id: null,
@@ -844,7 +846,7 @@ export default {
 
         setDefaultSerieByDocument()
         {
-            if(this.authUser.multiple_default_document_types)
+            if(this.authUser && this.authUser.multiple_default_document_types)
             {
                 const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : this.form.document_type_id})
 
@@ -862,7 +864,7 @@ export default {
 
         setDefaultDocumentType(from_function) {
 
-            if(this.authUser.multiple_default_document_types) return
+            if(this.authUser && this.authUser.multiple_default_document_types) return
 
             this.default_series_type = this.document.user.serie;
             this.default_document_type = this.document.user.document_id;
@@ -942,29 +944,75 @@ export default {
             let total_plastic_bag_taxes = 0
             let total_base_isc = 0
             let total_isc = 0
+            this.totales = []
+            let total_exist = false
 
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
-                if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                console.log('afectation IGV Active ',row.affectation_igv_type)
+
+                if(row.affectation_igv_type.free == 1){
+                    total_free += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.exportation == 1){
+                    total_exportation += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.unaffected== 1){
+                    total_unaffected += parseFloat(row.total_value);
+                }else{
+                    if (row.total_value_without_rounding) {
+                        total_taxed += parseFloat(row.total_value_without_rounding);
+                    } else {
+                        total_taxed += parseFloat(row.total_value);
+                    }
                 }
-                if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
+
+                if (row.total_igv_without_rounding) {
+                    total_igv += _.round(parseFloat(row.total_igv_without_rounding),2);
+                } else {
+                    total_igv += _.round(parseFloat(row.total_igv),2);
                 }
-                if (row.affectation_igv_type_id === '30') {
-                    total_unaffected += parseFloat(row.total_value)
+
+                if (row.total_without_rounding) {
+                    total += parseFloat(row.total_without_rounding);
+                } else {
+                    total += parseFloat(row.total);
                 }
-                if (row.affectation_igv_type_id === '40') {
-                    total_exportation += parseFloat(row.total_value)
+
+                this.totales.forEach((item)=>{
+                    if (item.index === _.round(parseFloat(row.affectation_igv_type.percentage),0)) {
+                        total_exist = true;
+                        item.taxed += (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2);
+                        item.igv += (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2);
+                    }
+                });
+
+                if(total_exist == false){
+                    this.totales.push({
+                        index : _.round(parseFloat(row.affectation_igv_type.percentage),0),
+                        taxed : (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2),
+                        igv : (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2),
+                    });
                 }
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value)
-                }
-                total_value += parseFloat(row.total_value)
-                total_igv += parseFloat(row.total_igv)
-                total += parseFloat(row.total)
+
+                // if (row.affectation_igv_type_id === '10') {
+                //     total_taxed += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '20') {
+                //     total_exonerated += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '30') {
+                //     total_unaffected += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '40') {
+                //     total_exportation += parseFloat(row.total_value)
+                // }
+                // if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                //     total_free += parseFloat(row.total_value)
+                // }
+                // total_value += parseFloat(row.total_value)
+                // total_igv += parseFloat(row.total_igv)
+                // total += parseFloat(row.total)
                 total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
                 // isc

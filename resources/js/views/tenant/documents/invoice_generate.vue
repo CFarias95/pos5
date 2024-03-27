@@ -2807,7 +2807,7 @@ export default {
       //this.changeDateOfIssue();
       this.updateChangeDestinationSale();
       this.prepareDataCustomer();
-      //this.calculateTotal();
+      this.calculateTotal();
     },
     prepareDataGlobalDiscount(data) {
       const discounts = data.discounts ? Object.values(data.discounts) : [];

@@ -31,6 +31,7 @@
 
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 
+    $subtotal = 0;
     $total12=0;
     $totalIVA12=0;
 
@@ -43,27 +44,26 @@
     $total14=0;
     $totalIVA14=0;
 
+    $totales = [];
+
     foreach($document->items as $item){
 
-        if($item->affectation_igv_type_id === '10'){
-            //JOINSOFTWARE
-            $total12=$total12 + $item->total_value;
-            $totalIVA12= $totalIVA12 + $item->total_taxes;
+        $subtotal += $item->total_value;
+
+        $existe = false;
+        foreach ($totales as $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $value['iva'] += $item->total_taxes;
+                $value['subtotal'] += $item->total_value;
+            }
         }
-        if($item->affectation_igv_type_id === '11'){
-            //JOINSOFTWARE
-            $total8=$total8 + $item->total_value;
-            $totalIVA8= $totalIVA8 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '12'){
-            //JOINSOFTWARE
-            $total14=$total14 + $item->total_value;
-            $totalIVA14= $totalIVA14 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '30'){
-            //JOINSOFTWARE
-            $total0=$total0 + $item->total_value;
-            $totalIVA0= $totalIVA0 + $item->total_taxes;
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => $item->total_taxes,
+                'subtotal' => $item->total_value,
+            ]);
         }
     }
     Log::info('pagos - '.$document->payment_condition_id);
@@ -515,20 +515,12 @@
                 </td>
                 <td width="40%">
                     <table class="full-width" style="border-spacing: 0px 5px; border-collapse: separate;">
+                        @foreach( $totales as $total)
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 0%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal {{ $total['tarifa'] }}%:</td>
+                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
                         </tr>
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 12%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
-                        </tr>
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total14, 2) }}</td>
-                        </tr>
-                        -->
+                        @endforeach
                         @if ($document->document_type_id === '07')
                             @if($document->total_taxed >= 0)
                             <tr>
@@ -538,8 +530,8 @@
                             @endif
                         @elseif($document->total_taxed > 0)
                             <tr>
-                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal Sin Impuestos:</td>
-                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0+$total12+$total14+$total8, 2) }}</td>
+                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Sin Impuestos:</strong></td>
+                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($subtotal, 2) }}</td>
                             </tr>
                         @endif
                         <tr>
@@ -547,20 +539,12 @@
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($document->total_discount, 2) }}</td>
                         </tr>
                         <!-- JOINSOFTWARE -->
+                        @foreach($totales as $total)
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 0%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}0.00</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA {{$total['tarifa']}}%:</td>
+                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{$total['iva']}}</td>
                         </tr>
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 12%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
-                        </tr>
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalIVA14, 2) }}</td>
-                        </tr>
-                        -->
+                        @endforeach
                         <tr>
                             <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Servicio %:</td>
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}0.00</td>
@@ -580,7 +564,7 @@
                         </tr>
                         @else
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Valor Total:</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Total:</strong></td>
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
                         </tr>
                         @endif
