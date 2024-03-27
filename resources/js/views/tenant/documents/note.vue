@@ -462,7 +462,6 @@ export default {
         this.getCustomer()
         this.getHasDocuments()
 
-
     },
     mounted() {
 
@@ -646,6 +645,8 @@ export default {
         */
         async initFormCreditNoteAndType13() {
 
+            console.log(initFormCreditNoteAndType13)
+
             this.errors = {}
 
             this.form.establishment_id = this.document.establishment_id
@@ -687,6 +688,8 @@ export default {
             this.form.payment_condition_id = null
             this.form.fee = []
 
+            this.calculateTotal()
+
             await this.form.items.forEach((item) => {
                 item.input_unit_price_value = item.unit_price
                 item.additional_information = null
@@ -694,7 +697,7 @@ export default {
             })
 
             this.temp_total = this.form.total
-            this.calculateTotal()
+
         },
         async initForm() {
 
