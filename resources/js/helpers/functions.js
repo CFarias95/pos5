@@ -57,7 +57,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
         unit_price: unit_price,
         input_unit_price_value: row_old.input_unit_price_value,
         total_value: 0,
-        total_discount: 0,
+        total_discount: row_old.total_discount ?? 0,
         total_charge: 0,
         total: 0,
         attributes: row_old.attributes,
@@ -173,23 +173,13 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     /* Discounts */
     let discount_base = 0
     let discount_no_base = 0
-    // row.discounts.forEach((discount, index) => {
-    //     discount.percentage = parseFloat(discount.percentage)
-    //     discount.factor = discount.percentage / 100
-    //     discount.base = _.round(total_value_partial, 2)
-    //     discount.amount = _.round(discount.base * discount.factor, 2)
-    //     if (discount.discount_type.base) {
-    //         discount_base += discount.amount
-    //     } else {
-    //         discount_no_base += discount.amount
-    //     }
-    //     row.discounts.splice(index, discount)
-    // })
-    if (row.discounts && row.discounts.length > 0) {
+
+    console.log('DISCOUNTS :' + row_old.discounts.length)
+
+    if (row_old.discounts && row_old.discounts.length > 0) {
+        console.log('tiene descuento')
         row.discounts.forEach((discount, index) => {
-
-            let affectation_igv_type_exonerated = ['20', '21', '30', '31', '32', '33', '34', '35', '36', '37']
-
+            console.log('tiene descuento' , discount)
             if (discount.is_amount) {
                 if (discount.discount_type.base) {
                     discount.base = _.round(total_value_partial, 2)
@@ -209,21 +199,11 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
                     let aux_total_line = row.unit_price * row.quantity
 
-                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
-                    //     total_value_partial = (aux_total_line - discount.percentage) / (1 + percentage_igv / 100)
-                    // } else {
-                    //     total_value_partial = aux_total_line - discount.percentage
-                    // }
 
                     discount.base = _.round(aux_total_line, 2)
-                    //amount and percentage are equals in input
-                    // discount.amount = _.round(discount.percentage, 2)
                     discount.amount = getAmountFromInputDiscount(discount)
-
                     discount.percentage = _.round(100 * (parseFloat(discount.amount) / parseFloat(discount.base)), 2)
                     discount.factor = _.round(discount.percentage / 100, 5)
-                    // discount.factor = _.round(discount.percentage / 100, 2)
-                    // discount_no_base += discount.amount
                 }
 
             } else {
@@ -246,13 +226,6 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
                     let aux_total_line = row.unit_price * row.quantity
                     discount.factor = _.round(discount.percentage / 100, 5)
                     discount.amount = _.round(aux_total_line * discount.factor, 2)
-
-                    // if (!affectation_igv_type_exonerated.includes(row.affectation_igv_type_id)) {
-                    //     total_value_partial = (aux_total_line - discount.amount) / (1 + percentage_igv / 100)
-                    // } else {
-                    //     total_value_partial = aux_total_line - discount.amount
-                    // }
-
                     discount.base = _.round(aux_total_line, 2)
 
                 }
@@ -261,6 +234,8 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
 
             row.discounts.splice(index, discount)
         })
+    }else if(row.total_discount && row.total_discount > 0){
+        discount_base = row.total_discount
     }
     // console.log('total base discount:'+discount_base)
     // console.log('total no base discount:'+discount_no_base)
@@ -300,13 +275,9 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let total_charge = charge_base + charge_no_base
     let total_value = total_value_partial - total_discount + total_charge
     let total_base_igv = total_value_partial - discount_base + total_isc
-
-    //console.log(total_base_igv, (row.percentage_igv / 100))
-    //console.log(row.affectation_igv_type_id)
-
     let total_igv = 0
 
-    if (row.affectation_igv_type_id === '30') { //Unaffected
+    if (row.affectation_igv_type.unaffected === 1) { //Unaffected
         total_igv = 0
     }else{
         total_igv = (total_base_igv * (row.percentage_igv / 100))
@@ -330,7 +301,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     // let total_taxes = total_igv + total_isc + total_other_taxes
     let total_taxes = total_igv + total_isc + total_other_taxes + total_plastic_bag_taxes + total_service_taxes
 
-    let total = total_value + total_taxes
+    let total =  _.round(total_value, 2) + _.round(total_taxes, 2)
 
 
     row.total_discount = _.round(total_discount, 2)

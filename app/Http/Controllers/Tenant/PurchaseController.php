@@ -2370,7 +2370,7 @@ class PurchaseController extends Controller
                     $doc->save();
 
                     foreach ($data['items'] as $row) {
-                        log::info("Purchase item to create : " . json_encode($row['item']));
+                        log::info("Purchase item to create : " . json_encode($row));
                         $row['has_igv'] = true;
                         if (isset($row['total_base_igv']) == false) {
                             $row['total_base_igv'] = 0;

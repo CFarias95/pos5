@@ -461,7 +461,7 @@ export default {
         await this.getPercentageIgv();
         this.getCustomer()
         this.getHasDocuments()
-
+        this.calculateTotal()
     },
     mounted() {
 
@@ -812,6 +812,7 @@ export default {
                 .then(response => {
                     // console.log(response)
                     this.document = response.data
+                    this.calculateTotal()
                     // this.getHasDocuments()
                 })
                 .then(() => {

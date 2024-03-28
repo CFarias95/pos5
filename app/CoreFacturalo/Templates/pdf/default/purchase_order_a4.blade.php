@@ -15,29 +15,30 @@
     $total14=0;
     $totalIVA14=0;
 
+    $totales = [];
+    $subtotal = 0;
+
     foreach($document->items as $item){
 
-        if($item->affectation_igv_type_id === '10'){
-            //JOINSOFTWARE
-            $total12=$total12 + $item->total_value;
-            $totalIVA12= $totalIVA12 + $item->total_taxes;
+        $subtotal += $item->total_value;
+
+        $existe = false;
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
         }
-        if($item->affectation_igv_type_id === '11'){
-            //JOINSOFTWARE
-            $total8=$total8 + $item->total_value;
-            $totalIVA8= $totalIVA8 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '12'){
-            //JOINSOFTWARE
-            $total14=$total14 + $item->total_value;
-            $totalIVA14= $totalIVA14 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '30'){
-            //JOINSOFTWARE
-            $total0=$total0 + $item->total_value;
-            $totalIVA0= $totalIVA0 + $item->total_taxes;
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => $item->total_taxes,
+                'subtotal' => $item->total_value,
+            ]);
         }
     }
+
 @endphp
 <html>
 <head>
@@ -272,30 +273,24 @@
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">Subtotal 0%:</td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
-            </tr>
-            <tr>
-                <td colspan="6" class="text-right font-bold">Subtotal 12%:</td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
-            </tr>
-        @endif
+        @foreach( $totales as $total)
+        <tr>
+            <td colspan="6" class="text-right font-bold">Subtotal {{ $total['tarifa'] }}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
+        </tr>
+        @endforeach
         @if($document->total_discount > 0)
             <tr>
                 <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
+        @foreach($totales as $total)
         <tr>
-            <td colspan="6" class="text-right font-bold">IVA 0%:</td>
-            <td class="text-right font-bold">{{ $document->currency_type->symbol }}0.00</td>
+            <td colspan="6" class="text-right font-bold">IVA {{$total['tarifa']}}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{$total['iva']}}</td>
         </tr>
-        <tr>
-            <td colspan="6" class="text-right font-bold">IVA 12%:</td>
-            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
-        </tr>
+        @endforeach
         <tr>
             <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>

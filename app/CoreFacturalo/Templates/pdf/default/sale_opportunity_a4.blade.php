@@ -4,6 +4,31 @@
     //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
     $accounts = \App\Models\Tenant\BankAccount::all();
     $tittle = $document->prefix.'-'.str_pad($document->id, 8, '0', STR_PAD_LEFT);
+    $totales = [];
+    $subtotal = 0;
+
+    foreach($document->items as $item){
+
+        $subtotal += $item->total_value;
+
+        $existe = false;
+
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
+        }
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => floatVal($item->total_taxes),
+                'subtotal' => floatVal($item->total_value),
+            ]);
+        }
+
+    }
 @endphp
 <html>
 <head>
@@ -245,12 +270,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="5" class="text-right font-bold">SUBTOTAL 12%: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
-        @endif
+        @foreach( $totales as $totalC)
+        <tr>
+            <td colspan="5" class="text-right font-bold">Subtotal {{ $totalC['tarifa'] }}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($totalC['subtotal'], 2) }}</td>
+        </tr>
+        @endforeach
         @if($document->total_discount > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">DESCUENTO TOTAL: {{ $document->currency_type->symbol }}</td>
@@ -258,10 +283,12 @@
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
+        @foreach($totales as $totalX)
         <tr>
-            <td colspan="5" class="text-right font-bold">IVA: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
+            <td colspan="5" class="text-right font-bold">IVA {{$totalX['tarifa']}}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{$totalX['iva']}}</td>
         </tr>
+        @endforeach
         <tr>
             <td colspan="5" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>

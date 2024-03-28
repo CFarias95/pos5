@@ -4,6 +4,29 @@
     $payments = $document->payments;
     $tittle = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
     //Log::info('data - '.$account_entry);
+    $totales = [];
+    $subtotal = 0;
+
+    foreach($document->items as $item){
+
+        $subtotal += $item->total_value;
+
+        $existe = false;
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
+        }
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => $item->total_taxes,
+                'subtotal' => $item->total_value,
+            ]);
+        }
+    }
 @endphp
 <html>
 <head>
@@ -202,22 +225,24 @@
                 <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
-        @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="5" class="text-right font-bold">SUBTOTAL 12%: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
-        @endif
+        @foreach( $totales as $total)
+        <tr>
+            <td colspan="5" class="text-right font-bold">Subtotal {{ $total['tarifa'] }}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
+        </tr>
+        @endforeach
         @if($document->total_discount > 0)
             <tr>
                 <td colspan="5" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
                 <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
+        @foreach($totales as $total)
         <tr>
-            <td colspan="5" class="text-right font-bold">IVA: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
+            <td colspan="5" class="text-right font-bold">IVA {{$total['tarifa']}}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{$total['iva']}}</td>
         </tr>
+        @endforeach
 
         @if($document->total_isc > 0)
         <tr>
@@ -349,62 +374,62 @@
         <tr class="font-sm">
             <td class="border-top text-left p-1 font-sm" width="15%">
                 <b>
-                    Responsable: 
+                    Responsable:
                 </b>
                 {{ $document->user->name }}
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
                 {{ $document->user->number }}
             </td>
             <td class="p-1"  width="5%"></td>
             <td class="border-top text-left p-1 font-sm" width="15%">
                 <b>
-                    Revisado por: 
+                    Revisado por:
                 </b>
                 <br>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="5%"></td>
             <td class="border-top text-left p-1 font-sm" width="20%">
                 <b>
-                    Auditor Interno: 
+                    Auditor Interno:
                 </b>
                 <br>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="5%"></td>
             <td class="border-top text-left p-1 font-sm" width="15%">
                 <b>
-                    Aprobado por: 
+                    Aprobado por:
                 </b>
                 <br>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="5%"></td>
             <td class="border-top text-left p-1 font-sm" width="20%">
                 <b>
-                    Recibí conforme: 
+                    Recibí conforme:
                 </b>
                 <br>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
          </tr>
     </tbody>

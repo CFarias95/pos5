@@ -202,15 +202,6 @@
                             </div>
                         </div>
                     </div>
-                    <!-- <div class="row">
-                        <div class="col-lg-2 col-md-6 d-flex align-items-end pt-2">
-                            <div class="form-group">
-                                <button type="button" class="btn waves-effect waves-light btn-primary"
-                                        @click.prevent="clickAddItemNote()">+ Agregar Producto
-                                </button>
-                            </div>
-                        </div>
-                    </div> -->
                     <div class="row" v-if="form.items.length > 0">
                         <div class="col-md-12">
                             <div class="table-responsive">
@@ -261,24 +252,18 @@
                                 }} {{ form.total_unaffected }}</p>
                             <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS:
                                 {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
-                            <p class="text-right" v-if="form.total_taxed > 0">SUBTOTAL 12%: {{ currency_type.symbol }}
-                                {{ form.total_taxed }}</p>
-                            <p class="text-right" v-if="form.total_igv > 0">IVA: {{ currency_type.symbol }}
-                                {{ form.total_igv }}</p>
+                            <p class="text-right" v-if="form.total_taxed > 0" v-for="value in totales" :key="value.index">
+                                SUBTOTAL {{ value.index }} %:  {{ currency_type.symbol }} {{ value.taxed }}
+                            </p>
+                            <p class="text-right" v-if="form.total_igv > 0" v-for="value in totales" :key="value.index">
+                                IVA {{ value.index }} %: {{ currency_type.symbol }} {{ value.igv }}
+                            </p>
                             <p class="text-right" v-if="form.total_isc > 0">ISC: {{ currency_type.symbol }}
                                 {{ form.total_isc }}</p>
                             <p class="text-right" v-if="form.total_charge > 0">OTROS CARGOS: {{ currency_type.symbol }}
                                 {{ form.total_charge }}</p>
                             <p class="text-right" v-if="form.total_discount > 0">DESCUENTO: {{ currency_type.symbol }}
                                 {{ form.total_discount }}</p>
-                            <!-- <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
-                                <h3 class="text-right"><b>TOTAL A PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}
-                                </h3>
-                            </template>
-                            <template v-else>
-                                <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A
-                                    PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
-                            </template> -->
                             <template>
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A
                                     PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
@@ -345,16 +330,6 @@
                 </div>
                 <div class="form-actions text-right mt-4">
                     <el-button @click.prevent="close()">Cancelar</el-button>
-                    <!-- <template v-if="isCreditNoteAndType13 || isCreditNoteAndType03">
-                        <el-button type="primary" native-type="submit" :loading="loading_submit"
-                                   v-if="form.items.length > 0">Actualizar
-                        </el-button>
-                    </template>
-                    <template v-else>
-                        <el-button type="primary" native-type="submit" :loading="loading_submit"
-                                   v-if="form.items.length > 0 && form.total > 0">Actualizar
-                        </el-button>
-                    </template> -->
                     <template>
                         <el-button type="primary" native-type="submit" :loading="loading_submit"
                                    v-if="form.items.length > 0 && form.total > 0">Actualizar
@@ -397,12 +372,10 @@ export default {
     props: [
         'document_affected',
         'configuration',
-        //'note',
-        //JOINSOFTWARE
-        //'authUser',
     ],
     data() {
         return {
+            totales:[],
             recordItem: null,
             isEditItemNote: false,
             showDialogAddItem: false,
@@ -469,6 +442,7 @@ export default {
             })
         //await this.getPercentageIgv();
         this.getCustomer()
+        this.calculateTotal()
         //this.getHasDocuments()
 
 
@@ -622,7 +596,7 @@ export default {
 
         },
         async initData() {
-
+            console.log('init data')
             // si se seleccionó el tipo de nota 13, se deberá reiniciar la data
             if (this.selected_credit_note_type_13 || this.selected_credit_note_type_03) {
 
@@ -653,6 +627,7 @@ export default {
         */
         async initFormCreditNoteAndType13() {
 
+            console.log('initFormCreditNoteAndType13')
             this.errors = {}
 
             this.form.establishment_id = this.document.affected_document.establishment_id
@@ -709,6 +684,7 @@ export default {
             // console.log(this.hasDiscounts)
 
             this.errors = {}
+            this.totales = []
             this.form = {
                 establishment_id: this.document.affected_document.establishment_id,
                 document_type_id: null,
@@ -815,13 +791,15 @@ export default {
             this.loading = true
             await this.$http.get(`/${this.resource}/note/record/${this.form.affected_document_id}`)
                 .then(response => {
-                    // console.log(response)
+                    console.log('getNote: ',response)
                     this.document = response.data
+                    this.calculateTotal()
                     // this.getHasDocuments()
                 })
                 .then(() => {
                     this.loading = false
                 })
+
         },
         getHasDocuments() {
 
@@ -939,6 +917,7 @@ export default {
             this.calculateTotal()
         },
         calculateTotal() {
+            console.log('calculateTotal')
             let total_discount = 0
             let total_charge = 0
             let total_exportation = 0
@@ -953,30 +932,56 @@ export default {
             let total_base_isc = 0
             let total_isc = 0
 
+            this.totales = []
+            let total_exist = false
+
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
-                if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '30') {
-                    total_unaffected += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '40') {
-                    total_exportation += parseFloat(row.total_value)
-                }
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value)
-                }
-                total_value += parseFloat(row.total_value)
-                total_igv += parseFloat(row.total_igv)
-                total += parseFloat(row.total)
-                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                console.log('afectation IGV Active ',row.affectation_igv_type)
 
+                if(row.affectation_igv_type.free == 1){
+                    total_free += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.exportation == 1){
+                    total_exportation += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.unaffected== 1){
+                    total_unaffected += parseFloat(row.total_value);
+                }else{
+                    if (row.total_value_without_rounding) {
+                        total_taxed += parseFloat(row.total_value_without_rounding);
+                    } else {
+                        total_taxed += parseFloat(row.total_value);
+                    }
+                }
+
+                if (row.total_igv_without_rounding) {
+                    total_igv += _.round(parseFloat(row.total_igv_without_rounding),2);
+                } else {
+                    total_igv += _.round(parseFloat(row.total_igv),2);
+                }
+
+                if (row.total_without_rounding) {
+                    total += parseFloat(row.total_without_rounding);
+                } else {
+                    total += parseFloat(row.total);
+                }
+
+                this.totales.forEach((item)=>{
+                    if (item.index === _.round(parseFloat(row.affectation_igv_type.percentage),0)) {
+                        total_exist = true;
+                        item.taxed += (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2);
+                        item.igv += (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2);
+                    }
+                });
+
+                if(total_exist == false){
+                    this.totales.push({
+                        index : _.round(parseFloat(row.affectation_igv_type.percentage),0),
+                        taxed : (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2),
+                        igv : (row.total_igv_without_rounding)? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2),
+                    });
+                }
                 // isc
                 total_isc += parseFloat(row.total_isc)
                 total_base_isc += parseFloat(row.total_base_isc)
@@ -1071,7 +1076,7 @@ export default {
         getCustomer() {
             this.$http.get(`/${this.resource}/search/customer/${this.document.affected_document.customer_id}`).then((response) => {
                 this.customers = response.data.customers
-                //console.log('customers', response);
+                console.log('getCustomer');
                 this.form.customer_id = this.document.affected_document.customer_id
                 //console.log('this.form.customer_id', this.form.customer_id);
             })

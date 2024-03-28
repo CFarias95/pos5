@@ -51,11 +51,11 @@
         $subtotal += $item->total_value;
 
         $existe = false;
-        foreach ($totales as $value) {
+        foreach ($totales as $key => $value) {
             if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
                 $existe = true;
-                $value['iva'] += $item->total_taxes;
-                $value['subtotal'] += $item->total_value;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
             }
         }
         if( $existe ==  false){

@@ -9,9 +9,32 @@
     if($establishment->logo) {
         $logo = "{$establishment->logo}";
     }
-//Log::info('Document'.$document->seller);
-//Log::info('establishment'.json_encode($establishment));
-//Log::info('customer'.json_encode($customer));
+    $totales = [];
+    $subtotal = 0;
+
+    foreach($document->items as $item){
+
+        $subtotal += $item->total_value;
+
+        $existe = false;
+
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
+        }
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => floatVal($item->total_taxes),
+                'subtotal' => floatVal($item->total_value),
+            ]);
+        }
+
+    }
+
 Log::info('documents-items'.json_encode($document->seller));
 @endphp
 <html>
@@ -302,12 +325,12 @@ Log::info('documents-items'.json_encode($document->seller));
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="7" class="text-right font-bold">SUBTOTAL 12%: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
-        @endif
+        @foreach( $totales as $total)
+        <tr>
+            <td colspan="7" class="text-right font-bold">Subtotal {{ $total['tarifa'] }}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
+        </tr>
+        @endforeach
        @if($document->total_discount > 0)
             <tr>
                 <td colspan="7" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
@@ -315,10 +338,12 @@ Log::info('documents-items'.json_encode($document->seller));
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
+        @foreach($totales as $totalX)
         <tr>
-            <td colspan="7" class="text-right font-bold">IVA: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
+            <td colspan="7" class="text-right font-bold">IVA {{$totalX['tarifa']}}%:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{$totalX['iva']}}</td>
         </tr>
+        @endforeach
         <tr>
             <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>

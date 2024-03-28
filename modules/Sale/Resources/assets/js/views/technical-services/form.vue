@@ -372,6 +372,7 @@ export default {
     components: { PersonForm },
     data() {
         return {
+            totales: [],
             headers: headers_token,
             load_record: true,
             record: [],
@@ -705,6 +706,8 @@ export default {
             this.total_discount_no_base = 0
 
             let total_igv_free = 0
+            this.totales = []
+            let total_exist = false
 
             // let total_free_igv = 0
 
@@ -712,73 +715,119 @@ export default {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
-                if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
+                console.log('afectation IGV Active ',row.affectation_igv_type)
+
+                if(row.affectation_igv_type.free == 1){
+                    total_free += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.exportation == 1){
+                    total_exportation += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.unaffected== 1){
+                    total_unaffected += parseFloat(row.total_value);
+                }else{
+                    if (row.total_value_without_rounding) {
+                        total_taxed += parseFloat(row.total_value_without_rounding);
+                    } else {
+                        total_taxed += parseFloat(row.total_value);
+                    }
                 }
 
-                if (
-                    row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
-                    // || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
-                ) {
-                    total_exonerated += parseFloat(row.total_value)
+                if (row.total_igv_without_rounding) {
+                    total_igv += _.round(parseFloat(row.total_igv_without_rounding),2);
+                } else {
+                    total_igv += _.round(parseFloat(row.total_igv),2);
                 }
 
-                if (
-                    row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
-                    || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
-                    || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
-                    || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
-                    || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
-                    || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
-                    || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
-                    // || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
-                ) {
-                    total_unaffected += parseFloat(row.total_value)
+                if (row.total_without_rounding) {
+                    total += parseFloat(row.total_without_rounding);
+                } else {
+                    total += parseFloat(row.total);
                 }
 
-                if (row.affectation_igv_type_id === '40') {
-                    total_exportation += parseFloat(row.total_value)
+                this.totales.forEach((item)=>{
+                    if (item.index === _.round(parseFloat(row.affectation_igv_type.percentage),0)) {
+                        total_exist = true;
+                        item.taxed += (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2);
+                        item.igv += (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2);
+                    }
+                });
+
+                if(total_exist == false){
+                    this.totales.push({
+                        index : _.round(parseFloat(row.affectation_igv_type.percentage),0),
+                        taxed : (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2),
+                        igv : (row.total_igv_without_rounding)? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2),
+                    });
                 }
 
-                if (['10',
-                    // '20', '21',
-                    '20',
-                    '30', '31', '32', '33', '34', '35', '36',
-                    '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value)
-                }
 
-                if (['10',
-                    '20', '21',
-                    '30', '31', '32', '33', '34', '35', '36',
-                    '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
-                }
+                // if (row.affectation_igv_type_id === '10') {
+                //     total_taxed += parseFloat(row.total_value)
+                // }
 
-                // console.log(row.total_value)
+                // if (
+                //     row.affectation_igv_type_id === '20'  // 20,Exonerado - Operación Onerosa
+                //     // || row.affectation_igv_type_id === '21' // 21,Exonerado – Transferencia Gratuita
+                // ) {
+                //     total_exonerated += parseFloat(row.total_value)
+                // }
 
-                if (!['21', '37'].includes(row.affectation_igv_type_id)) {
-                    total_value += parseFloat(row.total_value)
-                }
+                // if (
+                //     row.affectation_igv_type_id === '30'  // 30,Inafecto - Operación Onerosa
+                //     || row.affectation_igv_type_id === '31'  // 31,Inafecto – Retiro por Bonificación
+                //     || row.affectation_igv_type_id === '32'  // 32,Inafecto – Retiro
+                //     || row.affectation_igv_type_id === '33'  // 33,Inafecto – Retiro por Muestras Médicas
+                //     || row.affectation_igv_type_id === '34'  // 34,Inafecto - Retiro por Convenio Colectivo
+                //     || row.affectation_igv_type_id === '35'  // 35,Inafecto – Retiro por premio
+                //     || row.affectation_igv_type_id === '36' // 36,Inafecto - Retiro por publicidad
+                //     // || row.affectation_igv_type_id === '37'  // 37,Inafecto - Transferencia gratuita
+                // ) {
+                //     total_unaffected += parseFloat(row.total_value)
+                // }
 
-                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
+                // if (row.affectation_igv_type_id === '40') {
+                //     total_exportation += parseFloat(row.total_value)
+                // }
 
-                if (['12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+                // if (['10',
+                //     // '20', '21',
+                //     '20',
+                //     '30', '31', '32', '33', '34', '35', '36',
+                //     '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                //     total_free += parseFloat(row.total_value)
+                // }
 
-                    let unit_value = row.total_value / row.quantity
-                    let total_value_partial = unit_value * row.quantity
-                    row.total_taxes = row.total_value - total_value_partial
-                    row.total_igv = total_value_partial * (row.percentage_igv / 100)
-                    row.total_base_igv = total_value_partial
-                    total_value -= row.total_value
+                // if (['10',
+                //     '20', '21',
+                //     '30', '31', '32', '33', '34', '35', '36',
+                //     '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                //     total_igv += parseFloat(row.total_igv)
+                //     total += parseFloat(row.total)
+                // }
 
-                    total_igv_free += row.total_igv
+                // // console.log(row.total_value)
 
-                }
+                // if (!['21', '37'].includes(row.affectation_igv_type_id)) {
+                //     total_value += parseFloat(row.total_value)
+                // }
+
+
+
+                // if (['12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                //     let unit_value = row.total_value / row.quantity
+                //     let total_value_partial = unit_value * row.quantity
+                //     row.total_taxes = row.total_value - total_value_partial
+                //     row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                //     row.total_base_igv = total_value_partial
+                //     total_value -= row.total_value
+
+                //     total_igv_free += row.total_igv
+
+                // }
 
                 //sum discount no base
                 this.total_discount_no_base += this.sumDiscountsNoBaseByItem(row)
+                total_plastic_bag_taxes += parseFloat(row.total_plastic_bag_taxes)
 
             });
 
@@ -1140,6 +1189,7 @@ export default {
         },
         initForm() {
             this.errors = {}
+            this.totales = []
             //this.form.exchange_rate_sale = this.exchange_rate
             this.form = {
                 id: null,

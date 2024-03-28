@@ -1,270 +1,3 @@
-{{-- @php
-    $establishment = $document->establishment;
-    $customer = $document->customer;
-
-    $document_base = $document->note;
-    $document_number = $document->series.'-'.str_pad($document->number, 8, '0', STR_PAD_LEFT);
-    $document_type_description_array = [
-        '01' => 'FACTURA',
-        '03' => 'BOLETA DE VENTA',
-        '07' => 'NOTA DE CREDITO',
-        '08' => 'NOTA DE DEBITO',
-    ];
-    $identity_document_type_description_array = [
-        '-' => 'S/D',
-        '0' => 'S/D',
-        '1' => 'DNI',
-        '6' => 'RUC',
-    ];
-
-    $affected_document_number = ($document_base->affected_document) ? $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT) : $document_base->data_affected_document->series.'-'.str_pad($document_base->data_affected_document->number, 8, '0', STR_PAD_LEFT);
-
-    //$affected_document_number = $document_base->affected_document->series.'-'.str_pad($document_base->affected_document->number, 8, '0', STR_PAD_LEFT);
-    //$path_style = app_path('CoreFacturalo'.DIRECTORY_SEPARATOR.'Templates'.DIRECTORY_SEPARATOR.'pdf'.DIRECTORY_SEPARATOR.'style.css');
-
-    $logo = "storage/uploads/logos/{$company->logo}";
-    if($establishment->logo) {
-        $logo = "{$establishment->logo}";
-    }
-
-@endphp
-<html>
-<head>
-</head>
-<body>
-<table class="full-width">
-    <tr>
-        @if($company->logo)
-            <td width="20%">
-                <div class="company_logo_box">
-                    <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" alt="{{ $company->name }}" class="company_logo" style="max-width: 150px;">
-                </div>
-            </td>
-        @else
-            <td width="20%">
-                <img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">
-            </td>
-        @endif
-        <td width="50%" class="pl-3">
-            <div class="text-left">
-                <h4 class="">{{ $company->name }}</h4>
-                <h5>{{ 'RUC '.$company->number }}</h5>
-                <h6 style="text-transform: uppercase;">
-                    {{ ($establishment->address !== '-')? $establishment->address : '' }}
-                    {{ ($establishment->province_id !== '-')? ', '.$establishment->province->description : '' }}
-                    {{ ($establishment->department_id !== '-')? '- '.$establishment->department->description : '' }}
-                </h6>
-                <h6>{{ ($establishment->email !== '-')? $establishment->email : '' }}</h6>
-                <h6>{{ ($establishment->telephone !== '-')? $establishment->telephone : '' }}</h6>
-            </div>
-        </td>
-        <td width="30%" class="border-box py-4 px-2 text-center">
-            <h5 class="text-center">{{ $document->document_type->description }}</h5>
-            <h3 class="text-center">{{ $document_number }}</h3>
-        </td>
-    </tr>
-</table>
-
-<table class="full-width mt-5">
-    <tr>
-        <td width="120px">FEHA AUTORIZADO</td>
-        <td width="8px">:</td>
-        <td>{{$document->date_authorization}} {{ $document->time_authorization}}</td>
-    </tr>
-    <tr>
-        <td width="120px">FECHA DE EMISIÓN</td>
-        <td width="5px">:</td>
-        <td>{{ $document->date_of_issue->format('Y-m-d') }}</td>
-    </tr>
-    <tr>
-        <td>CLIENTE</td>
-        <td>:</td>
-        <td>{{ $customer->name }}</td>
-    </tr>
-    <tr>
-        <td>{{ $customer->identity_document_type->description }}</td>
-        <td>:</td>
-        <td>{{ $customer->number }}</td>
-    </tr>
-    @if ($customer->address !== '')
-    <tr>
-        <td class="align-top">DIRECCIÓN</td>
-        <td>:</td>
-        <td>
-            {{ $customer->address }}
-            <!--{{ ($customer->district_id !== '-')? ', '.$customer->district->description : '' }}-->
-            {{ ($customer->province_id !== '-')? ', '.$customer->province->description : '' }}
-            {{ ($customer->department_id !== '-')? '- '.$customer->department->description : '' }}
-        </td>
-    </tr>
-    @endif
-</table>
-
-@if ($document->guides)
-<table class="full-width mt-3">
-@foreach($document->guides as $guide)
-    <tr>
-        <td>{{ $guide->document_type_id }}</td>
-        <td>{{ $guide->number }}</td>
-    </tr>
-@endforeach
-</table>
-@endif
-
-<table class="full-width mt-3">
-    @if ($document->purchase_order)
-    <tr>
-        <td>ORDEN DE COMPRA</td>
-        <td>:</td>
-        <td>{{ $document->purchase_order }}</td>
-    </tr>
-    @endif
-    <tr>
-        <td width="120px">DOC. AFECTADO</td>
-        <td width="5px">:</td>
-        <td>{{ $affected_document_number }}</td>
-    </tr>
-    <tr>
-        <td>TIPO DE NOTA</td>
-        <td>:</td>
-        <td>{{ ($document_base->note_type === 'credit')?$document_base->note_credit_type->description:$document_base->note_debit_type->description}}</td>
-    </tr>
-    <tr>
-        <td>DESCRIPCIÓN</td>
-        <td>:</td>
-        <td>{{ $document_base->note_description }}</td>
-    </tr>
-</table>
-<table class="full-width mt-10 mb-10">
-    <thead class="">
-    <tr class="bg-grey">
-        <th class="border-top-bottom text-left py-2" width="">COD.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">CANT.</th>
-        <th class="border-top-bottom text-center py-2" width="8%">UNIDAD</th>
-        <th class="border-top-bottom text-left py-2">DESCRIPCIÓN</th>
-        <th class="border-top-bottom text-right py-2" width="12%">P.UNIT</th>
-        <th class="border-top-bottom text-right py-2" width="8%">DTO.</th>
-        <th class="border-top-bottom text-right py-2" width="12%">TOTAL</th>
-    </tr>
-    </thead>
-    <tbody>
-    @foreach($document->items as $row)
-        <tr>
-            <td class="text-left align-top">{{ $row->relation_item->internal_id }}</td>
-            <td class="text-center">
-                @if(((int)$row->quantity != $row->quantity))
-                    {{ $row->quantity }}
-                @else
-                    {{ number_format($row->quantity, 0) }}
-                @endif
-            </td>
-            <td class="text-center">{{ $row->item->unit_type_id }}</td>
-            <td class="text-left">
-                {!! $row->item->description !!}
-                @if($row->attributes)
-                    @foreach($row->attributes as $attr)
-                        <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
-                    @endforeach
-                @endif
-                @if($row->discounts)
-                    @foreach($row->discounts as $dtos)
-                        <br/><span style="font-size: 9px">{{ $dtos->factor * 100 }}% {{$dtos->description }}</span>
-                    @endforeach
-                @endif
-            </td>
-            <td class="text-right">{{ number_format($row->unit_price, 2) }}</td>
-            <td class="text-right align-top">
-                @if($row->discounts)
-                    @php
-                        $total_discount_line = 0;
-                        foreach ($row->discounts as $disto) {
-                            $total_discount_line = $total_discount_line + $disto->amount;
-                        }
-                    @endphp
-                    {{ number_format($total_discount_line, 2) }}
-                @else
-                0
-                @endif
-            </td>
-            <td class="text-right">{{ number_format($row->total, 2) }}</td>
-        </tr>
-        <tr>
-            <td colspan="7" class="border-bottom"></td>
-        </tr>
-    @endforeach
-        @if($document->total_exportation > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXPORTACIÓN: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_exportation, 2) }}</td>
-            </tr>
-        @endif
-        @if($document->total_free > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
-            </tr>
-        @endif
-        @if($document->total_unaffected > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">OP. INAFECTAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
-            </tr>
-        @endif
-        @if($document->total_exonerated > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
-            </tr>
-        @endif
-        @if($document->total_taxed > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">OP. GRAVADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_taxed, 2) }}</td>
-            </tr>
-        @endif
-        @if($document->total_discount > 0)
-            <tr>
-                <td colspan="6" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
-            </tr>
-        @endif
-        <tr>
-            <td colspan="6" class="text-right font-bold">IGV: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total_igv, 2) }}</td>
-        </tr>
-        <tr>
-            <td colspan="6" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
-        </tr>
-    </tbody>
-    <tfoot style="border-top: 1px solid #333;">
-    <tr>
-        <td colspan="5" class="font-lg"  style="padding-top: 2rem;text-transform: uppercase;">Son: <span class="font-bold">{{ $document->number_to_letter }} {{ $document->currency_type->description }}</span></td>
-    </tr>
-    @if(isset($document->optional->observations))
-        <tr>
-            <td colspan="3"><b>Obsevaciones</b></td>
-            <td colspan="2"></td>
-        </tr>
-        <tr>
-            <td colspan="3">{{ $document->optional->observations }}</td>
-            <td colspan="2"></td>
-        </tr>
-    @endif
-    </tfoot>
-</table>
-
-<table class="full-width">
-    <tr>
-        <td width="65%">
-            <div class="text-left"><img class="qr_code" src="data:image/png;base64, {{ $document->qr }}" /></div>
-            <p>Código Hash: {{ $document->hash }}</p>
-        </td>
-    </tr>
-</table>
-</body>
-</html> --}}
-
 {{-- JOINSOFTWARE --}}
 @php
     $establishment = $document->establishment;
@@ -326,30 +59,55 @@
 
     $total14=0;
     $totalIVA14=0;
+    $totales = [];
+    $subtotal = 0;
 
     foreach($document->items as $item){
 
-        if($item->affectation_igv_type_id === '10'){
-            //JOINSOFTWARE
-            $total12=$total12 + $item->total_value;
-            $totalIVA12= $totalIVA12 + $item->total_taxes;
+        $subtotal += $item->total_value;
+
+        $existe = false;
+
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
         }
-        if($item->affectation_igv_type_id === '11'){
-            //JOINSOFTWARE
-            $total8=$total8 + $item->total_value;
-            $totalIVA8= $totalIVA8 + $item->total_taxes;
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => floatVal($item->total_taxes),
+                'subtotal' => floatVal($item->total_value),
+            ]);
         }
-        if($item->affectation_igv_type_id === '12'){
-            //JOINSOFTWARE
-            $total14=$total14 + $item->total_value;
-            $totalIVA14= $totalIVA14 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '30'){
-            //JOINSOFTWARE
-            $total0=$total0 + $item->total_value;
-            $totalIVA0= $totalIVA0 + $item->total_taxes;
-        }
+
     }
+
+    // foreach($document->items as $item){
+
+    //     if($item->affectation_igv_type_id === '10'){
+    //         //JOINSOFTWARE
+    //         $total12=$total12 + $item->total_value;
+    //         $totalIVA12= $totalIVA12 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '11'){
+    //         //JOINSOFTWARE
+    //         $total8=$total8 + $item->total_value;
+    //         $totalIVA8= $totalIVA8 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '12'){
+    //         //JOINSOFTWARE
+    //         $total14=$total14 + $item->total_value;
+    //         $totalIVA14= $totalIVA14 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '30'){
+    //         //JOINSOFTWARE
+    //         $total0=$total0 + $item->total_value;
+    //         $totalIVA0= $totalIVA0 + $item->total_taxes;
+    //     }
+    // }
 @endphp
 
 
@@ -434,7 +192,7 @@
 
                 <td width="120px">N. CTA DETRACCIONES:</td>
                 <td>{{ $document->detraction->bank_account}}</td>
-                
+
             @endif
         </tr>
         @if($invoice)
@@ -841,7 +599,7 @@
                 @else
                     <td class="text-right align-top">{{ number_format($row->unit_price, 2) }}</td>
                 @endif
-                
+
                 <td class="text-right align-top">
                     @if($row->discounts)
                         @php
@@ -1168,11 +926,11 @@
             <tr>
                 <td width="50%">
                 @if($company->logo)
-                    
+
                         <div class="company_logo_box">
                             <img src="data:{{mime_content_type(public_path("{$logo}"))}};base64, {{base64_encode(file_get_contents(public_path("{$logo}")))}}" alt="{{$company->name}}" class="company_logo" style="margin-left: 50px; padding-bottom: 40px; max-width: 150px" >
                         </div>
-                   
+
                 @else
                 {{--<img src="{{ asset('logo/logo.jpg') }}" class="company_logo" style="max-width: 150px">--}}
                         <!--
@@ -1180,7 +938,7 @@
                         <img alt="Bootstrap Image Preview" src="https://www.pngitem.com/pimgs/m/47-479827_join-now-png-transparent-images-join-logo-png.png" width="100px" height="100px" style="margin-left: 50px"/>
                         -->
                 @endif
-                        
+
                     <!--<img alt="Bootstrap Image Preview" src="https://www.pngitem.com/pimgs/m/47-479827_join-now-png-transparent-images-join-logo-png.png" width="100px" height="100px" style="margin-left: 50px"/>-->
                     <table>
                         <tbody>
@@ -1287,7 +1045,7 @@
                 @if(!is_null($document_base))
                 <tr>
                     <td style="text-transform: uppercase;">
-                        <strong>Comprobante que se modifica: </strong>                        
+                        <strong>Comprobante que se modifica: </strong>
                     </td>
                     <td>
                         <pre>FACTURA&nbsp;&nbsp;    {{ $affected_document_number }}</pre>
@@ -1585,13 +1343,13 @@
                         </table>
                         <!--
                         <table class="full-width">
-                            
+
                             <thead class="">
                                 <tr style="background: #eaeaea;">
                                     <th class="py-2" style="text-align: start; padding-left: 15px; padding-right: 15px;">Formas de pago</th>
                                 </tr>
                             </thead>
-                            
+
                             <tbody>
                                 <tr style="background: #f7f7f5;">
                                     <td style="text-align: start; padding-left: 15px; padding-right: 15px;">Otros con Utilización del Sistema Financiero</td>
@@ -1605,25 +1363,18 @@
                 </td>
                 <td width="40%">
                     <table class="full-width" style="border-spacing: 0px 5px; border-collapse: separate;">
+                        @foreach( $totales as $totalC)
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 0%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal {{ $totalC['tarifa'] }}%:</td>
+                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalC['subtotal'], 2) }}</td>
                         </tr>
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 12%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
-                        </tr>
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total14, 2) }}</td>
-                        </tr>
+                        @endforeach
                         -->
                         @if ($document->document_type_id === '07')
                             @if($document->total_taxed >= 0)
                             <tr>
-                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal Sin Impuestos:</td>
-                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0+$total12+$total14+$total8, 2) }}</td>
+                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Sin Impuestos:</strong></td>
+                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($subtotal, 2) }}</td>
                             </tr>
                             @endif
                         @endif
@@ -1632,19 +1383,12 @@
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($document->total_discount, 2) }}</td>
                         </tr>
                         <!-- JOINSOFTWARE -->
+                        @foreach($totales as $totalX)
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 0%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}0.00</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA {{$totalX['tarifa']}}%:</td>
+                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{$totalX['iva']}}</td>
                         </tr>
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 12%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalIVA12, 2) }}</td>
-                        </tr>
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalIVA14, 2) }}</td>
-                        </tr>
+                        @endforeach
                         -->
                         <tr>
                             <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Servicio %:</td>
@@ -1665,7 +1409,7 @@
                         </tr>
                         @else
                         <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Valor Total:</td>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Total:</strong></td>
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
                         </tr>
                         @endif

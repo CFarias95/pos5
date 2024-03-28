@@ -383,10 +383,12 @@
                                     {{ currency_type.symbol }} {{ form.total_unaffected }}</p>
                                 <p class="text-right" v-if="form.total_exonerated > 0">OP.EXONERADAS:
                                     {{ currency_type.symbol }} {{ form.total_exonerated }}</p>
-                                <p class="text-right" v-if="form.total_taxed > 0">SUBTOTAL 12%: {{ currency_type.symbol }}
-                                    {{ form.total_taxed }}</p>
-                                <p class="text-right" v-if="form.total_igv > 0">IVA: {{ currency_type.symbol }}
-                                    {{ form.total_igv }}</p>
+                                <p class="text-right" v-if="form.total_taxed > 0" v-for="value in totales" :key="value.index">
+                                    SUBTOTAL {{ value.index }} %:  {{ currency_type.symbol }} {{ value.taxed }}
+                                </p>
+                                <p class="text-right" v-if="form.total_igv > 0" v-for="value in totales" :key="value.index">
+                                    IVA {{ value.index }} %: {{ currency_type.symbol }} {{ value.igv }}
+                                </p>
                                 <h3 class="text-right" v-if="form.total > 0"><b>TOTAL A
                                         PAGAR: </b>{{ currency_type.symbol }} {{ form.total }}</h3>
                             </div>
@@ -451,6 +453,7 @@ export default {
         return {
             showDialogTermsCondition: false,
             type: 'edit',
+            totales : [],
             resource: 'quotations',
             showDialogAddItem: false,
             showDialogNewPerson: false,
@@ -712,6 +715,7 @@ export default {
         },
         initForm() {
             this.errors = {}
+            this.totales = [];
             this.form = {
                 id: 0,
                 description: '',
@@ -839,43 +843,89 @@ export default {
             let total = 0
             let total_igv_free = 0
             this.total_discount_no_base = 0
+            this.totales = []
+            let total_exist = false
 
             this.form.items.forEach((row) => {
                 total_discount += parseFloat(row.total_discount)
                 total_charge += parseFloat(row.total_charge)
 
-                if (row.affectation_igv_type_id === '10') {
-                    total_taxed += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '20') {
-                    total_exonerated += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '30') {
-                    total_unaffected += parseFloat(row.total_value)
-                }
-                if (row.affectation_igv_type_id === '40') {
-                    total_exportation += parseFloat(row.total_value)
-                }
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
-                    total_free += parseFloat(row.total_value)
-                }
-                if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
-                    total_igv += parseFloat(row.total_igv)
-                    total += parseFloat(row.total)
-                }
-                total_value += parseFloat(row.total_value)
+                console.log('afectation IGV Active ',row.affectation_igv_type)
 
-                if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
-
-                    let unit_value = row.total_value / row.quantity
-                    let total_value_partial = unit_value * row.quantity
-                    row.total_taxes = row.total_value - total_value_partial
-                    row.total_igv = total_value_partial * (row.percentage_igv / 100)
-                    row.total_base_igv = total_value_partial
-                    total_value -= row.total_value
-                    total_igv_free += row.total_igv
-
+                if(row.affectation_igv_type.free == 1){
+                    total_free += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.exportation == 1){
+                    total_exportation += parseFloat(row.total_value);
+                }else if(row.affectation_igv_type.unaffected== 1){
+                    total_unaffected += parseFloat(row.total_value);
+                }else{
+                    if (row.total_value_without_rounding) {
+                        total_taxed += parseFloat(row.total_value_without_rounding);
+                    } else {
+                        total_taxed += parseFloat(row.total_value);
+                    }
                 }
+
+                if (row.total_igv_without_rounding) {
+                    total_igv += _.round(parseFloat(row.total_igv_without_rounding),2);
+                } else {
+                    total_igv += _.round(parseFloat(row.total_igv),2);
+                }
+
+                if (row.total_without_rounding) {
+                    total += parseFloat(row.total_without_rounding);
+                } else {
+                    total += parseFloat(row.total);
+                }
+
+                this.totales.forEach((item)=>{
+                    if (item.index === _.round(parseFloat(row.affectation_igv_type.percentage),0)) {
+                        total_exist = true;
+                        item.taxed += (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2);
+                        item.igv += (row.total_igv_without_rounding) ? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2);
+                    }
+                });
+
+                if(total_exist == false){
+                    this.totales.push({
+                        index : _.round(parseFloat(row.affectation_igv_type.percentage),0),
+                        taxed : (row.total_value_without_rounding)? _.round(parseFloat(row.total_value_without_rounding),2) : _.round(parseFloat(row.total_value),2),
+                        igv : (row.total_igv_without_rounding)? _.round(parseFloat(row.total_igv_without_rounding),2) : _.round(parseFloat(row.total_igv),2),
+                    });
+                }
+
+                // if (row.affectation_igv_type_id === '10') {
+                //     total_taxed += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '20') {
+                //     total_exonerated += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '30') {
+                //     total_unaffected += parseFloat(row.total_value)
+                // }
+                // if (row.affectation_igv_type_id === '40') {
+                //     total_exportation += parseFloat(row.total_value)
+                // }
+                // if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) < 0) {
+                //     total_free += parseFloat(row.total_value)
+                // }
+                // if (['10', '20', '30', '40'].indexOf(row.affectation_igv_type_id) > -1) {
+                //     total_igv += parseFloat(row.total_igv)
+                //     total += parseFloat(row.total)
+                // }
+                // total_value += parseFloat(row.total_value)
+
+                // if (['11', '12', '13', '14', '15', '16'].includes(row.affectation_igv_type_id)) {
+
+                //     let unit_value = row.total_value / row.quantity
+                //     let total_value_partial = unit_value * row.quantity
+                //     row.total_taxes = row.total_value - total_value_partial
+                //     row.total_igv = total_value_partial * (row.percentage_igv / 100)
+                //     row.total_base_igv = total_value_partial
+                //     total_value -= row.total_value
+                //     total_igv_free += row.total_igv
+
+                // }
 
                 this.total_discount_no_base += sumAmountDiscountsNoBaseByItem(row)
 

@@ -79,6 +79,7 @@ class PurchaseItem extends ModelTenant
         'iva_retention',
         'import',
         'concepto',
+        'total_discount',
     ];
 
     protected $casts = [
@@ -86,6 +87,7 @@ class PurchaseItem extends ModelTenant
         'unit_price' => 'float',
         'unit_value' => 'float',
         'attributes' => 'json',
+        'total_discount'=>'float',
     ];
 
 
@@ -267,9 +269,10 @@ class PurchaseItem extends ModelTenant
             'charges'                 => $this->charges,
             'lot_code'                => $this->lot_code,
             'warehouse_id'            => $this->warehouse_id,
-            'warehouse'            => $wharehouse,
+            'warehouse'               => $wharehouse,
             'discounts'               => $this->discounts,
-            'date_of_due' => $date_of_due,
+            'date_of_due'             => $date_of_due,
+            'total_discount'         => $this->total_discount,
 
         ];
 
