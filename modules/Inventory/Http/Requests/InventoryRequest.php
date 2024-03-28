@@ -28,7 +28,7 @@ class InventoryRequest extends FormRequest
             'quantity' => [
                 'required',
                 'numeric',
-                'min:0.01'
+                'min:0.001'
             ],
             'type' => [
                 'required',

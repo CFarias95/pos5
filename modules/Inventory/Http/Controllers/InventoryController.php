@@ -256,7 +256,9 @@ class InventoryController extends Controller
 			$inventory->description = $inventory_transaction->name;
 			$inventory->item_id = $item_id;
 			$inventory->warehouse_id = $warehouse_id;
+			Log::info('antes de quantity - '.$quantity);
 			$inventory->quantity = $quantity;
+			Log::info('despues de quantity');
 			$inventory->inventory_transaction_id = $inventory_transaction_id;
 			$inventory->lot_code = $lot_code;
 			$inventory->comments = $comments;

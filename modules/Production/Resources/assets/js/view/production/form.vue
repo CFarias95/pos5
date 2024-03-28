@@ -35,7 +35,7 @@
                                             <el-option
                                                 v-for="option in items"
                                                 :key="option.id"
-                                                :label="option.description"
+                                                :label="`${option.name} - ${option.description}`"
                                                 :value="option.id"
                                             ></el-option>
                                         </el-select>
