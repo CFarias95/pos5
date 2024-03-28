@@ -15,7 +15,7 @@ class TenantAlterToCatAffectationIgvTypes extends Migration
     {
         Schema::table('cat_affectation_igv_types', function (Blueprint $table) {
             $table->decimal('percentage', 8, 4)->nullable();
-            $table->tinyInteger('unaffected',1)->unsigned()->nullable();
+            $table->boolean('unaffected')->nullable()->default(false);
         });
     }
 
