@@ -10,28 +10,53 @@
     $fecha = new DateTime();
     //descuento global - item que no afectan la base imponible
     $total_discount_no_base = $document_xml_service->getGlobalDiscountsNoBase($document) + $document_xml_service->getItemsDiscountsNoBase($document);
-    $total_IVA12 = 0;
-    $total_BASE12 = 0;
-    $total_IVA8= 0;
-    $total_BASE8 = 0;
-    $total_IVA14 = 0;
-    $total_BASE14 = 0;
-    $total_IVA0 = 0;
-    foreach($document->items as $row){
-        if($row->affectation_igv_type_id == 10){
-            $total_IVA12 = $total_IVA12 + $row->total_igv;
-            $total_BASE12 = $total_BASE12 + $row->total_base_igv;
+    // $total_IVA12 = 0;
+    // $total_BASE12 = 0;
+    // $total_IVA8= 0;
+    // $total_BASE8 = 0;
+    // $total_IVA14 = 0;
+    // $total_BASE14 = 0;
+    // $total_IVA0 = 0;
+    // foreach($document->items as $row){
+    //     if($row->affectation_igv_type_id == 10){
+    //         $total_IVA12 = $total_IVA12 + $row->total_igv;
+    //         $total_BASE12 = $total_BASE12 + $row->total_base_igv;
+    //     }
+    //     if($row->affectation_igv_type_id == 11){
+    //         $total_IVA8 = $total_IVA8 + $row->total_igv;
+    //         $total_BASE8 = $total_BASE8 + $row->total_base_igv;
+    //     }
+    //     if($row->affectation_igv_type_id == 12){
+    //         $total_IVA14 = $total_IVA14 + $row->total_igv;
+    //         $total_BASE14 = $total_BASE14 + $row->total_base_igv;
+    //     }
+    //     if($row->affectation_igv_type_id == 30){
+    //         $total_IVA0 = $total_IVA0 + $row->total_base_igv;
+    //     }
+    // }
+    $totales = [];
+    $subtotal = 0;
+
+    foreach($document->items as $item){
+
+        $subtotal += $item->total_value;
+
+        $existe = false;
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->affectation_igv_type->percentage)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+
+            }
         }
-        if($row->affectation_igv_type_id == 11){
-            $total_IVA8 = $total_IVA8 + $row->total_igv;
-            $total_BASE8 = $total_BASE8 + $row->total_base_igv;
-        }
-        if($row->affectation_igv_type_id == 12){
-            $total_IVA14 = $total_IVA14 + $row->total_igv;
-            $total_BASE14 = $total_BASE14 + $row->total_base_igv;
-        }
-        if($row->affectation_igv_type_id == 30){
-            $total_IVA0 = $total_IVA0 + $row->total_base_igv;
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->affectation_igv_type->percentage),
+                'iva' => $item->total_taxes,
+                'subtotal' => $item->total_value,
+                'code' => $item->affectation_igv_type->code,
+            ]);
         }
     }
 
@@ -73,7 +98,7 @@
         <totalSinImpuestos>{{ $document->total_value }}</totalSinImpuestos>
         <totalDescuento>{{ $document->total_discount }}</totalDescuento>
         <totalConImpuestos>
-            @if($total_IVA12 > 0)
+            {{-- @if($total_IVA12 > 0)
             <totalImpuesto>
                 <codigo>2</codigo>
                 <codigoPorcentaje>2</codigoPorcentaje>
@@ -104,7 +129,15 @@
                 <baseImponible>{{  $total_IVA0 }}</baseImponible>
                 <valor>0</valor>
             </totalImpuesto>
-            @endif
+            @endif --}}
+            @foreach($totales as $impuesto)
+            <totalImpuesto>
+                <codigo>2</codigo>
+                <codigoPorcentaje>{{$impuesto['code']}}</codigoPorcentaje>
+                <baseImponible>{{$impuesto['subtotal']}}</baseImponible>
+                <valor>{{$impuesto['iva']}}</valor>
+            </totalImpuesto>
+            @endforeach
         </totalConImpuestos>
         <propina>0.00</propina>
         <importeTotal>{{ $document->total }}</importeTotal>
@@ -159,7 +192,14 @@
             <descuento>{{ $row->total_discount }}</descuento>
             <precioTotalSinImpuesto>{{ $row->total_value }}</precioTotalSinImpuesto>
             <impuestos>
-            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 10)
+                <impuesto>
+                    <codigo>2</codigo>
+                    <codigoPorcentaje>{{$row->affectation_igv_type->code}}</codigoPorcentaje>
+                    <tarifa>{{ intVal($row->affectation_igv_type->percentage) }}</tarifa>
+                    <baseImponible>{{ $row->total_base_igv }}</baseImponible>
+                    <valor>{{ $row->total_igv }}</valor>
+                </impuesto>
+            {{-- @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 10)
                 <impuesto>
                     <codigo>2</codigo>
                     <codigoPorcentaje>2</codigoPorcentaje>
@@ -194,8 +234,8 @@
                     <baseImponible>{{ $row->total_base_igv }}</baseImponible>
                     <valor>0.00</valor>
                 </impuesto>
-            @endif
-        </impuestos>
+            @endif --}}
+            </impuestos>
         </detalle>
     @endforeach
     </detalles>
