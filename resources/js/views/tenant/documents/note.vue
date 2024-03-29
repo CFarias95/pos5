@@ -1045,6 +1045,10 @@ export default {
             // this.form.total = _.round(total, 2)
             this.form.total = _.round(total, 2) + this.form.total_plastic_bag_taxes
             this.form.total_discount = total_discount
+            this.totales.forEach((item)=>{
+                item.taxed =  _.round(item.taxed,2)
+                item.igv =  _.round(item.igv,2)
+            });
 
         },
         checkPercentageIgvDebitNote()

@@ -949,6 +949,11 @@ export default {
 
             this.setTotalDefaultPayment()
 
+            this.totales.forEach((item)=>{
+                item.taxed =  _.round(item.taxed,2)
+                item.igv =  _.round(item.igv,2)
+            });
+
         },
         validate_payments() {
 

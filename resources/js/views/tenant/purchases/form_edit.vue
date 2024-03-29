@@ -1587,6 +1587,10 @@ export default {
       this.calculatePayments();
       this.calculateFee();
       this.recordItem = null;
+      this.totales.forEach((item)=>{
+            item.taxed =  _.round(item.taxed,2)
+            item.igv =  _.round(item.igv,2)
+        });
     },
     calculatePerception() {
       let supplier = _.find(this.all_suppliers, { id: this.form.supplier_id });

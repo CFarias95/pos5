@@ -1692,6 +1692,10 @@ export default {
             this.calculateFee()
             this.discountGlobal()
             //console.log("items calculados final", this.form.items)
+            this.totales.forEach((item)=>{
+                item.taxed =  _.round(item.taxed,2)
+                item.igv =  _.round(item.igv,2)
+            });
         },
         setTotalDefaultPayment() {
 

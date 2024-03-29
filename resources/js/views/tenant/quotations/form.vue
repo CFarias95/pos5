@@ -1109,6 +1109,10 @@ export default {
       this.form.total = _.round(total - this.total_discount_no_base, 2);
 
       this.setTotalDefaultPayment();
+      this.totales.forEach((item)=>{
+            item.taxed =  _.round(item.taxed,2)
+            item.igv =  _.round(item.igv,2)
+        });
     },
     validate_payments() {
       //eliminando items de pagos

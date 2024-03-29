@@ -4068,7 +4068,6 @@ export default {
       // this.form.total = _.round(total + this.form.total_plastic_bag_taxes - this.total_discount_no_base, 2)
 
       if (this.enabled_discount_global) this.discountGlobal();
-
       if (this.prepayment_deduction) this.discountGlobalPrepayment();
 
       if (["1001", "1004"].includes(this.form.operation_type_id))
@@ -4080,12 +4079,14 @@ export default {
 
       this.setTotalDefaultPayment();
       this.setPendingAmount();
-
       this.calculateFee();
-
       this.chargeGlobal();
-
       this.setTotalPointsBySale(this.config);
+      this.totales.forEach((item)=>{
+            item.taxed =  _.round(item.taxed,2)
+            item.igv =  _.round(item.igv,2)
+        });
+
     },
     idSelectedWarehouseName(item)
     {

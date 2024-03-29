@@ -629,6 +629,10 @@
                 this.form.total_value = _.round(total_value, 2)
                 this.form.total_taxes = _.round(total_igv, 2)
                 this.form.total = _.round(total, 2)
+                this.totales.forEach((item)=>{
+                    item.taxed =  _.round(item.taxed,2)
+                    item.igv =  _.round(item.igv,2)
+                });
              },
             async submit() {
                 // await this.changePaymentMethodType(false)

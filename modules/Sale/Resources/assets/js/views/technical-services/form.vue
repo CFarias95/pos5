@@ -864,6 +864,10 @@ export default {
 
             this.chargeGlobal()
             this.updateCost()
+            this.totales.forEach((item)=>{
+                item.taxed =  _.round(item.taxed,2)
+                item.igv =  _.round(item.igv,2)
+            });
         },
 
         updateCost() {
