@@ -90,7 +90,7 @@
             @if($total_IVA12 > 0)
             <totalImpuesto>
                 <codigo>2</codigo>
-                <codigoPorcentaje>2</codigoPorcentaje>
+                <codigoPorcentaje>4</codigoPorcentaje>
                 <baseImponible>{{  $total_BASE12 }}</baseImponible>
                 <valor>{{ $total_IVA12 }}</valor>
             </totalImpuesto>
@@ -159,7 +159,7 @@
             @if($row->total_base_igv > 0 && $row->affectation_igv_type_id == 10)
                 <impuesto>
                     <codigo>2</codigo>
-                    <codigoPorcentaje>2</codigoPorcentaje>
+                    <codigoPorcentaje>4</codigoPorcentaje>
                     <tarifa>{{ 12 }}</tarifa>
                     <baseImponible>{{ $row->total_base_igv }}</baseImponible>
                     <valor>{{ $row->total_igv }}</valor>

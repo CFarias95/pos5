@@ -113,7 +113,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     }else if (row.affectation_igv_type_id === '12'){
         percentage_igv = 14
     }else if(row.affectation_igv_type_id === '10'){
-        percentage_igv = 12
+        percentage_igv = 15
     }
     else if(row.affectation_igv_type_id === '30' || row.affectation_igv_type_id === '20' ){
         percentage_igv = 0
