@@ -149,7 +149,7 @@
                 <codigo>2</codigo>
                 <codigoPorcentaje>{{$impuesto['code']}}</codigoPorcentaje>
                 <baseImponible>{{$impuesto['subtotal']}}</baseImponible>
-                <valor>{{$impuesto['IVA']}}</valor>
+                <valor>{{$impuesto['iva']}}</valor>
             </totalImpuesto>
             @endforeach
         </totalConImpuestos>
