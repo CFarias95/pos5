@@ -433,7 +433,7 @@ export default {
                 this.authUser = response.data.authUser;
                 this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
                 this.form.document_type_id = (this.document_types.length > 0) ? this.document_types[0].id : null
-                //this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
+                this.form.operation_type_id = (this.operation_types.length > 0)?this.operation_types[0].id:null
 
                 //this.changeDocumentType()
                 //this.changeDateOfIssue()
