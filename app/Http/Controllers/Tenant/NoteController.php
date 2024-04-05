@@ -77,9 +77,16 @@ class NoteController extends Controller
         $description = $request->description;
         $credit_type_id =$request->note_credit_or_debit_type_id;
         $items = $request->items;
+
+        /*$document->purchase_order = $request->purchase_order;
+        $document->save();
+
+        $note->note_description = $request->description;
+        $note->note_credit_type_id = $request->note_credit_or_debit_type_id;
+        $note->save();*/
         
         //Log::info('Request - '.json_encode($request->all()));
-        //$note = Note::query();
+
         return [
             'sucess' => false,
             'message' => 'Prueba de update',

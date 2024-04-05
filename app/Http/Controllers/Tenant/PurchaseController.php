@@ -1043,7 +1043,7 @@ class PurchaseController extends Controller
                         $importCTAItem = $value->import;
                         $ctaImportItem = Imports::find($importCTAItem);
                         $itemCTA = "";
-                        if ($ctaImportItem && $ctaImportItem->count() > 0 && $document->tipo_doc_id == 2) {
+                        if ($ctaImportItem && $ctaImportItem->count() > 0) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
 
@@ -1083,7 +1083,7 @@ class PurchaseController extends Controller
                             $accountantItem = AccountMovement::find($item->purchase_cta);
                             $seatCost = ($accountantItem && $accountantItem->cost_center > 0) ? $valor : 0;
 
-                            if ($itemCTA != "" && !$item->purchase_cta) {
+                            if ($itemCTA != "") {
 
                                 if (array_key_exists($itemCTA . '-' . $seatCost, $arrayEntrys)) {
 

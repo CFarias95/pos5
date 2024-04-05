@@ -28,6 +28,7 @@ use App\Models\Tenant\Establishment;
 use App\CoreFacturalo\Template;
 use App\Http\Resources\Tenant\AccountingEntriesResource;
 use App\Models\Tenant\Catalogs\CurrencyType;
+use Illuminate\Support\Facades\Log;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 
@@ -113,10 +114,11 @@ class AccountingEntriesController extends Controller
             });
 
         }
-            $records = $query->latest();
-            if ($date_start && $date_end) {
-                $records = $records->whereBetween('seat_date', [$date_start, $date_end]);
-            }
+        $records = $query->latest();
+
+        if ($date_start && $date_end) {
+            $records = $records->whereBetween('seat_date', [$date_start, $date_end]);
+        }
         return $records;
     }
 
