@@ -9,6 +9,8 @@
                 <!-- <a :href="`/${resource}/create`" class="btn btn-custom btn-sm  mt-2 mr-2" ><i class="fa fa-plus-circle"></i> Nuevo</a> -->
                 <button @click.prevent="clickImport()" type="button" class="btn btn-custom btn-sm  mt-2 mr-2"><i
                         class="fa fa-upload"></i> Importar TXT</button>
+                <button @click.prevent="clickImportXml()" type="button" class="btn btn-warning btn-sm  mt-2 mr-2"><i
+                        class="fa fa-upload"></i> Importar XML</button>
                 <button @click.prevent="clickDownload('excel')" type="button" class="btn btn-success btn-sm  mt-2 mr-2"><i
                         class="fa fa-download"></i>Exportar Excel</button>
             </div>
@@ -55,6 +57,7 @@
                 </data-table>
             </div>
             <retention-import :showDialog.sync="showImportDialog"></retention-import>
+            <retention-import-xml :showDialog.sync="showImportXmlDialog"></retention-import-xml>
             <retention-options :showDialog.sync="showDialogOptions" :recordId="recordId"
                 :showClose="true"></retention-options>
         </div>
@@ -66,15 +69,17 @@
 import DataTable from '../../../components/DataTable.vue';
 import RetentionOptions from './partials/options.vue';
 import RetentionImport from './import.vue';
+import RetentionImportXml from './importXml.vue';
 import queryString from "query-string";
 
 export default {
-    components: { DataTable, RetentionOptions, RetentionImport },
+    components: { DataTable, RetentionOptions, RetentionImport, RetentionImportXml },
     data() {
         return {
             resource: 'retentions',
             showDialogOptions: false,
             showImportDialog: false,
+            showImportXmlDialog: false,
             recordId: null,
         }
     },
@@ -96,6 +101,9 @@ export default {
         },
         clickImport() {
             this.showImportDialog = true
+        },
+        clickImportXml() {
+            this.showImportXmlDialog = true
         },
     }
 }

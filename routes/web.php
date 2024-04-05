@@ -530,6 +530,7 @@ if ($hostname) {
             Route::get('retentions/document/tables', 'Tenant\RetentionController@document_tables');
             Route::get('retentions/table/{table}', 'Tenant\RetentionController@table');
             Route::post('retentions/import', 'Tenant\RetentionController@import');
+            Route::post('retentions/importxml', 'Tenant\RetentionController@importXml');
             Route::post('retentions/excel', 'Tenant\RetentionController@excel');
 
             /** Dispatches
