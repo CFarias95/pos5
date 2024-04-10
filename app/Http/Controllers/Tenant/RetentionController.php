@@ -226,8 +226,8 @@ class RetentionController extends Controller
                         foreach ($docSustento->retenciones->retencion as $retC) {
 
                             $detalleRet = $retC;
-                            $detalleRet["numDocSustento"] = $docSustento->numDocSustento;
-                            $detalleRet["tipo"] = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
+                            $detalleRet->numDocSustento = $docSustento->numDocSustento;
+                            $detalleRet->tipo = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
                             $totalRet += floatval($retC->valorRetenido);
                             array_push($detalles, $detalleRet);
                         }
@@ -264,8 +264,8 @@ class RetentionController extends Controller
                         foreach ($docSustento->retenciones->retencion as $retC) {
 
                             $detalleRet = $retC;
-                            $detalleRet["numDocSustento"] = $docSustento->numDocSustento;
-                            $detalleRet["tipo"] = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
+                            $detalleRet->numDocSustento = $docSustento->numDocSustento;
+                            $detalleRet->tipo = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
                             $totalRet += floatval($retC->valorRetenido);
 
                             array_push($detalles, $detalleRet);
