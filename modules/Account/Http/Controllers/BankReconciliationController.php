@@ -201,8 +201,6 @@ class BankReconciliationController extends Controller
         }
     }
 
-
-
     public function excel(Request $request)
     {
         $records = $this->getRecords($request);
@@ -222,57 +220,139 @@ class BankReconciliationController extends Controller
 
     public function pdf($id)
     {
-        $records = BankReconciliation::where('id',$id)->get();
-        $monthDate = substr($records->first()->month, 0, -3);
-        $startDate = date('Y-m-01', strtotime("$monthDate +1 month"));
+        $bankReconciliation = BankReconciliation::where('id',$id)->first();
+        $monthsEnd = substr($bankReconciliation->month, 0, -3).'-31';
+        $monthsStart = $bankReconciliation->month;
         //Log::info('monthDate - '.$monthDate);
         //Log::info('startDate - '.$startDate);
         $company = Company::first();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
-        $user = User::where('id', $records[0]->user_id)->first();
-        $account = AccountMovement::where('id', $records[0]->account_id)->first();
-        $entries = AccountingEntryItems::where('bank_reconciliation_id', $records[0]->id)->with('account')->get();
-        
-        $data = AccountingEntryItems::query();
+        $user = User::where('id', $bankReconciliation->user_id)->first();
+        $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
-        if($account->id){
-            $data->where('account_movement_id',$account->id);
-        }
+        $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
+        $saldo_contable->leftJoin('accounting_entries', function ($join) use($monthsStart) {
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                ->where('accounting_entries.seat_date','<',$monthsStart);
+        });
 
-        if($monthDate){
+        //Log::info('Saldo Contable: '.json_encode($saldo_contable->get()));
 
-            $startDate = date('Y-m-31', strtotime($monthDate));
+        $SaldoDebe = $saldo_contable->sum('debe');
+        $SaldoHaber = $saldo_contable->sum('haber');
 
-            $mov = AccountingEntries::where('seat_date', '<=', $startDate)->orderBy('seat_date','asc')->get()->transform(function($row){
+        Log::info('Total DEbe: '.$SaldoDebe);
+        Log::info('Total Haber: '.$SaldoHaber);
+
+        $SaldoContable = 0;
+        $SaldoContable += $SaldoDebe - $SaldoHaber;
+
+        Log::info('Saldo Contable '.$SaldoContable);
+        $chequesGNC = [];
+        $chequesGNCTotales = 0;
+        //RECUPERAR LOS CHEQUES GIRADOS NO COBRADOS
+        $PurchasePaymnets = PurchasePayment::where('payment_method_type_id','13')->where('date_of_payment','<=', $monthsEnd)
+                                            ->select(DB::raw('CONCAT("PC",id) as id1, CONCAT("%PC",id,";%") as id2'));
+
+        if($PurchasePaymnets->count() > 0 ){
+            Log::info('PurchasePaymnets: '.json_encode($PurchasePaymnets->get()));
+            $accountingEntries = AccountingEntries::where('seat_date','<=', $monthsEnd);
+            $accountingEntries->leftJoinSub($PurchasePaymnets,'purchase_paymentsP', function ($join){
+                $join->on('accounting_entries.document_id','purchase_paymentsP.id1')
+                     ->orOn('accounting_entries.document_id', 'like','purchase_paymentsP.id2');
+            });
+
+            $chequesGNC = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
+            $chequesGNC->joinSub($accountingEntries,'accounting_entries', function ($join) use($monthsEnd) {
+                $join->on('accounting_entry_items.accounting_entrie_id', 'accounting_entries.id');
+            });
+
+            $chequesGNC = $chequesGNC->get()->transform(function($row) use($chequesGNCTotales){
                 return[
-                    'id' =>$row->id
+                    'entry' => $row->filename,
+                    'date' => $row->seat_date,
+                    'comment' => $row->comment,
+                    'debe' => round($row->debe,2),
+                    'haber' => round($row->haber,2) * -1,
+                    'bank_reconciliated' => $row->bank_reconciliated,
+                    'id' => $row->id,
                 ];
             });
-            //Log::info('mov - '.$mov);
-
-            $data->whereIn('accounting_entrie_id',$mov);
-            //Log::info('data1 - '.json_encode($data->get()));
+            $chequesGNCTotales += $chequesGNC->sum('debe') + $chequesGNC->sum('haber');
+            $accountingEntriesIds = $accountingEntries->get()->transform(function($row){
+                return[
+                    'id'=>$row->id
+                ];
+            });
+            Log::info('chequesGNC: '.json_encode($chequesGNC));
         }
 
-        $data->orderBy('accounting_entrie_id', 'asc')->get()->transform(function($row){
-            $accountingEntrie = AccountingEntries::find($row->accounting_entrie_id);
+
+        ////RECUPERAR LOS CHEQUES ANTICIPADOS
+        $chequesANT = [];
+        $chequesANTTotales = 0;
+        $DocumentPayments = DocumentPayment::where('payment_method_type_id','13')->where('date_of_payment','<=', $monthsEnd)
+                                            ->select(DB::raw('CONCAT("CF",id) as id1, CONCAT("%CF",id,";%") as id2'));
+        if($DocumentPayments->count() > 0 ){
+            Log::info('DocumentPayments: '.json_encode($DocumentPayments->get()));
+            $accountingEntriesD = AccountingEntries::where('seat_date','<=', $monthsEnd);
+            $accountingEntriesD->leftJoinSub($DocumentPayments,'document_paymentsD', function ($join){
+                $join->on('accounting_entries.document_id','document_paymentsD.id1')
+                        ->orOn('accounting_entries.document_id', 'like','document_paymentsD.id2');
+            });
+
+            $chequesANT = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
+            $chequesANT->joinSub($accountingEntriesD,'accounting_entriesD', function ($join) {
+                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entriesD.id');
+            });
+
+            $chequesANT = $chequesANT->get()->transform(function($row) use ($chequesANTTotales){
+                return[
+                    'entry' => $row->filename,
+                    'date' => $row->seat_date,
+                    'comment' => $row->comment,
+                    'debe' => round($row->debe,2),
+                    'haber' => round($row->haber,2) * -1,
+                    'bank_reconciliated' => $row->bank_reconciliated,
+                    'id' => $row->id,
+                ];
+            });
+            $chequesANTTotales += $chequesANT->sum('debe') + $chequesANT->sum('haber');
+            $accountingEntriesDIds = $accountingEntriesD->get()->transform(function($row){
+                return[
+                    'id'=>$row->id
+                ];
+            });
+            Log::info('chequesANT: '.json_encode($chequesANT));
+        }
+
+
+        //DEPOSITOS NO EFECTIVIZADOS
+        $depositosNETotales = 0;
+        $depositosNE = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
+        if(isset($accountingEntriesDIds)){
+            $depositosNE->whereNotIn('accounting_entrie_id',$accountingEntriesDIds);
+        }
+        if(isset($accountingEntriesIds)){
+            $depositosNE->whereNotIn('accounting_entrie_id',$accountingEntriesIds);
+        }
+        $depositosNE->join('accounting_entries', function ($join) {
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id');
+        });
+        $depositosNE = $depositosNE->get()->transform(function($row) use($depositosNETotales){
             return[
-                'entry' => $accountingEntrie->filename,
-                'date' => $accountingEntrie->seat_date,
-                'comment' => $accountingEntrie->comment,
+                'entry' => $row->filename,
+                'date' => $row->seat_date,
+                'comment' => $row->comment,
                 'debe' => round($row->debe,2),
-                'haber' => round($row->haber,2),
+                'haber' => round($row->haber,2) * -1,
                 'bank_reconciliated' => $row->bank_reconciliated,
                 'id' => $row->id,
             ];
         });
-        
-        $data1 = $data->get();
-        //Log::info('data - '.json_encode($data1));
-
-        $pdf = PDF::loadView('account::bank_reconciliation.pdf', compact("records", "company", "fechaActual", "usuario_log", "user", "account", "entries", "data1"));
-
+        $depositosNETotales +=  $depositosNE->sum('debe') + $depositosNE->sum('haber');
+        $pdf = PDF::loadView('account::bank_reconciliation.pdf', compact("bankReconciliation", "company", "fechaActual", "usuario_log", "user", "account","chequesGNC","chequesGNCTotales", "chequesANT","chequesANTTotales", "depositosNE","SaldoContable",'depositosNETotales'));
         $filename = 'Bank_Reconciliation_' .  date('YmdHis');
 
         return $pdf->download($filename . '.pdf');

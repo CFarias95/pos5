@@ -31,7 +31,7 @@
 
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 
-    $subtotal = 0;
+
     $total12=0;
     $totalIVA12=0;
 
@@ -45,6 +45,7 @@
     $totalIVA14=0;
 
     $totales = [];
+    $subtotal = 0;
 
     foreach($document->items as $item){
 
@@ -66,6 +67,7 @@
             ]);
         }
     }
+    
     Log::info('pagos - '.$document->payment_condition_id);
 @endphp
 

@@ -15,38 +15,38 @@ $logo = "storage/uploads/logos/{$company->logo}";
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: left;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -86,17 +86,214 @@ $logo = "storage/uploads/logos/{$company->logo}";
                 <p><strong>Fecha: </strong>{{date('d-m-Y')}}</p>
             </div>
         </div>
-        <hr>
         <div>
             <h2 align="center" class="title"><strong>Conciliación bancaria</strong></h2>
         </div>
-        <div style="margin-top:20px; margin-bottom:20px;">
-            
-        </div>
-        @if(!empty($records))
+        @if(!empty($bankReconciliation))
             <div class="">
-                <div class=" ">
+                <div class="">
                     <table class="">
+                        <thead>
+                            <tr>
+                                <th class="text-center">Fecha</th>
+                                <th class="text-center">Transaccion</th>
+                                <th class="text-center">Se</th>
+                                <th class="text-center">Documento</th>
+                                <th class="text-center">No. Cheque</th>
+                                <th class="text-center">Fecha Cobro</th>
+                                <th class="text-center">Valor</th>
+                                <th class="text-center">Saldo</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="celda">{{$bankReconciliation->created_at->format('m-Y')}}</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda"><strong>SALDO CONTABLE</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{$SaldoContable}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda"><strong>CHEQUE GIRADO Y NO COBRADO</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">$</td>
+                            </tr>
+                            @foreach($chequesGNC as $entry1)
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['entry']}}</td>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['comment']}}</td>
+                                <td class="celda"></td>
+                                <td class="celda">{{$entry1['date']}}</td>
+                                <td class="celda">-</td>
+                                @if($entry1['debe'] > 0)
+                                <td class="celda ">{{$entry1['debe']}}</td>
+                                @else
+                                <td class="celda">{{$entry1['haber']}}</td>
+                                @endif
+
+                            </tr>
+                            @endforeach
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda" style="text-align: right" ><strong>Suman:</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{ $chequesGNCTotales}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda"><strong>CHEQUES ANTICIPADOS</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">$</td>
+                            </tr>
+                            @foreach($chequesANT as $entry1)
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['entry']}}</td>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['comment']}}</td>
+                                <td class="celda"></td>
+                                <td class="celda">{{$entry1['date']}}</td>
+                                <td class="celda">-</td>
+                                @if($entry1['debe'] > 0)
+                                <td class="celda">{{$entry1['debe']}}</td>
+                                @else
+                                <td class="celda">{{$entry1['haber']}}</td>
+                                @endif
+
+                            </tr>
+                            @endforeach
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda" style="text-align: right" ><strong>Suman:</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{$chequesANTTotales}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda"><strong>DEPOSITOS NO EFECTIVIZADOS</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">$</td>
+                            </tr>
+                            @foreach($depositosNE as $entry1)
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['entry']}}</td>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$entry1['comment']}}</td>
+                                <td class="celda"></td>
+                                <td class="celda">{{$entry1['date']}}</td>
+                                <td class="celda">-</td>
+                                @if($entry1['debe'] > 0)
+                                <td class="celda">{{$entry1['debe']}}</td>
+                                @else
+                                <td class="celda">{{$entry1['haber']}}</td>
+                                @endif
+
+                            </tr>
+                            @endforeach
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda" style="text-align: right" ><strong>Suman:</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{$depositosNETotales}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda"><strong>RESUMEN</strong></td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">$</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">  Saldo contable:</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{$SaldoContable}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">  Saldo bancario:</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$bankReconciliation->initial_value}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">  Saldo conciliado:</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">{{$bankReconciliation->total_debe - $bankReconciliation->total_haber}}</td>
+                            </tr>
+                            <tr>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">  Diferencia:</td>
+                                <td class="celda">-</td>
+                                <td class="celda">-</td>
+                                <td class="celda">$</td>
+                                <td class="celda">{{$bankReconciliation->initial_value - ($bankReconciliation->total_debe - $bankReconciliation->total_haber)}}</td>
+                            </tr>
+
+                            {{-- @foreach($bankReconciliation as $row)
+                                <tr>
+                                    <td class="celda">{{$row->id}}</td>
+                                    <td class="celda">{{$row->initial_value}}</td>
+                                    <td class="celda">{{$row->total_debe}}</td>
+                                    <td class="celda">{{$row->total_haber}}</td>
+                                    <td class="celda">{{$row->diference_value}}</td>
+                                    <td class="celda">{{$user->name}}</td>
+                                    <td class="celda">{{$account->description}}</td>
+                                    <td class="celda">{{ $row->created_at->format('d-m-Y') }}</td>
+                                </tr>
+                            @endforeach --}}
+                        </tbody>
+                    </table>
+                    <br>
+                    {{-- <table class="">
                         <thead>
                             <tr>
                                 <th class="text-center">#</th>
@@ -111,27 +308,27 @@ $logo = "storage/uploads/logos/{$company->logo}";
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach($records as $row)
+                            @foreach($bankReconciliation as $row)
                                 <tr>
                                     <td class="celda">{{$row->id}}</td>
                                     <td class="celda">{{$row->initial_value}}</td>
-                                    <td class="celda">{{$row->total_debe}}</td>  
+                                    <td class="celda">{{$row->total_debe}}</td>
                                     <td class="celda">{{$row->total_haber}}</td>
-                                    <td class="celda">{{$row->diference_value}}</td> 
-                                    <td class="celda">{{$row->status == 0 ? 'Creada' : 'Cerrada'}}</td> 
-                                    <td class="celda">{{$user->name}}</td> 
-                                    <td class="celda">{{$account->description}}</td> 
+                                    <td class="celda">{{$row->diference_value}}</td>
+                                    <td class="celda">{{$row->status == 0 ? 'Creada' : 'Cerrada'}}</td>
+                                    <td class="celda">{{$user->name}}</td>
+                                    <td class="celda">{{$account->description}}</td>
                                     <td class="celda">{{ $row->created_at->format('d-m-Y') }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
-                    </table>
+                    </table> --}}
                 </div>
             </div>
+            {{-- <br>
             <br>
-            <br>
-            <br>
-            @if(!empty($entries))
+            <br> --}}
+            {{-- @if(!empty($entries))
                 <div class="">
                     <div class=" ">
                         <div>
@@ -152,12 +349,12 @@ $logo = "storage/uploads/logos/{$company->logo}";
                             <tbody>
                                 @foreach($entries as $entry)
                                     <tr>
-                                        <td class="celda">{{$entry->account->id}}</td> 
-                                        <td class="celda">{{$entry->account->filename}}</td> 
-                                        <td class="celda">{{$entry->account->seat_date}}</td> 
-                                        <td class="celda">{{$entry->account->comment}}</td> 
-                                        <td class="celda">{{$entry->debe}}</td> 
-                                        <td class="celda">{{$entry->haber}}</td> 
+                                        <td class="celda">{{$entry->account->id}}</td>
+                                        <td class="celda">{{$entry->account->filename}}</td>
+                                        <td class="celda">{{$entry->account->seat_date}}</td>
+                                        <td class="celda">{{$entry->account->comment}}</td>
+                                        <td class="celda">{{$entry->debe}}</td>
+                                        <td class="celda">{{$entry->haber}}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -193,12 +390,12 @@ $logo = "storage/uploads/logos/{$company->logo}";
                             <tbody>
                                 @foreach($data1 as $entry1)
                                     <tr>
-                                        <td class="celda">{{$entry1->account->id}}</td> 
-                                        <td class="celda">{{$entry1->account->filename}}</td> 
-                                        <td class="celda">{{$entry1->account->seat_date}}</td> 
-                                        <td class="celda">{{$entry1->account->comment}}</td> 
-                                        <td class="celda">{{$entry1->debe}}</td> 
-                                        <td class="celda">{{$entry1->haber}}</td> 
+                                        <td class="celda">{{$entry1->account->id}}</td>
+                                        <td class="celda">{{$entry1->account->filename}}</td>
+                                        <td class="celda">{{$entry1->account->seat_date}}</td>
+                                        <td class="celda">{{$entry1->account->comment}}</td>
+                                        <td class="celda">{{$entry1->debe}}</td>
+                                        <td class="celda">{{$entry1->haber}}</td>
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -209,7 +406,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
                 <div class="callout callout-info">
                     <p>No se encontraron registros asociados.</p>
                 </div>
-            @endif
+            @endif --}}
         @else
             <div class="callout callout-info">
                 <p>No se encontraron registros.</p>

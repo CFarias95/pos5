@@ -129,7 +129,7 @@ class UnpaidController extends Controller
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
         return $paginatedCollection;
 
-        return (new UnpaidCollection($records->paginate(config('tenant.items_per_page'))))->additional([
+        return (new UnpaidCollection($records))->additional([
             'configuration' => $config->finances
         ]);
     }

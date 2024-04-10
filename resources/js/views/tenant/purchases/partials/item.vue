@@ -993,12 +993,17 @@ export default {
             const item = { ..._.find(this.items, { 'id': this.form.item_id }) };
 
             console.log("retention_types_iva: ", this.form.has_igv)
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, { 'id': this.form.affectation_igv_type_id })
 
 
             if (val && val.type_id == '02') {
 
                 if (this.form.has_igv) {
 
+                    let  iva_amount = _.round(this.iva / (1 + (parseFloat(this.form.affectation_igv_type.percentage) / 100)),2)
+                    this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - iva_amount), 2)
+
+                    /*
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (this.iva - _.round(this.iva / 1.12,2)), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
@@ -1008,9 +1013,15 @@ export default {
                     } else if (this.form.affectation_igv_type_id == '30') {
                         this.form.iva_retention = 0
                     }
+                    */
 
                 } else {
 
+                    let  iva_amount = _.round(this.iva * (1 + (parseFloat(this.form.affectation_igv_type.percentage) / 100)),2)
+                    this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (iva_amount - this.iva), 2)
+
+
+                    /*
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (_.round(this.iva * 1.12,2) - this.iva), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
@@ -1019,9 +1030,9 @@ export default {
                         this.form.iva_retention = _.round((parseFloat(val.percentage) / 100) * (_.round(this.iva * 1.14,2) - this.iva), 2)
                     } else if (this.form.affectation_igv_type_id == '30') {
                         this.form.iva_retention = 0
-                    }
+                    }*/
+
                 }
-                //_.round
 
                 this.is_iva = true
             }
@@ -1031,10 +1042,17 @@ export default {
             const val = _.find(this.retention_types_income, { 'id': event });
             const item = { ..._.find(this.items, { 'id': this.form.item_id }) };
             //console.log("changeRetentionTypeIncome: ",this.val)
+            this.form.affectation_igv_type = _.find(this.affectation_igv_types, { 'id': this.form.affectation_igv_type_id })
 
             if (val && val.type_id == '01') {
                 if (this.form.has_igv) {
 
+                    let  iva_amount = _.round(this.income / (1 + (parseFloat(this.form.affectation_igv_type.percentage) / 100)),2)
+                    //this.form.income_retention = _.round((parseFloat(val.percentage) / 100) * (this.income - iva_amount), 2)
+                    this.form.income_retention = _.round((val.percentage / 100) * iva_amount, 2)
+
+
+                    /*
                     if (this.form.affectation_igv_type_id == '10') {
                         this.form.income_retention = _.round((val.percentage / 100) * _.round((this.income / 1.12),2), 2)
                     } else if (this.form.affectation_igv_type_id == '11') {
@@ -1045,6 +1063,7 @@ export default {
 
                         this.form.income_retention = _.round((val.percentage / 100) * _.round(this.income,2), 2)
                     }
+                    */
 
                 } else {
 
