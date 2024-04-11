@@ -117,19 +117,20 @@ class UnpaidController extends Controller
 
     public function records(Request $request)
     {
-        $records = (new DashboardView())->getUnpaidFilterUser($request->all());
+        //$records = (new DashboardView())->getUnpaidFilterUser($request->all());
         $config = Configuration::first();
 
         $data = $this->getRecordsBySP($request);
+        //return $data;
 
         $collection = collect($data);
-        $per_page = (config('tenant.items_per_page'));
+        $per_page =-1;//(config('tenant.items_per_page'));
         $page = $request['page'] ?? 1;
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
         return $paginatedCollection;
 
-        return (new UnpaidCollection($records))->additional([
+        return (new UnpaidCollection($data))->additional([
             'configuration' => $config->finances
         ]);
     }

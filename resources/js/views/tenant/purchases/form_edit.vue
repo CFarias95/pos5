@@ -1363,6 +1363,7 @@ export default {
       this.form.total = _.round(total - retenido, 2);
     },
     calculateTotal() {
+
       let total_discount = 0;
       let total_charge = 0;
       let total_exportation = 0;

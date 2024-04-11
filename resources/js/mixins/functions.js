@@ -3,7 +3,7 @@ export const functions = {
         return {
             loading_search_exchange_rate: false,
             loading_search: false,
-            percentage_igv: 0.12
+            percentage_igv: ''
             //percentage_igv: 0.18
         }
     },
