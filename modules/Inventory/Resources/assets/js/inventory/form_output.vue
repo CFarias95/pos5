@@ -31,7 +31,7 @@
           <div class="col-md-4">
             <div class="form-group" :class="{ 'has-danger': errors.quantity }">
               <label class="control-label">Cantidad</label>
-              <el-input v-model="form.quantity" :step="0.001"></el-input>
+              <el-input type ="number" v-model="form.quantity" :step="0.001"></el-input>
               <small
                 class="form-control-feedback"
                 v-if="errors.quantity"
@@ -318,7 +318,7 @@ export default {
       this.initForm();
       this.loading = false;
       if (this.itemId != null && this.warehouseId != null) {
-        
+
         //console.log("warehouses", this.warehouses);
         this.form.warehouse_id = this.warehouseId;
         this.form.item_id = this.itemId;
@@ -354,10 +354,11 @@ export default {
     },
     async submit() {
       if (this.form.lots.length > 0 && this.form.series_enabled) {
+        console.log('lotes SEries: ',this.form.lots)
         let select_lots = await _.filter(this.form.lots, { has_sale: true });
-        if (select_lots.length !== this.form.quantity) {
+        if (select_lots.length != this.form.quantity) {
           return this.$message.error(
-            "La cantidad ingresada es diferente a las series seleccionadas"
+            "La cantidad ingresada "+this.form.quantity+" es diferente a las series seleccionadas "+ select_lots.length
           );
         }
       }

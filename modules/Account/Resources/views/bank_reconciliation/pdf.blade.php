@@ -21,6 +21,11 @@ $logo = "storage/uploads/logos/{$company->logo}";
                 border-spacing: 0;
                 border: 1px solid black;
             }
+            .table1 {
+                width: 100%;
+                border-spacing: 0;
+                border: 0px;
+            }
 
             .celda {
                 text-align: left;
@@ -90,7 +95,6 @@ $logo = "storage/uploads/logos/{$company->logo}";
             <h2 align="center" class="title"><strong>Conciliación bancaria</strong></h2>
         </div>
         @if(!empty($bankReconciliation))
-            <div class="">
                 <div class="">
                     <table class="">
                         <thead>
@@ -277,54 +281,31 @@ $logo = "storage/uploads/logos/{$company->logo}";
                                 <td class="celda">$</td>
                                 <td class="celda">{{$bankReconciliation->initial_value - ($bankReconciliation->total_debe - $bankReconciliation->total_haber)}}</td>
                             </tr>
-
-                            {{-- @foreach($bankReconciliation as $row)
-                                <tr>
-                                    <td class="celda">{{$row->id}}</td>
-                                    <td class="celda">{{$row->initial_value}}</td>
-                                    <td class="celda">{{$row->total_debe}}</td>
-                                    <td class="celda">{{$row->total_haber}}</td>
-                                    <td class="celda">{{$row->diference_value}}</td>
-                                    <td class="celda">{{$user->name}}</td>
-                                    <td class="celda">{{$account->description}}</td>
-                                    <td class="celda">{{ $row->created_at->format('d-m-Y') }}</td>
-                                </tr>
-                            @endforeach --}}
                         </tbody>
                     </table>
                     <br>
-                    {{-- <table class="">
-                        <thead>
-                            <tr>
-                                <th class="text-center">#</th>
-                                <th class="text-center">Saldo Inicial</th>
-                                <th class="text-center">Total Debe</th>
-                                <th class="text-center">Total Haber</th>
-                                <th class="text-center">Diferencia</th>
-                                <th class="text-center">Estado</th>
-                                <th class="text-center">Creado por</th>
-                                <th class="text-center">Cta Movimiento</th>
-                                <th class="text-center">Fecha Conciliación</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach($bankReconciliation as $row)
-                                <tr>
-                                    <td class="celda">{{$row->id}}</td>
-                                    <td class="celda">{{$row->initial_value}}</td>
-                                    <td class="celda">{{$row->total_debe}}</td>
-                                    <td class="celda">{{$row->total_haber}}</td>
-                                    <td class="celda">{{$row->diference_value}}</td>
-                                    <td class="celda">{{$row->status == 0 ? 'Creada' : 'Cerrada'}}</td>
-                                    <td class="celda">{{$user->name}}</td>
-                                    <td class="celda">{{$account->description}}</td>
-                                    <td class="celda">{{ $row->created_at->format('d-m-Y') }}</td>
-                                </tr>
-                            @endforeach
-                        </tbody>
-                    </table> --}}
+                    <br>
+                    <table class="table1">
+                        <tr>
+                            <td colspan="3"style="text-align: center; height:50px;">
+                                ORLANDO ESPINOZA
+                            </td>
+                            <td colspan="3" style="text-align:center; text-justify:  height:50px;">
+                                {{$user->name}}
+
+                            </td>
+                        </tr>
+                        <tr>
+                            <td colspan="3"style="text-align: center;">
+                                CONTADOR GENERAL
+                            </td>
+                            <td colspan="3" style="text-align:center;">
+                                RESPONSABLE
+                            </td>
+                        </tr>
+                    </table>
                 </div>
-            </div>
+
             {{-- <br>
             <br>
             <br> --}}
