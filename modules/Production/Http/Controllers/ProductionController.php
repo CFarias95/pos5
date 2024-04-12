@@ -1233,7 +1233,7 @@ class ProductionController extends Controller
         $search = $request->input('search');
 
         return [
-            'items' => self::optionsItemFullProduction($search, 20),
+            'items' => self::optionsItemFullProduction($search),
         ];
     }
 
@@ -1245,6 +1245,7 @@ class ProductionController extends Controller
         if ($search) {
             $query->where('name', 'like', "%{$search}%")
                 ->orWhere('barcode', 'like', "%{$search}%")
+                ->orWhere('description', 'like', "%{$search}%")
                 ->orWhere('internal_id', 'like', "%{$search}%");
         }
         if ($take) {
