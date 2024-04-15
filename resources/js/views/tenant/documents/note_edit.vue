@@ -354,6 +354,7 @@
                             :isCreditNoteAndType03="isCreditNoteAndType03"
                             @add="addRow"></document-form-item>
 
+
     </div>
 </template>
 
@@ -1056,10 +1057,12 @@ export default {
             this.loading_submit = true
             await this.$http.post(`/${this.resource}/note/${this.document.document_id}/edit`, this.form)
                 .then(response => {
-                    if (response.data.success) {
+                    console.log('response', response.data)
+                    if (response.data.success == true) {
                         //this.resetForm()
                         //this.documentNewId = response.data.data.id
-                        this.showDialogOptions = true
+                        //this.showDialogOptions = true
+                        window.location.href = `/${this.resource}`;
                     } else {
                         this.$message.error(response.data.message)
                     }
