@@ -500,19 +500,19 @@
                     </el-form-item>
                     <el-form-item label="">
                         <el-row :gutter="20">
-                            <el-col :span="4">
+                            <el-col :span="6">
                                 <el-label>Valor</el-label>
                                 <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
                                     readonly></el-input>
                             </el-col>
-                            <el-col :span="4">
+                            <el-col :span="6">
                                 <el-label>Debe</el-label>
-                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
+                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.debe"
                                     readonly></el-input>
                             </el-col>
-                            <el-col :span="4">
+                            <el-col :span="6">
                                 <el-label>Haber</el-label>
-                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
+                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.haber"
                                     readonly></el-input>
                             </el-col>
                         </el-row>
@@ -542,12 +542,12 @@
                                     </td>
                                     <td>
                                         <el-input v-model="row.debe" type="number" :disabled="row.haber > 0"
-                                            :step="0.01" :min="0" :max="999999999999999999999">
+                                            @change="changeDebe(row.debe)" :step="0.01" :min="0" :max="999999999999999999999">
                                         </el-input>
                                     </td>
                                     <td>
                                         <el-input v-model="row.haber" type="number" :disabled="row.debe > 0"
-                                            :step="0.01" :min="0" :max="999999999999999999999">
+                                            @change="changeHaber(row.haber)" :step="0.01" :min="0" :max="999999999999999999999">
                                         </el-input>
                                     </td>
                                     <td>
@@ -678,6 +678,8 @@ export default {
                 payment_method_type_id: '01',
                 payment_destination_id: null,
                 reference: 'N/A',
+                debe: 0,
+                haber: 0,
             },
         };
     },
@@ -989,6 +991,8 @@ export default {
                 payment_method_type_id: '01',
                 payment_destination_id: null,
                 reference: 'N/A',
+                debe : 0,
+                haber: 0,
             }
         },
         clickMultiPay() {
@@ -1011,6 +1015,11 @@ export default {
             });
 
             this.formMultiPay.payment = _.round(total, 2);
+            this.formMultiPay.debe = _.round(total, 2);
+            this.formMultiPay.haber = _.round(total, 2);
+
+            this.changeDebeHaber()
+
         },
         cancelMultiPay() {
 
@@ -1049,9 +1058,22 @@ export default {
             });
 
         },
+        changeDebe(value){
+
+            this.formMultiPay.debe += parseFloat(value)
+        },
+        changeHaber(value){
+            this.formMultiPay.haber += parseFloat(value)
+        },
         deleteExtra(index) {
             this.formMultiPay.extras.splice(index, 1);
+        },
+        changeDebeHaber(){
+            this.formMultiPay.extras.forEach((extra)=>{
+                this.formMultiPay.debe += extra.debe
+                this.formMultiPay.haber += extra.haber
+            });
         }
     },
-};
+}
 </script>
