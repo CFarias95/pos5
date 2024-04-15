@@ -420,19 +420,13 @@ trait InventoryTrait
      */
     public function initializeInventory()
     {
-//        $establishments = Establishment::all();
-//        foreach ($establishments as $establishment)
-//        {
-//            Warehouse::firstOrCreate(['establishment_id' => $establishment->id],
-//                                     ['description' => $establishment->description]);
-//        }
+
         $warehouse = $this->findWarehouse();
         $items = Item::all();
         foreach ($items as $item) {
             if (!$this->checkInventory($item->id, $warehouse->id)) {
                 $inventory = $this->createInitialInventory($item->id, $item->stock, $warehouse->id);
-//                $this->createInventoryKardex($inventory, $item->id, $item->stock, $warehouse->id);
-//                $this->updateStock($item->id, $item->stock, $warehouse->id);
+
             }
         }
     }
@@ -760,12 +754,28 @@ trait InventoryTrait
      * @param float $quantity
      * @param int $warehouse_id
      */
-    private function updateStockPurchase($item_id, $quantity, $warehouse_id)
+    private function updateStockPurchase($item_id, $quantity, $warehouse_id, $purchase_item = null)
     {
         $inventory_configuration = InventoryConfiguration::firstOrFail();
         $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
-        $item_warehouse->stock = $item_warehouse->stock + $quantity;
+        $item_warehouse->stock += $quantity;
         $item_warehouse->save();
+
+        if(isset($purchase_item)){
+            if($purchase_item->lots_group_enabled == true || $purchase_item->lots_group_enabled == 1 ){
+                $lot = ItemLotsGroup::where([
+                    'item_id' => $item_id,
+                    'code' =>  $purchase_item->lot_code,
+                    'warehouse_id' =>  $warehouse_id
+                ])->first();
+
+                if($lot){
+                    $lot->quantity += $quantity;
+                    $lot->save();
+                }
+
+            }
+        }
     }
 
     /**

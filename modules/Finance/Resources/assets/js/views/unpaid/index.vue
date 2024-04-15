@@ -71,8 +71,8 @@
                                         <div class="col-md-3">
                                             <label class="control-label">Fecha del</label>
                                             <el-date-picker v-model="form.date_start" type="date"
-                                                @change="changeDisabledDates" value-format="yyyy/MM/dd" format="dd/MM/yyyy"
-                                                :clearable="false"></el-date-picker>
+                                                @change="changeDisabledDates" value-format="yyyy/MM/dd"
+                                                format="dd/MM/yyyy" :clearable="false"></el-date-picker>
                                         </div>
                                     </template>
                                     <template v-if="
@@ -135,7 +135,8 @@
                                                     <i class="fa fa-info-circle"></i>
                                                 </el-tooltip>
                                             </label>
-                                            <el-input @change="changeImporte" v-model="form.importe" clearable></el-input>
+                                            <el-input @change="changeImporte" v-model="form.importe"
+                                                clearable></el-input>
                                         </div>
                                     </div>
 
@@ -178,8 +179,8 @@
                                             Exportar Excel
                                         </el-button>
 
-                                        <el-tooltip class="item" effect="dark" content="Reporte por formas de pago (Días)"
-                                            placement="top-start">
+                                        <el-tooltip class="item" effect="dark"
+                                            content="Reporte por formas de pago (Días)" placement="top-start">
                                             <el-button v-if="records.length > 0" class="submit" type="primary"
                                                 @click.prevent="clickDownloadPaymentMethod()">
                                                 <i class="fa fa-file-excel"></i>
@@ -270,7 +271,8 @@
                                                         'bg-success text-white': row.total_to_pay <= 0,
                                                         }" :key="index">
                                                         <td>
-                                                            <el-switch v-if="row.total_to_pay > 0" v-model="row.selected"></el-switch>
+                                                            <el-switch v-if="row.total_to_pay > 0"
+                                                                v-model="row.selected"></el-switch>
                                                         </td>
                                                         <td>
                                                             {{ customIndex(index) }}
@@ -337,13 +339,12 @@
                                                                                     class="btn waves-effect waves-light btn-xs btn-info"
                                                                                     @click.prevent="clickDownloadDispatch(scope.row.download_external_cdr)">CDR</button>
                                                                             </template>
-                                                                        </el-table-column>
-                                                                    </el-table>
-                                                                    <el-button slot="reference"
-                                                                        icon="el-icon-view"></el-button>
-                                                                </el-popover>
-                                                            </template>
-                                                        </td>-->
+                </el-table-column>
+                </el-table>
+                <el-button slot="reference" icon="el-icon-view"></el-button>
+                </el-popover>
+                </template>
+                </td>-->
 
                                                         <td v-if="columns.web_platforms.visible">
                                                             <template v-for="(platform, i) in row.web_platforms"
@@ -358,7 +359,8 @@
                                                             <el-popover placement="right" width="300" trigger="click">
                                                                 <p>
                                                                     Saldo actual:
-                                                                    <span class="custom-badge">{{ row.total_to_pay }}</span>
+                                                                    <span class="custom-badge">{{ row.total_to_pay
+                                                                        }}</span>
                                                                 </p>
                                                                 <p>
                                                                     Fecha ultimo pago:
@@ -369,7 +371,8 @@
                                                                         }}</span>
                                                                 </p>
 
-                                                                <el-button icon="el-icon-view" slot="reference"></el-button>
+                                                                <el-button icon="el-icon-view"
+                                                                    slot="reference"></el-button>
                                                             </el-popover>
                                                         </td>
                                                         <td>
@@ -445,8 +448,9 @@
                                             </tbody>
                                         </table>
                                         <div>
-                                            <el-pagination @current-change="loadUnpaid()" layout="total, prev, pager, next"
-                                                :total="pagination.total" :current-page.sync="pagination.current_page"
+                                            <el-pagination @current-change="loadUnpaid()"
+                                                layout="total, prev, pager, next" :total="pagination.total"
+                                                :current-page.sync="pagination.current_page"
                                                 :page-size="pagination.per_page">
                                             </el-pagination>
                                         </div>
@@ -461,7 +465,8 @@
 
         <document-payments :showDialog.sync="showDialogDocumentPayments" :documentId="recordId" :customerId="customerId"
             :external="true" :configuration="this.configuration" :documentFeeId="feeID"></document-payments>
-        <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId" :documentFeeId="feeID"></pos-fechado>
+        <pos-fechado :showDialog.sync="showDialogPosFechado" :documentId="recordId"
+            :documentFeeId="feeID"></pos-fechado>
         <split-form :showDialog.sync="showDialogSplit" :documentId="recordId" :amountFee="amountFeeRow"></split-form>
         <date-form :showDialog.sync="showDialogDate" :documentId="recordId"></date-form>
         <sale-note-payments :showDialog.sync="showDialogSaleNotePayments" :documentId="recordId" :external="true"
@@ -477,8 +482,8 @@
                     <el-form-item label="Forma de pago">
                         <el-select v-model="formMultiPay.payment_method_type_id"
                             :rules="[{ required: true, message: 'La forma de pago es obligatoria' }]">
-                            <el-option v-for="option in payment_method_types" v-show="option.id != '09'" :key="option.id"
-                                :value="option.id" :label="option.description"></el-option>
+                            <el-option v-for="option in payment_method_types" v-show="option.id != '09'"
+                                :key="option.id" :value="option.id" :label="option.description"></el-option>
                         </el-select>
                     </el-form-item>
                     <el-form-item label="Referencia">
@@ -493,8 +498,25 @@
                                 :label="option.description"></el-option>
                         </el-select>
                     </el-form-item>
-                    <el-form-item label="Valor">
-                        <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment" readonly></el-input>
+                    <el-form-item label="">
+                        <el-row :gutter="20">
+                            <el-col :span="4">
+                                <el-label>Valor</el-label>
+                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
+                                    readonly></el-input>
+                            </el-col>
+                            <el-col :span="4">
+                                <el-label>Debe</el-label>
+                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
+                                    readonly></el-input>
+                            </el-col>
+                            <el-col :span="4">
+                                <el-label>Haber</el-label>
+                                <el-input type="number" :step="0.01" :min="0" v-model="formMultiPay.payment"
+                                    readonly></el-input>
+                            </el-col>
+                        </el-row>
+
                     </el-form-item>
                     <el-form-item label="Extras">
                         <el-button @click="addExtra()">
@@ -519,13 +541,13 @@
                                         </el-select>
                                     </td>
                                     <td>
-                                        <el-input v-model="row.debe" type="number" :disabled="row.haber > 0" :step="0.01"
-                                            :min="0" :max="999999999999999999999">
+                                        <el-input v-model="row.debe" type="number" :disabled="row.haber > 0"
+                                            :step="0.01" :min="0" :max="999999999999999999999">
                                         </el-input>
                                     </td>
                                     <td>
-                                        <el-input v-model="row.haber" type="number" :disabled="row.debe > 0" :step="0.01"
-                                            :min="0" :max="999999999999999999999">
+                                        <el-input v-model="row.haber" type="number" :disabled="row.debe > 0"
+                                            :step="0.01" :min="0" :max="999999999999999999999">
                                         </el-input>
                                     </td>
                                     <td>
@@ -570,7 +592,8 @@
                 <template #footer>
                     <span class="dialog-footer">
                         <el-button type="danger" @click="cancelMultiPay()">Cancel</el-button>
-                        <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary" @click="generateMultiPay()">
+                        <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary"
+                            @click="generateMultiPay()">
                             Generar
                         </el-button>
                     </span>
@@ -713,7 +736,7 @@ export default {
                 return parseFloat(item.total_to_pay);
             }).toFixed(2);
         },
-        getCurrentBalanceMultipayUsd(){
+        getCurrentBalanceMultipayUsd() {
             const self = this;
             let source = [];
 

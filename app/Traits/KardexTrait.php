@@ -3,6 +3,7 @@
 namespace App\Traits;
 use App\Models\Tenant\Item;
 use App\Models\Tenant\Kardex;
+use Illuminate\Support\Facades\Log;
 use Modules\Inventory\Models\ItemWarehouse;
 use Modules\Inventory\Models\InventoryConfiguration;
 use Modules\Item\Models\ItemLotsGroup;
@@ -38,6 +39,7 @@ trait KardexTrait
 
     public function restoreStockInWarehpuse($item_id, $warehouse_id, $quantity)
     {
+        Log::info('restoreStockInWarehpuse');
         $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
         $item_warehouse->stock = $item_warehouse->stock + $quantity;
         $item_warehouse->save();
@@ -45,6 +47,7 @@ trait KardexTrait
 
     public function restoreStockInWarehouseLotGroup($item_id, $warehouse_id, $quantity, $lot_code)
     {
+        Log::info('restoreStockInWarehouseLotGroup');
         $item_warehouse = ItemLotsGroup::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id,'code' => $lot_code]);
         $item_warehouse->quantity = $item_warehouse->quantity + $quantity;
         $item_warehouse->save();

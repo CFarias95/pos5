@@ -268,9 +268,6 @@ class InventoryController extends Controller
 			if($created_at) {
 			  $inventory->date_of_issue = $created_at;
 			}
-
-            //Log::info("ACTUAL " . $costoA . '-' . $totalA . ' NUEVO: ' . $costoN . "-" . $totalN);
-
 			$inventory->save();
 
 			$lots_enabled = isset($request->lots_enabled) ? $request->lots_enabled : false;

@@ -1660,7 +1660,6 @@ class PurchaseController extends Controller
 
                 foreach ($request['items'] as $row) {
 
-
                     $item = Item::where('id', $row['item_id'])->first();
                     if ($item->unit_type_id != 'ZZ') {
                         $costoA = $item->purchase_mean_cost;
@@ -1706,7 +1705,6 @@ class PurchaseController extends Controller
                             ]);
                         }
                     }
-
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
                             $this->processUpdateItemLotsGroup($row, $p_item);
@@ -1836,6 +1834,7 @@ class PurchaseController extends Controller
      */
     private function processUpdateItemLotsGroup($row, PurchaseItem $purchase_item)
     {
+        Log::info('processUpdateItemLotsGroup');
         $lot_code = $row['lot_code'] ?? null;
         $date_of_due = $row['date_of_due'] ?? null;
 
