@@ -209,51 +209,55 @@ class RetentionController extends Controller
             if ($version == '2.0.0' || $version == '2.1.0') {
 
                 $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
-                $existe = Retention::where('ubl_version', $secuencialRet)->first();
+                $existe = Retention::where('ubl_version', $secuencialRet)->get();
 
                 if ($existe && $existe->count() > 0) {
 
-                    if ($existe->in_use == false) {
-                        $existe->delete();
-                    } else {
-                        return;
-                    }
-                    foreach($xmlRet->docsSustento->docSustento as $docSustento){
-                        $number = (Retention::get())->count() + 1;
-                        $detalles = [];
-                        $totalRet = 0;
+                    return[
+                        'success' => false,
+                        'message' => 'El secuencial ya se encuentra registrado',
+                    ];
+                    // if ($existe->in_use == false) {
+                    //     $existe->delete();
+                    // } else {
+                    //     return;
+                    // }
+                    // foreach($xmlRet->docsSustento->docSustento as $docSustento){
+                    //     $number = (Retention::get())->count() + 1;
+                    //     $detalles = [];
+                    //     $totalRet = 0;
 
-                        foreach ($docSustento->retenciones->retencion as $retC) {
+                    //     foreach ($docSustento->retenciones->retencion as $retC) {
 
-                            $detalleRet = $retC;
-                            $detalleRet->numDocSustento = $docSustento->numDocSustento;
-                            $detalleRet->tipo = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
-                            $totalRet += floatval($retC->valorRetenido);
-                            array_push($detalles, $detalleRet);
-                        }
+                    //         $detalleRet = $retC;
+                    //         $detalleRet->numDocSustento = $docSustento->numDocSustento;
+                    //         $detalleRet->tipo = (($retC->codigo == '1') ? 'RENTA' : 'IVA');
+                    //         $totalRet += floatval($retC->valorRetenido);
+                    //         array_push($detalles, $detalleRet);
+                    //     }
 
-                        $retIN = new Retention();
-                        $retIN->user_id = auth()->user()->id;
-                        $retIN->external_id = Str::uuid()->toString();
-                        $retIN->establishment_id = auth()->user()->establishment_id;
-                        $retIN->soap_type_id = $this->company->soap_type_id;
-                        $retIN->state_type_id = '05';
-                        $retIN->series = 'RT';
-                        $retIN->number = $number;
-                        $retIN->date_of_issue = substr($claveAcceso, 4, 4) . "-" . substr($claveAcceso, 2, 2) . "-" . substr($claveAcceso, 0, 2); //date("Y-m-d");
-                        $retIN->time_of_issue = date("h:i:s");
-                        $retIN->supplier_id = $supplier->id;
-                        $retIN->supplier = $supplier;
-                        $retIN->retention_type_id = '01';
-                        $retIN->observations = "Retencion: " . $claveAcceso;
-                        $retIN->ubl_version = $secuencialRet;
-                        $retIN->currency_type_id = $this->config->currency_type_id;
-                        $retIN->total_retention = $totalRet;
-                        $retIN->total = $docSustento->importeTotal;
-                        $retIN->document_type_id = $docSustento->codDocSustento;
-                        $retIN->optional = $detalles;
-                        $retIN->save();
-                    }
+                    //     $retIN = new Retention();
+                    //     $retIN->user_id = auth()->user()->id;
+                    //     $retIN->external_id = Str::uuid()->toString();
+                    //     $retIN->establishment_id = auth()->user()->establishment_id;
+                    //     $retIN->soap_type_id = $this->company->soap_type_id;
+                    //     $retIN->state_type_id = '05';
+                    //     $retIN->series = 'RT';
+                    //     $retIN->number = $number;
+                    //     $retIN->date_of_issue = substr($claveAcceso, 4, 4) . "-" . substr($claveAcceso, 2, 2) . "-" . substr($claveAcceso, 0, 2); //date("Y-m-d");
+                    //     $retIN->time_of_issue = date("h:i:s");
+                    //     $retIN->supplier_id = $supplier->id;
+                    //     $retIN->supplier = $supplier;
+                    //     $retIN->retention_type_id = '01';
+                    //     $retIN->observations = "Retencion: " . $claveAcceso;
+                    //     $retIN->ubl_version = $secuencialRet;
+                    //     $retIN->currency_type_id = $this->config->currency_type_id;
+                    //     $retIN->total_retention = $totalRet;
+                    //     $retIN->total = $docSustento->importeTotal;
+                    //     $retIN->document_type_id = $docSustento->codDocSustento;
+                    //     $retIN->optional = $detalles;
+                    //     $retIN->save();
+                    // }
                 } else {
 
                     foreach($xmlRet->docsSustento->docSustento as $docSustento){
@@ -392,6 +396,7 @@ class RetentionController extends Controller
                 'success' => true,
                 'message' => 'Se ha enviado procesado correctamente la retencion',
             ];
+
         }catch(Exception $ex){
             return [
                 'success' => true,
