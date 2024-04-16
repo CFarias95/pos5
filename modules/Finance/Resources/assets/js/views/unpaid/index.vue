@@ -1059,18 +1059,21 @@ export default {
 
         },
         changeDebe(value){
-
-            this.formMultiPay.debe += parseFloat(value)
+            this.formMultiPay.debe -= parseFloat(value)
+            this.formMultiPay.haber -= parseFloat(value)
         },
         changeHaber(value){
             this.formMultiPay.haber += parseFloat(value)
+            this.formMultiPay.debe += parseFloat(value)
         },
         deleteExtra(index) {
             this.formMultiPay.extras.splice(index, 1);
         },
         changeDebeHaber(){
             this.formMultiPay.extras.forEach((extra)=>{
-                this.formMultiPay.debe += extra.debe
+                this.formMultiPay.debe -= extra.debe
+                this.formMultiPay.haber -= extra.debe
+                this.formMultiPay.debe += extra.haber
                 this.formMultiPay.haber += extra.haber
             });
         }
