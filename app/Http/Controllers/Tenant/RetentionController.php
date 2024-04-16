@@ -403,7 +403,7 @@ class RetentionController extends Controller
 
         }catch(Exception $ex){
             return [
-                'success' => true,
+                'success' => false,
                 'message' => $ex->getMessage()
             ];
         }
