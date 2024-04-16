@@ -124,7 +124,7 @@ class UnpaidController extends Controller
         //return $data;
 
         $collection = collect($data);
-        $per_page =-1;//(config('tenant.items_per_page'));
+        $per_page = 10000;//(config('tenant.items_per_page'));
         $page = $request['page'] ?? 1;
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
