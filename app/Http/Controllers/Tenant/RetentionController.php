@@ -209,13 +209,13 @@ class RetentionController extends Controller
             if ($version == '2.0.0' || $version == '2.1.0') {
 
                 $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
-                $existe = Retention::where('ubl_version', $secuencialRet)->get();
+                $existe = Retention::where('ubl_version', $secuencialRet)->where('supplier_id',$supplier->id)->get();
 
                 if ($existe && $existe->count() > 0) {
 
                     return[
                         'success' => false,
-                        'message' => 'El secuencial ya se encuentra registrado',
+                        'message' => 'El secuencial ya se encuentra registrado: '.$secuencialRet.' con el proveedor: '.$supplier->number,
                     ];
                     // if ($existe->in_use == false) {
                     //     $existe->delete();
@@ -303,13 +303,14 @@ class RetentionController extends Controller
 
                 $secuencialRet = $xmlRet->infoTributaria->estab . $xmlRet->infoTributaria->ptoEmi . $xmlRet->infoTributaria->secuencial;
 
-                $existe = Retention::where('ubl_version', $secuencialRet)->first();
+                $existe = Retention::where('ubl_version', $secuencialRet)->where('supplier_id',$supplier->id)->get();
+
 
                 if ($existe && $existe->count() > 0) {
 
                     return[
                         'success' => false,
-                        'message' => 'El secuencial ya se encuentra registrado',
+                        'message' => 'El secuencial ya se encuentra registrado: '.$secuencialRet.' con el proveedor: '.$supplier->number,
                     ];
                     // if ($existe->in_use == false) {
                     //     $existe->delete();
