@@ -130,12 +130,12 @@
                                         <div class="form-group">
                                             <label>Total documento
                                                 <el-tooltip class="item" effect="dark"
-                                                    content="Por defecto la condicion sera >=(mayor igual), si se desea otra condición especificar condicion,valor ejemplo =,100"
+                                                    content="Por defecto la condicion sera >=(mayor igual)"
                                                     placement="top-start">
                                                     <i class="fa fa-info-circle"></i>
                                                 </el-tooltip>
                                             </label>
-                                            <el-input @change="changeImporte" v-model="form.importe"
+                                            <el-input type="number"  @change="changeImporte" v-model="form.importe"
                                                 clearable></el-input>
                                         </div>
                                     </div>
@@ -202,24 +202,11 @@
 
                                     </div>
                                     <div class="col-md-1 mt-5 text-right"></div>
-
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getTotalRowsUnpaid" class="item">
                                             <span size="small">Total Vencimientos</span>
                                         </el-badge>
                                     </div>
-                                    <!--
-                                    <div class="col-md-2 mt-5 text-right">
-                                        <el-badge :value="getTotalAmountUnpaid" class="item">
-                                            <span size="small">Monto general (PEN)</span>
-                                        </el-badge>
-                                    </div>
-                                    <div class="col-md-2 mt-5 text-right">
-                                        <el-badge :value="getCurrentBalance" class="item">
-                                            <span size="small">Saldo corriente (PEN)</span>
-                                        </el-badge>
-                                    </div>
-                                    -->
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getTotalAmountUnpaidUsd" class="item">
                                             <span size="small">Monto general (USD)</span>
@@ -232,7 +219,7 @@
                                     </div>
                                     <div class="col-md-2 mt-5 text-right">
                                         <el-badge :value="getCurrentBalanceMultipayUsd" class="item" type="warning">
-                                            <span size="small">MultiCobros</span>
+                                            <span size="small">Multipagos</span>
                                         </el-badge>
                                     </div>
 
