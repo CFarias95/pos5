@@ -457,6 +457,7 @@ if ($hostname) {
             Route::get('document_payments/document/{document_id}/{fee_id}', 'Tenant\DocumentPaymentController@document');
             Route::get('document_payments/tables', 'Tenant\DocumentPaymentController@tables');
             Route::post('document_payments', 'Tenant\DocumentPaymentController@store');
+            Route::post('document_payments/update', 'Tenant\DocumentPaymentController@update');
             Route::delete('document_payments/{document_payment}', 'Tenant\DocumentPaymentController@destroy');
             Route::get('document_payments/initialize_balance', 'Tenant\DocumentPaymentController@initialize_balance');
             Route::get('document_payments/report/{start}/{end}/{report}', 'Tenant\DocumentPaymentController@report');

@@ -362,7 +362,6 @@ class DocumentPaymentController extends Controller
             }
         }
 
-
         if((Company::active())->countable > 0 ){
             $this->createAccountingEntry($request, $data);
         }
@@ -838,6 +837,46 @@ class DocumentPaymentController extends Controller
         ];
     }
 
+    public function update(Request $request){
+        try{
+            $data = DocumentPayment::find($request->id);
+            $data->payment = $request->payment;
+            $data->reference = $request->reference;
+            $data->save();
+
+            $seat = AccountingEntries::where('document_id', 'CF'.$request->id)->first();
+            $seat->total_haber = floatVal($request->payment);
+            $seat->total_debe = floatVal($request->payment);
+            $seat->save();
+
+            $seatItems = AccountingEntryItems::where('accounting_entrie_id',$seat->id)->get();
+
+            foreach($seatItems as $item){
+                if($item->debe > 0){
+                    $item->debe = floatVal($request->payment);
+                    $item->save();
+                }
+                if($item->haber > 0){
+                    $item->haber = floatVal($request->payment);
+                    $item->save();
+                }
+            }
+
+            return[
+                'success'=>true,
+                'message'=>'Se actualizó el registro'
+            ];
+
+        }catch(Exception $ex){
+            Log::error('Error al actualizar cobro');
+            Log::error($ex->getMessage());
+            return[
+                'success'=>false,
+                'message'=>$ex->getMessage()
+            ];
+        }
+    }
+
     public function initialize_balance()
     {
 
@@ -1046,5 +1085,7 @@ class DocumentPaymentController extends Controller
 
 
     }
+
+
 
 }

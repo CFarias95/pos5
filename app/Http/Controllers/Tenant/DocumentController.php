@@ -2159,7 +2159,7 @@ class DocumentController extends Controller
         $items = Item::orderBy('description')->whereIn('item_for',[0,1])->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
+                'description' => $row->name.' / '.$row->description.' / '.$row->reference. ' / '.$row->internal_id.' / '.$row->factory_code,
             ];
         });
 

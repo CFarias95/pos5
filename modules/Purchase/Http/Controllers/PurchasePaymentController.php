@@ -681,4 +681,44 @@ class PurchasePaymentController extends Controller
         }
     }
 
+    public function update(Request $request){
+        try{
+            $data = PurchasePayment::find($request->id);
+            $data->payment = $request->payment;
+            $data->reference = $request->reference;
+            $data->save();
+
+            $seat = AccountingEntries::where('document_id', 'PC'.$request->id)->first();
+            $seat->total_haber = floatVal($request->payment);
+            $seat->total_debe = floatVal($request->payment);
+            $seat->save();
+
+            $seatItems = AccountingEntryItems::where('accounting_entrie_id',$seat->id)->get();
+
+            foreach($seatItems as $item){
+                if($item->debe > 0){
+                    $item->debe = floatVal($request->payment);
+                    $item->save();
+                }
+                if($item->haber > 0){
+                    $item->haber = floatVal($request->payment);
+                    $item->save();
+                }
+            }
+
+            return[
+                'success'=>true,
+                'message'=>'Se actualizó el registro'
+            ];
+
+        }catch(Exception $ex){
+            Log::error('Error al actualizar Pago');
+            Log::error($ex->getMessage());
+            return[
+                'success'=>false,
+                'message'=>$ex->getMessage()
+            ];
+        }
+    }
+
 }
