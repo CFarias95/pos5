@@ -31,41 +31,42 @@
 
     $configuration_decimal_quantity = App\CoreFacturalo\Helpers\Template\TemplateHelper::getConfigurationDecimalQuantity();
 
-    $total12=0;
-    $totalIVA12=0;
+    // $total12=0;
+    // $totalIVA12=0;
 
-    $total8=0;
-    $totalIVA8=0;
+    // $total8=0;
+    // $totalIVA8=0;
 
-    $total0=0.00;
-    $totalIVA0=0.00;
+    // $total0=0.00;
+    // $totalIVA0=0.00;
 
-    $total14=0;
-    $totalIVA14=0;
+    // $total14=0;
+    // $totalIVA14=0;
 
-    foreach($document->items as $item){
+    // foreach($document->items as $item){
 
-        if($item->affectation_igv_type_id === '10'){
-            //JOINSOFTWARE
-            $total12=$total12 + $item->total_value;
-            $totalIVA12= $totalIVA12 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '11'){
-            //JOINSOFTWARE
-            $total8=$total8 + $item->total_value;
-            $totalIVA8= $totalIVA8 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '12'){
-            //JOINSOFTWARE
-            $total14=$total14 + $item->total_value;
-            $totalIVA14= $totalIVA14 + $item->total_taxes;
-        }
-        if($item->affectation_igv_type_id === '30'){
-            //JOINSOFTWARE
-            $total0=$total0 + $item->total_value;
-            $totalIVA0= $totalIVA0 + $item->total_taxes;
-        }
-    }
+    //     if($item->affectation_igv_type_id === '10'){
+    //         //JOINSOFTWARE
+    //         $total12=$total12 + $item->total_value;
+    //         $totalIVA12= $totalIVA12 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '11'){
+    //         //JOINSOFTWARE
+    //         $total8=$total8 + $item->total_value;
+    //         $totalIVA8= $totalIVA8 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '12'){
+    //         //JOINSOFTWARE
+    //         $total14=$total14 + $item->total_value;
+    //         $totalIVA14= $totalIVA14 + $item->total_taxes;
+    //     }
+    //     if($item->affectation_igv_type_id === '30'){
+    //         //JOINSOFTWARE
+    //         $total0=$total0 + $item->total_value;
+    //         $totalIVA0= $totalIVA0 + $item->total_taxes;
+    //     }
+    // }
+    
 @endphp
 
 
