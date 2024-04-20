@@ -518,20 +518,7 @@
                 </td>
                 <td width="40%">
                     <table class="full-width" style="border-spacing: 0px 5px; border-collapse: separate;">
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 0%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0, 2) }}</td>
-                        </tr>
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 12%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total12, 2) }}</td>
-                        </tr>
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total14, 2) }}</td>
-                        </tr>
-                        -->
+                        
                         @if ($document->document_type_id === '07')
                             @if($document->total_taxed >= 0)
                             <tr>
