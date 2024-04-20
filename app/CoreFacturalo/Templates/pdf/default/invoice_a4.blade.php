@@ -66,7 +66,31 @@
     //         $totalIVA0= $totalIVA0 + $item->total_taxes;
     //     }
     // }
-    
+
+    $totales = [];
+    $subtotal = 0;
+
+    foreach($document->items as $item){
+
+        $subtotal += $item->total_value;
+
+        $existe = false;
+        foreach ($totales as $key => $value) {
+            if($value['tarifa'] == intVal($item->percentage_igv)){
+                $existe = true;
+                $totales[$key]['iva'] += floatVal($item->total_taxes);
+                $totales[$key]['subtotal'] += floatVal($item->total_value);
+            }
+        }
+        if( $existe ==  false){
+            array_push($totales,[
+                'tarifa'=> intVal($item->percentage_igv),
+                'iva' => $item->total_taxes,
+                'subtotal' => $item->total_value,
+            ]);
+        }
+    }
+
 @endphp
 
 
