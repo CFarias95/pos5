@@ -518,7 +518,12 @@
                 </td>
                 <td width="40%">
                     <table class="full-width" style="border-spacing: 0px 5px; border-collapse: separate;">
-                        
+                        @foreach( $totales as $total)
+                        <tr>
+                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal {{ $total['tarifa'] }}%:</td>
+                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
+                        </tr>
+                        @endforeach
                         @if ($document->document_type_id === '07')
                             @if($document->total_taxed >= 0)
                             <tr>
@@ -528,7 +533,7 @@
                             @endif
                         @elseif($document->total_taxed > 0)
                             <tr>
-                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Subtotal Sin Impuestos:</td>
+                                <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Subtotal Sin Impuestos:</strong></td>
                                 <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0+$total12+$total14+$total8, 2) }}</td>
                             </tr>
                         @endif
