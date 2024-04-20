@@ -425,7 +425,7 @@
                                                     <td>{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
                                                 </tr>
                                                 <tr v-if="form.total_taxed > 0">
-                                                    <td>SUBTOTAL 12%:</td>
+                                                    <td>SUBTOTAL 15%:</td>
                                                     <td>{{ currency_type.symbol }} {{ form.total_taxed }}</td>
                                                 </tr>
                                                 <tr v-if="form.total_prepayment > 0">
@@ -908,7 +908,7 @@
                                         <td>{{ currency_type.symbol }} {{ form.total_exonerated }}</td>
                                     </tr>
                                     <tr v-if="form.total_taxed > 0">
-                                        <td>SUBTOTAL 12%:</td>
+                                        <td>SUBTOTAL 15%:</td>
                                         <td>{{ currency_type.symbol }} {{ form.total_taxed }}</td>
                                     </tr>
                                     <tr v-if="form.total_prepayment > 0">
