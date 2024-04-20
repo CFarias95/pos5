@@ -3,7 +3,7 @@ export const functions = {
         return {
             loading_search_exchange_rate: false,
             loading_search: false,
-            percentage_igv: 0.12
+            percentage_igv: 0.15
             //percentage_igv: 0.18
         }
     },
@@ -84,7 +84,7 @@ export const functions = {
                     console.log(this.form.percentage_igv);
                 });
         },
-        async getPercentageIgvWithParams(establishment_id, date_of_issue) 
+        async getPercentageIgvWithParams(establishment_id, date_of_issue)
         {
             await this.$http.post(`/store/get_igv`, {
                         establishment_id: establishment_id,
@@ -296,7 +296,7 @@ export const setDefaultSeriesByMultipleDocumentTypes = {
                 if(this.authUser.multiple_default_document_types)
                 {
                     const default_document_type_serie = _.find(this.authUser.default_document_types, { document_type_id : document_type_id})
-        
+
                     if(default_document_type_serie)
                     {
                         const exist_serie = _.find(this.series, { id : default_document_type_serie.series_id})
@@ -407,12 +407,12 @@ export const operationsForDiscounts = {
         }
     },
     methods: {
-        deleteDiscountGlobal() 
+        deleteDiscountGlobal()
         {
             let discount = _.find(this.form.discounts, {'discount_type_id': this.config.global_discount_type_id})
             let index = this.form.discounts.indexOf(discount)
 
-            if (index > -1) 
+            if (index > -1)
             {
                 this.form.discounts.splice(index, 1)
                 this.form.total_discount = 0
@@ -473,11 +473,11 @@ export const operationsForDiscounts = {
             }
 
         },
-        changeTypeDiscount() 
+        changeTypeDiscount()
         {
             this.calculateTotal()
         },
-        changeTotalGlobalDiscount() 
+        changeTotalGlobalDiscount()
         {
             this.calculateTotal()
         },
