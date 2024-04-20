@@ -1418,7 +1418,7 @@ export default {
 
                     //JOINSOFTWARE //
                     if(affectation_igv_type_id === "10" ){
-                        unit_price = this.form.unit_price_value * 1.12;
+                        unit_price = this.form.unit_price_value * 1.15;
                     }else if(affectation_igv_type_id === "11"){
                         unit_price = this.form.unit_price_value * 1.08;
                     }else if(affectation_igv_type_id === "12"){
