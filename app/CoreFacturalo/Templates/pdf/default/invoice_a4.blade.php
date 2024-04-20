@@ -534,7 +534,7 @@
                         @elseif($document->total_taxed > 0)
                             <tr>
                                 <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;"><strong>Subtotal Sin Impuestos:</strong></td>
-                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($total0+$total12+$total14+$total8, 2) }}</td>
+                                <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($subtotal, 2) }}</td>
                             </tr>
                         @endif
                         <tr>
