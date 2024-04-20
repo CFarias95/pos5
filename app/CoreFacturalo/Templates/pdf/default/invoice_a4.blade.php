@@ -548,12 +548,7 @@
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{$total['iva']}}</td>
                         </tr>
                         @endforeach
-                        <!-- JOINSOFTWARE
-                        <tr>
-                            <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">IVA 14%:</td>
-                            <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}{{ number_format($totalIVA14, 2) }}</td>
-                        </tr>
-                        -->
+
                         <tr>
                             <td style="padding-left: 15px; padding-right: 15px; background: #f7f7f5;">Servicio %:</td>
                             <td class="text-right" style="padding-left: 15px; padding-right: 15px; background: #eaeaea;">{{ $document->currency_type->symbol }}0.00</td>
