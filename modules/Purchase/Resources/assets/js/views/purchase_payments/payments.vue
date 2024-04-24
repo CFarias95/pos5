@@ -48,9 +48,9 @@
                                                     @click.prevent="clickReverse(row)">Reversar</button>
                                                 <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                                     @click.prevent="clickExpenses(row)">Gastos</button>
-                                                <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
+                                                <!-- <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-success"
-                                                    @click.prevent="clickEdit(row)">Editar</button>
+                                                    @click.prevent="clickEdit(row)">Editar</button> -->
                                             <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                         </td>
                                     </template>
@@ -543,7 +543,7 @@ export default {
             let total = this.purchase.total_difference;
 
             let payment = 0;
-            let amount = _.round(total / payment_count, 2);
+            let amount = this.records[index].payment; //_.round(total / payment_count, 2);
 
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
