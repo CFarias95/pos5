@@ -1043,7 +1043,7 @@ class PurchaseController extends Controller
                         $importCTAItem = $value->import;
                         $ctaImportItem = Imports::find($importCTAItem);
                         $itemCTA = "";
-                        if ($ctaImportItem && $ctaImportItem->count() > 0) {
+                        if ($ctaImportItem && $ctaImportItem->count() > 0 && $document->tipo_doc_id == 2) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
 

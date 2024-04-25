@@ -886,7 +886,7 @@ export default {
             let total = this.document.total_difference;
 
             let payment = 0;
-            let amount = _.round(total / payment_count, 2);
+            let amount = this.records[index].payment //_.round(total / payment_count, 2);
 
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
