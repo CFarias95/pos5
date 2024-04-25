@@ -4,6 +4,7 @@
 
     use App\Http\Controllers\Controller;
     use App\Http\Controllers\SearchItemController;
+use App\Models\Tenant\Inventory as TenantInventory;
 use App\Models\Tenant\Item;
 use Barryvdh\DomPDF\Facade as PDF;
     use Carbon\Carbon;
@@ -63,7 +64,14 @@ use Modules\Item\Models\ItemLotsGroup;
                 ];
             });
 
-            return compact('columns', 'clients', 'warehouses');
+            $items = Item::where('unit_type_id','!=', 'ZZ')->get()->transform(function($row){
+                return[
+                    'id' => $row->id,
+                    'description' => $row->name .' / '.$row->description.' / '.$row->model.' / '.$row->internal_i,
+                ];
+            });
+
+            return compact('columns', 'clients', 'warehouses','items');
         }
 
         public function records(Request $request)
@@ -89,21 +97,52 @@ use Modules\Item\Models\ItemLotsGroup;
             if ($request->warehouse_destination_id) {
                 $records->where('warehouse_destination_id', $request->warehouse_destination_id)->latest();
             }
+            if ($request->item_id) {
+                $inventoriesId = TenantInventory::where('item_id',$request->item_id)->get()->transform(function($row){
+                    return[
+                        'id' =>$row->id
+                    ];
+                });
 
-            //$person = Person::where('id', $records->client_id)->get();
-            //Log::info('records'.json_encode($person));
+                if($inventoriesId->count() > 0){
+                    $records->whereIn('id', $inventoriesId);
+                }
+            }
 
-            //return json_encode( $records );
-            /*$records = Inventory::with(['item', 'warehouse', 'warehouse_destination'])
-                                ->where('type', 2)
-                                ->whereHas('warehouse_destination')
-                                ->whereHas('item', function($query) use($request) {
-                                    $query->where('description', 'like', '%' . $request->value . '%');
+            $idReversos = InventoryTransfer::where('description', 'like', 'Reverso Traslado  de: %')->get();
+            $idReversosO = array();
+            $idReversos->transform(function($row) use($idReversosO){
 
-                                })
-                                ->latest();*/
+                $descrop = $row->description;
+                $descrop = str_replace('Reverso Traslado  de: ','',$descrop);
+                $record = InventoryTransfer::where('description', $descrop)->first();
+                if($record){
 
-            //Log::info('records'.json_encode($records));
+                        array_push($idReversosO,array('id'=>$record->id));
+
+
+                    //$idReversosO[]=['id'=>$record->id];
+                }
+
+                    array_push($idReversosO,array('id'=>$row->id));
+
+
+                //$idReversosO[]=['id'=>$row->id];
+
+                return $idReversosO;
+            });
+
+            $arrayID = array();
+            foreach($idReversos as $value){
+                if(count($value) > 1){
+                    $arrayID[] = $value[0];
+                    $arrayID[] = $value[1];
+                }else{
+                    $arrayID[] = $value[0];
+                }
+            }
+
+            $records->whereNotIn('id',$arrayID);
 
             return new TransferCollection($records->paginate(config('tenant.items_per_page')));
         }

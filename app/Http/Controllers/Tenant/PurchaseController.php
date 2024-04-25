@@ -867,7 +867,7 @@ class PurchaseController extends Controller
                         $warehouseItem = TenantWarehouse::find($value->warehouse_id);
                         $establishmentItem = Establishment::find($warehouseItem->establishment_id);
 
-                        if ($ctaImportItem && $ctaImportItem->count() > 0) {
+                        if ($ctaImportItem && $ctaImportItem->count() > 0 && $document->tipo_doc_id == 2) {
                             $itemCTA = $ctaImportItem->cuenta_contable;
                         }
 
@@ -1785,7 +1785,6 @@ class PurchaseController extends Controller
             ];
         }
     }
-
 
     /**
      *

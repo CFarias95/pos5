@@ -49,6 +49,12 @@
                     <el-option v-for="option in warehouses" :key="option.id" :value="option.id" :label="option.description"></el-option>
                 </el-select>
             </div>
+            <div class="col-md-3">
+                <label>Producto</label>
+                <el-select v-model="search.item_id" filterable clearable @change="getRecords">
+                    <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
+                </el-select>
+            </div>
         </div>
       </div>
 
@@ -95,10 +101,12 @@ export default {
         warehouse_id:null,
         warehouse_destination_id:null,
         warehouse:null,
+        item_id:null,
       },
       columns: [],
       clients : [],
       warehouses: [],
+      items: [],
       records: [],
       pagination: {}
     };
@@ -121,6 +129,7 @@ export default {
             this.search.column = _.head(Object.keys(this.columns));
             this.clients = response.data.clients
             this.warehouses = response.data.warehouses
+            this.items = response.data.items
 
         }else{
             this.columns = response.data;

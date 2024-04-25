@@ -48,6 +48,9 @@
                                                     @click.prevent="clickReverse(row)">Reversar</button>
                                                 <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                                     @click.prevent="clickExpenses(row)">Gastos</button>
+                                                <!-- <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
+                                                    class="btn waves-effect waves-light btn-xs btn-success"
+                                                    @click.prevent="clickEdit(row)">Editar</button> -->
                                             <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
                                         </td>
                                     </template>
@@ -264,6 +267,127 @@
                     </template>
                 </el-dialog>
             </template>
+            <template #default>
+                <el-dialog style="background-color: rgb(14 14 14 / 64%);" :show-close="true"
+                    :visible="this.showEdit" title="Editar cobro" append-to-body align-center>
+                    <table class="table" style="width:100%">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>Fecha de cobro</th>
+                                <th>Método de cobro <span class="text-danger">*</span></th>
+                                <th>Destino <span class="text-danger">*</span></th>
+                                <th class="text-center">Monto <span class="text-danger">*</span></th>
+                                <th>Referencia</th>
+                                <template v-if="external">
+                                    <th>Acciones</th>
+                                </template>
+                                <th></th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>{{ (editRow.multi_pay && editRow.multi_pay == 'SI')?'MULTICOBRO':'COBRO'}}-{{
+                                            editRow.sequential }}</td>
+                                <td>
+                                    <div class="form-group mb-0">
+                                        <el-input v-model="editRow.date_of_payment" readonly></el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-0">
+                                        <el-input readonly v-model="editRow.payment_method_type_description"></el-input>
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="form-group mb-0">
+                                        <el-input readonly v-model="editRow.destination_description"></el-input>
+                                    </div>
+                                </td>
+                                <td v-if="editRow.payment_method_type_id == '99'">
+                                    <div class="form-group mb-0">
+                                        <el-input v-model="editRow.payment"
+                                            @change="changeRetentionInput(index, $event, editRow.payment_method_type_id, editRow.reference)"></el-input>
+
+                                    </div>
+                                </td>
+                                <td v-else-if="editRow.payment_method_type_id == '16'">
+                                    <div class="form-group mb-0">
+                                        <el-input v-model="editRow.payment"
+                                            @change="changeCreditsInput(index, $event, editRow.payment_method_type_id, editRow.reference)"></el-input>
+
+                                    </div>
+                                </td>
+                                <td v-else-if="editRow.payment_method_type_id == '13'">
+                                    <div class="form-group mb-0">
+                                        <el-date-picker v-model="editRow.postdated" type="date" :clearable="false"
+                                            format="dd/MM/yyyy" value-format="yyyy-MM-dd"
+                                            placeholder="Postfechado"></el-date-picker>
+
+                                    </div>
+                                    <div class="form-group mb-0">
+                                        <el-input v-model="editRow.payment"></el-input>
+                                    </div>
+                                </td>
+                                <td v-else>
+                                    <div class="form-group mb-0" >
+                                        <el-input type="number" v-model="editRow.payment"></el-input>
+                                    </div>
+                                </td>
+                                <td class="row no-gutters px-0">
+                                    <div class="col-md-12">
+                                        <div class="form-group mb-0"
+                                            v-if="editRow.payment_method_type_id == '14' || editRow.payment_method_type_id == '15'">
+                                            <el-select v-model="editRow.reference" placeholder="Referencia Acticipo"
+                                                @change="changeAdvance(index, $event)">
+                                                <el-option v-for="option in advances" :key="option.id"
+                                                    :label="'AT' + option.id + ' - ' + option.reference"
+                                                    :value="option.id"></el-option>
+                                            </el-select>
+                                        </div>
+                                        <div class="form-group mb-0"
+                                            v-else-if="editRow.payment_method_type_id == '99'">
+                                            <el-select v-model="editRow.reference" placeholder="Referencia retención"
+                                                @change="changeRetention(index, $event)">
+                                                <el-option v-for="option in retentions" :key="option.id"
+                                                    :label="option.name" :value="option.id"></el-option>
+                                            </el-select>
+
+                                        </div>
+                                        <div class="form-group mb-0"
+                                            v-else-if="editRow.payment_method_type_id == '16'">
+                                            <el-select v-model="editRow.reference" placeholder="Referencia retención"
+                                                @change="changeCredits(index, $event)">
+                                                <el-option v-for="option in credits" :key="option.id"
+                                                    :label="option.name" :value="option.id"></el-option>
+                                            </el-select>
+
+                                        </div>
+                                        <div class="form-group mb-0"
+                                            v-else>
+                                            <el-input v-model="editRow.reference" placeholder="Referencia y/o N° Operación"
+                                                :disabled="editRow.payment_received == '0'"></el-input>
+
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="series-table-actions text-right px-0">
+                                    <button type="button" class="btn waves-effect waves-light btn-sm btn-info"
+                                        @click.prevent="clickSaveEdit(editRow)">
+                                        <i class="fa fa-check d-block"></i>
+                                    </button>
+
+                                    <button type="button" class="btn waves-effect waves-light btn-sm btn-danger"
+                                        @click.prevent="clickCancelEdit">
+                                        <i class="fa fa-times d-block"></i>
+                                    </button>
+                                </td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </el-dialog>
+
+            </template>
         </div>
     </el-dialog>
 </template>
@@ -316,6 +440,8 @@ export default {
                 overPaymentAdvance: false,
                 overPaymentAccount: null,
             },
+            showEdit:false,
+            editRow:[],
         }
     },
     async created() {
@@ -417,7 +543,7 @@ export default {
             let total = this.purchase.total_difference;
 
             let payment = 0;
-            let amount = _.round(total / payment_count, 2);
+            let amount = this.records[index].payment; //_.round(total / payment_count, 2);
 
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
@@ -571,6 +697,20 @@ export default {
             this.records = [];
             this.fileList = [];
             this.showAddButton = true;
+            this.editRow = {
+                id : null,
+                date_of_payment : moment().format('YYYY-MM-DD'),
+                payment_method_type_id : null,
+                payment_destination_id : null,
+                reference : null,
+                filename : null,
+                temp_path : null,
+                payment : 0,
+                // payment: 0,
+                errors : {},
+                loading : false,
+                payment_received : '1',
+                }
         },
         async getData() {
             if (this.documentFeeId) {
@@ -579,6 +719,7 @@ export default {
                 this.title3 = "PENDIENTE DE PAGO CUOTA"
             }
             this.initForm();
+
             await this.$http.get(`/${this.resource}/purchase/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
                     this.purchase = response.data;
@@ -707,6 +848,30 @@ export default {
             )
 
         },
+        clickEdit(paymnet){
+            console.log('clickEdit',paymnet)
+            this.editRow = paymnet;
+            console.log('editRow',this.editRow)
+            this.showEdit = true;
+        },
+        clickSaveEdit(row){
+            console.log('clickSaveEdit',row)
+            this.$http.post(`/${this.resource}/update`, row)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success("Registro actualizado correctamente");
+                        this.initForm();
+                        this.showEdit = false
+                        this.getData();
+                    }else{
+                        this.$message.error(response.data.message);
+                    }
+                });
+        },
+        clickCancelEdit(){
+            this.showEdit = false;
+            this.getData();
+        }
     }
 }
 </script>
