@@ -238,7 +238,7 @@
                                                     <el-select v-model="row.reference" placeholder="Referencia Acticipo"
                                                         @change="changeAdvance(index, $event)">
                                                         <el-option v-for="option in advances" :key="option.id"
-                                                            :label="'AT' + option.id + ' - ' + option.reference"
+                                                            :label="'AT' + option.id + ' - ' + option.reference + '/'+ option.valor"
                                                             :value="option.id"></el-option>
                                                     </el-select>
                                                     <small class="form-control-feedback" v-if="row.errors.reference"
@@ -480,7 +480,7 @@
                                             <el-select v-model="editRow.reference" placeholder="Referencia Acticipo"
                                                 @change="changeAdvance(index, $event)">
                                                 <el-option v-for="option in advances" :key="option.id"
-                                                    :label="'AT' + option.id + ' - ' + option.reference"
+                                                    :label="'AT' + option.id + ' - ' + option.reference + '/'+option.valor"
                                                     :value="option.id"></el-option>
                                             </el-select>
                                         </div>
@@ -887,9 +887,12 @@ export default {
 
             let payment = 0;
             let amount = this.records[index].payment //_.round(total / payment_count, 2);
+            console.log('Valor del anticipo: ',maxAmount)
+            console.log('Valor de la cuota: ',amount)
 
             if (maxAmount >= amount) {
                 /* EL MONTO INGRESADO ESTA PERMITIDO */
+                console.log('El valor del anticipo es mayor o igual al valor a pagar',maxAmount,amount)
             } else if (amount > maxAmount) {
 
                 this.records[index].payment = maxAmount
