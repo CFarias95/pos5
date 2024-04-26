@@ -13,38 +13,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: left;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -81,30 +81,30 @@
             <h2 align="center" class="title"><strong>Reporte Balance General</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
-            
+
         </div>
         @if(!empty($records))
             <div class="">
                 <div class=" ">
+                    @php
+                        $keys = $records[0];
+                    @endphp
                     <table class="">
                         <thead>
                             <tr>
-                                @foreach ($sp2 as $row)
-                                    <th>
-                                        {{$row}}
-                                    </th>
-                                @endforeach 
+                                @foreach($keys as $key => $value)
+                                <th><strong> {{ $key }} </strong></th>
+                                @endforeach
+
                             </tr>
                         </thead>
                         <tbody>
-                            @foreach ($records as $data)
-                            <tr>                   
-                                @foreach ($data as $name)
-                                    <td class="celda">
-                                        {{ $name }}&nbsp;
-                                    </td> 
-                                @endforeach                    
-                            </tr> 
+                            @foreach($records as $key => $value)
+                            <tr>
+                                @foreach($value as $v)
+                                <td>{{ $v }}</td>
+                                @endforeach
+                            </tr>
                             @endforeach
                         </tbody>
                     </table>

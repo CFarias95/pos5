@@ -103,7 +103,7 @@ class BalanceGeneralController extends Controller
         }
         $company = Company::first();
         $records = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
-        
+
         $sp1 = array();
         $sp2 = [];
         foreach($records as $row)
@@ -115,7 +115,7 @@ class BalanceGeneralController extends Controller
             }
             break;
         }
-        
+
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
@@ -148,18 +148,6 @@ class BalanceGeneralController extends Controller
 
         $company = Company::first();
         $records = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
-        
-        $sp1 = array();
-        $sp2 = [];
-        foreach($records as $row)
-        {
-            foreach($row as $key => $data)
-            {
-                array_push($sp1, $data);
-                array_push($sp2, $key);
-            }
-            break;
-        }
 
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
@@ -169,8 +157,7 @@ class BalanceGeneralController extends Controller
             ->records($records)
             ->company($company)
             ->usuario_log($usuario_log)
-            ->fechaActual($fechaActual)
-            ->sp2($sp2);
+            ->fechaActual($fechaActual);
 
         return $documentExport->download('Reporte_balance_general' . Carbon::now() . '.xlsx');
     }

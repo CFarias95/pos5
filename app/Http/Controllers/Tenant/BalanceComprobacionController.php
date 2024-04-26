@@ -61,13 +61,13 @@ class BalanceComprobacionController extends Controller
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
         $paginatedCollection['datos'] = $sp2;
-        
+
         return new BalanceComprobacionCollection($paginatedCollection);
     }
 
     public function cuentas()
     {
-        $cuentas = AccountMovement::get()->transform(function($row){
+        $cuentas = AccountMovement::orderBy('code','asc')->get()->transform(function($row){
             return[
                 'id'=> $row->code,
                 'name' => $row->description,
@@ -86,9 +86,7 @@ class BalanceComprobacionController extends Controller
         $fechaActual = date('d/m/Y');
 
         $pdf = PDF::loadView('tenant.balance_comprobacion.balance_comprobacion_pdf', compact("records", "company", "usuario_log", "request"));
-
         $filename = 'Reporte_Balance_Comprobacion_' . date('YmdHis');
-
         return $pdf->download($filename . '.pdf');
     }
 
@@ -105,7 +103,6 @@ class BalanceComprobacionController extends Controller
             ->company($company)
             ->usuario_log($usuario_log)
             ->fechaActual($fechaActual);
-
         return $documentExport->download('Reporte_Balance_Comprobacion' . Carbon::now() . '.xlsx');
     }
 }

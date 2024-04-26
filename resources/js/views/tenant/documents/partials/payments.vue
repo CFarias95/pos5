@@ -479,7 +479,7 @@
                                             v-if="editRow.payment_method_type_id == '14' || editRow.payment_method_type_id == '15'">
                                             <el-select v-model="editRow.reference" placeholder="Referencia Acticipo"
                                                 @change="changeAdvance(index, $event)">
-                                                <el-option v-for="option in advances" :key="option.id"
+                                                <el-option v-for="option in advances" :key="option.id" v-if="option.valor > 0"
                                                     :label="'AT' + option.id + ' - ' + option.reference + '/'+option.valor"
                                                     :value="option.id"></el-option>
                                             </el-select>
@@ -528,15 +528,14 @@
 
             </template>
         </div>
-
         <dialog-link-payment :documentPaymentId="documentPayment.id" :currencyTypeId="document.currency_type_id"
             :exchangeRateSale="document.exchange_rate_sale" :payment="documentPayment.payment"
             :showDialog.sync="showDialogLink" :documentPayment="documentPayment">
         </dialog-link-payment>
-
         <document-options :recordId="this.payment_id" :showDialogOptions.sync="showDialogOptions"
             :showClose="showDialogClose" :type="this.type" :configuration="this.configuration"
-            :monto="this.monto"></document-options>
+            :monto="this.monto">
+        </document-options>
 
     </el-dialog>
 </template>

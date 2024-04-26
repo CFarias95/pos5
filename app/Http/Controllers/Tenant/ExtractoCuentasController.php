@@ -66,7 +66,7 @@ class ExtractoCuentasController extends Controller
 
     public function cuentas()
     {
-        $cuentas = AccountMovement::get()->transform(function($row){
+        $cuentas = AccountMovement::orderBy('code','asc')->get()->transform(function($row){
             return[
                 'id'=> $row->code,
                 'name' => $row->description,

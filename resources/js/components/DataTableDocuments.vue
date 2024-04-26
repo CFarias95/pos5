@@ -92,8 +92,9 @@
                     <div class="col-lg-4 col-md-4 " v-if="resource == 'documents'">
                         <div class="form-group">
                             <label class="control-label">Productos</label>
-                            <el-select v-model="search.item_id" filterable remote  popper-class="el-select-customers"  clearable
+                            <el-select v-model="search.item_id" remote  popper-class="el-select-customers"  clearable
                                 placeholder="Nombre o código interno"
+                                filterable
                                 :remote-method="searchRemoteItems"
                                 :loading="loading_search_item">
                                 <el-option v-for="option in items" :key="option.id" :value="option.id" :label="option.description"></el-option>
@@ -288,7 +289,6 @@ export default {
         },
         methods: {
             ...mapActions(['loadConfiguration']),
-
             searchRemoteItems(input) {
 
                 if (input.length > 0) {
@@ -298,10 +298,9 @@ export default {
 
                     this.$http.get(`/documents/data-table/items?${parameters}`)
                             .then(response => {
-                                // console.log(response.data)
+                                console.log('searchRemoteItems',response.data)
                                 this.items = response.data
                                 this.loading_search = false
-
                                 if(this.items.length == 0){
                                     this.filterItems()
                                 }

@@ -144,7 +144,6 @@ export default {
     return {
       resource: "balance-comprobacion",
       form: {
-        //s: null,
         date_start: null,
         date_end: null,
         icuenta: null,

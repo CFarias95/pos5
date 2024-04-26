@@ -483,88 +483,88 @@ class DocumentController extends Controller
         }
 
         if ($table === 'items') {
-
+            Log::error('Buscando items');
             return SearchItemController::getItemsToDocuments();
 
-            $establishment_id = auth()->user()->establishment_id;
-            $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
-            // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
-            $items_u = Item::with('warehousePrices')
-                ->whereIsActive()
-                ->orderBy('description');
-            $items_s = Item::with('warehousePrices')
-                ->where('items.unit_type_id', 'ZZ')
-                ->whereIsActive()
-                ->orderBy('description');
-            $items_u = $items_u
-                ->take(20)
-                ->get();
-            $items_s = $items_s
-                ->take(10)
-                ->get();
-            $items = $items_u->merge($items_s);
+            // $establishment_id = auth()->user()->establishment_id;
+            // $warehouse = ModuleWarehouse::where('establishment_id', $establishment_id)->first();
+            // // $items_u = Item::whereWarehouse()->whereIsActive()->whereNotIsSet()->orderBy('description')->take(20)->get();
+            // $items_u = Item::with('warehousePrices')
+            //     ->whereIsActive()
+            //     ->orderBy('description');
+            // $items_s = Item::with('warehousePrices')
+            //     ->where('items.unit_type_id', 'ZZ')
+            //     ->whereIsActive()
+            //     ->orderBy('description');
+            // $items_u = $items_u
+            //     ->take(20)
+            //     ->get();
+            // $items_s = $items_s
+            //     ->take(10)
+            //     ->get();
+            // $items = $items_u->merge($items_s);
 
-            return collect($items)->transform(function ($row) use ($warehouse) {
-                /** @var Item $row */
-                return $row->getDataToItemModal($warehouse);
-                $detail = $this->getFullDescription($row, $warehouse);
-                return [
-                    'id' => $row->id,
-                    'full_description' => $detail['full_description'],
-                    'model' => $row->model,
-                    'brand' => $detail['brand'],
-                    'warehouse_description' => $detail['warehouse_description'],
-                    'category' => $detail['category'],
-                    'stock' => $detail['stock'],
-                    'internal_id' => $row->internal_id,
-                    'description' => $row->description,
-                    'currency_type_id' => $row->currency_type_id,
-                    'currency_type_symbol' => $row->currency_type->symbol,
-                    'sale_unit_price' => Item::getSaleUnitPriceByWarehouse($row, $warehouse->id),
-                    'purchase_unit_price' => $row->purchase_unit_price,
-                    'unit_type_id' => $row->unit_type_id,
-                    'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
-                    'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
-                    'calculate_quantity' => (bool)$row->calculate_quantity,
-                    'has_igv' => (bool)$row->has_igv,
-                    'has_plastic_bag_taxes' => (bool)$row->has_plastic_bag_taxes,
-                    'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
-                    'item_unit_types' => collect($row->item_unit_types)->transform(function ($row) {
-                        return [
-                            'id' => $row->id,
-                            'description' => "{$row->description}",
-                            'item_id' => $row->item_id,
-                            'unit_type_id' => $row->unit_type_id,
-                            'quantity_unit' => $row->quantity_unit,
-                            'price1' => $row->price1,
-                            'price2' => $row->price2,
-                            'price3' => $row->price3,
-                            'price_default' => $row->price_default,
-                        ];
-                    }),
-                    'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
-                        return [
-                            'warehouse_description' => $row->warehouse->description,
-                            'stock' => $row->stock,
-                            'warehouse_id' => $row->warehouse_id,
-                            'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
-                        ];
-                    }),
-                    'attributes' => $row->attributes ? $row->attributes : [],
-                    'lots_group' => collect($row->lots_group)->transform(function ($row) {
-                        return [
-                            'id' => $row->id,
-                            'code' => $row->code,
-                            'quantity' => $row->quantity,
-                            'date_of_due' => $row->date_of_due,
-                            'checked' => false
-                        ];
-                    }),
-                    'lots' => [],
-                    'lots_enabled' => (bool)$row->lots_enabled,
-                    'series_enabled' => (bool)$row->series_enabled,
-                ];
-            });
+            // return collect($items)->transform(function ($row) use ($warehouse) {
+            //     /** @var Item $row */
+            //     return $row->getDataToItemModal($warehouse);
+            //     $detail = $this->getFullDescription($row, $warehouse);
+            //     return [
+            //         'id' => $row->id,
+            //         'full_description' => $detail['full_description'],
+            //         'model' => $row->model,
+            //         'brand' => $detail['brand'],
+            //         'warehouse_description' => $detail['warehouse_description'],
+            //         'category' => $detail['category'],
+            //         'stock' => $detail['stock'],
+            //         'internal_id' => $row->internal_id,
+            //         'description' => $row->description,
+            //         'currency_type_id' => $row->currency_type_id,
+            //         'currency_type_symbol' => $row->currency_type->symbol,
+            //         'sale_unit_price' => Item::getSaleUnitPriceByWarehouse($row, $warehouse->id),
+            //         'purchase_unit_price' => $row->purchase_unit_price,
+            //         'unit_type_id' => $row->unit_type_id,
+            //         'sale_affectation_igv_type_id' => $row->sale_affectation_igv_type_id,
+            //         'purchase_affectation_igv_type_id' => $row->purchase_affectation_igv_type_id,
+            //         'calculate_quantity' => (bool)$row->calculate_quantity,
+            //         'has_igv' => (bool)$row->has_igv,
+            //         'has_plastic_bag_taxes' => (bool)$row->has_plastic_bag_taxes,
+            //         'amount_plastic_bag_taxes' => $row->amount_plastic_bag_taxes,
+            //         'item_unit_types' => collect($row->item_unit_types)->transform(function ($row) {
+            //             return [
+            //                 'id' => $row->id,
+            //                 'description' => "{$row->description}",
+            //                 'item_id' => $row->item_id,
+            //                 'unit_type_id' => $row->unit_type_id,
+            //                 'quantity_unit' => $row->quantity_unit,
+            //                 'price1' => $row->price1,
+            //                 'price2' => $row->price2,
+            //                 'price3' => $row->price3,
+            //                 'price_default' => $row->price_default,
+            //             ];
+            //         }),
+            //         'warehouses' => collect($row->warehouses)->transform(function ($row) use ($warehouse) {
+            //             return [
+            //                 'warehouse_description' => $row->warehouse->description,
+            //                 'stock' => $row->stock,
+            //                 'warehouse_id' => $row->warehouse_id,
+            //                 'checked' => ($row->warehouse_id == $warehouse->id) ? true : false,
+            //             ];
+            //         }),
+            //         'attributes' => $row->attributes ? $row->attributes : [],
+            //         'lots_group' => collect($row->lots_group)->transform(function ($row) {
+            //             return [
+            //                 'id' => $row->id,
+            //                 'code' => $row->code,
+            //                 'quantity' => $row->quantity,
+            //                 'date_of_due' => $row->date_of_due,
+            //                 'checked' => false
+            //             ];
+            //         }),
+            //         'lots' => [],
+            //         'lots_enabled' => (bool)$row->lots_enabled,
+            //         'series_enabled' => (bool)$row->series_enabled,
+            //     ];
+            // });
         }
 
         return [];
@@ -2172,11 +2172,15 @@ class DocumentController extends Controller
 
         $items = Item::where('description', 'like', "%{$request->input}%")
             ->orWhere('internal_id', 'like', "%{$request->input}%")
+            ->orWhere('name', 'like', "%{$request->input}%")
+            ->orWhere('reference', 'like', "%{$request->input}%")
+            ->orWhere('factory_code', 'like', "%{$request->input}%")
+            ->orWhere('model', 'like', "%{$request->input}%")
             ->orderBy('description')
             ->get()->transform(function ($row) {
                 return [
                     'id' => $row->id,
-                    'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" : $row->description,
+                    'description' => $row->name .'/'.$row->description.'/'.$row->reference.'/'.$row->model.'/'.$row->internal_id,
                 ];
             });
 

@@ -13,38 +13,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: left;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -81,7 +81,7 @@
             <h2 align="center" class="title"><strong>Reporte Balance de Comprobación</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
-            
+
         </div>
         @if(!empty($records))
             <div class="">
@@ -92,7 +92,7 @@
                                 <th class="">Cuenta</th>
                                 <th class="">Descripción Cuenta</th>
                                 <th class="">Saldo Inicial</th>
-                                <th class="">Debe cuenta</th>
+                                <th class="">Cuenta</th>
                                 <th class="">Haber</th>
                                 <th class="">Saldo Deudor</th>
                                 <th class="">Saldo Acreedor</th>

@@ -37,19 +37,12 @@ class BalanceGeneralExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
-    public function sp2($sp2) {
-        $this->sp2 = $sp2;
-
-        return $this;
-    }
-
     public function view(): View {
         return view('tenant.balance_general.balance_general_excel', [
             'records'=> $this->records,
             'company' => $this->company,
             'fechaActual'=>$this->fechaActual,
             'usuario_log'=>$this->usuario_log,
-            'sp2' => $this->sp2,
         ]);
     }
 }

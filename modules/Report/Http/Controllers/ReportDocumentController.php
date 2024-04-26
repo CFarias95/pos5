@@ -11,6 +11,7 @@ use App\Models\Tenant\SaleNote;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\Category;
 use Modules\Report\Exports\DocumentExport;
 use Modules\Report\Http\Resources\DocumentCollection;
@@ -55,6 +56,7 @@ class ReportDocumentController extends Controller
 
     public function records(Request $request)
     {
+        Log::info("Generando reporte ReportDocumentController");
         $documentTypeId = "01";
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);
@@ -71,6 +73,7 @@ class ReportDocumentController extends Controller
         if ($classType == SaleNote::class) {
             return new SaleNoteCollection($records->paginate(config('tenant.items_per_page')));
         }
+        //Log::info('Records'.json_encode($records->get()));
         return new DocumentCollection($records->paginate(config('tenant.items_per_page')));
 
 
@@ -134,7 +137,7 @@ class ReportDocumentController extends Controller
 
 
     public function excel(Request $request) {
-        
+
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
 
