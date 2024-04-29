@@ -93,9 +93,9 @@
                                                 <button v-if="row.payment > 0" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-warning"
                                                     @click.prevent="clickExpenses(row)">Gastos</button>
-                                                <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
+                                                <!-- <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-success"
-                                                    @click.prevent="clickEdit(row)">Editar</button>
+                                                    @click.prevent="clickEdit(row)">Editar</button> -->
                                             </template>
                                         </td>
                                     </template>
@@ -536,7 +536,8 @@
             :showClose="showDialogClose" :type="this.type" :configuration="this.configuration"
             :monto="this.monto">
         </document-options>
-        <edit-payment :recordId="this.payment_id" :showDialogEdit.sync="showDialogEdit" :resource="this.resource">
+        <edit-payment :recordId="this.payment_id" :showDialogEdit.sync="showDialogEdit" :resource="this.resource"
+        :payment_method_types = "this.payment_method_types" :payment_destinations="this.payment_destinations" >
         </edit-payment>
 
     </el-dialog>

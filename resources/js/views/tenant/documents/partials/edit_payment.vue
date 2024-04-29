@@ -129,7 +129,7 @@
 import { mapState, mapActions } from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialogEdit', 'recordId', 'resource'],
+    props: ['showDialogEdit', 'recordId', 'resource', 'payment_method_types', 'payment_destinations'],
     components: {
 
     },
@@ -142,8 +142,6 @@ export default {
             formMultiPay: {},
             company: {},
             locked_emission: {},
-            payment_method_types: [],
-            payment_destinations: [],
         }
     },
     created() {
