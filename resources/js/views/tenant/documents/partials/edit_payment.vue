@@ -1,7 +1,7 @@
 <template>
     <el-dialog style="background-color: rgb(14 14 14 / 64%);" :close-on-click-modal="false"
         :close-on-press-escape="false" :show-close="false" append-to-body width="75%"
-        @open="create" title="Editar Pago" align-center>
+        @open="create" title="Editar Pago" align-center :visible="showDialogEdit">
         <el-form>
             <el-form-item label="Fecha de pago">
                 <el-date-picker v-model="formMultiPay.date_of_payment" type="date" :clearable="false"
@@ -114,7 +114,7 @@
         </el-form>
         <template #footer>
             <span class="dialog-footer">
-                <el-button type="danger" @click="cancelMultiPay()">Cancel</el-button>
+                <el-button type="danger" @click="clickClose()">Cancel</el-button>
                 <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary"
                     @click="generateMultiPay()">
                     Generar
@@ -129,15 +129,15 @@
 import { mapState, mapActions } from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialog', 'recordId', 'showClose', 'resource'],
+    props: ['showDialogEdit', 'recordId', 'resource'],
     components: {
-        Keypress
+
     },
     data() {
         return {
             titleDialog: null,
             loading: false,
-            resource: 'finances/unpaid',
+            //resource: 'finances/unpaid',
             errors: {},
             formMultiPay: {},
             company: {},
@@ -279,7 +279,7 @@ export default {
             }
         },
         clickClose() {
-            this.$emit('update:showDialog', false)
+            this.$emit('update:showDialogEdit', false)
             this.initForm()
         },
     }

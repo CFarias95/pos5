@@ -536,6 +536,8 @@
             :showClose="showDialogClose" :type="this.type" :configuration="this.configuration"
             :monto="this.monto">
         </document-options>
+        <edit-payment :recordId="this.payment_id" :showDialogEdit.sync="showDialogEdit" :resource="this.resource">
+        </edit-payment>
 
     </el-dialog>
 </template>
@@ -544,13 +546,15 @@
 
 import { deletable } from '../../../../mixins/deletable'
 import DialogLinkPayment from './dialog_link_payment'
+import EditPayment from './edit_payment.vue'
 import DocumentOptions from '../../../../../../modules/Finance/Resources/assets/js/views/unpaid/partials/options'
 export default {
     props: ['showDialog', 'documentId', 'external', 'configuration', 'customerId', 'documentFeeId'],
     mixins: [deletable],
     components: {
         DialogLinkPayment,
-        DocumentOptions
+        DocumentOptions,
+        EditPayment
     },
     data() {
         return {
@@ -608,6 +612,7 @@ export default {
             },
             showEdit:false,
             editRow:[],
+            showDialogEdit:false,
         }
     },
     async created() {
@@ -1122,9 +1127,8 @@ export default {
         },
         clickEdit(paymnet){
             console.log('clickEdit',paymnet)
-            this.editRow = paymnet;
-            console.log('editRow',this.editRow)
-            this.showEdit = true;
+            this.payment_id = paymnet.id
+            this.showDialogEdit = true
         },
         clickSaveEdit(row){
             console.log('clickSaveEdit',row)

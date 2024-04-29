@@ -37,11 +37,6 @@ class BalanceResultadosExport implements  FromView, ShouldAutoSize
         return $this;
     }
 
-    public function sp2($sp2) {
-        $this->sp2 = $sp2;
-
-        return $this;
-    }
 
     public function view(): View {
         return view('tenant.balance_resultados.balance_resultados_excel', [
@@ -49,7 +44,6 @@ class BalanceResultadosExport implements  FromView, ShouldAutoSize
             'company' => $this->company,
             'fechaActual'=>$this->fechaActual,
             'usuario_log'=>$this->usuario_log,
-            'sp2' => $this->sp2,
         ]);
     }
 }
