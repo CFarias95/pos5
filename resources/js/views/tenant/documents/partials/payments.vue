@@ -93,9 +93,9 @@
                                                 <button v-if="row.payment > 0" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-warning"
                                                     @click.prevent="clickExpenses(row)">Gastos</button>
-                                                <!-- <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
+                                                <button v-if="row.payment > 0" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-success"
-                                                    @click.prevent="clickEdit(row)">Editar</button> -->
+                                                    @click.prevent="clickEdit(row)">Editar</button>
                                             </template>
                                         </td>
                                     </template>

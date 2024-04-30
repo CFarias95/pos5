@@ -181,35 +181,13 @@ export default {
         },
         async create() {
             await this.getRecord()
-            await this.$http.get(`/${this.resource}/filter`, this.form).then((response) => {
-                this.establishments = response.data.establishments;
-                this.customers = response.data.customers;
-                this.form.establishment_id =
-                    this.establishments.length > 0 ? this.establishments[0].id : null;
-                this.users = response.data.users;
-                this.payment_method_types = response.data.payment_method_types;
-                this.payment_destinations = response.data.payment_destinations;
-                this.accounts = response.data.accounts;
-                this.web_platforms = response.data.web_platforms;
-            });
             this.loading = true;
 
         },
-        async getCompany() {
-            this.loading = true;
-            await this.$http.get(`/companies/record`)
-                .then(response => {
-                    if (response.data !== '') {
-                        this.company = response.data.data
-                    }
-                }).finally(() => this.loading = false);
-        },
         async getRecord() {
             this.loading = true;
-            await this.$http.get(`/${this.resource}/record/${this.recordId}`).then(response => {
-                this.form = response.data.data;
-                this.titleDialog = 'Comprobante: ' + this.form.number;
-                if (this.generatDispatch) window.open(`/dispatches/create/${this.form.id}/i/${this.dispatchId}`)
+            await this.$http.get(`/${this.resource}/record/edit/${this.recordId}`).then(response => {
+                this.formMultiPay = response.data;
             }).finally(() => {
                 this.loading = false
             });

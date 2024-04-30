@@ -54,6 +54,25 @@ class DocumentPaymentController extends Controller
         return new DocumentPaymentCollection($records);
     }
 
+    public function recordEdit($id){
+
+        $data = AccountingEntries::where('document_id','CF'.$id)->orWhere('document_id','like','%CF'.$id.';%')->get()->transform(function($row){
+            $data['id'] = $row->id;
+            $data['filename'] = $row->filename;
+            $data['date_of_payment'] = $row->seat_date;
+            $data['payment'] = $row->total_debe;
+            $data['debe'] = $row->total_debe;
+            $data['haber'] = $row->total_haber;
+            $data['extras'] = $row->items->transform()
+            unpaid: [],
+            extras: [],
+            payment: 0,
+            payment_method_type_id: '01',
+            payment_destination_id: null,
+            reference: 'N/A',
+        });
+    }
+
     public function tables()
     {
         return [

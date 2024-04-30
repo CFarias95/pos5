@@ -249,7 +249,6 @@
             if (!empty($input)) {
 
                 $whereItem[] = ['name', 'like', '%' . str_replace(' ','%',$input) . '%'];
-                $whereItem[] = ['reference', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['description', 'like', '%' . str_replace(' ','%',$input) . '%'];
                 $whereItem[] = ['internal_id', 'like', '%' . $input . '%'];
                 $whereItem[] = ['factory_code', 'like', '%' . $input . '%'];
