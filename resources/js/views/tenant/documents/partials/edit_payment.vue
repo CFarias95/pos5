@@ -116,8 +116,8 @@
             <span class="dialog-footer">
                 <el-button type="danger" @click="clickClose()">Cancel</el-button>
                 <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary"
-                    @click="generateMultiPay()">
-                    Generar
+                    @click="editPayment">
+                    Editar
                 </el-button>
             </span>
         </template>
@@ -129,7 +129,7 @@
 import { mapState, mapActions } from "vuex/dist/vuex.mjs";
 
 export default {
-    props: ['showDialogEdit', 'recordId', 'resource', 'payment_method_types', 'payment_destinations'],
+    props: ['showDialogEdit', 'recordId', 'resource', 'payment_method_types', 'payment_destinations', 'accounts'],
     components: {
 
     },
@@ -137,7 +137,6 @@ export default {
         return {
             titleDialog: null,
             loading: false,
-            //resource: 'finances/unpaid',
             errors: {},
             formMultiPay: {},
             company: {},
@@ -181,83 +180,32 @@ export default {
         },
         async create() {
             await this.getRecord()
-            this.loading = true;
-
         },
         async getRecord() {
             this.loading = true;
             await this.$http.get(`/${this.resource}/record/edit/${this.recordId}`).then(response => {
-                this.formMultiPay = response.data;
+                console.log(response.data)
+                this.formMultiPay = response.data.data[0];
             }).finally(() => {
                 this.loading = false
             });
-        },
-        clickPrint(format) {
-            window.open(`/print/document/${this.form.external_id}/${format}`, '_blank');
-        },
-        clickDownloadImage() {
-            window.open(`${this.form.image_detraction}`, '_blank');
-        },
-        clickDownload(format) {
-            window.open(`${this.form.download_pdf}/${format}`, '_blank');
-        },
-        clickSendEmail() {
-            this.loading = true
-            this.$http.post(`/${this.resource}/email`, {
-                customer_email: this.form.customer_email,
-                id: this.form.id
-            })
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success('El correo fue enviado satisfactoriamente')
-                    } else {
-                        this.$message.error('Error al enviar el correo')
-                    }
-                })
-                .catch(error => {
-                    if (error.response.status === 422) {
-                        this.errors = error.response.data.errors
-                    } else {
-                        this.$message.error(error.response.data.message)
-                    }
-                })
-                .then(() => {
-                    this.loading = false
-                })
-        },
-        clickConsultCdr(document_id) {
-            this.$http.get(`/${this.resource}/consult_cdr/${document_id}`)
-                .then(response => {
-                    if (response.data.success) {
-                        this.$message.success(response.data.message)
-                        this.getRecord()
-                        this.$eventHub.$emit('reloadData')
-                    } else {
-                        this.$message.error(response.data.message)
-                    }
-                })
-                .catch(error => {
-                    this.$message.error(error.response.data.message)
-                })
-        },
-        clickFinalize() {
-            if (this.table) {
-                location.href = `/${this.table}`;
-            } else {
-                location.href = (this.isContingency) ? `/contingencies` : `/${this.resource}`
-            }
-        },
-        clickNewDocument() {
-            if (this.table) {
-                location.href = `/${this.table}/create`;
-            } else {
-                this.clickClose();
-            }
         },
         clickClose() {
             this.$emit('update:showDialogEdit', false)
             this.initForm()
         },
+        async editPayment(){
+            await this.$http.post(`/${this.resource}/save/edit`,this.formMultiPay).then(response => {
+                if(response.data.success){
+                    this.$message.success(response.data.message);
+                }else{
+                    this.$message.error(response.data.message);
+                }
+            }).finally(() => {
+                this.loading = false
+                this.clickClose();
+            });
+        }
     }
 }
 </script>

@@ -64,6 +64,11 @@ class DocumentPayment extends ModelTenant
         return $this->belongsTo(Document::class, 'document_id');
     }
 
+    public function fee()
+    {
+        return $this->belongsTo(DocumentFee::class, 'fee_id');
+    }
+
 
     public function global_payment()
     {

@@ -537,7 +537,8 @@
             :monto="this.monto">
         </document-options>
         <edit-payment :recordId="this.payment_id" :showDialogEdit.sync="showDialogEdit" :resource="this.resource"
-        :payment_method_types = "this.payment_method_types" :payment_destinations="this.payment_destinations" >
+        :payment_method_types = "this.payment_method_types" :payment_destinations="this.payment_destinations"
+        :accounts="this.accounts" >
         </edit-payment>
 
     </el-dialog>

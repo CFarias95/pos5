@@ -35,6 +35,7 @@ use Modules\Finance\Http\Controllers\AdvanceController;
 use Modules\Finance\Http\Controllers\UnpaidController;
 use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Models\GlobalPayment;
+use TenantGlobalPaymentsTable;
 
 class DocumentPaymentController extends Controller
 {
@@ -56,23 +57,76 @@ class DocumentPaymentController extends Controller
 
     public function recordEdit($id){
 
-        $data = AccountingEntries::where('document_id','CF'.$id)->orWhere('document_id','like','%CF'.$id.';%')->get()->transform(function($row){
-            $data['id'] = $row->id;
-            $data['filename'] = $row->filename;
-            $data['date_of_payment'] = $row->seat_date;
-            $data['payment'] = $row->total_debe;
-            $data['debe'] = $row->total_debe;
-            $data['haber'] = $row->total_haber;
-            $data['extras'] = $row->items->transform()
-            unpaid: [],
-            extras: [],
-            payment: 0,
-            payment_method_type_id: '01',
-            payment_destination_id: null,
-            reference: 'N/A',
-        });
+        try{
+            $datas = AccountingEntries::where('document_id','CF'.$id)->orWhere('document_id','like','%CF'.$id.';%')->get()->transform(function($row){
+                $unpaids = $row->document_id;
+                $unpaids = explode(';',$unpaids);
+                $numberUnpaids = 0;
+                Log::info('numberUnpaids '.$numberUnpaids);
+                foreach($unpaids as $value){
+                    $idPaymnet = str_replace(['CF',';'], '', $value);
+                    Log::info(intval($idPaymnet));
+                    if(intval($idPaymnet) > 0 ){
+                        $numberUnpaids += 1;
+                        $payment = DocumentPayment::find(intval($idPaymnet));
+                        $document = Document::find($payment->document_id);
+                        $data['unpaid'][]=[
+                            'document'=> $document->series. '-'. $document->number,
+                            'document_id' => $payment->id,
+                            'fee_id'=> $payment->fee_id,
+                            'maxamount' => $payment->fee->amount,
+                            'amount' => $payment->payment,
+                            'customer_id' => $document->customer_id,
+                            'customer' => $document->customer->name,
+                            'id' => $payment->id,
+                        ];
+                        $data['reference'] = $payment->reference;
+                        $data['payment_method_type_id'] = $payment->payment_method_type_id;
+                        $data['payment_destination_id'] = $payment->global_payment->destination_description;
+                    }
+                }
+
+                $extras = AccountingEntryItems::where('seat_line','>',$numberUnpaids+1)->where('accounting_entrie_id',$row->id)->get();
+                $data['extras'] = $extras->transform(function($value){
+                    $array['account_id'] = $value->account_movement_id;
+                    $array['debe'] = $value->debe;
+                    $array['haber'] = $value->haber;
+                    return $array;
+                });
+                $data['id'] = $row->id;
+                $data['filename'] = $row->filename;
+                $data['date_of_payment'] = $row->seat_date;
+                $data['payment'] = $row->total_debe;
+                $data['debe'] = $row->total_debe;
+                $data['haber'] = $row->total_haber;
+
+                return $data;
+            });
+
+            return[
+                'success'=> true,
+                'message'=>"Exito",
+                'data' => $datas,
+            ];
+
+        }catch(Exception $ex){
+            Log::error('Error al recuperar datos de cobro');
+            Log::error($ex->getMessage());
+            return[
+                'success'=>false,
+                'message'=>"Error al recuperar los datos del cobro ".$ex->getMessage(),
+            ];
+        }
+
     }
 
+    public function recordSave(Request $request){
+
+        return[
+            'success'=>true,
+            'messagge' => 'Método en proceso'
+        ];
+    }
     public function tables()
     {
         return [
