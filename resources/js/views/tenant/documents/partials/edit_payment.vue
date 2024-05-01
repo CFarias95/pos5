@@ -1,6 +1,6 @@
 <template>
     <el-dialog style="background-color: rgb(14 14 14 / 64%);" :close-on-click-modal="false"
-        :close-on-press-escape="false" :show-close="false" append-to-body width="75%" @open="create" title="Editar Pago"
+        :close-on-press-escape="false" :show-close="false" append-to-body width="60%" @open="create" title="Editar Pago"
         align-center :visible="showDialogEdit">
         <el-form>
             <el-form-item label="Fecha de pago">
