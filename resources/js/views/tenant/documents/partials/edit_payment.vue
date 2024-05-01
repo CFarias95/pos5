@@ -1,7 +1,7 @@
 <template>
     <el-dialog style="background-color: rgb(14 14 14 / 64%);" :close-on-click-modal="false"
-        :close-on-press-escape="false" :show-close="false" append-to-body width="75%"
-        @open="create" title="Editar Pago" align-center :visible="showDialogEdit">
+        :close-on-press-escape="false" :show-close="false" append-to-body width="75%" @open="create" title="Editar Pago"
+        align-center :visible="showDialogEdit">
         <el-form>
             <el-form-item label="Fecha de pago">
                 <el-date-picker v-model="formMultiPay.date_of_payment" type="date" :clearable="false"
@@ -96,7 +96,8 @@
                     </thead>
                     <tbody>
                         <template>
-                            <tr v-for="(row, index) in formMultiPay.unpaid" :key="index" :class="{'bg-success text-white': row.total_to_pay == 0}">
+                            <tr v-for="(row, index) in formMultiPay.unpaid" :key="index"
+                                :class="{ 'bg-success text-white': row.total_to_pay == 0 }">
                                 <td>
                                     {{ row.document }}
                                 </td>
@@ -104,7 +105,8 @@
                                     {{ row.customer }}
                                 </td>
                                 <td>
-                                    <el-input-number v-model="row.amount" :max="row.maxamount" :step="0.01" :min="0.01" @change="changeInMultiPay"></el-input-number>
+                                    <el-input-number v-model="row.amount" :max="row.maxamount" :step="0.01" :min="0.01"
+                                        @change="changeInMultiPay"></el-input-number>
                                 </td>
                             </tr>
                         </template>
@@ -116,7 +118,7 @@
             <span class="dialog-footer">
                 <el-button type="danger" @click="clickClose()">Cancel</el-button>
                 <el-button :loading="loading_submit_multipay" v-if="formMultiPay.payment > 0" type="primary"
-                    @click="editPayment">
+                    @click="editPayment()">
                     Editar
                 </el-button>
             </span>
@@ -126,12 +128,10 @@
 </template>
 
 <script>
-import { mapState, mapActions } from "vuex/dist/vuex.mjs";
 
 export default {
     props: ['showDialogEdit', 'recordId', 'resource', 'payment_method_types', 'payment_destinations', 'accounts'],
     components: {
-
     },
     data() {
         return {
@@ -141,22 +141,17 @@ export default {
             formMultiPay: {},
             company: {},
             locked_emission: {},
+            loading_submit_multipay: false,
         }
     },
     created() {
-        this.loadConfiguration(this.$store)
-        this.$store.commit('setConfiguration', this.configuration)
     },
     mounted() {
-        this.initForm()
+        //this.initForm()
     },
     computed: {
-        ...mapState([
-            'config',
-        ]),
     },
     methods: {
-        ...mapActions(['loadConfiguration']),
         initForm() {
             this.errors = {};
             this.formMultiPay = {
@@ -170,10 +165,10 @@ export default {
                 debe: 0,
                 haber: 0,
             },
-            this.locked_emission = {
-                success: true,
-                message: null
-            }
+                this.locked_emission = {
+                    success: true,
+                    message: null
+                }
             this.company = {
                 soap_type_id: null,
             }
@@ -194,16 +189,66 @@ export default {
             this.$emit('update:showDialogEdit', false)
             this.initForm()
         },
-        async editPayment(){
-            await this.$http.post(`/${this.resource}/save/edit`,this.formMultiPay).then(response => {
-                if(response.data.success){
-                    this.$message.success(response.data.message);
-                }else{
-                    this.$message.error(response.data.message);
+        editPayment() {
+            this.loading_submit_multipay = true
+            this.$http.post(`/${this.resource}/save/edit`, this.formMultiPay).then(response => {
+                console.log(response.data)
+                if (response.data.success == true) {
+                    console.log(response.data.message)
+                    this.$message.success(response.data.message)
+                    this.initForm();
+                    this.$eventHub.$emit('reloadDataPayments')
+                    this.$emit('update:showDialogEdit', false)
+
+                } else {
+                    this.$message.error(response.data.message)
                 }
+
             }).finally(() => {
-                this.loading = false
-                this.clickClose();
+                this.loading_submit_multipay = false
+
+            });
+        },
+        changeInMultiPay() {
+            console.log('cambio de valores a liquidar')
+            let total = 0;
+            this.formMultiPay.unpaid.forEach(element => {
+                total += element.amount;
+            });
+
+            this.formMultiPay.payment = _.round(total, 2);
+            this.formMultiPay.debe = _.round(total, 2);
+            this.formMultiPay.haber = _.round(total, 2);
+
+            this.changeDebeHaber()
+
+        },
+        addExtra() {
+
+            this.formMultiPay.extras.push({
+                account_id: null,
+                debe: 0,
+                haber: 0,
+            });
+
+        },
+        changeDebe(value) {
+            this.formMultiPay.debe -= parseFloat(value)
+            this.formMultiPay.haber -= parseFloat(value)
+        },
+        changeHaber(value) {
+            this.formMultiPay.haber += parseFloat(value)
+            this.formMultiPay.debe += parseFloat(value)
+        },
+        deleteExtra(index) {
+            this.formMultiPay.extras.splice(index, 1);
+        },
+        changeDebeHaber() {
+            this.formMultiPay.extras.forEach((extra) => {
+                this.formMultiPay.debe -= extra.debe
+                this.formMultiPay.haber -= extra.debe
+                this.formMultiPay.debe += extra.haber
+                this.formMultiPay.haber += extra.haber
             });
         }
     }

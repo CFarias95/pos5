@@ -464,7 +464,7 @@ if ($hostname) {
             Route::post('document_payments/reverse', 'Tenant\DocumentPaymentController@generateReverse');
             Route::post('document_payments/expenses', 'Tenant\DocumentPaymentController@generateExpenses');
             Route::get('document_payments/record/edit/{id}', 'Tenant\DocumentPaymentController@recordEdit');
-            Route::post('document_payments/record/save', 'Tenant\DocumentPaymentController@recordSave');
+            Route::post('document_payments/save/edit', 'Tenant\DocumentPaymentController@recordSave');
             Route::get('documents/send_server/{document}/{query?}', 'Tenant\DocumentController@sendServer');
             Route::get('documents/check_server/{document}', 'Tenant\DocumentController@checkServer');
             Route::get('documents/change_to_registered_status/{document}', 'Tenant\DocumentController@changeToRegisteredStatus');

@@ -591,12 +591,12 @@
 </template>
 
 <script>
+
 import DocumentPayments from "@views/documents/partials/payments.vue";
 import SaleNotePayments from "@views/sale_notes/partials/payments.vue";
 import PosFechado from "@views/documents/partials/posFechado.vue";
 import SplitForm from "./partials/split.vue";
 import DateForm from "./partials/date.vue";
-// import DataTable from '../../components/DataTableWithoutPaging.vue'
 import queryString from "query-string";
 
 export default {

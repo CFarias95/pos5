@@ -122,10 +122,110 @@ class DocumentPaymentController extends Controller
 
     public function recordSave(Request $request){
 
-        return[
-            'success'=>true,
-            'messagge' => 'Método en proceso'
-        ];
+        try{
+            Log::info('Funcion para crear pago multiple');
+            Log::info('generateMultiPay' . json_encode($request->all()));
+
+            $debeAdicional = 0;
+            $haberAdicional = 0;
+            $totalDebe = 0;
+            $totalHaber = 0;
+            $documentIds = '';
+            $documentsSequentials = '';
+            $config = Configuration::first();
+            $haber = [];
+
+            foreach ($request->unpaid as $value) {
+
+                $payment = DocumentPayment::find($value['id']);
+                $payment->date_of_payment = $request->date_of_payment;
+                $payment->payment_method_type_id = $request->payment_method_type_id;
+                $payment->reference = $request->reference;
+                $payment->payment = $value['amount'];
+                $payment->save();
+
+                $secu = $payment->sequential;
+                $document = Document::find($value['document_id']);
+                $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+
+                $documentIds .= 'CF'.$payment->id.';';
+                $customer = Person::find($value['customer_id']);
+                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
+            }
+            foreach ($request->extras as $value) {
+                $debeAdicional += floatVal($value['debe']);
+                $haberAdicional += floatVal($value['haber']);
+            }
+            $comment = ' | '.$documentsSequentials. ' | Multicobro '.$secu;
+            $cabeceraC = AccountingEntries::find($request->id);
+            $cabeceraC->seat_date = $request->date_of_payment;
+            $cabeceraC->comment = $request->reference.$comment;
+            $cabeceraC->total_debe = $request->payment + $debeAdicional;
+            $cabeceraC->total_haber = $request->payment + $haberAdicional;
+            $cabeceraC->document_id = $documentIds;
+            $cabeceraC->save();
+
+            $entryItems = AccountingEntryItems::where('accounting_entrie_id',$cabeceraC->id)->get();
+            foreach($entryItems as $value){
+                $value->delete();
+            }
+
+            $detalle = new AccountingEntryItems();
+            $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount)?$ceuntaC->countable_acount:$config->cta_charge;
+            $detalle->seat_line = 1;
+            $detalle->haber = 0;
+            $detalle->debe = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
+            $detalle->save();
+            $totalDebe += $detalle->debe;
+            $line = 2;
+            foreach ($haber as $key => $value) {
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account'];
+                $detalle->seat_line = $line;
+                $detalle->debe = 0;
+                $detalle->haber = $value['amount'];
+                $detalle->comment = $value['secuential'] ;
+                $detalle->save();
+                $line += 1;
+
+                $totalHaber += $detalle->haber;
+            }
+
+            foreach ($request->extras as $value) {
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account_id'];
+                $detalle->seat_line = $line;
+                $detalle->debe = floatVal($value['debe']);
+                $detalle->haber = floatVal($value['haber']);
+                $detalle->save();
+                $line += 1;
+
+                $totalDebe += $detalle->debe;
+                $totalHaber += $detalle->haber;
+            }
+
+            $cabeceraC->total_debe = $totalDebe;
+            $cabeceraC->total_haber = $totalHaber;
+            $cabeceraC->save();
+
+            return[
+                'success'=>true,
+                'message' => 'Cobro modificado correctamente'
+            ];
+        }catch(Exception $ex){
+            Log::error('Error al EDITAR multicobro');
+            Log::error($ex->getMessage());
+            return[
+                'success'=> false,
+                'message' => 'Error al modificar el registro'
+            ];
+        }
+
     }
     public function tables()
     {
