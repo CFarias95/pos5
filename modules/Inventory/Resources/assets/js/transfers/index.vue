@@ -169,14 +169,21 @@ export default {
                 });
         },
         clickReverse(id) {
-            this.$http.get(`/${this.resource}/reverse/${id}`)
-                .then(response => {
-                    if (response.data.status == true) {
-                        this.$message.success(response.data.message)
-                    } else {
-                        this.$message.error(response.data.message)
-                    }
-                });
+            this.$confirm('Esta seguro que quieres REVERSAR el traslado NT-'+id)
+            .then((result) => {
+                console.log(result);
+                if(result == 'confirm'){
+                    this.$http.get(`/${this.resource}/reverse/${id}`)
+                    .then(response => {
+                        if (response.data.success == true) {
+                            this.$message.success(response.data.message)
+                            this.$eventHub.$emit("reloadData")
+                        } else {
+                            this.$message.error(response.data.message)
+                        }
+                    });
+                }
+            });
         }
     }
 };

@@ -140,6 +140,7 @@ if($hostname) {
                     Route::post('', 'AdvanceController@store');
                     Route::get('record/{record}', 'AdvanceController@record');
                     Route::get('voided/{record}', 'AdvanceController@voided');
+                    Route::get('destroy/{id}', 'AdvanceController@destroy');
                     Route::get('pdf/{id}', 'AdvanceController@pdf');
                     Route::get('filterPersons', 'AdvanceController@filterPersons');
 

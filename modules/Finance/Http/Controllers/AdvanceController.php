@@ -190,8 +190,10 @@ class AdvanceController extends Controller
         $msg = '';
         $msg = ($id) ? 'Anticipo editado con éxito' : 'Anticipo registrado con éxito';
 
-        if(!$id ){ //&& $request->input('generate_account') != 0 ){
+        if(!$id ){
             $this->createAccountingEntry($advance->id);
+        }else{
+            $this->editAccountingEntry($advance->id);
         }
 
         return [
@@ -251,15 +253,9 @@ class AdvanceController extends Controller
             $cabeceraC->person_id = null;
             $cabeceraC->external_id = Str::uuid()->toString();
             $cabeceraC->document_id = 'AD' . $document->id;
-
             $cabeceraC->save();
             $cabeceraC->filename = 'ASC-' . $cabeceraC->id . '-' . date('Ymd');
             $cabeceraC->save();
-
-            $arrayEntrys = [];
-            $n = 1;
-
-            $debeGlobal = 0;
 
             $cuentaPerson = null;
             $cuentaAnticipo = null;
@@ -305,13 +301,39 @@ class AdvanceController extends Controller
                 $detalle2->debe = $document->valor;
                 $detalle2->save();
             }
-
-
-
-
         } catch (Exception $ex) {
 
             Log::error('Error al intentar generar el asiento contable');
+            Log::error($ex->getMessage());
+        }
+    }
+
+    //EDITAR El ASIENTO CONTABLE DE ANTICIPOS
+    public function editAccountingEntry($id){
+        try {
+
+            $document = Advance::find($id);
+
+            $cabeceraC = AccountingEntries::where('document_id','AD'.$id)->first();
+            $cabeceraC->seat_date = $document->created_at;
+            $cabeceraC->types_accounting_entrie_id = ($document->is_supplier)?7:6;
+            $cabeceraC->total_debe = $document->valor;
+            $cabeceraC->total_haber = $document->valor;
+            $cabeceraC->save();
+
+            $detalle = AccountingEntryItems::where('accounting_entrie_id',$cabeceraC->id)->where('seat_line',1)->first();
+            $detalle->debe = $document->valor;
+            $detalle->haber = 0;
+            $detalle->save();
+
+            $detalle2 = AccountingEntryItems::where('accounting_entrie_id',$cabeceraC->id)->where('seat_line',2)->first();
+            $detalle2->debe = 0;
+            $detalle2->haber = $document->valor;
+            $detalle2->save();
+
+        } catch (Exception $ex) {
+
+            Log::error('Error al intentar editar el asiento contable');
             Log::error($ex->getMessage());
         }
     }
@@ -433,6 +455,29 @@ class AdvanceController extends Controller
             'success' => true,
             'message' => 'Ingreso anulado exitosamente',
         ];
+    }
+
+    public function destroy($id){
+        try{
+
+            $document = Advance::find($id);
+            $cabeceraC = AccountingEntries::where('document_id','AD'.$id);
+            $cabeceraC->delete();
+
+            $document->delete();
+
+            return[
+                'success' => true,
+                'message' => 'Se eliminó el anticipo'
+            ];
+        }catch(Exception $ex){
+            Log::error('Error al eliminar el un anticipo');
+            Log::error($ex->getMessage());
+            return[
+                'success' => false,
+                'message' => 'No se pudo eliminar el anticipo'
+            ];
+        }
     }
 
 

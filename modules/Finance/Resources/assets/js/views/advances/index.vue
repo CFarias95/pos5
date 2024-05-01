@@ -24,7 +24,7 @@
                         <th class="text-center">Notas</th>
                         <th class="text-center">Fecha Creaciòn</th>
                         <th class="text-center">Documento</th>
-                        <th class="text-center">Editar</th>
+                        <th class="text-center">Acciones</th>
                         <th class="text-center">PDF</th>
 
                     </tr>
@@ -53,6 +53,11 @@
                                 class="btn waves-effect waves-light btn-xs btn-primary m-1__2"
                                 @click.prevent="clickCreate(row.id)">
                                 <i class="fas fa-edit"></i>
+                            </button>
+                            <button type="button" style="min-width: 41px" v-if="row.used == 0 || row.used == '0'"
+                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                @click.prevent="clickDestroy(row.id)">
+                                <i class="fas fa-trash"></i>
                             </button>
                         </td>
                         <td class="text-center">
@@ -120,6 +125,22 @@ export default {
             this.voided(`/${this.resource}/voided/${recordId}`).then(() =>
                 this.$eventHub.$emit('reloadData')
             )
+        },
+        clickDestroy(recordID){
+            this.$confirm('Esta seguro que quieres ELIMINAR el anticipo')
+            .then((result) => {
+                console.log(result);
+                if(result == 'confirm'){
+                    this.$http.get(`/${this.resource}/destroy/${recordID}`).then((response) =>{
+                    if(response.data.success == true){
+                        this.$message.success(response.data.message);
+                        this.$eventHub.$emit('reloadData')
+                    }else{
+                        this.$message.error(response.data.message);
+                    }
+                })
+                }
+            })
         },
         clickDownload(download) {
             window.open(download, '_blank');

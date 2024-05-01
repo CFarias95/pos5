@@ -444,6 +444,10 @@ use Modules\Item\Models\ItemLotsGroup;
 
                 Log::info('Error al generar traslado ');
                 Log::error($e->getMessage());
+                return [
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ];
             }
 
         }
@@ -475,7 +479,7 @@ use Modules\Item\Models\ItemLotsGroup;
                     if($item->series_enabled ==  true || $item->series_enabled ==  1 || $item->series_enabled ==  '1'){
                         $item_lot = ItemLot::where('item_id', $item->id)->where('series',$it->lot_code);
                         $item_lot->warehouse_id = $it->warehouse_id;
-                        $item_lot->update();
+                        $item_lot->save();
                     }
 
                     if($item->lots_enabled ==  true || $item->lots_enabled ==  1 || $item->lots_enabled ==  '1'){
