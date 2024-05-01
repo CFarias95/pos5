@@ -417,6 +417,7 @@ use Modules\Item\Models\ItemLotsGroup;
                                 }
                             }
                         }else{
+
                             if(isset($it['quantity']) && $it['quantity'] > 0){
                                 $inventory = new Inventory();
                                 $inventory->type = 2;
@@ -431,7 +432,6 @@ use Modules\Item\Models\ItemLotsGroup;
                             }
                         }
                     }
-
                     return [
                         'success' => true,
                         'message' => 'Traslado creado con éxito'
@@ -441,7 +441,7 @@ use Modules\Item\Models\ItemLotsGroup;
                 return $result;
 
             } catch (Exception $e) {
-                //DB::rollback();
+
                 Log::info('Error al generar traslado ');
                 Log::error($e->getMessage());
             }
@@ -470,6 +470,33 @@ use Modules\Item\Models\ItemLotsGroup;
                     $reverseInventory->warehouse_destination_id= $it->warehouse_id;
                     $reverseInventory->description = 'Reverso '. $it->description;
                     $reverseInventory->save();
+
+                    $item = Item::find($it->item_id);
+                    if($item->series_enabled ==  true || $item->series_enabled ==  1 || $item->series_enabled ==  '1'){
+                        $item_lot = ItemLot::where('item_id', $item->id)->where('series',$it->lot_code);
+                        $item_lot->warehouse_id = $it->warehouse_id;
+                        $item_lot->update();
+                    }
+
+                    if($item->lots_enabled ==  true || $item->lots_enabled ==  1 || $item->lots_enabled ==  '1'){
+                        //lotes origen
+                        $lotOrigin = ItemLotsGroup::where('item_id',$it->item_id)
+                        ->where('code',$it->lot_code)
+                        ->where('warehouse_id', $reverseInventory->warehouse_id)
+                        ->first();
+                        $lotOrigin->quantity -= $reverseInventory->quantity;
+                        $lotOrigin->save();
+
+
+                        //comprobar existencia producto
+                        $lotDest = ItemLotsGroup::where('item_id',$it->item_id)
+                        ->where('code',$it->lot_code)
+                        ->where('warehouse_id', $reverseInventory->warehouse_destination_id)
+                        ->first();
+                        $lotDest->quantity += $reverseInventory->quantity;
+                        $lotDest->save();
+
+                    }
 
                 }
 
