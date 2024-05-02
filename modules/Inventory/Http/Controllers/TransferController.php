@@ -477,7 +477,7 @@ use Modules\Item\Models\ItemLotsGroup;
 
                     $item = Item::find($it->item_id);
                     if($item->series_enabled ==  true || $item->series_enabled ==  1 || $item->series_enabled ==  '1'){
-                        $item_lot = ItemLot::where('item_id', $item->id)->where('series',$it->lot_code);
+                        $item_lot = ItemLot::where('item_id', $item->id)->where('series',$it->lot_code)->first();
                         $item_lot->warehouse_id = $it->warehouse_id;
                         $item_lot->save();
                     }

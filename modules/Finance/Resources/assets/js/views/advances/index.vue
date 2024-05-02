@@ -55,14 +55,14 @@
                                 <i class="fas fa-edit"></i>
                             </button>
                             <button type="button" style="min-width: 41px" v-if="row.used == 0 || row.used == '0'"
-                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
+                                class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
                                 @click.prevent="clickDestroy(row.id)">
                                 <i class="fas fa-trash"></i>
                             </button>
                         </td>
                         <td class="text-center">
                             <button type="button" style="min-width: 41px"
-                                class="btn waves-effect waves-light btn-xs btn-danger m-1__2"
+                                class="btn waves-effect waves-light btn-xs btn-warning m-1__2"
                                 @click.prevent="printPdf(row.id)">
                                 <i class="fas fa-file-pdf"></i>
                             </button>

@@ -1764,11 +1764,8 @@ class DocumentController extends Controller
             $facturalo->updateSoap('02', $type);
             $facturalo->updateState('01');
             $facturalo->createPdf($document, $type, 'ticket');
-//            $facturalo->senderXmlSignedBill();
-        });
 
-//        $document = $fact->getDocument();
-//        $response = $fact->getResponse();
+        });
 
         return [
             'success' => true,
