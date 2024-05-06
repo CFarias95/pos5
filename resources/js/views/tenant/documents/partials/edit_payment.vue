@@ -242,6 +242,8 @@ export default {
         },
         deleteExtra(index) {
             this.formMultiPay.extras.splice(index, 1);
+            this.changeInMultiPay();
+            this.changeDebeHaber();
         },
         changeDebeHaber() {
             this.formMultiPay.extras.forEach((extra) => {

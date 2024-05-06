@@ -82,7 +82,11 @@
 <br>
 <table class="full-width">
     <thead class="">
-    <tr class="bg-grey">
+        <tr>
+            <th class="border-top-bottom text-left p-4"><strong>Fecha Pago: </strong> {{ $account_entry['seat_date']}}</th>
+            <th class="border-top-bottom text-left p-4">Comentario: {{ $account_entry['comment']}}</th>
+        <tr>
+    {{-- <tr class="bg-grey">
         <th class="border-top-bottom text-left p-1">#</th>
         <th class="border-top-bottom text-left p-2">SERIE</th>
         <th class="border-top-bottom text-left p-2">NÚMERO</th>
@@ -92,9 +96,9 @@
         <th class="border-top-bottom text-left p-3">COMENTARIO</th>
         <th class="border-top-bottom text-left p-2">PAGADO</th>
         <th class="border-top-bottom text-left p-2">PENDIENTE</th>
-    </tr>
+    </tr> --}}
     </thead>
-    <tbody>
+    {{-- <tbody>
     @foreach($document as $key => $row)
         <tr>
             <td class="text-left ">{{ $key }}</td>
@@ -108,7 +112,7 @@
             <td class="text-left ">{{ $row['to_pay'] }}</td>
         </tr>
     @endforeach
-    </tbody>
+    </tbody> --}}
 </table>
 
 <table class="full-width mt-4">

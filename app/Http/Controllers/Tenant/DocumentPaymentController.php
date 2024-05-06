@@ -785,7 +785,7 @@ class DocumentPaymentController extends Controller
                 $cabeceraC->user_id = auth()->user()->id;
                 $cabeceraC->seat = $seat;
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = date('y-m-d');
+                $cabeceraC->seat_date = $request->date_of_payment;
                 $cabeceraC->types_accounting_entrie_id = 4;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->serie = 'REVERSO COBRO VENTA';
@@ -1178,7 +1178,7 @@ class DocumentPaymentController extends Controller
 
             $newPayment = new DocumentPayment();
             $newPayment->document_id = $payment->document_id;
-            $newPayment->date_of_payment = date('Y-m-d');
+            $newPayment->date_of_payment = $request->date_of_payment;
             $newPayment->payment_method_type_id = $payment->payment_method_type_id;
             $newPayment->has_card = $payment->has_card;
             $newPayment->card_brand_id = $payment->card_brand_id;
@@ -1218,7 +1218,7 @@ class DocumentPaymentController extends Controller
 
                 $newPayment = new DocumentPayment();
                 $newPayment->document_id = $paymentM->document_id;
-                $newPayment->date_of_payment = date('Y-m-d');
+                $newPayment->date_of_payment = $request->date_of_payment;
                 $newPayment->payment_method_type_id = $paymentM->payment_method_type_id;
                 $newPayment->has_card = $paymentM->has_card;
                 $newPayment->card_brand_id = $paymentM->card_brand_id;

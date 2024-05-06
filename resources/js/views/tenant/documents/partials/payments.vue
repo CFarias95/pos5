@@ -367,6 +367,11 @@
                         <el-form-item label="Motivo">
                             <el-input v-model="formSubmit.reference" autocomplete="off" />
                         </el-form-item>
+                        <el-form-item label="Fecha reverso">
+                            <el-date-picker v-model="formSubmit.date_of_payment" :clearable="false" autocomplete="off"
+                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd"
+                                                    ></el-date-picker>
+                        </el-form-item>
                     </el-form>
                     <template #footer>
                         <span class="dialog-footer">
@@ -971,6 +976,7 @@ export default {
             this.formSubmit.id = row.id
             this.formSubmit.reference = row.reference
 
+
         },
         clickExpenses(row) {
 
@@ -1008,6 +1014,7 @@ export default {
             this.showReverse = false
             this.formSubmit.id = null
             this.formSubmit.reference = null
+            this.formSubmit.date_of_payment = null
         },
         clickDownloadReport(id) {
             window.open(`/${this.resource}/report/${this.documentId}`, '_blank');
