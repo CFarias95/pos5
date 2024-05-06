@@ -369,7 +369,7 @@
                         </el-form-item>
                         <el-form-item label="Fecha reverso">
                             <el-date-picker v-model="formSubmit.date_of_payment" :clearable="false" autocomplete="off"
-                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd"
+                                                    format="dd/MM/yyyy" value-format="yyyy-MM-dd" required
                                                     ></el-date-picker>
                         </el-form-item>
                     </el-form>

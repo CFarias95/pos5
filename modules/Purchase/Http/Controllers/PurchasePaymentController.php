@@ -486,7 +486,7 @@ class PurchasePaymentController extends Controller
             Log::info('Sin MULTIPAGO');
             $newPayment = new PurchasePayment();
             $newPayment->purchase_id = $payment->purchase_id;
-            $newPayment->date_of_payment = date('Y-m-d');
+            $newPayment->date_of_payment = $request->date_of_payment;
             $newPayment->payment_method_type_id = $payment->payment_method_type_id;
             $newPayment->has_card = $payment->has_card;
             $newPayment->card_brand_id = $payment->card_brand_id;
@@ -508,7 +508,7 @@ class PurchasePaymentController extends Controller
             $newGlobalPayment->user_id = $globalPayment->user_id;
             $newGlobalPayment->save();
 
-            $this->createAccountingEntryReverse('PC'.$newPayment->id,$id);
+            $this->createAccountingEntryReverse('PC'.$newPayment->id,$id,$request->date_of_payment);
 
             return [
                 'success'=>true,
@@ -529,7 +529,7 @@ class PurchasePaymentController extends Controller
 
                 $newPayment = new PurchasePayment();
                 $newPayment->purchase_id = $paymentM->purchase_id;
-                $newPayment->date_of_payment = date('Y-m-d');
+                $newPayment->date_of_payment = $request->date_of_payment;
                 $newPayment->payment_method_type_id = $paymentM->payment_method_type_id;
                 $newPayment->has_card = $paymentM->has_card;
                 $newPayment->card_brand_id = $paymentM->card_brand_id;
@@ -556,7 +556,7 @@ class PurchasePaymentController extends Controller
             }
 
             //$unp = new ToPayController();
-            $this->createAccountingEntryReverse($paymentsIds,$id);
+            $this->createAccountingEntryReverse($paymentsIds,$id,$request->date_of_payment);
 
             return [
                 'success'=>true,
@@ -571,7 +571,7 @@ class PurchasePaymentController extends Controller
     }
 
      /* Crear los asientos contables del REVERSO */
-    private function createAccountingEntryReverse($documents, $id){
+    private function createAccountingEntryReverse($documents, $id, $fecha){
 
         Log::info('Generando asiento de reverso: PC'.$id);
             try{
@@ -602,7 +602,7 @@ class PurchasePaymentController extends Controller
                 $cabeceraC->seat = $seat;
                 $cabeceraC->serie = 'REVERSO PAGO COMPRA';
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = date('y-m-d');
+                $cabeceraC->seat_date = $fecha;
                 $cabeceraC->comment = $comment;
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
