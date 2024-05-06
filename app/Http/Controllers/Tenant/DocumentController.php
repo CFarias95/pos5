@@ -2156,7 +2156,7 @@ class DocumentController extends Controller
         $items = Item::orderBy('description')->whereIn('item_for',[0,1])->get()->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->name.' / '.$row->description.' / '.$row->reference. ' / '.$row->internal_id.' / '.$row->factory_code,
+                'description' => $row->name.' / '.$row->description.' / '.$row->internal_id.' / '.$row->factory_code,
             ];
         });
 
@@ -2170,14 +2170,13 @@ class DocumentController extends Controller
         $items = Item::where('description', 'like', "%{$request->input}%")
             ->orWhere('internal_id', 'like', "%{$request->input}%")
             ->orWhere('name', 'like', "%{$request->input}%")
-            ->orWhere('reference', 'like', "%{$request->input}%")
             ->orWhere('factory_code', 'like', "%{$request->input}%")
             ->orWhere('model', 'like', "%{$request->input}%")
             ->orderBy('description')
             ->get()->transform(function ($row) {
                 return [
                     'id' => $row->id,
-                    'description' => $row->name .'/'.$row->description.'/'.$row->reference.'/'.$row->model.'/'.$row->internal_id,
+                    'description' => $row->name .'/'.$row->description.'/'.$row->model.'/'.$row->internal_id,
                 ];
             });
 
