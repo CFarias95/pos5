@@ -83,7 +83,7 @@
             <table class="table">
               <thead>
                 <slot
-                  v-for="(key, value) in balance_header"
+                  v-for="(key, value) in records[0]"
                   :index="customIndex(value)"
                   :row="key"
                 >
