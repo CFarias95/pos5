@@ -42,6 +42,180 @@ class PurchasePaymentController extends Controller
         return new PurchasePaymentCollection($records);
     }
 
+    public function recordEdit($id){
+
+        try{
+            $datas = AccountingEntries::where('document_id','PC'.$id)->orWhere('document_id','like','%PC'.$id.';%')->get()->transform(function($row){
+                $unpaids = $row->document_id;
+                $unpaids = explode(';',$unpaids);
+                $numberUnpaids = 0;
+                Log::info('numberUnpaids '.$numberUnpaids);
+                foreach($unpaids as $value){
+                    $idPaymnet = str_replace(['CF',';'], '', $value);
+                    Log::info(intval($idPaymnet));
+                    if(intval($idPaymnet) > 0 ){
+                        $numberUnpaids += 1;
+                        $payment = PurchasePayment::find(intval($idPaymnet));
+                        $document = Purchase::find($payment->document_id);
+                        $data['unpaid'][]=[
+                            'document'=> $document->series. '-'. $document->number,
+                            'document_id' => $payment->id,
+                            'fee_id'=> $payment->fee_id,
+                            'maxamount' => $payment->fee->amount,
+                            'amount' => $payment->payment,
+                            'customer_id' => $document->customer_id,
+                            'customer' => $document->customer->name,
+                            'id' => $payment->id,
+                        ];
+                        $data['reference'] = $payment->reference;
+                        $data['payment_method_type_id'] = $payment->payment_method_type_id;
+                        $data['payment_destination_id'] = $payment->global_payment->destination_description;
+                    }
+                }
+
+                $extras = AccountingEntryItems::where('seat_line','>',$numberUnpaids+1)->where('accounting_entrie_id',$row->id)->get();
+                $data['extras'] = $extras->transform(function($value){
+                    $array['account_id'] = $value->account_movement_id;
+                    $array['debe'] = $value->debe;
+                    $array['haber'] = $value->haber;
+                    return $array;
+                });
+                $data['id'] = $row->id;
+                $data['filename'] = $row->filename;
+                $data['date_of_payment'] = $row->seat_date;
+                $data['payment'] = $row->total_debe;
+                $data['debe'] = $row->total_debe;
+                $data['haber'] = $row->total_haber;
+
+                return $data;
+            });
+
+            return[
+                'success'=> true,
+                'message'=>"Exito",
+                'data' => $datas,
+            ];
+
+        }catch(Exception $ex){
+            Log::error('Error al recuperar datos de pago');
+            Log::error($ex->getMessage());
+            return[
+                'success'=>false,
+                'message'=>"Error al recuperar los datos del pago ".$ex->getMessage(),
+            ];
+        }
+
+    }
+
+    public function recordSave(Request $request){
+
+        try{
+            Log::info('Guardar pago editado');
+
+            $debeAdicional = 0;
+            $haberAdicional = 0;
+            $totalDebe = 0;
+            $totalHaber = 0;
+            $documentIds = '';
+            $documentsSequentials = '';
+            $config = Configuration::first();
+            $haber = [];
+
+            foreach ($request->unpaid as $value) {
+
+                $payment = PurchasePayment::find($value['id']);
+                $payment->date_of_payment = $request->date_of_payment;
+                $payment->payment_method_type_id = $request->payment_method_type_id;
+                $payment->reference = $request->reference;
+                $payment->payment = $value['amount'];
+                $payment->save();
+
+                $secu = $payment->sequential;
+                $document = Purchase::find($value['document_id']);
+                $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+
+                $documentIds .= 'PC'.$payment->id.';';
+                $customer = Person::find($value['customer_id']);
+                //Log::info($customer);
+                Log::info($config);
+                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
+            }
+            foreach ($request->extras as $value) {
+                $debeAdicional += floatVal($value['debe']);
+                $haberAdicional += floatVal($value['haber']);
+            }
+            $comment = ' | '.$documentsSequentials. ' | Multipago '.$secu;
+            $cabeceraC = AccountingEntries::find($request->id);
+            $cabeceraC->seat_date = $request->date_of_payment;
+            $cabeceraC->comment = $request->reference.$comment;
+            $cabeceraC->total_debe = $request->payment + $debeAdicional;
+            $cabeceraC->total_haber = $request->payment + $haberAdicional;
+            $cabeceraC->document_id = $documentIds;
+            $cabeceraC->save();
+
+            $entryItems = AccountingEntryItems::where('accounting_entrie_id',$cabeceraC->id)->get();
+            foreach($entryItems as $value){
+                $value->delete();
+            }
+
+            $detalle = new AccountingEntryItems();
+            $ceuntaC = PaymentMethodType::find($request->payment_method_type_id);
+            $detalle->accounting_entrie_id = $cabeceraC->id;
+            $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$config->cta_paymnets;
+            $detalle->seat_line = 1;
+            $detalle->debe = 0;
+            $detalle->haber = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
+            $detalle->save();
+            $totalDebe += $detalle->debe;
+            $line = 2;
+            foreach ($haber as $key => $value) {
+
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account'];
+                $detalle->seat_line = $line;
+                $detalle->haber = 0;
+                $detalle->debe = $value['amount'];
+                $detalle->comment = $value['secuential'] ;
+                $detalle->save();
+                $line += 1;
+
+                $totalDebe += $detalle->debe;
+            }
+
+            foreach ($request->extras as $value) {
+                $detalle = new AccountingEntryItems();
+                $detalle->accounting_entrie_id = $cabeceraC->id;
+                $detalle->account_movement_id = $value['account_id'];
+                $detalle->seat_line = $line;
+                $detalle->debe = floatVal($value['debe']);
+                $detalle->haber = floatVal($value['haber']);
+                $detalle->save();
+                $line += 1;
+
+                $totalDebe += $detalle->debe;
+                $totalHaber += $detalle->haber;
+            }
+
+            $cabeceraC->total_debe = $totalDebe;
+            $cabeceraC->total_haber = $totalHaber;
+            $cabeceraC->save();
+
+            return[
+                'success'=>true,
+                'message' => 'Pago modificado correctamente'
+            ];
+        }catch(Exception $ex){
+            Log::error('Error al EDITAR multipago');
+            Log::error($ex->getMessage());
+            return[
+                'success'=> false,
+                'message' => 'Error al modificar el registro'
+            ];
+        }
+
+    }
+
     public function tables()
     {
         return [

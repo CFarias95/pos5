@@ -223,8 +223,8 @@ class BankReconciliationController extends Controller
         $bankReconciliation = BankReconciliation::where('id',$id)->first();
         $monthsEnd = substr($bankReconciliation->month, 0, -3).'-31';
         $monthsStart = $bankReconciliation->month;
-        //Log::info('monthDate - '.$monthDate);
-        //Log::info('startDate - '.$startDate);
+        Log::info('monthDate - '.$monthsEnd);
+        Log::info('startDate - '.$monthsStart);
         $company = Company::first();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
@@ -258,7 +258,7 @@ class BankReconciliationController extends Controller
         if($PurchasePaymnets->count() > 0 ){
             Log::info('PurchasePaymnets: '.json_encode($PurchasePaymnets->get()));
             $accountingEntries = AccountingEntries::where('seat_date','<=', $monthsEnd);
-            $accountingEntries->leftJoinSub($PurchasePaymnets,'purchase_paymentsP', function ($join){
+            $accountingEntries->joinSub($PurchasePaymnets,'purchase_paymentsP', function ($join){
                 $join->on('accounting_entries.document_id','purchase_paymentsP.id1')
                      ->orOn('accounting_entries.document_id', 'like','purchase_paymentsP.id2');
             });
@@ -297,7 +297,7 @@ class BankReconciliationController extends Controller
         if($DocumentPayments->count() > 0 ){
             Log::info('DocumentPayments: '.json_encode($DocumentPayments->get()));
             $accountingEntriesD = AccountingEntries::where('seat_date','<=', $monthsEnd);
-            $accountingEntriesD->leftJoinSub($DocumentPayments,'document_paymentsD', function ($join){
+            $accountingEntriesD->joinSub($DocumentPayments,'document_paymentsD', function ($join){
                 $join->on('accounting_entries.document_id','document_paymentsD.id1')
                         ->orOn('accounting_entries.document_id', 'like','document_paymentsD.id2');
             });
@@ -330,7 +330,12 @@ class BankReconciliationController extends Controller
 
         //DEPOSITOS NO EFECTIVIZADOS
         $depositosNETotales = 0;
+        $accountingEntriesNE = AccountingEntries::where('seat_date','<=', $monthsEnd);
         $depositosNE = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
+        $depositosNE->joinSub($accountingEntriesNE,'accounting_entries_ne', function ($join) {
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries_ne.id');
+        });
+
         if(isset($accountingEntriesDIds)){
             $depositosNE->whereNotIn('accounting_entrie_id',$accountingEntriesDIds);
         }

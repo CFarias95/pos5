@@ -48,10 +48,9 @@
                                                     @click.prevent="clickReverse(row)">Reversar</button>
                                                 <button v-if="row.payment > 0" type="button" class="btn waves-effect waves-light btn-xs btn-warning"
                                                     @click.prevent="clickExpenses(row)">Gastos</button>
-                                                <!-- <button v-if="row.payment > 0 && row.multi_pay == 'NO'" type="button"
+                                                <button v-if="row.payment > 0" type="button"
                                                     class="btn waves-effect waves-light btn-xs btn-success"
-                                                    @click.prevent="clickEdit(row)">Editar</button> -->
-                                            <!--<el-button type="danger" icon="el-icon-delete" plain @click.prevent="clickDelete(row.id)"></el-button>-->
+                                                    @click.prevent="clickEdit(row)">Editar</button>
                                         </td>
                                     </template>
                                     <template v-else>
@@ -394,16 +393,24 @@
 
             </template>
         </div>
+        <edit-payment :recordId="this.payment_id" :showDialogEdit.sync="showDialogEdit" :resource="this.resource"
+        :payment_method_types = "this.payment_method_types" :payment_destinations="this.payment_destinations"
+        :accounts="this.accounts" >
+        </edit-payment>
     </el-dialog>
 </template>
 
 <script>
 
 import { deletable } from '@mixins/deletable'
+import EditPayment from './edit_payment.vue'
 
 export default {
     props: ['showDialog', 'purchaseId', 'customerId', 'documentFeeId'],
     mixins: [deletable],
+    components: {
+        EditPayment
+    },
     data() {
         return {
             title: null,
@@ -447,6 +454,8 @@ export default {
             },
             showEdit:false,
             editRow:[],
+            showDialogEdit: false,
+            payment_id:null,
         }
     },
     async created() {
@@ -855,9 +864,9 @@ export default {
         },
         clickEdit(paymnet){
             console.log('clickEdit',paymnet)
-            this.editRow = paymnet;
-            console.log('editRow',this.editRow)
-            this.showEdit = true;
+            this.payment_id = paymnet.id
+            this.showDialogEdit = true
+
         },
         clickSaveEdit(row){
             console.log('clickSaveEdit',row)

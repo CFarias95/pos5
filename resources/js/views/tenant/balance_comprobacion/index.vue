@@ -97,7 +97,7 @@
                       slot="heading"
                       :key="name"
                     >
-                      <strong>{{ value1 }}</strong>
+                      <strong>{{ name }}</strong>
                     </th>
                   </tr>
                 </slot>
