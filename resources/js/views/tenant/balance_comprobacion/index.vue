@@ -80,9 +80,10 @@
         </div>
         <div class="col-md-12">
           <div class="table-responsive">
-            <table class="table">
+            <table class="table" style="text-align: right;">
               <thead>
                 <slot
+                  v-if="records.length > 0"
                   v-for="(key, value) in records[0]"
                   :index="customIndex(value)"
                   :row="key"
