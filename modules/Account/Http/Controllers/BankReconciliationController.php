@@ -394,7 +394,8 @@ class BankReconciliationController extends Controller
         $depositosNE = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
         $depositosNE->joinSub($accountingEntriesNE,'accounting_entries_ne', function ($join) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries_ne.id')
-            ->where('accounting_entries_ne.comment','not like','%Asiento Inicial%');
+            ->where('accounting_entries_ne.comment','not like','%Asiento Inicial%')
+            ->where('accounting_entries_ne.comment','not like','%CHEQUE GIRADO Y NO COBRADO%');
         });
 
         if(isset($accountingEntriesDIds)){
