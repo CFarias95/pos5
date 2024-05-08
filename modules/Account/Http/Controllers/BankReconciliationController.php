@@ -349,7 +349,7 @@ class BankReconciliationController extends Controller
             $chequesGNC = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
             $chequesGNC->join('accounting_entries','accounting', function ($join) use($monthsStart,$monthsEnd) {
                 $join->on('accounting_entry_items.accounting_entrie_id', 'accounting.id')
-                    ->where('accounting.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
+                    ->where('accounting.comment','like','%cheque girado y no cobrado%')
                     ->where('accounting.seat_date','<=', $monthsEnd)
                     ->where('accounting.seat_date','>=',$monthsStart);
             });
