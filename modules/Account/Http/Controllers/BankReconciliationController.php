@@ -361,7 +361,7 @@ class BankReconciliationController extends Controller
                     'id' => $row->id,
                 ];
             });
-            $chequesGNCTotales += $chequesGNC->sum('debe') - $chequesGNC->sum('haber');
+            $chequesGNCTotales += $chequesGNC->sum('debe') + $chequesGNC->sum('haber');
             Log::info('chequesGNC: '.json_encode($chequesGNC));
         }
 
