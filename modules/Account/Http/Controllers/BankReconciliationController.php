@@ -356,12 +356,12 @@ class BankReconciliationController extends Controller
                     'date' => $row->seat_date,
                     'comment' => $row->comment,
                     'debe' => round($row->debe,2),
-                    'haber' => round($row->haber,2) * -1,
+                    'haber' => round($row->haber,2),
                     'bank_reconciliated' => $row->bank_reconciliated,
                     'id' => $row->id,
                 ];
             });
-            $chequesGNCTotales += $chequesGNC->sum('debe') + $chequesGNC->sum('haber');
+            $chequesGNCTotales += $chequesGNC->sum('debe') - $chequesGNC->sum('haber');
             Log::info('chequesGNC: '.json_encode($chequesGNC));
         }
 
