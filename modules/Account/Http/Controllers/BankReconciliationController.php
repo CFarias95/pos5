@@ -422,6 +422,10 @@ class BankReconciliationController extends Controller
         $account = $request->account_id;
         $month = $request->month;
         $id = $request->id;
+        $bankReconciliation = BankReconciliation::where('id',$id)->first();
+        $monthsEnd = substr($bankReconciliation->month, 0, -3).'-31';
+        $monthsStart = $bankReconciliation->month;
+
 
         if(strlen($month) > 7){
             $month = substr($month,0,7);
@@ -436,13 +440,29 @@ class BankReconciliationController extends Controller
 
         if($month){
 
-            $mov = AccountingEntries::where('seat_date','like',$month.'%')->orderBy('seat_date','asc')->get()->transform(function($row){
+            $mov = AccountingEntries::where('comment','not like','%Saldo Inicial%')->where('seat_date','like',$month.'%')->orderBy('seat_date','asc')->get()->transform(function($row){
                 return[
                     'id' =>$row->id
                 ];
             });
 
-            $data->whereIn('accounting_entrie_id',$mov);
+            $movementsExtras = AccountingEntryItems::where('account_movement_id',$account)
+                                ->where('reconciliation',0)
+                                ->join('accounting_entries', function ($join) use($monthsStart) {
+                                    $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                                        ->where('accounting_entries.seat_date','<',$monthsStart)
+                                        ->where('accounting_entries.comment','not like','%Asiento Inicial%');
+                                })->select(DB::raw('accounting_entry_items.id'))->get()
+                                ->transform(function($row){
+                                    return[
+                                        'id' =>$row->id
+                                    ];
+                                });
+
+            $dataArray = array_merge($mov->toArray(),$movementsExtras->toArray());
+            Log::info('Arrays: '.json_encode($dataArray));
+            $data->whereIn('accounting_entrie_id',$dataArray);
+            //$data->whereIn('accounting_entrie_id',$movementsExtras);
         }
 
 
