@@ -41,7 +41,7 @@
                     <div>
                         <el-table :data="records" style="width: 100%" row-key="id" :row-class-name="tableRowClassName">
                             <el-table-column prop="id" label="Número" sortable />
-                            <el-table-column prop="initial_value" label="Saldo inicial" sortable />
+                            <el-table-column prop="initial_value" label="Saldo bancario" sortable />
                             <el-table-column prop="total_debe" label="Total debe" sortable />
                             <el-table-column prop="total_haber" label="Total haber" sortable />
                             <el-table-column prop="diference_value" label="Diferencia" sortable />

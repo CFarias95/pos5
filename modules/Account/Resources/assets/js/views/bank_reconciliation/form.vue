@@ -9,7 +9,7 @@
                         <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
                     </div>
                     <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
-                        <label class="control-label">Saldo estado de cuenta</label>
+                        <label class="control-label">Saldo bancario</label>
                         <el-input type="number" :step="0.01" :min="0" :max="999999999999999" v-model="form.initial_value" @change="recalculateDif"></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>

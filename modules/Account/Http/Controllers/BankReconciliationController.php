@@ -218,6 +218,40 @@ class BankReconciliationController extends Controller
 
     }
 
+    public function pdfConciliations($id){
+        $bankReconciliation = BankReconciliation::where('id',$id)->first();
+        $monthsEnd = substr($bankReconciliation->month, 0, -3).'-31';
+        $monthsStart = $bankReconciliation->month;
+        Log::info('monthDate - '.$monthsEnd);
+        Log::info('startDate - '.$monthsStart);
+        $company = Company::first();
+        $usuario_log = Auth::user();
+        $fechaActual = date('d/m/Y');
+        $user = User::where('id', $bankReconciliation->user_id)->first();
+        $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
+
+        $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
+        $saldo_contable->join('accounting_entries', function ($join) use($monthsStart) {
+            $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                ->where('accounting_entries.seat_date','<',$monthsStart);
+        });
+
+        //Log::info('Saldo Contable: '.json_encode($saldo_contable->get()));
+
+        $SaldoDebe = $saldo_contable->sum('debe');
+        $SaldoHaber = $saldo_contable->sum('haber');
+
+        Log::info('Total Debe: '.$SaldoDebe);
+        Log::info('Total Haber: '.$SaldoHaber);
+
+        $SaldoContableValue = 0;
+        $SaldoContableValue += $SaldoDebe - $SaldoHaber;
+
+        Log::info('Saldo Contable '.$SaldoContableValue);
+        Log::info('Conciliados: '.json_encode($saldo_contable->get()));
+
+    }
+
     public function pdf($id)
     {
         $bankReconciliation = BankReconciliation::where('id',$id)->first();
@@ -232,7 +266,7 @@ class BankReconciliationController extends Controller
         $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
         $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
-        $saldo_contable->leftJoin('accounting_entries', function ($join) use($monthsStart) {
+        $saldo_contable->join('accounting_entries', function ($join) use($monthsStart) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                 ->where('accounting_entries.seat_date','<',$monthsStart);
         });
@@ -242,13 +276,25 @@ class BankReconciliationController extends Controller
         $SaldoDebe = $saldo_contable->sum('debe');
         $SaldoHaber = $saldo_contable->sum('haber');
 
-        Log::info('Total DEbe: '.$SaldoDebe);
+        Log::info('Total Debe: '.$SaldoDebe);
         Log::info('Total Haber: '.$SaldoHaber);
 
         $SaldoContable = 0;
         $SaldoContable += $SaldoDebe - $SaldoHaber;
+        $saldosIniciales = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0)
+                            ->where('comment','like','%Asiento Inicial%')->get();
+
 
         Log::info('Saldo Contable '.$SaldoContable);
+        if($saldosIniciales->count() > 0){
+            $SaldoContable += $saldosIniciales->debe;
+            $SaldoContable -= $saldosIniciales->haber;
+
+            Log::info('Saldo Inicial '.$saldosIniciales->debe . ' '. $saldosIniciales->haber);
+        }
+
+
+
         $chequesGNC = [];
         $chequesGNCTotales = 0;
         //RECUPERAR LOS CHEQUES GIRADOS NO COBRADOS
