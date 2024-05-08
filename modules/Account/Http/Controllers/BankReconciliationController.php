@@ -266,7 +266,7 @@ class BankReconciliationController extends Controller
         $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
         $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
-        $saldo_contable->join('accounting_entries', function ($join) use($monthsStart) {
+        $saldo_contable->leftJoin('accounting_entries', function ($join) use($monthsStart) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                 ->where('accounting_entries.seat_date','<',$monthsStart);
         });
@@ -282,8 +282,11 @@ class BankReconciliationController extends Controller
         $SaldoContable = 0;
         $SaldoContable += $SaldoDebe - $SaldoHaber;
         $saldosIniciales = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0)
-                            ->where('comment','like','%Asiento Inicial%')->get();
-
+                            ->leftJoin('accounting_entries', function ($join) use($monthsStart) {
+                                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                                    ->where('accounting_entries.seat_date','<',$monthsStart)
+                                    ->where('comment','like','%Asiento Inicial%');
+                            });
 
         Log::info('Saldo Contable '.$SaldoContable);
         if($saldosIniciales->count() > 0){

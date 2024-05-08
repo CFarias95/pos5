@@ -269,7 +269,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
                                 <td class="celda">-</td>
                                 <td class="celda">-</td>
                                 <td class="celda">-</td>
-                                <td class="celda">{{$bankReconciliation->total_debe - $bankReconciliation->total_haber}}</td>
+                                <td class="celda">{{$SaldoContable +$chequesGNCTotales + $chequesANTTotales - $depositosNETotales }}</td>
                             </tr>
                             <tr>
                                 <td class="celda">-</td>
@@ -279,7 +279,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
                                 <td class="celda">-</td>
                                 <td class="celda">-</td>
                                 <td class="celda">$</td>
-                                <td class="celda">{{$bankReconciliation->initial_value - ($bankReconciliation->total_debe - $bankReconciliation->total_haber)}}</td>
+                                <td class="celda">{{$bankReconciliation->initial_value - ($SaldoContable +$chequesGNCTotales + $chequesANTTotales - $depositosNETotales)}}</td>
                             </tr>
                         </tbody>
                     </table>
