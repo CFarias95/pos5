@@ -266,7 +266,7 @@ class BankReconciliationController extends Controller
         $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
         $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
-        $saldo_contable->oin('jaccounting_entries', function ($join) use($monthsStart) {
+        $saldo_contable->join('jaccounting_entries', function ($join) use($monthsStart) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                 ->where('accounting_entries.seat_date','<',$monthsStart);
         });
