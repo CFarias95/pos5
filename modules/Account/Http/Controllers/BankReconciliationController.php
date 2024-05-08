@@ -321,9 +321,7 @@ class BankReconciliationController extends Controller
             });
             $chequesGNC->join('accounting_entries', function ($join2) use($monthsStart,$monthsEnd) {
                 $join2->on('accounting_entry_items.accounting_entrie_id', 'accounting_entries.id')
-                ->where('accounting_entries.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
-                ->where('accounting_entries.seat_date','<=', $monthsEnd)
-                ->where('accounting_entries.seat_date','>=',$monthsStart);
+                ->where('accounting_entries.comment','like','%CHEQUE GIRADO Y NO COBRADO%');
             });
 
             $chequesGNC = $chequesGNC->get()->transform(function($row) use($chequesGNCTotales){
@@ -349,9 +347,7 @@ class BankReconciliationController extends Controller
             $chequesGNC = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
             $chequesGNC->join('accounting_entries', function ($join) use($monthsStart,$monthsEnd) {
                 $join->on('accounting_entry_items.accounting_entrie_id', 'accounting_entries.id')
-                    ->where('accounting_entries.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
-                    ->where('accounting_entries.seat_date','<=', $monthsEnd)
-                    ->where('accounting_entries.seat_date','>=',$monthsStart);
+                    ->where('accounting_entries.comment','like','%CHEQUE GIRADO Y NO COBRADO%');
             });
 
             $chequesGNC = $chequesGNC->get()->transform(function($row){
