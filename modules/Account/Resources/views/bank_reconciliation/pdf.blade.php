@@ -279,7 +279,7 @@ $logo = "storage/uploads/logos/{$company->logo}";
                                 <td class="celda">-</td>
                                 <td class="celda">-</td>
                                 <td class="celda">$</td>
-                                <td class="celda">{{round($bankReconciliation->initial_value - $SaldoContable + $chequesGNCTotales + $chequesANTTotales - $depositosNETotales,2)}}</td>
+                                <td class="celda">{{round($bankReconciliation->initial_value - ($SaldoContable + $chequesGNCTotales + $chequesANTTotales - $depositosNETotales),2)}}</td>
                             </tr>
                         </tbody>
                     </table>
