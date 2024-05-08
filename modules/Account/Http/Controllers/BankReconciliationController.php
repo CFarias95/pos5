@@ -452,7 +452,7 @@ class BankReconciliationController extends Controller
                                     $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                                         ->where('accounting_entries.seat_date','<',$monthsStart)
                                         ->where('accounting_entries.comment','not like','%Asiento Inicial%');
-                                })->select(DB::raw('accounting_entry_items.id'))->get()
+                                })->select(DB::raw('accounting_entries.id'))->get()
                                 ->transform(function($row){
                                     return[
                                         'id' =>$row->id
