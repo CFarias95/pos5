@@ -440,7 +440,7 @@ class BankReconciliationController extends Controller
 
         if($month){
 
-            $mov = AccountingEntries::where('comment','not like','%Saldo Inicial%')->where('seat_date','like',$month.'%')->orderBy('seat_date','asc')->get()->transform(function($row){
+            $mov = AccountingEntries::where('comment','not like','%Saldo Inicial%')->where('seat_date','>=',$monthsStart)->where('seat_date','<=',$monthsEnd)->orderBy('seat_date','asc')->get()->transform(function($row){
                 return[
                     'id' =>$row->id
                 ];
