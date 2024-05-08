@@ -266,9 +266,10 @@ class BankReconciliationController extends Controller
         $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
         $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
-        $saldo_contable->join('jaccounting_entries', function ($join) use($monthsStart) {
+        $saldo_contable->join('accounting_entries', function ($join) use($monthsStart,$monthsEnd) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                ->where('accounting_entries.seat_date','<',$monthsStart);
+                ->where('accounting_entries.seat_date','>=',$monthsStart)
+                ->where('accounting_entries.seat_date','<=',$monthsEnd);
         });
 
         //Log::info('Saldo Contable: '.json_encode($saldo_contable->get()));
@@ -282,18 +283,21 @@ class BankReconciliationController extends Controller
         $SaldoContable = 0;
         $SaldoContable = $SaldoDebe - $SaldoHaber;
         $saldosIniciales = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0)
-                            ->leftJoin('accounting_entries', function ($join) use($monthsStart) {
+                            ->join('accounting_entries', function ($join) use($monthsStart) {
                                 $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                                     ->where('accounting_entries.seat_date','<',$monthsStart)
                                     ->where('accounting_entries.comment','like','%Asiento Inicial%');
                             })->get();
 
         Log::info('Saldo Contable '.$SaldoContable);
-        if($saldosIniciales->count() > 0){
-            $SaldoContable += $saldosIniciales->debe;
-            $SaldoContable -= $saldosIniciales->haber;
+        Log::info('Saldo Inicial: '.json_encode($saldosIniciales));
 
-            Log::info('Saldo Inicial '.$saldosIniciales->debe . ' '. $saldosIniciales->haber);
+        if($saldosIniciales->count() > 0){
+            foreach($saldosIniciales as $sini){
+                $SaldoContable += $sini->debe;
+                $SaldoContable -= $sini->haber;
+                Log::info('Saldo Inicial DEBE:'.$sini->debe . ' - HABER:'. $sini->haber);
+            }
         }
 
 
