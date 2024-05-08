@@ -304,6 +304,7 @@ class BankReconciliationController extends Controller
 
         $chequesGNC = [];
         $chequesGNCTotales = 0;
+
         //RECUPERAR LOS CHEQUES GIRADOS NO COBRADOS
         $PurchasePaymnets = PurchasePayment::where('payment_method_type_id','13')->where('date_of_payment','<=', $monthsEnd)
                                             ->select(DB::raw('CONCAT("PC",id) as id1, CONCAT("%PC",id,";%") as id2'));
@@ -319,6 +320,12 @@ class BankReconciliationController extends Controller
             $chequesGNC = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
             $chequesGNC->joinSub($accountingEntries,'accounting_entries', function ($join) use($monthsEnd) {
                 $join->on('accounting_entry_items.accounting_entrie_id', 'accounting_entries.id');
+            });
+            $chequesGNC->join('accounting_entries','accounting', function ($join) use($monthsStart,$monthsEnd) {
+                $join->on('accounting_entry_items.accounting_entrie_id', 'accounting.id')
+                    ->where('accounting.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
+                    ->where('accounting.seat_date','<=', $monthsEnd)
+                    ->where('accounting_entries.seat_date','>=',$monthsStart);
             });
 
             $chequesGNC = $chequesGNC->get()->transform(function($row) use($chequesGNCTotales){
@@ -447,7 +454,7 @@ class BankReconciliationController extends Controller
             });
 
             $movementsExtras = AccountingEntryItems::where('account_movement_id',$account)
-                                ->where('reconciliation',0)
+                                ->where('bank_reconciliated',0)
                                 ->join('accounting_entries', function ($join) use($monthsStart) {
                                     $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
                                         ->where('accounting_entries.seat_date','<',$monthsStart)
@@ -458,10 +465,10 @@ class BankReconciliationController extends Controller
                                         'id' =>$row->id
                                     ];
                                 });
-            Log::info('anterioies: ');
-            Log::info(json_encode($movementsExtras));
+            //Log::info('anterioies: ');
+            //Log::info(json_encode($movementsExtras));
             $dataArray = array_merge($mov->toArray(),$movementsExtras->toArray());
-            Log::info('Arrays: '.json_encode($dataArray));
+            //Log::info('Arrays: '.json_encode($dataArray));
             $data->whereIn('accounting_entrie_id',$dataArray);
             //$data->whereIn('accounting_entrie_id',$movementsExtras);
         }
