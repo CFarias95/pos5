@@ -300,8 +300,6 @@ class BankReconciliationController extends Controller
             }
         }
 
-
-
         $chequesGNC = [];
         $chequesGNCTotales = 0;
 
@@ -321,12 +319,12 @@ class BankReconciliationController extends Controller
             $chequesGNC->joinSub($accountingEntries,'accounting_entries', function ($join) use($monthsEnd) {
                 $join->on('accounting_entry_items.accounting_entrie_id', 'accounting_entries.id');
             });
-            $chequesGNC->join('accounting_entries','accounting', function ($join) use($monthsStart,$monthsEnd) {
-                $join->on('accounting_entry_items.accounting_entrie_id', 'accounting.id')
-                    ->where('accounting.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
-                    ->where('accounting.seat_date','<=', $monthsEnd)
-                    ->where('accounting.seat_date','>=',$monthsStart);
-            });
+            // $chequesGNC->join('accounting_entries','accounting', function ($join2) use($monthsStart,$monthsEnd) {
+            //     $join2->on('accounting_entry_items.accounting_entrie_id', 'accounting.id')
+            //         ->where('accounting.comment','like','%CHEQUE GIRADO Y NO COBRADO%')
+            //         ->where('accounting.seat_date','<=', $monthsEnd)
+            //         ->where('accounting.seat_date','>=',$monthsStart);
+            // });
 
             $chequesGNC = $chequesGNC->get()->transform(function($row) use($chequesGNCTotales){
                 return[
@@ -347,6 +345,7 @@ class BankReconciliationController extends Controller
             });
             Log::info('chequesGNC: '.json_encode($chequesGNC));
         }else{
+
             $chequesGNC = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0);
             $chequesGNC->join('accounting_entries','accounting', function ($join) use($monthsStart,$monthsEnd) {
                 $join->on('accounting_entry_items.accounting_entrie_id', 'accounting.id')
@@ -355,7 +354,7 @@ class BankReconciliationController extends Controller
                     ->where('accounting.seat_date','>=',$monthsStart);
             });
 
-            $chequesGNC = $chequesGNC->get()->transform(function($row) use($chequesGNCTotales){
+            $chequesGNC = $chequesGNC->get()->transform(function($row){
                 return[
                     'entry' => $row->filename,
                     'date' => $row->seat_date,
@@ -367,11 +366,6 @@ class BankReconciliationController extends Controller
                 ];
             });
             $chequesGNCTotales += $chequesGNC->sum('debe') + $chequesGNC->sum('haber');
-            // $accountingEntriesIds = $accountingEntries->get()->transform(function($row){
-            //     return[
-            //         'id'=>$row->id
-            //     ];
-            // });
             Log::info('chequesGNC: '.json_encode($chequesGNC));
         }
 
