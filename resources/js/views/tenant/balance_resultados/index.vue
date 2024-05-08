@@ -70,7 +70,7 @@
         </div>
         <div class="col-md-12">
           <div class="table-responsive">
-            <table class="table">
+            <table class="table" style="text-align: right;">
               <thead>
                 <slot
                   v-for="(key, value) in balance_header"

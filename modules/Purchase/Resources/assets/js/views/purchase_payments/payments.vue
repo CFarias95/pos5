@@ -466,8 +466,14 @@ export default {
                 this.payment_method_types = response.data.payment_method_types;
                 this.accounts = response.data.accounts
             })
+        await this.events();
     },
     methods: {
+        events() {
+            this.$eventHub.$on('reloadDataPayments', () => {
+                this.getData()
+            })
+        },
         clickDownloadFile(filename) {
             window.open(
                 `/finances/payment-file/download-file/${filename}/purchases`,
@@ -726,7 +732,7 @@ export default {
                 payment_received : '1',
                 }
         },
-        async getData() {
+        getData() {
             if (this.documentFeeId) {
                 this.title1 = "TOTAL PAGADO CUOTA"
                 this.title2 = "TOTAL DOCUMENTO"
@@ -734,12 +740,12 @@ export default {
             }
             this.initForm();
 
-            await this.$http.get(`/${this.resource}/purchase/${this.purchaseId}/${this.documentFeeId}`)
+            this.$http.get(`/${this.resource}/purchase/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
                     this.purchase = response.data;
                     this.title = 'Pagos de la compra: ' + this.purchase.number_full;
                 });
-            await this.$http.get(`/${this.resource}/records/${this.purchaseId}/${this.documentFeeId}`)
+            this.$http.get(`/${this.resource}/records/${this.purchaseId}/${this.documentFeeId}`)
                 .then(response => {
                     this.records = response.data.data
                     this.addAdvancesCustomer()

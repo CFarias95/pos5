@@ -90,6 +90,8 @@ if($current_hostname) {
                 Route::delete('/{purchase_payment}', 'PurchasePaymentController@destroy');
                 Route::post('/reverse', 'PurchasePaymentController@generateReverse');
                 Route::post('/expenses', 'PurchasePaymentController@generateExpenses');
+                Route::get('/record/edit/{id}', 'PurchasePaymentController@recordEdit');
+                Route::post('/save/edit', 'PurchasePaymentController@recordSave');
 
             });
 

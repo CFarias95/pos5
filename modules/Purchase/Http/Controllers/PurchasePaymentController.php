@@ -51,20 +51,21 @@ class PurchasePaymentController extends Controller
                 $numberUnpaids = 0;
                 Log::info('numberUnpaids '.$numberUnpaids);
                 foreach($unpaids as $value){
-                    $idPaymnet = str_replace(['CF',';'], '', $value);
+                    $idPaymnet = str_replace(['PC',';'], '', $value);
                     Log::info(intval($idPaymnet));
                     if(intval($idPaymnet) > 0 ){
                         $numberUnpaids += 1;
                         $payment = PurchasePayment::find(intval($idPaymnet));
-                        $document = Purchase::find($payment->document_id);
+                        $document = Purchase::find($payment->purchase_id);
+                        $fee = PurchaseFee::find($payment->fee_id);
                         $data['unpaid'][]=[
                             'document'=> $document->series. '-'. $document->number,
                             'document_id' => $payment->id,
                             'fee_id'=> $payment->fee_id,
-                            'maxamount' => $payment->fee->amount,
+                            'maxamount' => $fee->amount,
                             'amount' => $payment->payment,
-                            'customer_id' => $document->customer_id,
-                            'customer' => $document->customer->name,
+                            'customer_id' => $document->supplier_id,
+                            'customer' => $document->supplier->name,
                             'id' => $payment->id,
                         ];
                         $data['reference'] = $payment->reference;
@@ -123,6 +124,7 @@ class PurchasePaymentController extends Controller
 
             foreach ($request->unpaid as $value) {
 
+                Log::info(json_encode($value));
                 $payment = PurchasePayment::find($value['id']);
                 $payment->date_of_payment = $request->date_of_payment;
                 $payment->payment_method_type_id = $request->payment_method_type_id;
@@ -131,8 +133,8 @@ class PurchasePaymentController extends Controller
                 $payment->save();
 
                 $secu = $payment->sequential;
-                $document = Purchase::find($value['document_id']);
-                $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
+                $document = Purchase::find($payment->purchase_id);
+                //$documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
 
                 $documentIds .= 'PC'.$payment->id.';';
                 $customer = Person::find($value['customer_id']);
@@ -144,13 +146,13 @@ class PurchasePaymentController extends Controller
                 $debeAdicional += floatVal($value['debe']);
                 $haberAdicional += floatVal($value['haber']);
             }
-            $comment = ' | '.$documentsSequentials. ' | Multipago '.$secu;
+            //$comment = ' | '.$documentsSequentials. ' | Multipago '.$secu;
             $cabeceraC = AccountingEntries::find($request->id);
             $cabeceraC->seat_date = $request->date_of_payment;
-            $cabeceraC->comment = $request->reference.$comment;
+            //$cabeceraC->comment = $request->reference.$comment;
             $cabeceraC->total_debe = $request->payment + $debeAdicional;
             $cabeceraC->total_haber = $request->payment + $haberAdicional;
-            $cabeceraC->document_id = $documentIds;
+            //$cabeceraC->document_id = $documentIds;
             $cabeceraC->save();
 
             $entryItems = AccountingEntryItems::where('accounting_entrie_id',$cabeceraC->id)->get();
