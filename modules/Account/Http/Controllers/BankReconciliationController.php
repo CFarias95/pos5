@@ -265,11 +265,12 @@ class BankReconciliationController extends Controller
         $user = User::where('id', $bankReconciliation->user_id)->first();
         $account = AccountMovement::where('id', $bankReconciliation->account_id)->first();
 
-        $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',1);
+        $saldo_contable = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id);
         $saldo_contable->join('accounting_entries', function ($join) use($monthsStart,$monthsEnd) {
             $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                ->where('accounting_entries.seat_date','>=',$monthsStart)
+                ->where('accounting_entries.seat_date','>=','2024-02-29')
                 ->where('accounting_entries.seat_date','<=',$monthsEnd);
+                //->where('accounting_entries.comment','not like','%Asiento Inicial%');
         });
 
         //Log::info('Saldo Contable: '.json_encode($saldo_contable->get()));
@@ -282,23 +283,22 @@ class BankReconciliationController extends Controller
 
         $SaldoContable = 0;
         $SaldoContable = $SaldoDebe - $SaldoHaber;
-        $saldosIniciales = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0)
-                            ->join('accounting_entries', function ($join) use($monthsStart) {
-                                $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                                    ->where('accounting_entries.seat_date','<',$monthsStart)
-                                    ->where('accounting_entries.comment','like','%Asiento Inicial%');
-                            })->get();
+        // $saldosIniciales = AccountingEntryItems::where('account_movement_id',$bankReconciliation->account_id)->where('bank_reconciliated',0)
+        //                     ->join('accounting_entries', function ($join) use($monthsStart) {
+        //                         $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+        //                             ->where('accounting_entries.seat_date','<',$monthsStart)
+        //                             ->where('accounting_entries.comment','like','%Asiento Inicial%');
+        //                     })->get();
 
         Log::info('Saldo Contable '.$SaldoContable);
-        Log::info('Saldo Inicial: '.json_encode($saldosIniciales));
 
-        if($saldosIniciales->count() > 0){
-            foreach($saldosIniciales as $sini){
-                $SaldoContable += $sini->debe;
-                $SaldoContable -= $sini->haber;
-                Log::info('Saldo Inicial DEBE:'.$sini->debe . ' - HABER:'. $sini->haber);
-            }
-        }
+        // if($saldosIniciales->count() > 0){
+        //     foreach($saldosIniciales as $sini){
+        //         $SaldoContable += $sini->debe;
+        //         $SaldoContable -= $sini->haber;
+        //         Log::info('Saldo Inicial DEBE:'.$sini->debe . ' - HABER:'. $sini->haber);
+        //     }
+        // }
 
         $chequesGNC = [];
         $chequesGNCTotales = 0;
