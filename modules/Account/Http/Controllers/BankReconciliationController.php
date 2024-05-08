@@ -458,7 +458,8 @@ class BankReconciliationController extends Controller
                                         'id' =>$row->id
                                     ];
                                 });
-
+            Log::info('anterioies: ');
+            Log::info(json_encode($movementsExtras));
             $dataArray = array_merge($mov->toArray(),$movementsExtras->toArray());
             Log::info('Arrays: '.json_encode($dataArray));
             $data->whereIn('accounting_entrie_id',$dataArray);
