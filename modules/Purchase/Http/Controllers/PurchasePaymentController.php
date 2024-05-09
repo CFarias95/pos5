@@ -166,9 +166,9 @@ class PurchasePaymentController extends Controller
             $detalle->account_movement_id = ($ceuntaC && $ceuntaC->countable_acount_payment)?$ceuntaC->countable_acount_payment:$config->cta_paymnets;
             $detalle->seat_line = 1;
             $detalle->debe = 0;
-            $detalle->haber = $request->payment - floatVal($debeAdicional) +  floatVal($haberAdicional);
+            $detalle->haber = $request->payment + floatVal($debeAdicional) -  floatVal($haberAdicional);
             $detalle->save();
-            $totalDebe += $detalle->debe;
+            $totalHaber += $detalle->haber;
             $line = 2;
             foreach ($haber as $key => $value) {
 
