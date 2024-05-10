@@ -67,7 +67,7 @@
                                         <td>
                                             <div class="form-group mb-0"
                                                 :class="{ 'has-danger': row.errors.payment_method_type_id }">
-                                                <el-select v-model="row.payment_method_type_id"
+                                                <el-select v-model="row.payment_method_type_id" filterable
                                                     @change="changePaymentMethodType(index)">
                                                     <el-option v-for="option in payment_method_types" :key="option.id"
                                                         :value="option.id" :label="option.description"></el-option>
@@ -95,8 +95,8 @@
                                                 v-if="row.payment_method_type_id == '14' || row.payment_method_type_id == '15'">
                                                 <el-select v-model="row.reference" @change="changeAdvance(index, $event)"
                                                     placeholder="Referencia Anticipo">
-                                                    <el-option v-for="option in advances" :key="option.id"
-                                                        :label="'AT' + option.id + ' - ' + option.reference"
+                                                    <el-option v-for="option in advances" :key="option.id" v-if="option.valor > 0"
+                                                        :label="'AT' + option.id + ' - ' + option.reference + '/' + option.value"
                                                         :value="option.id"></el-option>
                                                 </el-select>
                                                 <small class="form-control-feedback" v-if="row.errors.reference"

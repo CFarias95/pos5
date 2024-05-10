@@ -83,38 +83,11 @@
 <table class="full-width">
     <thead class="">
         <tr>
-            <th class="border-top-bottom text-left p-4"><strong>Fecha Pago: </strong> {{ $account_entry['seat_date']}}</th>
-            <th class="border-top-bottom text-left p-4">Comentario: {{ $account_entry['comment']}}</th>
+            <th class="border-top-bottom text-left">Fecha Pago: {{ $account_entry['seat_date']}}</th>
+            <th class="border-top-bottom text-left">Comentario: {{ substr($account_entry['comment'],0,strpos($account_entry['comment'],'|'))}}</th>
         <tr>
-    {{-- <tr class="bg-grey">
-        <th class="border-top-bottom text-left p-1">#</th>
-        <th class="border-top-bottom text-left p-2">SERIE</th>
-        <th class="border-top-bottom text-left p-2">NÚMERO</th>
-        <th class="border-top-bottom text-left p-2">CUOTA</th>
-        <th class="border-top-bottom text-left p-3">CLIENTE</th>
-        <th class="border-top-bottom text-left p-2">CI</th>
-        <th class="border-top-bottom text-left p-3">COMENTARIO</th>
-        <th class="border-top-bottom text-left p-2">PAGADO</th>
-        <th class="border-top-bottom text-left p-2">PENDIENTE</th>
-    </tr> --}}
     </thead>
-    {{-- <tbody>
-    @foreach($document as $key => $row)
-        <tr>
-            <td class="text-left ">{{ $key }}</td>
-            <td class="text-left ">{{ $row['document_serie'] }}</td>
-            <td class="text-left ">{{ $row['document_number']}}</td>
-            <td class="text-left ">{{ $row['document_fee']}}</td>
-            <td class="text-left ">{{ $row['client_name'] }}</td>
-            <td class="text-left ">{{ $row['client_number'] }}</td>
-            <td class="text-left ">{{ $row['comment'] }}</td>
-            <td class="text-left ">{{ $row['payment'] }}</td>
-            <td class="text-left ">{{ $row['to_pay'] }}</td>
-        </tr>
-    @endforeach
-    </tbody> --}}
 </table>
-
 <table class="full-width mt-4">
     <tr class="mt-4">
         <td width="50%" class="font-bold">
@@ -167,11 +140,6 @@
         </tr>
     </tbody>
 </table>
-<br>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 <br>

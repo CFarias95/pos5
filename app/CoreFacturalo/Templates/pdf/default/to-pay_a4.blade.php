@@ -78,73 +78,12 @@
     <br>
     <table class="full-width">
         <thead class="">
-        <tr class="bg-grey">
-            <th class="border-top-bottom text-left p-1">#</th>
-            <th class="border-top-bottom text-left p-2">SERIE</th>
-            <th class="border-top-bottom text-left p-2">NÚMERO</th>
-            <th class="border-top-bottom text-left p-2">CUOTA</th>
-            <th class="border-top-bottom text-left p-3">PROVEEDOR</th>
-            <th class="border-top-bottom text-left p-2">RUC</th>
-            <th class="border-top-bottom text-left p-3">COMENTARIO</th>
-            <th class="border-top-bottom text-left p-2">PAGADO</th>
-            <th class="border-top-bottom text-left p-2">PENDIENTE</th>
-        </tr>
+            <tr>
+                <th class="border-top-bottom text-left">Fecha Pago: {{ $account_entry[0]['seat_date']}}</th>
+                <th class="border-top-bottom text-left">Comentario: {{ substr($account_entry[0]['comment'],0,strpos($account_entry[0]['comment'],'|'))}}</th>
+            <tr>
         </thead>
-        <tbody>
-        @foreach($document as $key => $row)
-            <tr>
-                <td class="text-left ">{{ $key }}</td>
-                <td class="text-left ">{{ $row['document_serie'] }}</td>
-                <td class="text-left ">{{ $row['document_number']}}</td>
-                <td class="text-left ">{{ $row['document_fee']}}</td>
-                <td class="text-left ">{{ $row['client_name'] }}</td>
-                <td class="text-left ">{{ $row['client_number'] }}</td>
-                <td class="text-left ">{{ $row['comment'] }}</td>
-                <td class="text-left ">{{ $row['payment'] }}</td>
-                <td class="text-left ">{{ $row['to_pay'] }}</td>
-            </tr>
-        @endforeach
-        </tbody>
     </table>
-
-    {{-- @if ($document->payment_method_type_id && $payments->count() == 0)
-        <table class="full-width">
-            <tr>
-                <td>
-                    <strong>PAGO: </strong>{{ $document->payment_method_type->description }}
-                </td>
-            </tr>
-        </table>
-    @endif
-
-    @if ($payments->count())
-
-        <table class="full-width">
-            <tr>
-                <td>
-                    <strong>
-                        PAGOS:
-                    </strong>
-                </td>
-            </tr>
-            <tr>
-                <td>-{{ $data[$index]->date_of_payment->format('d/m/Y') }} -
-                    {{ $data[$index]->payment_method_type->description }}-
-                    {{ $data[$index]->reference ? $row->reference . ' - ' : '' }}
-                    {{ $document->currency_type->symbol }}{{ $data[$index]->payment }}</td>
-            </tr>
-            @php
-                $payment = 0;
-            @endphp
-            @foreach ($payments as $row)
-                @php
-                    $payment += (float) $row->payment;
-                @endphp
-            @endforeach
-            </tr>
-        </table>
-    @endif --}}
-
     <table class="full-width mt-4">
         <tr class="mt-4">
             <td width="50%" class="font-bold">
@@ -201,11 +140,6 @@
             </tr>
         </tbody>
     </table>
-    <br>
-    <br>
-    <br>
-    <br>
-    <br>
     <br>
     <br>
     <br>

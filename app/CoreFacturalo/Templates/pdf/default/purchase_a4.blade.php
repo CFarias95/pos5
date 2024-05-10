@@ -140,7 +140,7 @@
     </tr>
 </table>
 
-
+{{--
 <table class="full-width mt-10 mb-10">
     <thead class="">
     <tr class="bg-grey">
@@ -256,20 +256,20 @@
             <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
-</table>
+</table> --}}
 
 @if($document->payment_condition_id && ($payments->count() || $document->fee->count()))
-<table class="full-width">
+{{-- <table class="full-width">
     <tr>
         <td>
             <strong>CONDICIÓN DE PAGO: {{ $document->payment_condition->name }} </strong>
         </td>
     </tr>
-</table>
+</table> --}}
 @endif
 
 @if($payments->count())
-    <table class="full-width">
+    {{-- <table class="full-width">
         <tr>
             <td>
                 <strong>PAGOS:</strong>
@@ -285,23 +285,23 @@
             @endforeach
         </tr>
 
-    </table>
+    </table> --}}
 @endif
 
 @if($document->fee->count())
 
-<table class="full-width">
+{{-- <table class="full-width">
         @foreach($document->fee as $key => $quote)
             <tr>
                 <td>&#8226; {{ (empty($quote->getStringPaymentMethodType()) ? 'Cuota #'.( $key + 1) : $quote->getStringPaymentMethodType()) }} / Fecha: {{ $quote->date->format('d-m-Y') }} / Monto: {{ $quote->currency_type->symbol }}{{ $quote->amount }}</td>
             </tr>
         @endforeach
     </tr>
-</table>
+</table> --}}
 
 @endif
 
-<table class="full-width">
+{{-- <table class="full-width">
     <tr>
         <td width="65%">
             @if($document->observation)
@@ -310,7 +310,7 @@
             @endif
         </td>
     </tr>
-</table>
+</table> --}}
 @if(isset($account_entry))
     <table class="full-width mt-4">
         <tr class="mt-4">
@@ -361,11 +361,6 @@
         </tbody>
     </table>
 @endif
-<br>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 <br>

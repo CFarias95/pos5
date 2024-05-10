@@ -221,9 +221,9 @@ class PurchasePaymentController extends Controller
     public function tables()
     {
         return [
-            'payment_method_types' => PaymentMethodType::all(),
+            'payment_method_types' => PaymentMethodType::orderBy('description','asc')->all(),
             'payment_destinations' => $this->getPaymentDestinations(),
-            'accounts' => AccountMovement::get()->transform(function($row){
+            'accounts' => AccountMovement::orderBy('code','asc')->get()->transform(function($row){
                 return[
                     'description' => $row->code .' '.$row->description,
                     'id'=> $row->id

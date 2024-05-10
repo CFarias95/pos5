@@ -114,7 +114,7 @@
                                         <td>
                                             <div class="form-group mb-0"
                                                 :class="{ 'has-danger': row.errors.payment_method_type_id }">
-                                                <el-select v-model="row.payment_method_type_id"
+                                                <el-select v-model="row.payment_method_type_id" filterable
                                                     @change="changePaymentMethodType(row.payment_method_type_id)">
                                                     <el-option v-for="option in payment_method_types"
                                                         v-show="option.id != '09'" :key="option.id" :value="option.id"
