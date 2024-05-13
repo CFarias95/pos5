@@ -2342,9 +2342,14 @@ class PurchaseController extends Controller
                 if ($formaPagoDefecto) {
 
                     $date = date_create($data['date_of_issue']);
+                    //Log::info($formaPagoDefecto->number_days);
                     $numberDays = ($formaPagoDefecto && $formaPagoDefecto->number_days >= 0) ? $formaPagoDefecto->number_days : 0;
+                    if($numberDays > 0){
+                        $fecha = date_add($date, date_interval_create_from_date_string($numberDays . " days"));
+                    }else{
+                        $fecha = $date;
+                    }
 
-                    $fecha = date_add($date, date_interval_create_from_date_string($numberDays . " days"));
                     $data['payments'][$indice]['payment_method_type_id'] = $supplier->default_payment;
                     $data['payment_method_type_id'] = $supplier->default_payment;
                     $data['payments'][$indice]['date_of_payment'] = date_format($fecha, "Y-m-d");
@@ -2359,8 +2364,8 @@ class PurchaseController extends Controller
             }
 
             $purchase = DB::connection('tenant')->transaction(function () use ($data) {
-                Log::info('Data Compra XML');
-                Log::info($data);
+                //Log::info('Data Compra XML');
+                //Log::info($data);
 
                 try {
                     $doc = new Purchase();
@@ -2386,7 +2391,7 @@ class PurchaseController extends Controller
                     return $doc;
                 } catch (Exception $ex) {
                     $doc->delete();
-                    Log::error('Error al tratar de crear Compra desde iimportacion: '.$ex->getMessage());
+                    Log::error('Error al tratar de crear Compra desde importacion: '.$ex->getMessage());
                     return false;
                 }
             });
