@@ -190,6 +190,7 @@
                         Haber
                       </th>
                       <th class="text-center font-weight-bold">Centro costo</th>
+                      <th class="text-center font-weight-bold">Comentario</th>
                       <th class="text-center font-weight-bold" width="4%"></th>
                     </tr>
                   </thead>
@@ -263,6 +264,19 @@
                           class="text-danger"
                           v-if="errors['items.' + index + '.seat_cost']"
                           v-text="errors['items.' + index + '.seat_cost'][0]"
+                        ></small>
+                      </td>
+                      <td class="text-center">
+                        <el-input
+                          :class="{
+                            'h-danger': errors['items.' + index + '.comment'],
+                          }"
+                          v-model="row.comment"
+                        ></el-input>
+                        <small
+                          class="text-danger"
+                          v-if="errors['items.' + index + '.comment']"
+                          v-text="errors['items.' + index + '.comment'][0]"
                         ></small>
                       </td>
                       <td class="series-table-actions text-center">
@@ -519,6 +533,7 @@ export default {
         debe: 0.0,
         haber: 0.0,
         seat_cost: null,
+        comment: null,
       });
       this.calculateTotal();
     },
@@ -636,7 +651,7 @@ export default {
             this.resetForm();
             this.quotationNewId = response.data.data.id;
             this.$message.success(`El Asiento ${response.data.data.number_full} fue generada`)
-           
+
             this.showDialogOptions = true;
           } else {
             this.$message.error(response.data.message);

@@ -65,7 +65,7 @@ class TenantSPCuentarPorPagar extends Migration
             AND (d.import_id = import_id OR 0 = import_id)
             GROUP BY id, df.id
         ) AS AA
-            WHERE (AA.total >= valor OR 0=valor)
+            WHERE (AA.total like CONCAT('%',d.valor,'%') OR 0 = valor)
             AND CASE WHEN liquidated < 1 THEN AA.total_to_pay > 0 ELSE 0=0 END
             AND CASE WHEN tipo = 1 THEN AA.date_of_issue BETWEEN date_start AND date_end ELSE
             CASE WHEN tipo = 2 THEN AA.date_of_due BETWEEN date_start AND date_end ELSE

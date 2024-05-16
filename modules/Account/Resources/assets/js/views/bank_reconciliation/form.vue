@@ -3,32 +3,37 @@
         <form autocomplete="off" @submit.prevent="submit">
             <div class="form-body">
                 <div class="row">
-                    <div class="form- col-md-6" :class="{ 'has-danger': errors.code }">
+                    <div class="form- col-md-3" :class="{ 'has-danger': errors.code }">
                         <label class="control-label">Código</label>
                         <el-input v-model="form.id" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.code" v-text="errors.code[0]"></small>
                     </div>
-                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Saldo bancario</label>
                         <el-input type="number" :step="0.01" :min="0" :max="999999999999999" v-model="form.initial_value" @change="recalculateDif"></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
-                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.name }">
+                        <label class="control-label">Saldo inicial contable</label>
+                        <el-input type="number" :step="0.01" :min="0" :max="999999999999999" v-model="form.init_value"></el-input>
+                        <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
+                    </div>
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Total debe</label>
                         <el-input type="number" v-model="form.total_debe" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
-                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.name }">
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.name }">
                         <label class="control-label">Total haber</label>
                         <el-input type="number" :step="0.01" :min="0" :max="999999999999999"  v-model="form.total_haber" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.name" v-text="errors.name[0]"></small>
                     </div>
-                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.diference_value }">
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.diference_value }">
                         <label class="control-label">Diferencia</label>
                         <el-input type="number" :step="0.01" :min="0" :max="999999999999999"  v-model="form.diference_value" readonly></el-input>
                         <small class="form-control-feedback" v-if="errors.diference_value" v-text="errors.name[0]"></small>
                     </div>
-                    <div class="form-group col-md-6" :class="{ 'has-danger': errors.month }">
+                    <div class="form-group col-md-3" :class="{ 'has-danger': errors.month }">
                         <label class="control-label">Mes a conciliar</label>
                         <el-date-picker v-model="form.month" type="month" :required="true" value-format="yyyy-MM"
                             format="MM/yyyy" :clearable="false" :readonly="form.id != null"></el-date-picker>
@@ -56,6 +61,8 @@
                     </div>
                     <div class="col-md-12">
                         <div class="form-group">
+                            <br>
+                            <el-input placeholder="Buscar" v-model="searchMovement" @change="filterMovement"></el-input>
                             <table class="table" style="text-align: right;">
                                 <thead>
                                     <tr>
@@ -121,14 +128,22 @@ export default {
             errors: {},
             form: {},
             ctas: [],
+            searchMovement:'',
             movements: [],
+            movements_all: [],
             loading_form: false,
         }
     },
+
     created() {
         this.initForm()
     },
     methods: {
+        mounted() {
+            this.$nextTick(() => {
+                this.filterMovement();
+            });
+        },
         initForm() {
             this.errors = {}
             this.form = {
@@ -139,6 +154,7 @@ export default {
                 diference_value: 0,
                 month: null,
                 account_id: null,
+                init_value: 0,
             }
             this.ctas = []
             this.movements = []
@@ -203,6 +219,7 @@ export default {
 
             this.$http.post(`/${this.resource}/movements`, this.form).then(response => {
                 this.movements = response.data
+                this.movements_all = response.data
             })
         },
         reconciliate(asiento) {
@@ -267,6 +284,17 @@ export default {
                         this.$message.error(response.data.message)
                     }
                 })
+        },
+        filterMovement(){
+            console.log('search filter Movements',this.searchMovement)
+            if(this.searchMovement != '' || this.searchMovement){
+                this.movements = this.movements_all.filter((item) => item.date.toLowerCase().includes(this.searchMovement) || item.comment.toLowerCase().includes(this.searchMovement))
+
+            }else{
+                this.movements = this.movements_all
+            }
+
+            console.log('Data filtrada: ',this.movements_all)
         }
     }
 }

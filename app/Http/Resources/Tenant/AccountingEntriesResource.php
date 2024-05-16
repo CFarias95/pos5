@@ -41,9 +41,9 @@ class AccountingEntriesResource extends JsonResource
                 'person_id' => $this->person_id,
                 'created_at' => $this->created_at->format('d/m/Y H:i:s'),
                 'updated_at' => $this->updated_at->format('d/m/Y H:i:s'),
-                'detalles'=>$this->items,
+                'detalles'=> $this->items,
             ];
 
-        
+
     }
 }

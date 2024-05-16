@@ -93,7 +93,7 @@ export default {
     },
     clickNewQuotation() {
       this.clickClose();
-      this.clickFinalize();
+      //this.clickFinalize();
     },
     clickClose() {
       this.$emit("update:showDialog", false);
@@ -116,4 +116,3 @@ export default {
   },
 };
 </script>
- 

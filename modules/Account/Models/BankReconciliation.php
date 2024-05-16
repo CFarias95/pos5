@@ -17,9 +17,11 @@ class BankReconciliation extends ModelTenant
         'user_id',
         'account_id',
         'month',  // Mes de la verificacion
+        'init_value',
     ];
 
     protected $casts = [
         'status' => 'bool',
+        'init_value' => 'double',
     ];
 }

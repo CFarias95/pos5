@@ -236,8 +236,6 @@ class BankReconciliationController extends Controller
                 ->where('accounting_entries.seat_date','<',$monthsStart);
         });
 
-        //Log::info('Saldo Contable: '.json_encode($saldo_contable->get()));
-
         $SaldoDebe = $saldo_contable->sum('debe');
         $SaldoHaber = $saldo_contable->sum('haber');
 
@@ -453,11 +451,9 @@ class BankReconciliationController extends Controller
         $monthsEnd = substr($bankReconciliation->month, 0, -3).'-31';
         $monthsStart = $bankReconciliation->month;
 
-
         if(strlen($month) > 7){
             $month = substr($month,0,7);
         }
-
 
         $data = AccountingEntryItems::query();
 
@@ -505,7 +501,7 @@ class BankReconciliationController extends Controller
                 'bank_reconciliated' => $row->bank_reconciliated,
                 'id' => $row->id,
             ];
-        });
+        })->sortBy('date');
     }
 
     public function store( Request $request){
@@ -514,7 +510,19 @@ class BankReconciliationController extends Controller
             if($id){
                 $record = BankReconciliation::find($id);
                 $record->fill($request->toArray());
+
+                $saldo_contable = AccountingEntryItems::where('account_movement_id',$record->account_id)->where('bank_reconciliated',1)->where('bank_reconciliation_id',$id);
+                //$monthsStart = $record->month;
+                // $saldo_contable->join('accounting_entries', function ($join) use($monthsStart) {
+                //     $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
+                //         ->where('accounting_entries.seat_date','<',$monthsStart);
+                // });
+
+                $record->total_debe = $saldo_contable->sum('debe');
+                $record->total_haber = $saldo_contable->sum('haber');
+
                 $record->save();
+
                 return[
                     'success'=>true,
                     'message'=>'Se ha actualizado la información correctamente.'
