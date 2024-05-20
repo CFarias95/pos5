@@ -341,7 +341,7 @@ Log::info('documents-items'.json_encode($document->seller));
         @foreach($totales as $totalX)
         <tr>
             <td colspan="7" class="text-right font-bold">IVA {{$totalX['tarifa']}}%:</td>
-            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{$totalX['iva']}}</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{number_format($totalX['iva'],2)}}</td>
         </tr>
         @endforeach
         <tr>
