@@ -229,18 +229,25 @@ class DocumentPaymentController extends Controller
     }
     public function tables()
     {
-        return [
-            'payment_method_types' => PaymentMethodType::orderBy('description','asc')->all(),
-            'payment_destinations' => $this->getPaymentDestinations(),
-            'permissions' => auth()->user()->getPermissionsPayment(),
-            'accounts' => AccountMovement::orderBy('code','asc')->get()->transform(function($row){
-                return[
-                    'description' => $row->code .' '.$row->description,
-                    'id'=> $row->id
-                ];
+        try{
+            return [
+                'payment_method_types' => PaymentMethodType::orderBy('description','asc')->get(),
+                'payment_destinations' => $this->getPaymentDestinations(),
+                'permissions' => auth()->user()->getPermissionsPayment(),
+                'accounts' => AccountMovement::orderBy('code','asc')->get()->transform(function($row){
+                    return[
+                        'description' => $row->code .' '.$row->description,
+                        'id'=> $row->id
+                    ];
 
-            })
-        ];
+                })
+            ];
+
+        }catch(Exception $ex){
+            Log::error('Error DocumentPaymentController , tables');
+            Log::error($ex->getMessage());
+        }
+
     }
 
     public function document($document_id,$fee_id = 'null' )
