@@ -312,12 +312,6 @@ Log::info('documents-items'.json_encode($document->seller));
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
-        @if($document->total_unaffected > 0)
-            <tr>
-                <td colspan="7" class="text-right font-bold">SUBTOTAL 0%: </td>
-                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total_unaffected, 2) }}</td>
-            </tr>
-        @endif
         @if($document->total_exonerated > 0)
             <tr>
                 <td colspan="7" class="text-right font-bold">OP. EXONERADAS: </td>
