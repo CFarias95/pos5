@@ -327,7 +327,7 @@ Log::info('documents-items'.json_encode($document->seller));
         <!-- JOINSOFTWARE -->
         @foreach( $totales as $total)
         <tr>
-            <td colspan="7" class="text-right font-bold">Subtotal {{ $total['tarifa'] }}%:</td>
+            <td colspan="7" class="text-right font-bold">SUBTOTAL {{ $total['tarifa'] }}%:</td>
             <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($total['subtotal'], 2) }}</td>
         </tr>
         @endforeach
