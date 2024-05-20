@@ -242,7 +242,7 @@ Log::info('documents-items'.json_encode($document->seller));
             <td class="text-left">
 
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
-                {{ strip_tags($row->item->name_product_pdf) }}
+                {{ html_entity_decode(strip_tags($row->item->name_product_pdf)) }}
                 @else
                 {{ strip_tags($row->item->name) }} / {{ strip_tags($row->item->description) }}
                 @endif
