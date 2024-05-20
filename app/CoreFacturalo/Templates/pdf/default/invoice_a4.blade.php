@@ -74,8 +74,6 @@
 
 <html>
 <head>
-    {{--<title>{{ $document_number }}</title>--}}
-    {{--<link rel="stylesheet" href="{{ $path_style }}" />--}}
 </head>
 <body>
     <!-- Separeted code2 -->

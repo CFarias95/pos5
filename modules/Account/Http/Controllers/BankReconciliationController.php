@@ -512,12 +512,6 @@ class BankReconciliationController extends Controller
                 $record->fill($request->toArray());
 
                 $saldo_contable = AccountingEntryItems::where('account_movement_id',$record->account_id)->where('bank_reconciliated',1)->where('bank_reconciliation_id',$id);
-                //$monthsStart = $record->month;
-                // $saldo_contable->join('accounting_entries', function ($join) use($monthsStart) {
-                //     $join->on('accounting_entry_items.accounting_entrie_id', '=', 'accounting_entries.id')
-                //         ->where('accounting_entries.seat_date','<',$monthsStart);
-                // });
-
                 $record->total_debe = $saldo_contable->sum('debe');
                 $record->total_haber = $saldo_contable->sum('haber');
 

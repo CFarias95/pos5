@@ -244,9 +244,9 @@ Log::info('documents-items'.json_encode($document->seller));
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
                 {{ strip_tags($row->item->name_product_pdf) }}
                 @else
-                {{ $row->item->name }} / {{ $row->item->description }}
+                {{ $row->item->name }} / {{ strip_tags($row->item->description) }}
                 @endif
-                @if (!empty($row->item->presentation)) {!!$row->item->presentation->description!!} @endif
+                @if (!empty($row->item->presentation)) {{strip_tags($row->item->presentation->description)}} @endif
                 @if($row->attributes)
                     @foreach($row->attributes as $attr)
                         <br/><span style="font-size: 9px">{!! $attr->description !!} : {{ $attr->value }}</span>
@@ -307,21 +307,21 @@ Log::info('documents-items'.json_encode($document->seller));
         @endif
         @if($document->total_free > 0)
             <tr>
-                <td colspan="7" class="text-right font-bold">OP. GRATUITAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_free, 2) }}</td>
+                <td colspan="7" class="text-right font-bold">OP. GRATUITAS:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total_free, 2) }}</td>
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
         @if($document->total_unaffected > 0)
             <tr>
-                <td colspan="7" class="text-right font-bold">SUBTOTAL 0%: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_unaffected, 2) }}</td>
+                <td colspan="7" class="text-right font-bold">SUBTOTAL 0%: </td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total_unaffected, 2) }}</td>
             </tr>
         @endif
         @if($document->total_exonerated > 0)
             <tr>
-                <td colspan="7" class="text-right font-bold">OP. EXONERADAS: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_exonerated, 2) }}</td>
+                <td colspan="7" class="text-right font-bold">OP. EXONERADAS: </td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total_exonerated, 2) }}</td>
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
@@ -333,8 +333,8 @@ Log::info('documents-items'.json_encode($document->seller));
         @endforeach
        @if($document->total_discount > 0)
             <tr>
-                <td colspan="7" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}: {{ $document->currency_type->symbol }}</td>
-                <td class="text-right font-bold">{{ number_format($document->total_discount, 2) }}</td>
+                <td colspan="7" class="text-right font-bold">{{(($document->total_prepayment > 0) ? 'ANTICIPO':'DESCUENTO TOTAL')}}:</td>
+                <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total_discount, 2) }}</td>
             </tr>
         @endif
         <!-- JOINSOFTWARE -->
@@ -345,8 +345,8 @@ Log::info('documents-items'.json_encode($document->seller));
         </tr>
         @endforeach
         <tr>
-            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR: {{ $document->currency_type->symbol }}</td>
-            <td class="text-right font-bold">{{ number_format($document->total, 2) }}</td>
+            <td colspan="7" class="text-right font-bold">TOTAL A PAGAR:</td>
+            <td class="text-right font-bold">{{ $document->currency_type->symbol }}{{ number_format($document->total, 2) }}</td>
         </tr>
     </tbody>
 </table>
@@ -415,11 +415,6 @@ Si desea realizar alguna consulta con respecto a la cotización, pongase en cont
     @endif
 
 </b>
-<br>
-<br>
-<br>
-<br>
-<br>
 <br>
 <br>
 <br>
