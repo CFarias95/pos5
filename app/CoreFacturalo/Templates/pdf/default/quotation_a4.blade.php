@@ -244,7 +244,7 @@ Log::info('documents-items'.json_encode($document->seller));
                 @if(isset($row->item->name_product_pdf) && $row->item->name_product_pdf != null)
                 {{ strip_tags($row->item->name_product_pdf) }}
                 @else
-                {{ $row->item->name }} / {{ strip_tags($row->item->description) }}
+                {{ strip_tags($row->item->name) }} / {{ strip_tags($row->item->description) }}
                 @endif
                 @if (!empty($row->item->presentation)) {{strip_tags($row->item->presentation->description)}} @endif
                 @if($row->attributes)
