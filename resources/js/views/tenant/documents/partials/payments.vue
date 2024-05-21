@@ -237,7 +237,7 @@
                                                     v-if="row.payment_method_type_id == '14' || row.payment_method_type_id == '15'">
                                                     <el-select v-model="row.reference" placeholder="Referencia Acticipo"
                                                         @change="changeAdvance(index, $event)">
-                                                        <el-option v-for="option in advances" :key="option.id"
+                                                        <el-option v-for="option in advances" :key="option.id" v-if="option.valor > 0"
                                                             :label="'AT' + option.id + ' - ' + option.reference + '/'+ option.valor"
                                                             :value="option.id"></el-option>
                                                     </el-select>
