@@ -227,6 +227,7 @@ class DocumentPaymentController extends Controller
         }
 
     }
+    
     public function tables()
     {
         try{

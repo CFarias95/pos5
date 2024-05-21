@@ -96,7 +96,7 @@
                                                 <el-select v-model="row.reference" @change="changeAdvance(index, $event)"
                                                     placeholder="Referencia Anticipo">
                                                     <el-option v-for="option in advances" :key="option.id" v-if="option.valor > 0"
-                                                        :label="'AT' + option.id + ' - ' + option.reference + '/' + option.value"
+                                                        :label="'AT' + option.id + ' - ' + option.reference + '/' + option.valor"
                                                         :value="option.id"></el-option>
                                                 </el-select>
                                                 <small class="form-control-feedback" v-if="row.errors.reference"
@@ -344,8 +344,8 @@
                                             v-if="editRow.payment_method_type_id == '14' || editRow.payment_method_type_id == '15'">
                                             <el-select v-model="editRow.reference" placeholder="Referencia Acticipo"
                                                 @change="changeAdvance(index, $event)">
-                                                <el-option v-for="option in advances" :key="option.id"
-                                                    :label="'AT' + option.id + ' - ' + option.reference"
+                                                <el-option v-for="option in advances" :key="option.id" v-if="option.valor > 0"
+                                                    :label="'AT' + option.id + ' - ' + option.reference +' / '+ option.valor"
                                                     :value="option.id"></el-option>
                                             </el-select>
                                         </div>
