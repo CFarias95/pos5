@@ -33,6 +33,26 @@
                                             </el-select>
                                         </div>
                                     </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Marca</label>
+                                            <el-select v-model="form.brand_id" clearable>
+                                                <el-option label="Todas" :value="0" :key="0"></el-option>
+                                                <el-option v-for="option in brands" :key="option.id" :label="option.name"
+                                                    :value="option.id"></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-3">
+                                        <div class="form-group">
+                                            <label class="control-label">Categoria</label>
+                                            <el-select v-model="form.category_id" clearable>
+                                                <el-option label="Todos las categorias" :value="0" :key="0"></el-option>
+                                                <el-option v-for="option in categories" :key="option.id" :label="option.name"
+                                                    :value="option.id"></el-option>
+                                            </el-select>
+                                        </div>
+                                    </div>
 
                                     <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search"
@@ -40,17 +60,6 @@
                                         </el-button>
 
                                         <template v-if="records.length > 0 && resource !== 'reports/document-detractions'">
-
-                                            <!-- <el-button v-if="resource != 'reports/state-account'" class="submit"
-                                                icon="el-icon-tickets" type="danger"
-                                                @click.prevent="clickDownload('pdf')">Exportar PDF
-                                            </el-button>
-
-                                            <el-button v-if="resource == 'reports/sales'" class="submit"
-                                                icon="el-icon-tickets" type="danger"
-                                                @click.prevent="clickDownload('pdf-simple')">Exportar PDF Simple
-                                            </el-button> -->
-
                                             <el-button class="submit" type="success"
                                                 @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel"></i>
                                                 Exportal
@@ -118,9 +127,13 @@ export default {
                 desde: null,
                 hasta: null,
                 customer: '0',
+                brand_id: 0,
+                category_id:0,
             },
             records: [],
             customers: [],
+            categories: [],
+            brands: [],
             loading_submit: false,
             loading_search: false,
             headers: [],
@@ -133,6 +146,8 @@ export default {
         await this.$http.get(`/${this.resource}/filter`)
             .then(response => {
                 this.customers = response.data.persons
+                this.brands = response.data.brands
+                this.categories = response.data.categories
             });
         await this.getRecords()
     },
@@ -141,7 +156,8 @@ export default {
             this.form = {
                 desde: moment().format('YYYY-MM-DD'),
                 hasta: moment().format('YYYY-MM-DD'),
-                customer: '0'
+                customer: '0',
+                brand_id: 0,
             }
         },
         async getRecordsByFilter() {

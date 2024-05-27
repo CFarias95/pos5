@@ -18,8 +18,8 @@
                             <label class="control-label">Cliente:</label>
                             <el-select v-model="form.client_id" clearable filterable>
                                 <el-option :value="0" label="Todos los Clientes" />
-                                <el-option v-for="client in clients" 
-                                    :key="client.id" 
+                                <el-option v-for="client in clients"
+                                    :key="client.id"
                                     :label="client.name"
                                     :value="client.id">
                                 </el-option>
@@ -38,6 +38,10 @@
                         <div class="col-md-3">
                             <label class="control-label">Asiento Contable</label>
                             <el-input v-model="form.asiento" :clearable="true"></el-input>
+                        </div >
+                        <div class="col-md-3">
+                            <label class="control-label">Agrupar por Multicobro?</label>
+                            <el-switch v-model="form.multipay" :clearable="true"></el-switch>
                         </div >
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
@@ -71,7 +75,7 @@
                                     <td v-for="(key, index1) in all_keys" :key="index1">
                                         {{rowArray[0][key]}}
                                     </td>
-                                </tr>      
+                                </tr>
                             </tbody>
                             <tfoot>
                                 <tr class="col-md-12">
@@ -116,6 +120,7 @@ export default {
                 date_start: null,
                 date_end: null,
                 asiento: null,
+                multipay:false,
             },
             loading_submit: false,
             clients: [],
@@ -167,6 +172,7 @@ export default {
                 client_id: 0,
                 date_start: moment().format('YYYY-MM-DD'),
                 date_end: moment().format('YYYY-MM-DD'),
+                multipay: false,
             }
             this.total_pagado = 0
 
@@ -187,7 +193,7 @@ export default {
                 let dataR = response.data
                 delete dataR.data.data
                 this.total_pagado = 0
-                this.total_pagado_global = 0     
+                this.total_pagado_global = 0
                 this.pagination = response.data.meta
                 //this.pagination = response.data.meta
                 this.pagination.per_page = parseInt(response.data.meta.per_page)

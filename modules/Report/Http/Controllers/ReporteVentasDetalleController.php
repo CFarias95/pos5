@@ -18,6 +18,7 @@ use Illuminate\Http\Request;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Modules\Item\Models\Brand;
 use Modules\Item\Models\Category;
 use Modules\Report\Exports\ReportDetailSaleExport;
 use Modules\Report\Exports\StatusClientExport;
@@ -39,8 +40,10 @@ class ReporteVentasDetalleController extends Controller
     public function filter()
     {
         $persons = $this->getPersons('customers');
+        $brands = Brand::orderBy('name','asc')->get();
+        $categories = Category::where('parent_id',null)->get();
 
-        return compact('persons');
+        return compact('persons','brands','categories');
     }
 
 
@@ -50,13 +53,20 @@ class ReporteVentasDetalleController extends Controller
         $desde = $request->desde;
         $hasta = $request->hasta;
         $customer = $request->customer;
+        $brand_id = $request->brand_id;
+        $categorie_id = $request->categorie_id;
 
-        $data = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?);',[$desde,$hasta,$customer]);
+        $data = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?,?,?);',[$desde,$hasta,$customer,$brand_id,$categorie_id]);
 
         $collection = collect($data);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;
-        $header = get_object_vars($data[0]);
+        if($data[0] != null){
+            $header = get_object_vars($data[0]);
+        }else{
+            $header = [];
+        }
+
         $paginatedItems = $collection->slice(($page - 1) * $per_page, $per_page)->all();
 
         $paginatedCollection = new LengthAwarePaginator($paginatedItems, count($collection), $per_page, $page);
@@ -73,7 +83,10 @@ class ReporteVentasDetalleController extends Controller
         $desde = $request->desde;
         $hasta = $request->hasta;
         $customer = $request->customer;
-        $records = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?);',[$desde,$hasta,$customer]);
+        $brand_id = $request->brand_id;
+        $categorie_id = $request->categorie_id;
+
+        $records = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?,?,?);',[$desde,$hasta,$customer,$brand_id,$categorie_id]);
 
         $documentExport = new ReportDetailSaleExport();
         $documentExport
