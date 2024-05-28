@@ -286,7 +286,7 @@ export default {
                 })
         },
         filterMovement(){
-            console.log('search filter Movements',this.searchMovement)
+            console.log('search filter Movements',this.movements_all)
             if(this.searchMovement != '' || this.searchMovement){
                 this.movements = this.movements_all.filter((item) => item.date.toLowerCase().includes(this.searchMovement) || item.comment.toLowerCase().includes(this.searchMovement))
 
