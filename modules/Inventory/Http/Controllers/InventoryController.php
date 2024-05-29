@@ -58,6 +58,7 @@ class InventoryController extends Controller
 			'internal_id' => 'Código interno',
 			'warehouse'   => 'Almacén',
 			'category_id_array'   => 'Categoria',
+            'factory_code' => 'Código de fabrica',
 
 		];
 		$categories_list = Category::get();
