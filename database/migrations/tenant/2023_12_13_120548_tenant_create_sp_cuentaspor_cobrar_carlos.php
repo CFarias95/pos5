@@ -33,35 +33,31 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
         COMMENT ''
         BEGIN
                 SELECT * FROM
-                    (
-                    SELECT d.id , df.id as fee_id,
+                (SELECT d.id , df.id as fee_id,
                     CASE WHEN df.id IS NOT NULL THEN DATE_FORMAT(d.date_of_issue, '%Y/%m/%d') ELSE DATE_FORMAT(d.date_of_issue, '%Y/%m/%d') END as date_of_issue,
                     persons.name as customer_name, persons.id as customer_id
                     ,d.document_type_id,
-                        CASE WHEN df.id IS NOT NULL THEN CONCAT(d.series,'-',d.number,'/ C-',df.number) ELSE CONCAT(d.series,'-',d.number) END AS number_full,
+                        CASE WHEN df.id IS NOT NULL THEN CONCAT(d.series,'-',d.number,'/ C-',IF(d.series LIKE '%B%',d.clave_SRI,df.number)) ELSE CONCAT(d.series,'-',d.number) END AS number_full,
                         CASE WHEN df.id IS NOT NULL THEN df.amount ELSE d.total END as total,
-                    CASE WHEN df.id IS NOT NULL THEN IFNULL(SUM(dpf.payment),0) ELSE IFNULL(SUM(dpf.payment), 0) END as total_payment,
+                    (SELECT SUM(payment) FROM document_payments WHERE fee_id = df.id AND document_id = d.id) as total_payment,
                     IFNULL(SUM(dcn.total), 0) as total_credit_notes,
-                    CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL(SUM(dpf.payment),0) ELSE d.total - IFNULL(SUM(dpf.payment), 0)  END as total_to_pay,
+                    CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL((SELECT SUM(payment) FROM document_payments WHERE fee_id = df.id AND document_id = d.id),0) ELSE d.total - IFNULL((SELECT SUM(payment) FROM document_payments WHERE fee_id = df.id AND document_id = d.id), 0)  END as total_to_pay,
                     CASE WHEN df.id IS NOT NULL THEN DATE_FORMAT(df.date, '%Y/%m/%d') ELSE  DATE_FORMAT(inv.date_of_due , '%Y/%m/%d') END AS date_payment_last,
                     CASE WHEN df.id IS NOT NULL THEN DATEDIFF(df.date, NOW()) ELSE DATEDIFF(inv.date_of_due,NOW()) END AS delay_payment,
                     CASE WHEN df.id IS NOT NULL THEN DATE_FORMAT(df.date, '%Y/%m/%d') ELSE  DATE_FORMAT(inv.date_of_due , '%Y/%m/%d') END AS date_of_due,
                     'document' AS 'type',d.currency_type_id,d.exchange_rate_sale, d.user_id, users.name as username,
-                    CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL(SUM(dpf.payment),0) ELSE d.total - IFNULL(SUM(dpf.payment), 0) END as total_subtraction,
+                    CASE WHEN df.id IS NOT NULL THEN df.amount - IFNULL((SELECT SUM(payment) FROM document_payments WHERE fee_id = df.id AND document_id = d.id),0) ELSE d.total - IFNULL((SELECT SUM(payment) FROM document_payments WHERE fee_id = df.id AND document_id = d.id), 0) END as total_subtraction,
                     d.purchase_order AS purchase_order,
-                    DATE_FORMAT(df.f_posdated, '%Y/%m/%d') f_posdated,df.posdated as posdated
+                    DATE_FORMAT(df.f_posdated, '%Y/%m/%d') f_posdated,df.posdated as posdated,
+                    (SELECT CASE WHEN COUNT(id) > 0 THEN 'SI' ELSE 'NO' END FROM document_payments WHERE fee_id = df.id AND document_id = d.id AND multipay = 'SI') as multipay
                     FROM documents AS d
                     JOIN document_fee AS df ON df.document_id = d.id
                     JOIN persons ON persons.id = d.customer_id
                     JOIN users ON users.id = d.user_id
                     LEFT JOIN notes AS cn ON  cn.affected_document_id = d.id
                     LEFT JOIN documents AS dcn ON dcn.id = cn.document_id
-                    LEFT JOIN document_payments AS dpf ON dpf.fee_id = df.id AND dpf.document_id = d.id
-                    JOIN invoices AS inv ON inv.document_id = d.id
-                    WHERE (d.establishment_id = establecimiento OR 0=establecimiento)
-                    AND (d.customer_id = customer OR 0 = customer)
-                    AND (d.seller_id = usuario OR 0=usuario)
-                    AND (d.purchase_order LIKE CONCAT('%',purchaseorder,'%') OR 0= purchaseorder)
+
+                    LEFT JOIN invoices AS inv ON inv.document_id = d.id
                     GROUP BY id, inv.id, df.id
                 ) AS AA
                     WHERE (AA.total like CONCAT('%',valor,'%') OR 0 = valor)

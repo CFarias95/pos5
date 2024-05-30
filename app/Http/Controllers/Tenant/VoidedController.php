@@ -133,7 +133,10 @@ class VoidedController extends Controller
         });
         $voided_doc = VoidedDocument::where('id', $voided_id)->first();
         $doc_payment_seat = DocumentPayment::where('document_id', $voided_doc->document_id)->first();
-        AccountingEntries::where('document_id', 'CF'.$doc_payment_seat->id)->delete();
+        if($doc_payment_seat->count() > 0 ){
+            AccountingEntries::where('document_id', 'CF'.$doc_payment_seat->id)->delete();
+        }
+
         AccountingEntries::where('document_id', 'F'.$voided_doc->document_id)->delete();
         $response = $fact->getResponse();
 
