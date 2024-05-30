@@ -57,7 +57,7 @@ trait InventoryTrait
         return collect($records)->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->description
+                'description' => $row->name. '/ '.$row->description.' / '.$row->factory_code,
             ];
         });
     }
@@ -68,7 +68,7 @@ trait InventoryTrait
         return collect($records)->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->description
+                'description' => $row->name. '/ '.$row->description.' / '.$row->factory_code,
             ];
         });
     }
@@ -80,7 +80,7 @@ trait InventoryTrait
         return collect($records)->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->description
+                'description' => $row->name. '/ '.$row->description.' / '.$row->factory_code,
             ];
         });
     }
@@ -186,6 +186,10 @@ trait InventoryTrait
         return $query->get()->transform(function ($row) {
             //Log::info('row'.$row);
             $description = '';
+
+            if($row->factory_code) {
+                $description .= "{$row->factory_code} | ";
+            }
 
             if($row->internal_id) {
                 $description .= "{$row->internal_id} | ";

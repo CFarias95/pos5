@@ -78,7 +78,7 @@
         </tr>
         <tr>
             <td>
-                <p><strong>Producto: </strong>{{$records->item->name ? $records->item->name : 'NA'}} - {{$records->item->description ? $records->item->description : 'NA'}} - {{$records->item->model ? $records->item->model : 'NA'}} - {{$records->item->internal_id ? $records->item->internal_id : 'NA'}}</p>
+                <p><strong>Producto: </strong>{{$records->item->name ? $records->item->name : 'NA'}} - {{$records->item->description ? $records->item->description : 'NA'}} - {{$records->item->model ? $records->item->model : 'NA'}} - {{$records->item->internal_id ? $records->item->internal_id : 'NA'}} - {{$records->item->factory_code ? $records->item->factory_code : 'NA'}} </p>
                 @if($records->lot_code)
                 <p><strong>Lote: </strong>{{$records->lot_code}}</p>
                 <p><strong>F. Vencimiento: </strong>
@@ -136,7 +136,7 @@
             </tr>
         }
         @endif
-        
+
     </table>
     <br>
     <br>
@@ -151,36 +151,36 @@
         <tr class="font-sm">
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Elaborado por: 
+                    Elaborado por:
                 </b>
                 {{$user->name}}
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
                 {{$user->number}}
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Aprobado por: 
+                    Aprobado por:
                 </b>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
             <td class="p-1"  width="8%"></td>
             <td class="border-top text-left p-1 font-sm" width="30%">
                 <b>
-                    Revisado por: 
+                    Revisado por:
                 </b>
                 <br>
                 <b>
-                    Cédula: 
+                    Cédula:
                 </b>
-                
+
             </td>
          </tr>
     </tbody>

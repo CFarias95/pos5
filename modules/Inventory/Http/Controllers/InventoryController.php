@@ -840,7 +840,7 @@ class InventoryController extends Controller
     public function print($id,$type){
 
         $records = Inventory::find($id);
-		//Log::info('productionController - '.$records->production);
+		Log::info('productionController - '.$records->item);
 		$user = Auth()->user();
         $company = Company::first();
         $tipo = 'Ingreso';

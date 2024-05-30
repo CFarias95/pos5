@@ -54,14 +54,14 @@ class ReporteVentasDetalleController extends Controller
         $hasta = $request->hasta;
         $customer = $request->customer;
         $brand_id = $request->brand_id;
-        $categorie_id = $request->categorie_id;
+        $categorie_id = $request->category_id;
 
         $data = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?,?,?);',[$desde,$hasta,$customer,$brand_id,$categorie_id]);
 
         $collection = collect($data);
         $per_page = (config('tenant.items_per_page'));
         $page = request()->query('page') ?? 1;
-        if($data[0] != null){
+        if($data && count($data) > 0 ){
             $header = get_object_vars($data[0]);
         }else{
             $header = [];
@@ -84,7 +84,7 @@ class ReporteVentasDetalleController extends Controller
         $hasta = $request->hasta;
         $customer = $request->customer;
         $brand_id = $request->brand_id;
-        $categorie_id = $request->categorie_id;
+        $categorie_id = $request->category_id;
 
         $records = DB::connection('tenant')->select('CALL SP_ReporteVentasDetalle(?,?,?,?,?);',[$desde,$hasta,$customer,$brand_id,$categorie_id]);
 
