@@ -61,11 +61,6 @@ export default {
         ]),
         handleChange(file) {
 
-            // const self = this;
-            // const reader = new FileReader();
-            // reader.onload = e => self.parseTxt(e.target.result);
-            // reader.readAsText(file.raw);
-            // console.log('handleChange: ',file.raw)
             this.loadingForm = true;
             setTimeout(() => {
                 const self = this;
@@ -114,11 +109,19 @@ export default {
             this.loading_submit = false;
         },
         initForm() {
-            this.errors = {};
-            this.form = {
-                data: null,
-            };
-
+            this.has_file = false
+            this.loading_submit= false
+            this. headers= headers_token
+            this.errors={}
+            this.form= {}
+            this.formXmlJson= {}
+            this.items= []
+            this.affectation_igv_types= []
+            this.system_isc_types= []
+            this.discount_types= []
+            this.charge_types= []
+            this.attribute_types= []
+            this.purchaseItems= []
         },
         create() {
             this.titleDialog = "Importar retencion recibida por XML";
@@ -141,6 +144,7 @@ export default {
 
                         this.$eventHub.$emit("reloadData");
                         this.$refs.upload.clearFiles();
+                        this.initForm();
                         this.close();
                     } else {
                         this.$message({ message: response.data.message, type: "error" });
