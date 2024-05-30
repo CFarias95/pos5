@@ -56,8 +56,11 @@ class TenantCreateSpCuentasporCobrarCarlos extends Migration
                     JOIN users ON users.id = d.user_id
                     LEFT JOIN notes AS cn ON  cn.affected_document_id = d.id
                     LEFT JOIN documents AS dcn ON dcn.id = cn.document_id
-
                     LEFT JOIN invoices AS inv ON inv.document_id = d.id
+                    WHERE (d.establishment_id = establecimiento OR 0=establecimiento)
+                    AND (d.customer_id = customer OR 0 = customer)
+                    AND (d.seller_id = usuario OR 0=usuario)
+                    AND (d.purchase_order LIKE CONCAT('%',purchaseorder,'%') OR 0= purchaseorder)
                     GROUP BY id, inv.id, df.id
                 ) AS AA
                     WHERE (AA.total like CONCAT('%',valor,'%') OR 0 = valor)

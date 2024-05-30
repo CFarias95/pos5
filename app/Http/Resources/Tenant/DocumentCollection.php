@@ -27,7 +27,7 @@ class DocumentCollection extends ResourceCollection
             $btn_note = false;
             $btn_guide = true; // Boton para generar guia
             $btn_resend = false;
-            $btn_voided = false;
+            $btn_voided = true;
             $btn_consult_cdr = false;
             $btn_delete_doc_type_03 = false;
             $btn_constancy_detraction = false;
