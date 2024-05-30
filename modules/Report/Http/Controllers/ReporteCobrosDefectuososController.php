@@ -83,7 +83,13 @@ class ReporteCobrosDefectuososController extends Controller
     public function pdf(Request $request)
     {
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null]);
+        $multipay = $request->multipay ?? 0;
+        if($request->multipay === 'true' || $request->multipay === true ){
+            $multipay = 1;
+        }else{
+            $multipay = 0;
+        }
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay]);
 
         $sp1 = array();
         $sp2 = [];
@@ -110,7 +116,13 @@ class ReporteCobrosDefectuososController extends Controller
     public function excel(Request $request)
     {
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null]);
+        $multipay = $request->multipay ?? 0;
+        if($request->multipay === 'true' || $request->multipay === true ){
+            $multipay = 1;
+        }else{
+            $multipay = 0;
+        }
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay]);
 
         $sp1 = array();
         $sp2 = [];
