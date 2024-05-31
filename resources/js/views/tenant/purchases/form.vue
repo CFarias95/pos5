@@ -1403,8 +1403,12 @@ export default {
             this.codSustentos = _.filter(this.codSustentos_all, { 'idTipoComprobante': document.DocumentTypeID })
 
             this.is_countable = (document.accountant > 0)
-            //console.log('es contable: ', this.is_countable)
+            console.log('es contable: ',document )
             this.is_credit_note = (document.DocumentTypeID == '04')
+
+            if(document.description.includes('importación')){
+                this.form.tipo_doc_id = 1
+            }
         },
         addRow(row) {
 
