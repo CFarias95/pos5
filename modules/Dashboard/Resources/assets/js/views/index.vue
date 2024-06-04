@@ -1192,7 +1192,7 @@ export default {
       this.loaders.items_by_sales = false;
       this.loaders.top_customers = false;
     },
-    
+
     getSaleNoteSP() {
       return this.$http
         .get(`/${this.resource}/sale_note_data?${this.getQueryParameters()}`)
@@ -1201,7 +1201,8 @@ export default {
           //console.log("SaleNote", this.saleNotesSP);
           this.saleNote_headers = this.saleNotesSP[this.saleNotesSP.length - 1];
           let len = this.saleNotesSP.length;
-          this.saleNotesSP.splice(len - 1, 1);
+
+          //this.saleNotesSP.splice(len - 1, 1);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });
@@ -1214,7 +1215,7 @@ export default {
           //console.log("SaleNote", this.saleNotesSP);
           this.comprobantes_headers = this.comprobantesSP[this.comprobantesSP.length - 1];
           let len = this.comprobantesSP.length;
-          this.comprobantesSP.splice(len - 1, 1);
+          //this.comprobantesSP.splice(len - 1, 1);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });
@@ -1229,7 +1230,7 @@ export default {
             this.ventas_productoSP.length - 1
           ];
           let len = this.ventas_productoSP.length;
-          this.ventas_productoSP.splice(len - 1, 1);
+          //this.ventas_productoSP.splice(len - 1, 1);
           this.pagination = response.data.meta;
           this.pagination.per_page = parseInt(response.data.meta.per_page);
         });

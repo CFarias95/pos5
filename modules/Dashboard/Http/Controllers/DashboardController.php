@@ -45,11 +45,11 @@ class DashboardController extends Controller
         //$currency=$configuration->currency_type_id;
         $currency=$configuration->currency_type_id;
 
-        
 
-        
+
+
         $cash= ConfigurationCash::where('id','=',$currency);
-           
+
 
         return view('dashboard::index', compact('soap_company','configuration','cash'));
     }
@@ -60,11 +60,6 @@ class DashboardController extends Controller
             'establishments' => DashboardView::getEstablishments()
         ];
     }
-
-   
-
-
-
 
     public function globalData()
     {
@@ -170,7 +165,7 @@ class DashboardController extends Controller
     {
         return view('dashboard::sales_by_product');
     }
-    
+
     public function productOfDue(Request $request)
     {
         return  (new DashboardInventory())->data($request);
@@ -284,7 +279,7 @@ class DashboardController extends Controller
 
             foreach($row as $key => $data)
             {
-                array_push($sp3, $data);   
+                array_push($sp3, $data);
             }
             $sp3 = array_slice($sp3, 1);
             //Log::info('slice - '.json_encode($sp3));

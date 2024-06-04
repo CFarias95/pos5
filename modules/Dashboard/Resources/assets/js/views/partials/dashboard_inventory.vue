@@ -6,7 +6,7 @@
             </template>
         </div>
         <div class="card-body pb-0" v-show="!loader">
-            
+
             <div class="row">
                 <label>Productos por vencer
                 <el-tooltip class="item" effect="dark" content="Aplica filtro por establecimiento" placement="top-start">
@@ -17,14 +17,12 @@
                     <div class="col-md-3">
                         <label class="control-label">Fecha inicio</label>
                         <el-date-picker v-model="date_start" type="date"
-                                        @change="changeDisabledDates"
+
                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                     </div>
                     <div class="col-md-3">
                         <label class="control-label">Fecha término</label>
                         <el-date-picker v-model="date_end" type="date"
-                                        :picker-options="pickerOptionsDates"
-                                        @change="getRecords"
                                         value-format="yyyy-MM-dd" format="dd/MM/yyyy" :clearable="true"></el-date-picker>
                     </div>
             </div>

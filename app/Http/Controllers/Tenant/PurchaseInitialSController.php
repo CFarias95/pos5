@@ -309,7 +309,7 @@ class PurchaseInitialSController extends Controller
                 $inventoryKardex->quantity = floatVal(str_replace(',','.',$value->quantity));
                 $inventoryKardex->save();
 
-                if($item->lots_enabled){
+                if($item->lots_enabled > 0){
 
                     ItemLotsGroup::create([
                         'code' => $value->code,
@@ -319,7 +319,7 @@ class PurchaseInitialSController extends Controller
                         'item_id' => $item->id
                     ]);
                 }
-                if($item->series_enabled){
+                if($item->series_enabled > 0){
                     ItemLot::create([
                         'date'         => $value->date_of_due,
                         'series'       => $value->code,
