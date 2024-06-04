@@ -142,7 +142,7 @@ class PurchaseInitialSController extends Controller
                 $purchase->save();
 
                 Log::error('PURCHASE: '.json_encode($purchase));
-                sleep(5);
+                sleep(10);
                 //Log::error('PURCHASE: '.json_encode($purchase));
 
                 $purchaseFee = new PurchaseFee();
