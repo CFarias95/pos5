@@ -100,10 +100,8 @@ class PurchaseInitialSController extends Controller
                 $purchase->sequential_number = $numDoc;
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
 
-                Log::error('PURCHASE: '.json_encode($purchase));
-
                 $purchase->save();
-
+                Log::error('PURCHASE: '.json_encode($purchase));
 
                 // $purchaseFee = new PurchaseFee();
                 // $purchaseFee->date = $fechaVenci;
