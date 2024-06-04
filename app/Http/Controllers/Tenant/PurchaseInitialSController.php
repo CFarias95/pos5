@@ -103,6 +103,7 @@ class PurchaseInitialSController extends Controller
                 $purchase->save();
                 Log::error('PURCHASE: '.json_encode($purchase));
 
+                sleep(5);
                 // $purchaseFee = new PurchaseFee();
                 // $purchaseFee->date = $fechaVenci;
                 // $purchaseFee->currency_type_id = $configuration->currency_type_id;
