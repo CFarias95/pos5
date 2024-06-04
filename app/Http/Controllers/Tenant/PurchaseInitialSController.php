@@ -139,7 +139,7 @@ class PurchaseInitialSController extends Controller
                 $purchase->save();
                 Log::error('PURCHASE: '.json_encode($purchase));
                 Log::error('ID PURCHASE: '.$purchase->id);
-                sleep(5);
+                //sleep(5);
 
                 Log::error('ID PURCHASE: '.$purchase->id);
 
