@@ -336,8 +336,8 @@ class PurchaseInitialSController extends Controller
                 $iw->save();
 
             }catch(Exception $ex){
-                echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
-                Log::error("No Se pudo generar el stock INICIAL para " . $value->internal_id . " con lote : " . $value->code . " en la bodega " . $value->warehouse);
+                echo "No Se pudo generar el stock INICIAL para " . $value->internal_id . " con code : " . $value->code . " en la bodega " . $value->warehouse . "</br>";
+                Log::error("No Se pudo generar el stock INICIAL para " . $value->internal_id . "con code:  " . $value->code . " en la bodega " . $value->warehouse);
                 Log::error($ex->getMessage());
             }
         }
