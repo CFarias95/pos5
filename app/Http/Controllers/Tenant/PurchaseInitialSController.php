@@ -146,15 +146,14 @@ class PurchaseInitialSController extends Controller
                 //Log::error('PURCHASE: '.json_encode($purchase));
 
                 $purchaseFee = new PurchaseFee();
-                $purchaseFee->purchase_id = $purchase->id;
                 $purchaseFee->date = $fechaVenci;
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
                 $purchaseFee->amount = $importe;
                 $purchaseFee->number = 1; //Monto de la
+                $purchaseFee->purchase_id = $purchase->id;
                 $purchaseFee->save();
 
                 $purchaseItem = new PurchaseItem();
-                $purchaseItem->purchase_id = $purchase->id;
                 $purchaseItem->item_id = $itemP->id;
                 $purchaseItem->item = $itemP;
                 $purchaseItem->quantity = 1;
@@ -168,6 +167,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->unit_price = $importe;
                 $purchaseItem->total_value = $importe;
                 $purchaseItem->total = $importe;
+                $purchaseItem->purchase_id = $purchase->id;
                 $purchaseItem->save();
 
 
