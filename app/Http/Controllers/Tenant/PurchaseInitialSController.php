@@ -107,7 +107,7 @@ class PurchaseInitialSController extends Controller
                 $fechaVenci = date_create_from_format("d/m/Y", $item->vencimiento)->format("Y-m-d");
                 $importe =  floatval(str_replace(',', '.', $item->importe));
                 $numero = Purchase::where('establishment_id', 1)->where('series', 'CC')->get()->max('number');
-                $supplier = Person::where('number', $CI)->first();
+                $supplier = Person::where('number', $CI)->where('type','suppliers')->first();
 
                 $purchase = new Purchase();
                 $purchase->user_id = 1;
@@ -199,7 +199,7 @@ class PurchaseInitialSController extends Controller
                 $fechaVenci = date_create_from_format("d/m/Y", $item->vencimiento)->format("Y-m-d");
                 $importe =  floatval(str_replace(',', '.', $item->importe));
                 $numero = Document::where('establishment_id', 1)->where('series', 'B001')->get()->max('number');
-                $customer = Person::where('number', $CI)->first();
+                $customer = Person::where('number', $CI)->where('type','customers')->first();
 
                 $document = new Document();
                 $document->user_id = 28; //28
