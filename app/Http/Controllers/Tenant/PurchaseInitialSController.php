@@ -109,9 +109,10 @@ class PurchaseInitialSController extends Controller
                 $numero = Purchase::where('establishment_id', 1)->where('series', 'CC')->get()->max('number');
                 $supplier = Person::where('number', $CI)->where('type','suppliers')->first();
 
-                Log::error('Person ID  '.$supplier->id);
+                Log::error('Person ID  '.$CI.' ID INTERNO: '.$supplier->id);
+
                 $purchase = new Purchase();
-                $purchase->user_id = 1;
+                $purchase->user_id = 28;
                 $purchase->external_id = Str::uuid()->toString();
                 $purchase->establishment_id = 1;
                 $purchase->soap_type_id = $compani->soap_type_id;
