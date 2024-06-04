@@ -3,78 +3,41 @@
 namespace App\Http\Controllers\Tenant;
 
 use App\CoreFacturalo\Helpers\Storage\StorageDocument;
-use App\CoreFacturalo\Requests\Inputs\Common\PersonInput;
-use App\CoreFacturalo\Template;
 use App\Http\Controllers\Controller;
-use App\Http\Controllers\SearchItemController;
-use App\Http\Requests\Tenant\PurchaseImportRequest;
-use App\Http\Requests\Tenant\PurchaseRequest;
-use App\Http\Resources\Tenant\PurchaseCollection;
-use App\Http\Resources\Tenant\PurchaseResource;
-use App\Models\Tenant\AccountingEntries;
-use App\Models\Tenant\AccountingEntryItems;
-use App\Models\Tenant\AccountMovement;
-use App\Models\Tenant\Catalogs\AffectationIgvType;
-use App\Models\Tenant\Catalogs\AttributeType;
-use App\Models\Tenant\Catalogs\ChargeDiscountType;
-use App\Models\Tenant\Catalogs\CurrencyType;
-use App\Models\Tenant\Catalogs\DocumentType;
-use App\Models\Tenant\Catalogs\OperationType;
-use App\Models\Tenant\Catalogs\PriceType;
-use App\Models\Tenant\Catalogs\PurchaseDocumentType;
-use App\Models\Tenant\Catalogs\RetentionType;
-use App\Models\Tenant\Catalogs\SystemIscType;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
-use App\Models\Tenant\CreditNotesPayment;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\DocumentFee;
 use App\Models\Tenant\DocumentItem;
-use App\Models\Tenant\DocumentTypesSustentoSRI;
+
 use App\Models\Tenant\Establishment;
-use App\Models\Tenant\GuideFile;
+
 use App\Models\Tenant\Item;
-use App\Models\Tenant\ItemUnitType;
+
 use App\Models\Tenant\ItemWarehouse;
-use App\Models\Tenant\PaymentMethodType;
+
 use App\Models\Tenant\Person;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use App\Traits\OfflineTrait;
-use DOMDocument;
+
 use Exception;
-use Illuminate\Http\Request;
+
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use Modules\Finance\Http\Controllers\PaymentFileController;
+
 use Modules\Finance\Traits\FinanceTrait;
-use Modules\Inventory\Models\Warehouse;
+
 use Modules\Item\Models\ItemLotsGroup;
-use Modules\Purchase\Models\PurchaseOrder;
-use Mpdf\Config\ConfigVariables;
-use Mpdf\Config\FontVariables;
-use Mpdf\HTMLParserMode;
-use Mpdf\Mpdf;
-use stdClass;
-use Symfony\Component\HttpFoundation\StreamedResponse;
-use Throwable;
-use App\Models\Tenant\GeneralPaymentCondition;
-use App\Models\Tenant\Imports;
+
 use App\Models\Tenant\Inventory;
 use App\Models\Tenant\InventoryKardex;
-use App\Models\Tenant\PurchaseDocumentTypes2;
+
 use App\Models\Tenant\PurchaseFee;
-use App\Models\Tenant\Retention;
-use App\Models\Tenant\RetentionTypePurchase;
-use App\Models\Tenant\RetentionsDetailEC;
-use App\Models\Tenant\RetentionsEC;
-use App\Models\Tenant\Series;
-use App\Models\Tenant\TypeDocsPurchase;
-use App\Models\Tenant\UserDefaultDocumentType;
-use App\Models\Tenant\Warehouse as TenantWarehouse;
+
 use Illuminate\Support\Facades\Log;
 use Modules\Item\Models\ItemLot;
-use Modules\Sale\Models\SaleOpportunity;
+
 
 set_time_limit(0);
 
@@ -141,15 +104,15 @@ class PurchaseInitialSController extends Controller
 
                 $purchase->save();
 
-                sleep(10);
-                //Log::error('PURCHASE: '.json_encode($purchase));
+                $purchaseSaved = Purchase::where('number',$numero + 1)->where('series','CC')->first();
+                Log::error('PURCHASE: '.$purchaseSaved->id);
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->date = $fechaVenci;
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
                 $purchaseFee->amount = $importe;
                 $purchaseFee->number = 1; //Monto de la
-                $purchaseFee->purchase_id = $purchase->id;
+                $purchaseFee->purchase_id = $purchaseSaved->id;
                 $purchaseFee->save();
 
                 $purchaseItem = new PurchaseItem();
@@ -166,7 +129,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->unit_price = $importe;
                 $purchaseItem->total_value = $importe;
                 $purchaseItem->total = $importe;
-                $purchaseItem->purchase_id = $purchase->id;
+                $purchaseItem->purchase_id = $purchaseSaved->id;
                 $purchaseItem->save();
 
 
