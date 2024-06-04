@@ -141,6 +141,7 @@ class PurchaseInitialSController extends Controller
 
                 $purchase->save();
 
+                Log::error('PURCHASE: '.json_encode($purchase));
                 sleep(5);
                 //Log::error('PURCHASE: '.json_encode($purchase));
 
