@@ -104,30 +104,30 @@ class PurchaseInitialSController extends Controller
                 Log::error('PURCHASE: '.json_encode($purchase));
 
                 sleep(5);
-                // $purchaseFee = new PurchaseFee();
-                // $purchaseFee->date = $fechaVenci;
-                // $purchaseFee->currency_type_id = $configuration->currency_type_id;
-                // $purchaseFee->amount = $importe;
-                // $purchaseFee->number = 1; //Monto de la
-                // $purchaseFee->purchase_id = $purchase->id;
-                // $purchaseFee->save();
+                $purchaseFee = new PurchaseFee();
+                $purchaseFee->date = $fechaVenci;
+                $purchaseFee->currency_type_id = $configuration->currency_type_id;
+                $purchaseFee->amount = $importe;
+                $purchaseFee->number = 1; //Monto de la
+                $purchaseFee->purchase_id = $purchase->id;
+                $purchaseFee->save();
 
-                // $purchaseItem = new PurchaseItem();
-                // $purchaseItem->item_id = $itemP->id;
-                // $purchaseItem->item = $itemP;
-                // $purchaseItem->quantity = 1;
-                // $purchaseItem->unit_value = $importe;
-                // $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
-                // $purchaseItem->total_base_igv = $importe;
-                // $purchaseItem->percentage_igv = 0;
-                // $purchaseItem->total_igv = $importe;
-                // $purchaseItem->total_taxes = 0;
-                // $purchaseItem->price_type_id = '01';
-                // $purchaseItem->unit_price = $importe;
-                // $purchaseItem->total_value = $importe;
-                // $purchaseItem->total = $importe;
-                // $purchaseItem->purchase_id = $purchase->id;
-                // $purchaseItem->save();
+                $purchaseItem = new PurchaseItem();
+                $purchaseItem->item_id = $itemP->id;
+                $purchaseItem->item = $itemP;
+                $purchaseItem->quantity = 1;
+                $purchaseItem->unit_value = $importe;
+                $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
+                $purchaseItem->total_base_igv = $importe;
+                $purchaseItem->percentage_igv = 0;
+                $purchaseItem->total_igv = $importe;
+                $purchaseItem->total_taxes = 0;
+                $purchaseItem->price_type_id = '01';
+                $purchaseItem->unit_price = $importe;
+                $purchaseItem->total_value = $importe;
+                $purchaseItem->total = $importe;
+                $purchaseItem->purchase_id = $purchase->id;
+                $purchaseItem->save();
 
 
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
