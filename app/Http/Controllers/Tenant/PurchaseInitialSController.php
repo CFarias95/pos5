@@ -99,7 +99,7 @@ class PurchaseInitialSController extends Controller
 
             try {
 
-                $CI = $item->CI;
+                $CI = trim($item->CI);
                 $numDoc = $item->documento;
                 $fechaDoc = date($item->fecha);
                 $fecha = date_create_from_format("d/m/Y", $item->fecha)->format("Y-m-d");
