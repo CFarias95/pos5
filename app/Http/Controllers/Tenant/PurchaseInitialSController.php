@@ -110,6 +110,7 @@ class PurchaseInitialSController extends Controller
                 $supplier = Person::where('number', $CI)->where('type','suppliers')->first();
 
                 Log::error('Person ID  '.$CI.' ID INTERNO: '.$supplier->id);
+                Log::error('ITEM ID '.$itemP->id);
 
                 $purchase = new Purchase();
                 $purchase->user_id = 28;
@@ -140,7 +141,7 @@ class PurchaseInitialSController extends Controller
                 sleep(5);
 
                 Log::error('ID PURCHASE: '.$purchase->id);
-                Log::error('ITEM ID '.$itemP->id);
+
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->purchase_id = $purchase->id;
