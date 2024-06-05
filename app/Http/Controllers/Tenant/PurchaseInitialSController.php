@@ -74,35 +74,42 @@ class PurchaseInitialSController extends Controller
 
                 Log::error('Person ID  '.$CI.' ID INTERNO: '.$supplier->id);
                 Log::error('ITEM ID '.$itemP->id);
+                $purchaseId = null;
+                $purchaseCreated = Purchase::where('document_type_id','376')->where('supplier_id',$supplier->id)->where('user_id',28)->where('sequential_number',$numDoc)->where('total',$importe)->fisrt();
+                if($purchaseCreated && $purchaseCreated->count() > 0){
+                    $purchaseId = $purchaseCreated->id;
+                }else{
+                    $purchase = new Purchase();
+                    $purchase->user_id = 28;
+                    $purchase->external_id = Str::uuid()->toString();
+                    $purchase->establishment_id = 1;
+                    $purchase->soap_type_id = $compani->soap_type_id;
+                    $purchase->state_type_id = '01';
+                    $purchase->group_id = '01';
+                    $purchase->document_type_id = '376';
+                    $purchase->series = 'CC';
+                    $purchase->number = $numero + 1;
+                    $purchase->date_of_issue = $fecha;
+                    $purchase->date_of_due = $fechaVenci;
+                    $purchase->time_of_issue = $time;
+                    $purchase->supplier_id = $supplier->id;
+                    $purchase->supplier = $supplier;
+                    $purchase->currency_type_id = $configuration->currency_type_id;
+                    $purchase->payment_condition_id = '02';
+                    $purchase->exchange_rate_sale = 1;
+                    $purchase->total_unaffected = $importe;
+                    $purchase->total_taxes = $importe;
+                    $purchase->total_value = $importe;
+                    $purchase->total = $importe;
+                    $purchase->sequential_number = $numDoc;
+                    $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
 
-                $purchase = new Purchase();
-                $purchase->user_id = 28;
-                $purchase->external_id = Str::uuid()->toString();
-                $purchase->establishment_id = 1;
-                $purchase->soap_type_id = $compani->soap_type_id;
-                $purchase->state_type_id = '01';
-                $purchase->group_id = '01';
-                $purchase->document_type_id = '376';
-                $purchase->series = 'CC';
-                $purchase->number = $numero + 1;
-                $purchase->date_of_issue = $fecha;
-                $purchase->date_of_due = $fechaVenci;
-                $purchase->time_of_issue = $time;
-                $purchase->supplier_id = $supplier->id;
-                $purchase->supplier = $supplier;
-                $purchase->currency_type_id = $configuration->currency_type_id;
-                $purchase->payment_condition_id = '02';
-                $purchase->exchange_rate_sale = 1;
-                $purchase->total_unaffected = $importe;
-                $purchase->total_taxes = $importe;
-                $purchase->total_value = $importe;
-                $purchase->total = $importe;
-                $purchase->sequential_number = $numDoc;
-                $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
+                    $purchase->save();
+                    $purchaseId = $purchase->id;
+                }
 
-                $purchase->save();
                 sleep(10);
-                Log::error('ID purchase: '.$purchase->id);
+                Log::error('ID purchase: '.$purchaseId);
                 Log::error('ITEM ID '.$itemP->id);
 
                 $purchaseItem = new PurchaseItem();
@@ -119,7 +126,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->unit_price = $importe;
                 $purchaseItem->total_value = $importe;
                 $purchaseItem->total = $importe;
-                $purchaseItem->purchase_id = $purchase->id;
+                $purchaseItem->purchase_id = $purchaseId;
                 $purchaseItem->save();
 
                 $purchaseFee = new PurchaseFee();
@@ -127,7 +134,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
                 $purchaseFee->amount = $importe;
                 $purchaseFee->number = 1; //Monto de la
-                $purchaseFee->purchase_id = $purchase->id;
+                $purchaseFee->purchase_id = $purchaseId;
                 $purchaseFee->save();
 
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
