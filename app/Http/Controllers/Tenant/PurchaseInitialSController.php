@@ -112,6 +112,7 @@ class PurchaseInitialSController extends Controller
                 Log::error('ID purchase: '.$purchaseId);
                 Log::error('ITEM ID '.$itemP->id);
 
+                /*
                 $purchaseItem = new PurchaseItem();
                 $purchaseItem->item_id = $itemP->id;
                 $purchaseItem->item = $itemP;
@@ -130,7 +131,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->save();
 
                 sleep(6);
-
+                */
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->date = $fechaVenci;
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
