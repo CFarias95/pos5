@@ -118,7 +118,6 @@ class PurchaseController extends Controller
     {
 
         $records = $this->getRecords($request);
-
         return new PurchaseCollection($records->paginate(config('tenant.items_per_page')));
     }
 

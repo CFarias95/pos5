@@ -112,7 +112,6 @@ class PurchaseInitialSController extends Controller
                 Log::error('ID purchase: '.$purchaseId);
                 Log::error('ITEM ID '.$itemP->id);
 
-                /*
                 $purchaseItem = new PurchaseItem();
                 $purchaseItem->item_id = $itemP->id;
                 $purchaseItem->item = $itemP;
@@ -131,7 +130,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->save();
 
                 sleep(6);
-                */
+                /*
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->date = $fechaVenci;
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
@@ -139,7 +138,7 @@ class PurchaseInitialSController extends Controller
                 $purchaseFee->number = 1; //Monto de la
                 $purchaseFee->purchase_id = $purchaseId;
                 $purchaseFee->save();
-
+                */
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
             } catch (Exception $ex) {
 
