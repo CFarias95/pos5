@@ -95,7 +95,7 @@
         <razonSocialComprador>{{ $customer->name }}</razonSocialComprador>
         <identificacionComprador>{{ $customer->number }}</identificacionComprador>
         <direccionComprador>{{ $customer->address }}</direccionComprador>
-        <totalSinImpuestos>{{ $document->total_value }}</totalSinImpuestos>
+        <totalSinImpuestos>{{ $document->total_taxed + $document->total_unaffected }}</totalSinImpuestos>
         <totalDescuento>{{ $document->total_discount }}</totalDescuento>
         <totalConImpuestos>
             {{-- @if($total_IVA12 > 0)
