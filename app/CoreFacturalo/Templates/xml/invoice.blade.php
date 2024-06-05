@@ -59,7 +59,7 @@
             ]);
         }
     }
-Log::info("DOCUMENTO A ENVIAR: ".json_encode($document));
+        Log::info("DOCUMENTO A ENVIAR: ".json_encode($document));
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="UTF-8" standalone="no"?'.'>'  !!}
 <factura id="comprobante" version="1.1.0">
