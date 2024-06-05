@@ -49,9 +49,9 @@
                 </impuestoDocSustento>
                 <impuestoDocSustento>
                     <codImpuestoDocSustento>2</codImpuestoDocSustento>
-                    <codigoPorcentaje>2</codigoPorcentaje>
+                    <codigoPorcentaje>4</codigoPorcentaje>
                     <baseImponible>{{ $document['baseImponible12'] }}</baseImponible>
-                    <tarifa>12</tarifa>
+                    <tarifa>15</tarifa>
                     <valorImpuesto>{{ $document['valorIva12'] }}</valorImpuesto>
                 </impuestoDocSustento>
             </impuestosDocSustento>
