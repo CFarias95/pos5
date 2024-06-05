@@ -112,22 +112,24 @@ class PurchaseInitialSController extends Controller
                 Log::error('ID purchase: '.$purchaseId);
                 Log::error('ITEM ID '.$itemP->id);
 
-                // $purchaseItem = new PurchaseItem();
-                // $purchaseItem->item_id = $itemP->id;
-                // $purchaseItem->item = $itemP;
-                // $purchaseItem->quantity = 1;
-                // $purchaseItem->unit_value = $importe;
-                // $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
-                // $purchaseItem->total_base_igv = $importe;
-                // $purchaseItem->percentage_igv = 0;
-                // $purchaseItem->total_igv = $importe;
-                // $purchaseItem->total_taxes = 0;
-                // $purchaseItem->price_type_id = '01';
-                // $purchaseItem->unit_price = $importe;
-                // $purchaseItem->total_value = $importe;
-                // $purchaseItem->total = $importe;
-                // $purchaseItem->purchase_id = $purchaseId;
-                // $purchaseItem->save();
+                $purchaseItem = new PurchaseItem();
+                $purchaseItem->item_id = $itemP->id;
+                $purchaseItem->item = $itemP;
+                $purchaseItem->quantity = 1;
+                $purchaseItem->unit_value = $importe;
+                $purchaseItem->affectation_igv_type_id = $itemP->purchase_affectation_igv_type_id;
+                $purchaseItem->total_base_igv = $importe;
+                $purchaseItem->percentage_igv = 0;
+                $purchaseItem->total_igv = $importe;
+                $purchaseItem->total_taxes = 0;
+                $purchaseItem->price_type_id = '01';
+                $purchaseItem->unit_price = $importe;
+                $purchaseItem->total_value = $importe;
+                $purchaseItem->total = $importe;
+                $purchaseItem->purchase_id = $purchaseId;
+                $purchaseItem->save();
+
+                sleep(6);
 
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->date = $fechaVenci;
