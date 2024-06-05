@@ -75,7 +75,7 @@ class PurchaseInitialSController extends Controller
                 Log::error('Person ID  '.$CI.' ID INTERNO: '.$supplier->id);
                 Log::error('ITEM ID '.$itemP->id);
                 $purchaseId = null;
-                $purchaseCreated = Purchase::where('date_of_issue',$fecha)->where('document_type_id','376')->where('supplier_id',$supplier->id)->where('user_id',28)->where('sequential_number',$numDoc)->where('total',$importe)->fisrt();
+                $purchaseCreated = Purchase::where('date_of_issue',$fecha)->where('document_type_id','376')->where('supplier_id',$supplier->id)->where('user_id',28)->where('sequential_number',$numDoc)->where('total',$importe)->first();
                 if($purchaseCreated && $purchaseCreated->count() > 0){
                     $purchaseId = $purchaseCreated->id;
                 }else{
