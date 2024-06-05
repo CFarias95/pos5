@@ -101,7 +101,7 @@ class PurchaseInitialSController extends Controller
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
 
                 $purchase->save();
-                sleep(5);
+                sleep(10);
                 Log::error('ID purchase: '.$purchase->id);
                 Log::error('ITEM ID '.$itemP->id);
 
