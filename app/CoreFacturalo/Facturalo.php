@@ -110,6 +110,9 @@ class Facturalo
     public function setType($type)
     {
         $this->type = $type;
+        if($type == 'invoice'){
+            $this->doc_type = '01';
+        }
     }
 
     public function getResponse()

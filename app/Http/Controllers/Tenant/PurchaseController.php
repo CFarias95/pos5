@@ -1603,11 +1603,6 @@ class PurchaseController extends Controller
                     if ($retenciones && $retenciones->count() > 0) {
                         $retenciones->delete();
                     }
-                    /*
-                    foreach ($retenciones as $ret) {
-                        $ret->delete();
-                    }
-                    */
                     $serie = UserDefaultDocumentType::where('user_id', auth()->user()->id)->where('document_type_id','20')->first();
 
                     $tipoSerie = null;
