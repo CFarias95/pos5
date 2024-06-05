@@ -227,7 +227,7 @@ class PurchaseInitialSController extends Controller
                 $documentFee->date = $fechaVenci;
                 $documentFee->currency_type_id = 'USD';
                 $documentFee->amount = $importe;
-                $documentFee->number = 1;
+                $documentFee->number = intval($item->number);
                 $documentFee->save();
 
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
