@@ -100,17 +100,10 @@ class PurchaseInitialSController extends Controller
                 $purchase->sequential_number = $numDoc;
                 $purchase->document_type_intern = 'SIC'; //ID documento INTERNO
 
-                $created = $purchase->save();
-                Log::error('PURCHASE: '.$created);
-
-                //sleep(5);
-                $purchaseFee = new PurchaseFee();
-                $purchaseFee->date = $fechaVenci;
-                $purchaseFee->currency_type_id = $configuration->currency_type_id;
-                $purchaseFee->amount = $importe;
-                $purchaseFee->number = 1; //Monto de la
-                $purchaseFee->purchase_id = $purchase->id;
-                $purchaseFee->save();
+                $purchase->save();
+                sleep(5);
+                Log::error('ID purchase: '.$purchase->id);
+                Log::error('ITEM ID '.$itemP->id);
 
                 $purchaseItem = new PurchaseItem();
                 $purchaseItem->item_id = $itemP->id;
@@ -129,6 +122,13 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->purchase_id = $purchase->id;
                 $purchaseItem->save();
 
+                $purchaseFee = new PurchaseFee();
+                $purchaseFee->date = $fechaVenci;
+                $purchaseFee->currency_type_id = $configuration->currency_type_id;
+                $purchaseFee->amount = $importe;
+                $purchaseFee->number = 1; //Monto de la
+                $purchaseFee->purchase_id = $purchase->id;
+                $purchaseFee->save();
 
                 //echo "Saldo INICIAL creado Para " . $CI . " con fecha: " . $fecha . " valor de: " . $importe . "</br>";
             } catch (Exception $ex) {
