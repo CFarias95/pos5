@@ -2525,4 +2525,27 @@ class DocumentController extends Controller
             ];
         }
     }
+
+    public function aproveDocument($id){
+        try{
+            $documnet = Document::find($id);
+            $documnet->update([
+                'aproved' => true
+            ]);
+
+            return[
+                'success' => true,
+                'message' => 'El documento se enviará a autorizar',
+            ];
+
+        }catch(Exception $ex){
+
+            Log::error("Error al intentar aprovar documento");
+            return[
+                'success' => false,
+                'message' => $ex->getMessage(),
+            ];
+
+        }
+    }
 }

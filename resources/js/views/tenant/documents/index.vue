@@ -302,6 +302,10 @@
                                         v-if="row.btn_resend && !isClient">
                                         Reenviar
                                     </button>
+                                    <button class="dropdown-item" @click.prevent="clickAuth(row.id)"
+                                        v-if="row.aproved == 0 || row.aproved == '0'">
+                                        Autorizar
+                                    </button>
                                     <button class="dropdown-item" @click.prevent="clickReStore(row.id)"
                                         v-if="row.btn_recreate_document">
                                         Volver a recrear
@@ -715,6 +719,20 @@ export default {
         },
         clickReStore(document_id) {
             this.$http.get(`/${this.resource}/re_store/${document_id}`)
+                .then(response => {
+                    if (response.data.success) {
+                        this.$message.success(response.data.message)
+                        this.$eventHub.$emit('reloadData')
+                    } else {
+                        this.$message.error(response.data.message)
+                    }
+                })
+                .catch(error => {
+                    this.$message.error(error.response.data.message)
+                })
+        },
+        clickAuth(id){
+            this.$http.get(`/${this.resource}/aprove/${id}`)
                 .then(response => {
                     if (response.data.success) {
                         this.$message.success(response.data.message)
