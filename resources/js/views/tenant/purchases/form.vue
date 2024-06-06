@@ -1327,6 +1327,7 @@ export default {
                 fee: [],
                 ret: [],
                 is_aproved: false,
+                tipo_doc_id: null,
 
             }
 
