@@ -2910,6 +2910,7 @@ export default {
         i.additional_information = this.onPrepareAdditionalInformation(
           i.additional_information
         );
+        i.IdLoteSelected = i.item.IdLoteSelected;
         i.item = this.onPrepareIndividualItem(i);
         i.item.id = i.item_id;
         return i;

@@ -1668,7 +1668,6 @@ export default {
             this.btnText = 'Actualizar';
             this.loading_submit = true;
             await this.$http.get(`/documents/${this.documentId}/show`).then(response => {
-
                 this.onSetFormData(response.data.data);
             }).finally(() => this.loading_submit = false);
         }
@@ -1979,7 +1978,7 @@ export default {
             this.prepareDataCustomer()
 
             this.calculateTotal();
-            // this.currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
+            console.log('items records: ', this.form.items)
         },
         async prepareDataCustomer(){
 
@@ -2072,13 +2071,10 @@ export default {
 
                 i.unit_price_value = i.unit_value;
                 i.input_unit_price_value = (i.item.has_igv) ? i.unit_price : i.unit_value;
-                //print(i.unit_value);
-                //print(i.input_unit_price_value)
-                // i.input_unit_price_value = i.unit_price;
                 i.discounts = (i.discounts) ? Object.values(i.discounts) : []
-                // i.discounts = i.discounts || [];
                 i.charges = i.charges || [];
                 i.attributes = i.attributes || [];
+                i.IdLoteSelected = i.item.IdLoteSelected;
                 i.item.id = i.item_id;
                 i.additional_information = this.onPrepareAdditionalInformation(i.additional_information);
                 i.item = this.onPrepareIndividualItem(i);
@@ -2089,14 +2085,11 @@ export default {
 
             let new_item = data.item
             let currency_type = _.find(this.currency_types, {'id': this.form.currency_type_id})
-
             new_item.currency_type_id = currency_type.id
             new_item.currency_type_symbol = currency_type.symbol
-
             new_item.sale_affectation_igv_type_id = data.affectation_igv_type_id
             new_item.sale_unit_price = data.unit_price
             new_item.unit_price = data.unit_price
-
             return new_item
         },
         onSetSeriesId(documentType, serie) {

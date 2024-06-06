@@ -1115,6 +1115,7 @@ export default {
             this.affectation_igv_types = await _.filter(this.all_affectation_igv_types, {exportation: operation_type.exportation})
 
             if (this.recordItem) {
+                console.log('RECORD ITEM: ',this.recordItem)
 
                 if (this.recordItem.item !== undefined && this.recordItem.item.extra !== undefined) {
                     this.extra_temp = this.recordItem.item.extra
@@ -1123,6 +1124,10 @@ export default {
                 await this.reloadDataItems(this.recordItem.item_id)
                 this.form.item_id = await this.recordItem.item_id
                 await this.changeItem()
+
+                if(this.recordItem.item.IdLoteSelected){
+                    this.form.IdLoteSelected = this.recordItem.item.IdLoteSelected
+                }
 
                 this.form.quantity = this.recordItem.quantity
                 this.form.unit_price_value = this.recordItem.input_unit_price_value
@@ -1181,7 +1186,7 @@ export default {
             }
             this.$refs.selectSearchNormal.$el.getElementsByTagName('input')[0].focus()
 
-
+            console.log('this.form: ', this.form)
         },
         setPresentationEditItem() {
 
