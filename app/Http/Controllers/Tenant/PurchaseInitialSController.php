@@ -129,13 +129,14 @@ class PurchaseInitialSController extends Controller
                 $purchaseItem->purchase_id = $purchaseId;
                 $purchaseItem->save();
 
-                sleep(6);
+
                 /*
+                sleep(6);
                 $purchaseFee = new PurchaseFee();
                 $purchaseFee->date = $fechaVenci;
                 $purchaseFee->currency_type_id = $configuration->currency_type_id;
                 $purchaseFee->amount = $importe;
-                $purchaseFee->number = 1; //Monto de la
+                $purchaseFee->number = intval($item->number); //Monto de la
                 $purchaseFee->purchase_id = $purchaseId;
                 $purchaseFee->save();
                 */
