@@ -1406,7 +1406,9 @@ export default {
             console.log('es contable: ',document )
             this.is_credit_note = (document.DocumentTypeID == '04')
 
-            if(document.description.includes('importación')){
+            if(document.description.includes('Factura importación')){
+                this.form.tipo_doc_id = 1
+            }else if(document.description.includes('importación')){
                 this.form.tipo_doc_id = 2
             }else{
                 this.form.tipo_doc_id = null
