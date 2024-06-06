@@ -108,7 +108,7 @@ class PurchaseInitialSController extends Controller
                     $purchaseId = $purchase->id;
                 }
 
-                sleep(6);
+                sleep(8);
                 Log::error('ID purchase: '.$purchaseId);
                 Log::error('ITEM ID '.$itemP->id);
 
