@@ -1407,7 +1407,9 @@ export default {
             this.is_credit_note = (document.DocumentTypeID == '04')
 
             if(document.description.includes('importación')){
-                this.form.tipo_doc_id = 1
+                this.form.tipo_doc_id = 2
+            }else{
+                this.form.tipo_doc_id = null
             }
         },
         addRow(row) {
