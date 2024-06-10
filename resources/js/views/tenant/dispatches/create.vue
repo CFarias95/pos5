@@ -13,7 +13,7 @@
                                  class="form-group">
                                 <label class="control-label">Establecimiento<span class="text-danger"> *</span></label>
                                 <el-select v-model="form.establishment_id"
-                                           @change="changeEstablishment">
+                                           @change="changeEstablishment" disabled >
                                     <el-option v-for="option in establishments"
                                                :key="option.id"
                                                :label="option.description"
@@ -920,6 +920,7 @@ export default {
     },
     mounted() {
         // this.clean();
+        console.log('this config: ',this.configuration)
         this.initForm()
         const itemsFromSummary = localStorage.getItem('items');
         const payload = {}
@@ -1302,7 +1303,7 @@ export default {
 
             this.errors = {}
             let customer_id = parseInt(this.config.establishment.customer_id);
-            let establishment_id = parseInt(this.config.establishment.id);
+            let establishment_id = parseInt(this.configuration.establishment.id);
             if (isNaN(customer_id)) customer_id = null;
             if (isNaN(establishment_id)) establishment_id = null;
 

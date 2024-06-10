@@ -398,7 +398,6 @@ class DispatchController extends Controller
                     $facturalo = new Facturalo();
                     $facturalo->save($request->all());
                     $facturalo->createPdf();
-
                     return $facturalo;
                 });
 

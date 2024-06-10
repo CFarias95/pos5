@@ -27,6 +27,8 @@ if ($hostname) {
         Route::get('purchases/print/{external_id}/{format?}', 'Tenant\PurchaseController@toPrint');
         Route::get('retentions/print/{external_id}/{format?}', 'Tenant\RetentionsControllers@toPrint');
         Route::get('quotations/print/{external_id}/{format?}', 'Tenant\QuotationController@toPrint');
+        Route::get('purchases/aprove/{id}', 'Tenant\PurchaseController@aproveRetention');
+
 
         //TEMPORAL CERATE SALDOS INICIALES
 

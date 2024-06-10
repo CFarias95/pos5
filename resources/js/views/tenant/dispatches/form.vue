@@ -658,6 +658,8 @@ export default {
     },
     mounted() {
 
+        console.log('this config: ',this.configuration)
+
         this.$http.post(`/${this.resource}/tables`).then(response => {
             this.identityDocumentTypes = response.data.identityDocumentTypes;
             this.transferReasonTypes = response.data.transferReasonTypes;

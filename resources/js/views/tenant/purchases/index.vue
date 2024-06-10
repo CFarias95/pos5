@@ -133,7 +133,9 @@
                             <template v-if="permissions.delete_purchase&&row.state_type_id=='11'">
                                 <button v-if="row.state_type_id == '11'" type="button" class="btn waves-effect waves-light btn-xs btn-danger" @click.prevent="clickDelete(row.id)">Eliminar</button>
                             </template>
-
+                            <template v-if="row.is_aproved == 0 && row.retenciones_state_id != ''">
+                                <button type="button" class="btn waves-effect waves-light btn-xs btn-warning" @click.prevent="clickAprove(row.id)">Autorizar R</button>
+                            </template>
                             <button  type="button" class="btn waves-effect waves-light btn-xs btn-primary" @click.prevent="clickOptions(row.id, row.supplier_email, row.retenciones_id)">Opciones</button>
                             <button
                                 type="button"
@@ -294,6 +296,17 @@ import {mapActions, mapState} from 'vuex'
                 this.delete(`/${this.resource}/delete/${id}`).then(() =>
                     this.$eventHub.$emit('reloadData')
                 )
+            },
+            clickAprove(id)
+            {
+                this.$http.get(`/${this.resource}/aprove/${id}`).then((response) => {
+                    if(response.data.success){
+                        this.$message.success(response.data.message);
+                    }else{
+                        this.$message.success(response.data.message);
+                    }
+                    this.$eventHub.$emit('reloadData')
+                })
             },
             clickImport() {
                 this.showImportDialog = true

@@ -67,7 +67,7 @@ use Modules\Item\Models\ItemLotsGroup;
             $items = Item::where('unit_type_id','!=', 'ZZ')->get()->transform(function($row){
                 return[
                     'id' => $row->id,
-                    'description' => $row->name .' / '.$row->description.' / '.$row->model.' / '.$row->internal_i,
+                    'description' => $row->name .' / '.$row->description.' / '.$row->model.' / '.$row->internal_id.' / '.$row->factory_code,
                 ];
             });
 
@@ -143,6 +143,8 @@ use Modules\Item\Models\ItemLotsGroup;
             }
 
             $records->whereNotIn('id',$arrayID);
+            $records ->orderBy('id','desc');
+
 
             return new TransferCollection($records->paginate(config('tenant.items_per_page')));
         }

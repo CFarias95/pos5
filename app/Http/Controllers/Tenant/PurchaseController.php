@@ -2468,4 +2468,23 @@ class PurchaseController extends Controller
 
         return compact('existente');
     }
+
+    public function aproveRetention($id){
+        try{
+            $purchase = Purchase::find($id);
+            $purchase->update([
+                'is_aproved'=> true
+            ]);
+            return[
+                'success' => true,
+                'message' => 'Se mandara a autorizar la retencion',
+            ];
+        }catch(Exception $ex){
+            Log::info('Error al aprovar retencion');
+            return[
+                'success' => false,
+                'message' => 'No se puede mandar a autorizar las retenciones',
+            ];
+        }
+    }
 }

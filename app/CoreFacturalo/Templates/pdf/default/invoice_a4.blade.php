@@ -185,6 +185,7 @@
                         <div>
                             <strong>Razón Social: </strong>{{ $customer->name }}<br></br>
                             <strong>Dirección: </strong> {{ $customer->address }}<br></br>
+                            <strong>Ciudad: </strong> {{ $customer->province->description ?? '' }}<br></br>
                             <strong>Fecha Emisión: </strong> {{$document->date_of_issue->format('Y-m-d')}}
                         </div>
                     </td>

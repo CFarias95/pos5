@@ -471,7 +471,7 @@ class ToPayController extends Controller
                 $customer = Person::find($value['customer_id']);
                 //Log::info($customer);
                 Log::info($config);
-                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
+                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).'/'.$document->reference_data]);
 
             }
 

@@ -222,8 +222,8 @@ class Facturalo
                     $this->document = $document;
 
                 }else{
+                    
                     $document = Dispatch::create($inputs);
-
                     foreach ($inputs['items'] as $row) {
                         Log::info('row to CREATE: '.json_encode($row));
                         $document->items()->create($row);

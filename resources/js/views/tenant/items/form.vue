@@ -1971,7 +1971,7 @@ export default {
     setDefaultConfiguration() {
       this.form.sale_affectation_igv_type_id = this.config
         ? this.config.affectation_igv_type_id
-        : "10";
+        : "13";
 
       this.$http.get(`/configurations/record`).then((response) => {
         this.form.has_igv = response.data.data.include_igv;

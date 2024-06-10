@@ -57,7 +57,7 @@ trait InventoryTrait
         return collect($records)->transform(function ($row) {
             return [
                 'id' => $row->id,
-                'description' => $row->name. '/ '.$row->description.' / '.$row->factory_code,
+                'description' => $row->name .' / '.$row->description.' / '.$row->model.' / '.$row->internal_id.' / '.$row->factory_code,
             ];
         });
     }
@@ -178,6 +178,8 @@ trait InventoryTrait
             //Log::error($search->input('column').'-'.$search['value']);
             $query->where('name', 'like', "%{$search->search}%")
                 ->orWhere('description', 'like', "%{$search->search}%")
+                ->orWhere('factory_code', 'like', "%{$search->search}%")
+                ->orWhere('model', 'like', "%{$search->search}%")
                 ->orWhere('internal_id', 'like', "%{$search->search}%");
         }
         if ($take) {
