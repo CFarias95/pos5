@@ -327,6 +327,11 @@ class RetentionsControllers extends Controller
 
         if (!$retencion) throw new Exception("El código {$external_id} es inválido, no se encontro el pedido relacionado");
 
+        $tipodoc = 'retention';
+        $this->doc_type = '03';
+        $this->actions['format_pdf'] = 'blank';
+
+        $this->createPdf($retencion, $tipodoc, 'a4');
         //$this->reloadPDF($purchase, $format, $purchase->filename);
 
         $content = Storage::disk('tenant')->get('pdf/'.$retencion->claveAcceso.'.pdf');
