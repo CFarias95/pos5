@@ -126,7 +126,7 @@ export default {
 
         this.$http.get(`/${this.resource}/item/tables`).then((response) => {
             console.log("ITEMS IMPORT: ", response.data.items_import);
-            this.items_all = response.data.items_import;
+            //this.items_all = response.data.items_import;
 
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
