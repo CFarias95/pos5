@@ -60,6 +60,16 @@
         }
     }
     Log::info("DOCUMENTO A ENVIAR: ".json_encode($document));
+    $series = '';
+    foreach($document->items as $row){
+        if($row->item->lots && count($row->item->lots) > 0){
+            foreach($row->item->lots as $lot){
+                if(isset($lot->has_sale) && $lot->has_sale){
+                    $series = $lot->series;
+                }
+            }
+        }
+    }
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="UTF-8" standalone="no"?'.'>'  !!}
 <factura id="comprobante" version="1.1.0">
@@ -184,20 +194,10 @@
     </infoFactura>
     <detalles>
     @foreach($document->items as $row)
+    @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
         <detalle>
             <codigoPrincipal>{{ $row->item_id }}</codigoPrincipal>
-            <descripcion>{{ $row->item->name.'/'.$row->item->description.'/'.$row->item->model }}
-                {{ $row->m_item->factory_code ?? '' }}
-                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
-                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
-                @isset($row->item->lots)
-                @foreach($row->item->lots as $lot)
-                    @if( isset($lot->has_sale) && $lot->has_sale)
-                        {{ $lot->series }}
-                    @endif
-                @endforeach
-                @endisset
-            </descripcion>
+            <descripcion>{{trim($row->item->name.'/'.$row->item->description.'/'.$row->item->model.'/'.$row->m_item->factory_code.'/ Lote: '.$itemLotGroup->getLote($row->item->IdLoteSelected).'/ Serie: '.$series)}}</descripcion>
             <cantidad>{{ $row->quantity }}00</cantidad>
             <precioUnitario>{{ $row->unit_value }}</precioUnitario>
             <descuento>{{ $row->total_discount }}</descuento>
