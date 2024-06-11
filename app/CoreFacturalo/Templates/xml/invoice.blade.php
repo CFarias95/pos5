@@ -222,7 +222,9 @@
         <campoAdicional nombre="Informacion Adicional">{{ $document->additional_information[0] }}</campoAdicional>
         @endif
         <campoAdicional nombre="Vendedor">{{ trim($document->seller->name) }}</campoAdicional>
+        @if($document->purchase_order != null && $document->purchase_order != '')
         <campoAdicional nombre="Orden de compra">{{ trim($document->purchase_order) }}</campoAdicional>
+        @endif
         <campoAdicional nombre="Ciudad">{{ trim($customer->province->description ?? '') }}</campoAdicional>
     </infoAdicional>
 
