@@ -223,6 +223,7 @@
         @endif
         <campoAdicional nombre="Vendedor">{{ trim($document->seller->name) }}</campoAdicional>
         <campoAdicional nombre="Orden de compra">{{ trim($document->purchase_order) }}</campoAdicional>
+        <campoAdicional nombre="Ciudad">{{ trim($customer->province->description ?? '') }}</campoAdicional>
     </infoAdicional>
 
 </factura>
