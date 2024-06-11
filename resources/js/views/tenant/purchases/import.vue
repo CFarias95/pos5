@@ -353,10 +353,7 @@ export default {
             //if (search === '') return undefined;
             let item = this.all_items.find(
                 (obj) =>
-                    obj.id == search ||
-                    obj.item_code == search ||
-                    obj.model == search ||
-                    obj.internal_id == search
+                    obj.id == search
             );
 
             return item;
@@ -462,7 +459,12 @@ export default {
             //console.info(self.form.items)
         },
         async changeItem(id, index) {
-            let formItem = this.findItem(id);
+            
+            let formItem = this.all_items.find(
+                (obj) =>
+                    obj.id == search
+            );
+
             let itemActual = this.form.items[index];
 
             console.log("itemActual", itemActual);
