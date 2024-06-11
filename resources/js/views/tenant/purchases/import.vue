@@ -461,14 +461,14 @@ export default {
         },
         async changeItem(id, index) {
             //let formItem = this.findItem(id);
-            console.log("id: ", id);
-            console.log("all_items: ", this.all_items);
+            //console.log("id: ", id);
+            //console.log("all_items: ", this.all_items);
             let formItemG = _.filter(this.all_items, { 'id': parseInt(id) })
             //let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
             let itemActual = this.form.items[index];
 
-            console.log("itemActual", itemActual);
-            console.log("formItem", formItemG[0]);
+            //console.log("itemActual", itemActual);
+            //console.log("formItem", formItemG[0]);
 
             if (formItemG !== undefined) {
                 let formItem = formItemG[0]
