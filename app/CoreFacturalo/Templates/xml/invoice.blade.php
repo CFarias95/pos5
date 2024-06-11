@@ -89,6 +89,9 @@
     <infoFactura>
         <fechaEmision>{{ $document->date_of_issue->format('d/m/Y') }}</fechaEmision>
         <dirEstablecimiento>{{ $establishment->address }}</dirEstablecimiento>
+        @if($company->contribuyente_especial)
+        <contribuyenteEspecial>{{ $company->contribuyente_especial_num }}</contribuyenteEspecial>
+        @endif
         <obligadoContabilidad>SI</obligadoContabilidad>
         @if($customer->identity_document_type_id == 1)
         <tipoIdentificacionComprador>05</tipoIdentificacionComprador>
