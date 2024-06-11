@@ -354,6 +354,7 @@ export default {
             let item = this.all_items.find(
                 (obj) =>
                     obj.id == search
+
             );
 
             return item;
@@ -459,12 +460,9 @@ export default {
             //console.info(self.form.items)
         },
         async changeItem(id, index) {
-            
-            let formItem = this.all_items.find(
-                (obj) =>
-                    obj.id == search
-            );
-
+            //let formItem = this.findItem(id);
+            console.log("all_items", thid.all_items);
+            let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
             let itemActual = this.form.items[index];
 
             console.log("itemActual", itemActual);
