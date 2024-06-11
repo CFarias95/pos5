@@ -214,11 +214,12 @@
         </detalle>
     @endforeach
     </detalles>
-    @if($document->additional_information[0] != null)
     <infoAdicional>
+        @if($document->additional_information[0] != null)
         <campoAdicional nombre="Informacion Adicional">{{ $document->additional_information[0] }}</campoAdicional>
-        <campoAdicional nombre="Vendedor">{{ $document->seller->name }}</campoAdicional>
-        <campoAdicional nombre="Orden de compra">{{ $document->purchase_order }}</campoAdicional>
+        @endif
+        <campoAdicional nombre="Vendedor">{{ trim($document->seller->name) }}</campoAdicional>
+        <campoAdicional nombre="Orden de compra">{{ trim($document->purchase_order) }}</campoAdicional>
     </infoAdicional>
-    @endif
+
 </factura>
