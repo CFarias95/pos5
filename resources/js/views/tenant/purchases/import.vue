@@ -461,14 +461,17 @@ export default {
         },
         async changeItem(id, index) {
             //let formItem = this.findItem(id);
-            console.log("all_items", thid.all_items);
-            let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
+            console.log("id: ", id);
+            console.log("all_items: ", this.all_items);
+            let formItemG = _.filter(this.all_items, { 'id': parseInt(id) })
+            //let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
             let itemActual = this.form.items[index];
 
             console.log("itemActual", itemActual);
-            console.log("formItem", formItem);
+            console.log("formItem", formItemG[0]);
 
-            if (formItem !== undefined) {
+            if (formItemG !== undefined) {
+                let formItem = formItemG[0]
                 let affectation = _.find(this.affectation_igv_types, {'percentage': itemActual.iva+'.0000' });
                 //let affectation = this.affectation_igv_types.filter((option) => option.percentage == formItem.iva);
                 this.form.items[index].item_id = id;
