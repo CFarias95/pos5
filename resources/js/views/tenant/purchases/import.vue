@@ -67,8 +67,8 @@
                                         <td>{{ item.quantity }}</td>
                                         <td style="align-content: center">
                                             <el-select :disabled="item.item_id != null" v-model="item.item_id"
-                                                @change="changeItem(item.item_id, index)" filterable required="true">
-                                                <!-- :remote-method="searchRemoteItems" remote> -->
+                                                @change="changeItem(item.item_id, index)" filterable required="true"
+                                                :remote-method="searchRemoteItems" remote>
                                                 <el-option v-for="(prod, index2) in items_all" :key="index2"
                                                     :value="prod.id" :label="prod.full_description"></el-option>
                                             </el-select>

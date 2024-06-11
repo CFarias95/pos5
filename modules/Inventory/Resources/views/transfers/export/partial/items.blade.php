@@ -64,7 +64,7 @@
                     <tr>
                         <td class="celda text-center">{{ $index + 1 }}</td>
                         <td class="celda text-left">{{ $inventory->item->factory_code ?? '' }}</td>
-                        <td class="celda text-left">{{ ($inventory->item->name)?$inventory->item->name.' / ':'' }}{{ $inventory->item->description }}</td>
+                        <td class="celda text-left">{{ ($inventory->item->name)?$inventory->item->name.' / ':'' }}{{ $inventory->item->description }}{{ $inventory->item->model ? $inventory->item->model. ' / ' : '' }}{{ $inventory->item->factory_code ? $inventory->item->factory_code. ' / ' : '' }}</td>
                         <td class="celda">{{ $inventory->item->unit_type->description }}</td>
                         <td class="celda">{{ $inventory->quantity }}</td>
                         <td class="celda">{{ $inventory->lot_code }}</td>

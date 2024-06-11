@@ -159,7 +159,7 @@
     @foreach($document->items as $row)
         <detalle>
             <codigoInterno>{{ $row->item_id }}</codigoInterno>
-            <descripcion>{{ $row->item->description }}</descripcion>
+            <descripcion>{{ $row->item->name.'/'.$row->item->description }}</descripcion>
             <cantidad>{{ $row->quantity }}00</cantidad>
             <precioUnitario>{{ $row->unit_value }}</precioUnitario>
             <descuento>{{ $row->total_discount }}</descuento>

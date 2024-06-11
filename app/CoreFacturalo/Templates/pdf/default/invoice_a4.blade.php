@@ -291,7 +291,6 @@
                                 @endif
                             @endforeach
                         @endisset
-
                     </td>
                     <!-- JOINSOFTWARE -->
                     <td class="text-right align-top">{{ number_format($row->unit_value, 2) }}</td>

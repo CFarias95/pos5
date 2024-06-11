@@ -59,7 +59,7 @@
             ]);
         }
     }
-        Log::info("DOCUMENTO A ENVIAR: ".json_encode($document));
+    Log::info("DOCUMENTO A ENVIAR: ".json_encode($document));
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="UTF-8" standalone="no"?'.'>'  !!}
 <factura id="comprobante" version="1.1.0">
@@ -186,7 +186,18 @@
     @foreach($document->items as $row)
         <detalle>
             <codigoPrincipal>{{ $row->item_id }}</codigoPrincipal>
-            <descripcion>{{ $row->item->description }}</descripcion>
+            <descripcion>{{ $row->item->name.'/'.$row->item->description.'/'.$row->item->model }}
+                {{ $row->m_item->factory_code ?? '' }}
+                @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
+                {{ $itemLotGroup->getLote($row->item->IdLoteSelected) }}
+                @isset($row->item->lots)
+                @foreach($row->item->lots as $lot)
+                    @if( isset($lot->has_sale) && $lot->has_sale)
+                        {{ $lot->series }}
+                    @endif
+                @endforeach
+                @endisset
+            </descripcion>
             <cantidad>{{ $row->quantity }}00</cantidad>
             <precioUnitario>{{ $row->unit_value }}</precioUnitario>
             <descuento>{{ $row->total_discount }}</descuento>
@@ -199,42 +210,6 @@
                     <baseImponible>{{ $row->total_base_igv }}</baseImponible>
                     <valor>{{ $row->total_igv }}</valor>
                 </impuesto>
-            {{-- @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 10)
-                <impuesto>
-                    <codigo>2</codigo>
-                    <codigoPorcentaje>2</codigoPorcentaje>
-                    <tarifa>{{ 12 }}</tarifa>
-                    <baseImponible>{{ $row->total_base_igv }}</baseImponible>
-                    <valor>{{ $row->total_igv }}</valor>
-                </impuesto>
-            @endif
-            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 11)
-                <impuesto>
-                    <codigo>2</codigo>
-                    <codigoPorcentaje>2</codigoPorcentaje>
-                    <tarifa>{{ 8 }}</tarifa>
-                    <baseImponible>{{ $row->total_base_igv }}</baseImponible>
-                    <valor>{{ $row->total_igv }}</valor>
-                </impuesto>
-            @endif
-            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 12)
-                <impuesto>
-                    <codigo>2</codigo>
-                    <codigoPorcentaje>3</codigoPorcentaje>
-                    <tarifa>{{ 14 }}</tarifa>
-                    <baseImponible>{{ $row->total_base_igv }}</baseImponible>
-                    <valor>{{ $row->total_igv }}</valor>
-                </impuesto>
-            @endif
-            @if($row->total_base_igv > -1 && $row->affectation_igv_type_id == 30)
-                <impuesto>
-                    <codigo>2</codigo>
-                    <codigoPorcentaje>0</codigoPorcentaje>
-                    <tarifa>0</tarifa>
-                    <baseImponible>{{ $row->total_base_igv }}</baseImponible>
-                    <valor>0.00</valor>
-                </impuesto>
-            @endif --}}
             </impuestos>
         </detalle>
     @endforeach
@@ -242,6 +217,8 @@
     @if($document->additional_information[0] != null)
     <infoAdicional>
         <campoAdicional nombre="Informacion Adicional">{{ $document->additional_information[0] }}</campoAdicional>
+        <campoAdicional nombre="Vendedor">{{ $document->seller->name }}</campoAdicional>
+        <campoAdicional nombre="Orden de compra">{{ $document->purchase_order }}</campoAdicional>
     </infoAdicional>
     @endif
 </factura>

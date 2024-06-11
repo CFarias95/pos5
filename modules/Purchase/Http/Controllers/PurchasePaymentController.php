@@ -517,6 +517,7 @@ class PurchasePaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->haber = 0;
                 $detalle->debe = $payment->payment;
+                $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
                 if($detalle->save() == false){
                     $cabeceraC->delete();
                     return;
@@ -550,6 +551,7 @@ class PurchasePaymentController extends Controller
                         $detalle2->seat_line = $seat;
                         $detalle2->haber = $haberInterno;
                         $detalle2->debe = 0;
+                        $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
                         if($detalle2->save() == false){
                             $cabeceraC->delete();
                             break;
@@ -565,6 +567,7 @@ class PurchasePaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
+                    $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
                     if($detalle2->save() == false){
                         $cabeceraC->delete();
                         return;

@@ -189,15 +189,8 @@ trait InventoryTrait
             //Log::info('row'.$row);
             $description = '';
 
-            if($row->factory_code) {
-                $description .= "{$row->factory_code} | ";
-            }
+            $description = $row->name .' / '.$row->description.' / '.$row->model.' / '.$row->internal_id.' / '.$row->factory_code;
 
-            if($row->internal_id) {
-                $description .= "{$row->internal_id} | ";
-            }
-
-            $description .= "{$row->name} | {$row->description}";
             return [
                 'id' => $row->id,
                 'description' => $description,

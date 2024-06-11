@@ -227,7 +227,7 @@ class DocumentPaymentController extends Controller
         }
 
     }
-    
+
     public function tables()
     {
         try{
@@ -636,7 +636,8 @@ class DocumentPaymentController extends Controller
                 $detalle->account_movement_id = ($customer->account) ? $customer->account : $configuration->cta_clients;
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
-                $detalle->haber = $request->payment ;
+                $detalle->haber = $request->payment;
+                $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
 
                 if($detalle->save() == false){
                     $cabeceraC->delete();
