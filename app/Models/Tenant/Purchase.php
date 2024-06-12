@@ -668,7 +668,6 @@ class Purchase extends ModelTenant
         ];
     }
 
-
     /**
      * @param $query
      *

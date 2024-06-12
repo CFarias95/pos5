@@ -575,23 +575,8 @@ class PurchaseController extends Controller
                         }
                     }
 
-                    if (array_key_exists('lots', $row)) {
-
-                        foreach ($row['lots'] as $lot) {
-
-                            $p_item->lots()->create([
-                                'date' => $lot['date'],
-                                'series' => $lot['series'],
-                                'item_id' => $row['item_id'],
-                                'warehouse_id' => $row['warehouse_id'],
-                                'has_sale' => false,
-                                'state' => $lot['state']
-                            ]);
-                        }
-                    }
-
                     if (array_key_exists('item', $row)) {
-                        Log::info('Item Lots group: ' . json_encode($row));
+
                         if (isset($row['item']['lots_enabled']) && ($row['item']['lots_enabled'] == true || $row['item']['lots_enabled'] == 'true')) {
 
                             // factor de lista de precios
@@ -624,6 +609,33 @@ class PurchaseController extends Controller
 
                                 $p_item->item_lot_group_id = $item_lots_group->id;
                                 $p_item->update();
+                            }
+                        }else if (array_key_exists('lots', $row) && isset($row['item']['series_enabled']) && ($row['item']['series_enabled'] == true || $row['item']['series_enabled'] == 'true')) {
+
+                            foreach ($row['lots'] as $lot) {
+                                $p_item->lots()->create([
+                                    'date' => $lot['date'],
+                                    'series' => $lot['series'],
+                                    'item_id' => $row['item_id'],
+                                    'warehouse_id' => $row['warehouse_id'],
+                                    'has_sale' => false,
+                                    'state' => $lot['state']
+                                ]);
+                            }
+                        }else{
+
+                            $item = Item::where('id', $row['item_id'])->first();
+                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                            if($itemWarehouse && $itemWarehouse->count() > 0){
+                                $itemWarehouse->quantity += floatval($row['quantity']);
+                                $itemWarehouse->save();
+                            }else{
+
+                                $itemWarehouse = new ItemWarehouse();
+                                $itemWarehouse->item_id = $row['item_id'];
+                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
+                                $itemWarehouse->stock = floatval($row['quantity']);
+                                $itemWarehouse->save();
                             }
                         }
                     }
@@ -1649,6 +1661,12 @@ class PurchaseController extends Controller
                 foreach ($doc->items as $it) {
 
                     $p_i = PurchaseItem::findOrFail($it->id);
+                    $itemAct = Item::find($p_i->item_id);
+                    if(($itemAct->series_enabled == 0 && $itemAct->lots_enabled == 0) || ($itemAct->series_enabled == '0' && $itemAct->lots_enabled == '0')){
+                        $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
+                        $itemWarehouse->quantity -= floatval($p_i->quantity);
+                        $itemWarehouse->save();
+                    }
                     $p_i->delete();
                 }
 
@@ -1686,22 +1704,34 @@ class PurchaseController extends Controller
                             ->update(['purchase_unit_price' => round(floatval($row['unit_value']), 2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                     }
-                    if (array_key_exists('lots', $row)) {
-
-                        foreach ($row['lots'] as $lot) {
-
-                            $p_item->lots()->create([
-                                'date' => $lot['date'],
-                                'series' => $lot['series'],
-                                'item_id' => $row['item_id'],
-                                'warehouse_id' => $row['warehouse_id'],
-                                'has_sale' => false
-                            ]);
-                        }
-                    }
                     if (array_key_exists('item', $row)) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
                             $this->processUpdateItemLotsGroup($row, $p_item);
+                        }else if (array_key_exists('lots', $row)) {
+
+                            foreach ($row['lots'] as $lot) {
+                                $p_item->lots()->create([
+                                    'date' => $lot['date'],
+                                    'series' => $lot['series'],
+                                    'item_id' => $row['item_id'],
+                                    'warehouse_id' => $row['warehouse_id'],
+                                    'has_sale' => false
+                                ]);
+                            }
+                        }else{
+
+                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                            if($itemWarehouse && $itemWarehouse->count() > 0){
+                                $itemWarehouse->quantity =  floatval($row['quantity']);
+                                $itemWarehouse->save();
+                            }else{
+
+                                $itemWarehouse = new ItemWarehouse();
+                                $itemWarehouse->item_id = $row['item_id'];
+                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
+                                $itemWarehouse->stock = floatval($row['quantity']);
+                                $itemWarehouse->save();
+                            }
                         }
                     }
                 }
