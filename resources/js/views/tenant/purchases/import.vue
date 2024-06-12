@@ -482,7 +482,7 @@ export default {
 
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_value;
-                itemActual.item_unit_types = formItem.item_unit_types;
+                itemActual.item_unit_types = formItem.item_unit_types ?? [];
                 itemActual.quantity = itemActual.quantity;
                 itemActual.has_igv = false;
                 itemActual.item.presentation = {};
