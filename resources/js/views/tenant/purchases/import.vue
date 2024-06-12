@@ -125,7 +125,7 @@ export default {
         this.loadAllItems(this.$store);
 
         this.$http.get(`/${this.resource}/item/tables`).then((response) => {
-            console.log("ITEMS IMPORT: ", response.data.items_import);
+            //.log("ITEMS IMPORT: ", response.data.items_import);
             //this.items_all = response.data.items_import;
 
             this.affectation_igv_types = response.data.affectation_igv_types;
@@ -461,9 +461,10 @@ export default {
         },
         async changeItem(id, index) {
             //let formItem = this.findItem(id);
-            console.log("id: ", id);
-            console.log("id: ", parseInt(id));
-            console.log("all_items: ", this.all_items);
+            console.log("id: ", id)
+            console.log("id: ", parseInt(id))
+            console.log("all_items: ", this.all_items)
+
             let formItemG = _.filter(this.all_items, { 'id': parseInt(id) })
             //let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
             let itemActual = this.form.items[index];
@@ -587,14 +588,15 @@ export default {
         create() {
             this.titleDialog = "Importar Factura Compra";
         },
-        async searchRemoteItems(input) {
+        searchRemoteItems(input) {
             if (input.length > 2) {
                 this.loading_search = true;
                 let parameters = `input=${input}`;
 
-                await this.$http
+                this.$http
                     .get(`/${this.resource}/search-items/?${parameters}`)
                     .then((response) => {
+                        console.log('searchRemoteItems: ',response.data.items)
                         this.items_all = response.data.items;
                         this.loading_search = false;
 
