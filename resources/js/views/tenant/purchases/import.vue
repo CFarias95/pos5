@@ -475,9 +475,9 @@ export default {
                 let affectation = _.find(this.affectation_igv_types, {'percentage': itemActual.iva+'.0000' });
                 //let affectation = this.affectation_igv_types.filter((option) => option.percentage == formItem.iva);
                 this.form.items[index].item_id = id;
-                console.log('filter',formItem.iva+'.0000')
-                console.log('affectation_igv_types',this.affectation_igv_types)
-                console.log('affectation',affectation)
+                //console.log('filter',formItem.iva+'.0000')
+                //console.log('affectation_igv_types',this.affectation_igv_types)
+                //console.log('affectation',affectation)
 
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_value;
