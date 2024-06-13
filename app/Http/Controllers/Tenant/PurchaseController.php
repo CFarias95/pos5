@@ -1666,7 +1666,7 @@ class PurchaseController extends Controller
                     $itemAct = Item::find($p_i->item_id);
                     if(($itemAct->series_enabled == 0 && $itemAct->lots_enabled == 0) || ($itemAct->series_enabled == '0' && $itemAct->lots_enabled == '0')){
                         $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
-                        $itemWarehouse->quantity -= floatval($p_i->quantity);
+                        $itemWarehouse->stock -= floatval($p_i->quantity);
                         $itemWarehouse->save();
                     }
                     $p_i->delete();
@@ -1724,7 +1724,7 @@ class PurchaseController extends Controller
 
                             $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
                             if($itemWarehouse && $itemWarehouse->count() > 0){
-                                $itemWarehouse->quantity =  floatval($row['quantity']);
+                                $itemWarehouse->stock =  floatval($row['quantity']);
                                 $itemWarehouse->save();
                             }else{
 
