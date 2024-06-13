@@ -624,10 +624,12 @@ class PurchaseController extends Controller
                             }
                         }else{
 
+                            Log::info('ROW: '.json_encode($row));
+
                             $item = Item::where('id', $row['item_id'])->first();
                             $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
                             if($itemWarehouse && $itemWarehouse->count() > 0){
-                                $itemWarehouse->quantity += floatval($row['quantity']);
+                                $itemWarehouse->stock += floatval($row['quantity']);
                                 $itemWarehouse->save();
                             }else{
 
