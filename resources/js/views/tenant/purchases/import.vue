@@ -67,9 +67,9 @@
                                         <td>{{ item.quantity }}</td>
                                         <td style="align-content: center">
                                             <el-select :disabled="item.item_id != null" v-model="item.item_id"
-                                                @change="changeItem(item.item_id, index)" filterable required="true"
-                                                :remote-method="searchRemoteItems" remote>
-                                                <el-option v-for="(prod, index2) in items_all" :key="index2"
+                                                @change="changeItem(item.item_id, index)" filterable required="true">
+                                                <!-- :remote-method="searchRemoteItems" remote> -->
+                                                <el-option v-for="(prod, index2) in all_items" :key="index2"
                                                     :value="prod.id" :label="prod.full_description"></el-option>
                                             </el-select>
                                         </td>
@@ -126,8 +126,7 @@ export default {
 
         this.$http.get(`/${this.resource}/item/tables`).then((response) => {
             //.log("ITEMS IMPORT: ", response.data.items_import);
-            //this.items_all = response.data.items_import;
-
+            this.all_items = response.data.items_import;
             this.affectation_igv_types = response.data.affectation_igv_types;
             this.system_isc_types = response.data.system_isc_types;
             this.discount_types = response.data.discount_types;
@@ -182,11 +181,20 @@ export default {
         },
         async setdataForm() {
             let convert = require("xml-js");
+            let Invoice = null
 
-            let Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"], {
-                compact: true,
-                spaces: 4,
-            });
+            if(this.formXmlJson.autorizacion.comprobante["_cdata"]){
+                Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_cdata"], {
+                    compact: true,
+                    spaces: 4,
+                });
+            }
+            if(this.formXmlJson.autorizacion.comprobante["_text"]){
+                Invoice = convert.xml2js(this.formXmlJson.autorizacion.comprobante["_text"], {
+                    compact: true,
+                    spaces: 4,
+                });
+            }
             console.log("setdataForm", Invoice);
 
             let evalu = "";
@@ -349,16 +357,6 @@ export default {
             this.form.total_value = this.form.total_taxed + this.form.total_unaffected;
             this.has_file = true;
         },
-        findItem(search) {
-            //if (search === '') return undefined;
-            let item = this.all_items.find(
-                (obj) =>
-                    obj.id == search
-
-            );
-
-            return item;
-        },
         setFormItems(items) {
             console.log('setFormItems', items);
             const self = this;
@@ -461,16 +459,14 @@ export default {
         },
         async changeItem(id, index) {
             //let formItem = this.findItem(id);
-            console.log("id: ", id)
-            console.log("id: ", parseInt(id))
+            console.log("id recibido: ", id)
+            console.log("id int: ", parseInt(id))
             console.log("all_items: ", this.all_items)
 
-            let formItemG = _.filter(this.all_items, { 'id': parseInt(id) })
-            //let formItem = this.all_items.filter(item => (item.id = parseInt(id)))
-            let itemActual = this.form.items[index];
-
-            //console.log("itemActual", itemActual);
+            const formItemG = { ..._.find(this.all_items, { 'id': parseInt(id) }) };
             console.log("formItemG", formItemG);
+
+            let itemActual = this.form.items[index];
 
             if (formItemG !== undefined) {
                 let formItem = null
@@ -479,15 +475,10 @@ export default {
                 }else{
                     formItem = formItemG
                 }
-                //let formItem = formItemG[0]
                 console.log('formItem',formItem)
                 let affectation = _.find(this.affectation_igv_types, {'percentage': itemActual.iva+'.0000' });
                 //let affectation = this.affectation_igv_types.filter((option) => option.percentage == formItem.iva);
                 this.form.items[index].item_id = id;
-                //console.log('filter',formItem.iva+'.0000')
-                //console.log('affectation_igv_types',this.affectation_igv_types)
-                //console.log('affectation',affectation)
-
                 itemActual.item = formItem;
                 itemActual.unit_price = itemActual.unit_value;
                 itemActual.item_unit_types = formItem.item_unit_types ?? [];
@@ -588,22 +579,17 @@ export default {
         create() {
             this.titleDialog = "Importar Factura Compra";
         },
-        searchRemoteItems(input) {
+        async searchRemoteItems(input) {
             if (input.length > 2) {
                 this.loading_search = true;
                 let parameters = `input=${input}`;
 
-                this.$http
-                    .get(`/${this.resource}/search-items/?${parameters}`)
+                await this.$http.get(`/${this.resource}/search-items/?${parameters}`)
                     .then((response) => {
-                        console.log('searchRemoteItems: ',response.data.items)
-                        this.items_all = response.data.items;
+                        this.all_items = response.data.items
                         this.loading_search = false;
-
-                        if (this.items_all.length == 0) {
-                            this.initFilterItems();
-                        }
                     });
+
             }
         },
         initFilterItems() {
@@ -704,7 +690,7 @@ export default {
         },
     },
     computed: {
-        ...mapState(["config", "userType", "all_items"]),
+        ...mapState(["config", "userType"]),
     },
 };
 </script>
