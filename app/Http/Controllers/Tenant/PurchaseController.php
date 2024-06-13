@@ -1978,31 +1978,30 @@ class PurchaseController extends Controller
         }
 
         DB::connection('tenant')->transaction(function () use ($obj) {
-
-
             foreach ($obj->items as $it) {
                 $it->lots()->delete();
             }
-
 
             $obj->state_type_id = 11;
             $obj->save();
 
             foreach ($obj->items as $item) {
                 $item_warehouse_id = $item->warehouse_id ?? $obj->establishment->getCurrentWarehouseId();
-
                 $item->purchase->inventory_kardex()->create([
                     'date_of_issue' => date('Y-m-d'),
                     'item_id' => $item->item_id,
                     'warehouse_id' => $item_warehouse_id,
                     'quantity' => -$item->quantity,
                 ]);
+                Log::info('item eliminated: '.json_encode($item->item->unit_type_id));
+                if($item->item->unit_type_id != 'ZZ'){
+                    $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
+                    $wr->stock = $wr->stock - $item->quantity;
+                    $wr->save();
 
-                $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
-                $wr->stock = $wr->stock - $item->quantity;
-                $wr->save();
+                    self::voidedItemLotsGroup($item);
+                }
 
-                self::voidedItemLotsGroup($item);
             }
         });
 
