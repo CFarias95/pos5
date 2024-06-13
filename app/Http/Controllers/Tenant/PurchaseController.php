@@ -486,10 +486,6 @@ class PurchaseController extends Controller
                 }
 
                 foreach ($data['items'] as $row) {
-
-                    //Log::info('Item a crear: '.json_encode($row));
-                    //Log::info('docintern - '.json_encode($docIntern));
-                    //COSTO PROMEDIO COMPRA
                     $item = Item::where('id', $row['item_id'])->first();
                     if ($item->unit_type_id != 'ZZ' && $docIntern[0]->cost) {
                         $costoA = $item->purchase_mean_cost;
@@ -624,21 +620,21 @@ class PurchaseController extends Controller
                             }
                         }else{
 
-                            Log::info('ROW: '.json_encode($row));
+                            Log::info('ROW de compra: '.json_encode($row));
 
-                            $item = Item::where('id', $row['item_id'])->first();
-                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
-                            if($itemWarehouse && $itemWarehouse->count() > 0){
-                                $itemWarehouse->stock += floatval($row['quantity']);
-                                $itemWarehouse->save();
-                            }else{
+                            // $item = Item::where('id', $row['item_id'])->first();
+                            // $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                            // if($itemWarehouse && $itemWarehouse->count() > 0){
+                            //     $itemWarehouse->stock += floatval($row['quantity']);
+                            //     $itemWarehouse->save();
+                            // }else{
 
-                                $itemWarehouse = new ItemWarehouse();
-                                $itemWarehouse->item_id = $row['item_id'];
-                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
-                                $itemWarehouse->stock = floatval($row['quantity']);
-                                $itemWarehouse->save();
-                            }
+                            //     $itemWarehouse = new ItemWarehouse();
+                            //     $itemWarehouse->item_id = $row['item_id'];
+                            //     $itemWarehouse->warehouse_id = $row['warehouse_id'];
+                            //     $itemWarehouse->stock = floatval($row['quantity']);
+                            //     $itemWarehouse->save();
+                            // }
                         }
                     }
                 }
@@ -2213,7 +2209,6 @@ class PurchaseController extends Controller
 
     public function delete($id)
     {
-
         try {
 
             DB::connection('tenant')->transaction(function () use ($id) {
