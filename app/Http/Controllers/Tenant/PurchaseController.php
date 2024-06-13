@@ -620,21 +620,20 @@ class PurchaseController extends Controller
                             }
                         }else{
 
-                            Log::info('ROW de compra: '.json_encode($row));
+                            //Log::info('ROW de compra: '.json_encode($row));
+                            $item = Item::where('id', $row['item_id'])->first();
+                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                            if($itemWarehouse && $itemWarehouse->count() > 0){
+                                // $itemWarehouse->stock += floatval($row['quantity']);
+                                // $itemWarehouse->save();
+                            }else{
 
-                            // $item = Item::where('id', $row['item_id'])->first();
-                            // $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
-                            // if($itemWarehouse && $itemWarehouse->count() > 0){
-                            //     $itemWarehouse->stock += floatval($row['quantity']);
-                            //     $itemWarehouse->save();
-                            // }else{
-
-                            //     $itemWarehouse = new ItemWarehouse();
-                            //     $itemWarehouse->item_id = $row['item_id'];
-                            //     $itemWarehouse->warehouse_id = $row['warehouse_id'];
-                            //     $itemWarehouse->stock = floatval($row['quantity']);
-                            //     $itemWarehouse->save();
-                            // }
+                                $itemWarehouse = new ItemWarehouse();
+                                $itemWarehouse->item_id = $row['item_id'];
+                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
+                                $itemWarehouse->stock = floatval($row['quantity']);
+                                $itemWarehouse->save();
+                            }
                         }
                     }
                 }
@@ -1720,8 +1719,8 @@ class PurchaseController extends Controller
 
                             $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
                             if($itemWarehouse && $itemWarehouse->count() > 0){
-                                $itemWarehouse->stock =  floatval($row['quantity']);
-                                $itemWarehouse->save();
+                                // $itemWarehouse->stock =  floatval($row['quantity']);
+                                // $itemWarehouse->save();
                             }else{
 
                                 $itemWarehouse = new ItemWarehouse();
