@@ -621,18 +621,19 @@ class PurchaseController extends Controller
                         }else{
 
                             //Log::info('ROW de compra: '.json_encode($row));
-                            $item = Item::where('id', $row['item_id'])->first();
-                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
-                            if($itemWarehouse && $itemWarehouse->count() > 0){
-                                // $itemWarehouse->stock += floatval($row['quantity']);
-                                // $itemWarehouse->save();
-                            }else{
+                            if($row['item']['unit_type_id'] != 'ZZ'){
 
-                                $itemWarehouse = new ItemWarehouse();
-                                $itemWarehouse->item_id = $row['item_id'];
-                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
-                                $itemWarehouse->stock = floatval($row['quantity']);
-                                $itemWarehouse->save();
+                                $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                                if($itemWarehouse && $itemWarehouse->count() > 0){
+                                    // $itemWarehouse->stock += floatval($row['quantity']);
+                                    // $itemWarehouse->save();
+                                }else{
+                                    $itemWarehouse = new ItemWarehouse();
+                                    $itemWarehouse->item_id = $row['item_id'];
+                                    $itemWarehouse->warehouse_id = $row['warehouse_id'];
+                                    $itemWarehouse->stock = floatval($row['quantity']);
+                                    $itemWarehouse->save();
+                                }
                             }
                         }
                     }
@@ -670,12 +671,10 @@ class PurchaseController extends Controller
                 if ($data['document_type_id'] == '04') {
                     $this->createCreditNotePayment($doc);
                 }
-
                 return $doc;
             });
 
             Log::info('Compra creada: ' . json_encode($purchase));
-
             return [
                 'success' => true,
                 'data' => [
@@ -1660,9 +1659,11 @@ class PurchaseController extends Controller
                     $p_i = PurchaseItem::findOrFail($it->id);
                     $itemAct = Item::find($p_i->item_id);
                     if(($itemAct->series_enabled == 0 && $itemAct->lots_enabled == 0) || ($itemAct->series_enabled == '0' && $itemAct->lots_enabled == '0')){
-                        $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
-                        $itemWarehouse->stock -= floatval($p_i->quantity);
-                        $itemWarehouse->save();
+                        if($itemAct->unit_type_id != 'ZZ'){
+                            $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
+                            $itemWarehouse->stock -= floatval($p_i->quantity);
+                            $itemWarehouse->save();
+                        }
                     }
                     $p_i->delete();
                 }
@@ -1716,19 +1717,14 @@ class PurchaseController extends Controller
                                 ]);
                             }
                         }else{
-
-                            $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
-                            if($itemWarehouse && $itemWarehouse->count() > 0){
-                                // $itemWarehouse->stock =  floatval($row['quantity']);
-                                // $itemWarehouse->save();
-                            }else{
-
-                                $itemWarehouse = new ItemWarehouse();
-                                $itemWarehouse->item_id = $row['item_id'];
-                                $itemWarehouse->warehouse_id = $row['warehouse_id'];
-                                $itemWarehouse->stock = floatval($row['quantity']);
-                                $itemWarehouse->save();
+                            if($row['item']['unit_type_id'] != 'ZZ'){
+                                $itemWarehouse = ItemWarehouse::where('item_id',$row['item_id'])->where('warehouse_id',$row['warehouse_id'])->first();
+                                if($itemWarehouse && $itemWarehouse->count() > 0){
+                                    $itemWarehouse->stock +=  floatval($row['quantity']);
+                                    $itemWarehouse->save();
+                                }
                             }
+
                         }
                     }
                 }
