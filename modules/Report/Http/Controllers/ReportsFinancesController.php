@@ -197,7 +197,8 @@ class ReportsFinancesController extends Controller
         //$fini = FunctionController::InArray($request, 'fini');
         //$codcliente = FunctionController::InArray($request, 'codcliente');
         $codproveedor = FunctionController::InArray($request, 'codproveedor');
-        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $tipoproveedor = FunctionController::InArray($request, 'tipoproveedor');
+
         //Log::info('prueba'.$agrupado);
 
         $d_start = null;
@@ -222,7 +223,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?)', [$d_start, $agrupado, $codproveedor]);
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?, ?)', [$d_start, $agrupado, $codproveedor, $tipoproveedor]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -716,7 +717,7 @@ class ReportsFinancesController extends Controller
         //$fini = FunctionController::InArray($request, 'fini');
         //$codcliente = FunctionController::InArray($request, 'codcliente');
         $codproveedor = FunctionController::InArray($request, 'codproveedor');
-        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $tipoproveedor = FunctionController::InArray($request, 'tipoproveedor');
         //Log::info('prueba'.$agrupado);
 
         $d_start = null;
@@ -741,7 +742,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?)', [$d_start, $agrupado, $codproveedor]);
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?, /)', [$d_start, $agrupado, $codproveedor, $tipoproveedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
@@ -765,9 +766,12 @@ class ReportsFinancesController extends Controller
         $page = FunctionController::InArray($request, 'page');
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
+
         $agrupado = FunctionController::InArray($request, 'agrupado');
-        if($agrupado == true){
+        if($agrupado === true || $agrupado === 'true'){
             $agrupado = 1;
+        }else{
+            $agrupado = 0;
         }
         $ffin = FunctionController::InArray($request, 'ffin');
         $fini = FunctionController::InArray($request, 'fini');

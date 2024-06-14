@@ -87,6 +87,14 @@
                             <el-option v-for="row in suppliers" :key="row.id" :label="row.name" :value="row.id"></el-option>
                         </el-select>
                     </div>
+                    <div class="col-md-3" v-if="show_codproveedor">
+                        <label class="control-label">Tipo Proveedor</label>
+                        <el-select v-model="form.tipoproveedor" filterable clearable>
+                            <el-option key="Todos" label="Todos" value="Todos"></el-option>
+                            <el-option key="Local" label="Local" value="Local"></el-option>
+                            <el-option key="Exterior" label="Exterior" value="Exterior"></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-md-3" v-if="show_agrupado">
                         <label class="control-label">Importe</label>
                         <el-input v-model="form.importe"></el-input>
@@ -192,6 +200,7 @@ export default {
                 codcliente: 0,
                 codproveedor: 0,
                 codvendedor: 0,
+                tipoproveedor : 'Todos',
                 agrupado: 0,
                 ffin: null,
                 fini: null,
@@ -394,6 +403,7 @@ export default {
                 agrupado: 0,
                 codvendedor: 0,
                 codproveedor: 0,
+                tipoproveedor: 'Todos',
                 codcliente: 0,
             }
         },
