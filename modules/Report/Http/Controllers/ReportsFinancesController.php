@@ -91,7 +91,7 @@ class ReportsFinancesController extends Controller
         $fini = FunctionController::InArray($request, 'fini');
         //$codcliente = FunctionController::InArray($request, 'codcliente');
         $codproveedor = FunctionController::InArray($request, 'codproveedor');
-        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $tipoproveedor = FunctionController::InArray($request, 'tipoproveedor');
 
         $d_start = null;
         $d_end = null;
@@ -115,7 +115,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?)', [$d_start, $codproveedor]);
+        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?, ? )', [$d_start, $codproveedor, $tipoproveedor]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -606,7 +606,7 @@ class ReportsFinancesController extends Controller
         $fini = FunctionController::InArray($request, 'fini');
         //$codcliente = FunctionController::InArray($request, 'codcliente');
         $codproveedor = FunctionController::InArray($request, 'codproveedor');
-        //$codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $tipoproveedor = FunctionController::InArray($request, 'tipoproveedor');
 
         $d_start = null;
         $d_end = null;
@@ -630,7 +630,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?)', [$d_start, $codproveedor]);
+        $records = DB::connection('tenant')->select('CALL SP_payable_statement(?, ?, ?)', [$d_start, $codproveedor, $tipoproveedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();
