@@ -111,38 +111,6 @@
         <totalSinImpuestos>{{ $document->total_taxed + $document->total_unaffected }}</totalSinImpuestos>
         <totalDescuento>{{ $document->total_discount }}</totalDescuento>
         <totalConImpuestos>
-            {{-- @if($total_IVA12 > 0)
-            <totalImpuesto>
-                <codigo>2</codigo>
-                <codigoPorcentaje>2</codigoPorcentaje>
-                <baseImponible>{{  $total_BASE12 }}</baseImponible>
-                <valor>{{ $total_IVA12 }}</valor>
-            </totalImpuesto>
-            @endif
-            @if($total_IVA8 > 0)
-            <totalImpuesto>
-                <codigo>2</codigo>
-                <codigoPorcentaje>2</codigoPorcentaje>
-                <baseImponible>{{  $total_BASE8 }}</baseImponible>
-                <valor>{{ $total_IVA8 }}</valor>
-            </totalImpuesto>
-            @endif
-            @if($total_IVA14 > 0)
-            <totalImpuesto>
-                <codigo>2</codigo>
-                <codigoPorcentaje>3</codigoPorcentaje>
-                <baseImponible>{{  $total_BASE14 }}</baseImponible>
-                <valor>{{ $total_IVA14 }}</valor>
-            </totalImpuesto>
-            @endif
-            @if($total_IVA0 > 0)
-            <totalImpuesto>
-                <codigo>2</codigo>
-                <codigoPorcentaje>0</codigoPorcentaje>
-                <baseImponible>{{  $total_IVA0 }}</baseImponible>
-                <valor>0</valor>
-            </totalImpuesto>
-            @endif --}}
             @foreach($totales as $impuesto)
             <totalImpuesto>
                 <codigo>2</codigo>
@@ -156,9 +124,9 @@
         <importeTotal>{{ $document->total }}</importeTotal>
         <moneda>DOLAR</moneda>
         <pagos>
-        @if(count($document->payments) > 0)
+        @if(count($document->payments) > 0 || count($document->fee) > 0)
             @if($document->payment_condition_id === '01')
-            @foreach($payments as $pago)
+            @foreach($document->payments as $pago)
             <pago>
                 <formaPago>{{ $pago->payment_method_type->pago_sri }}</formaPago>
                 <total>{{ $pago->payment }}</total>
@@ -166,28 +134,19 @@
                 <unidadTiempo>Dias</unidadTiempo>
             </pago>
             @endforeach
-            @elseif($document->payment_condition_id === '02')
+            @elseif($document->payment_condition_id === '02' || $document->payment_condition_id === '03')
             @foreach($document->fee as $pago)
             <pago>
-                <formaPago>01</formaPago>
+                <formaPago>20</formaPago>
                 <total>{{ $pago->amount }}</total>
-                <plazo>{{ date_diff($document->date_of_issue, $pago->date)->format('%a') - 1 }}</plazo>
-                <unidadTiempo>Dias</unidadTiempo>
-            </pago>
-            @endforeach
-            @elseif($document->payment_condition_id === '03')
-            @foreach($document->fee as $pago)
-            <pago>
-                <formaPago>01</formaPago>
-                <total>{{ $pago->amount }}</total>
-                <plazo>{{ date_diff($document->date_of_issue, $pago->date)->format('%a') - 1 }}</plazo>
+                <plazo>{{ date_diff($document->date_of_issue, $pago->date)->format('%a')}}</plazo>
                 <unidadTiempo>Dias</unidadTiempo>
             </pago>
             @endforeach
             @endif
         @else
             <pago>
-                <formaPago>01</formaPago>
+                <formaPago>20</formaPago>
                 <total>{{ $document->total }}</total>
                 <plazo>0</plazo>
                 <unidadTiempo>Dias</unidadTiempo>
