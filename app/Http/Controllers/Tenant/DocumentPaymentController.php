@@ -150,7 +150,7 @@ class DocumentPaymentController extends Controller
 
                 $documentIds .= 'CF'.$payment->id.';';
                 $customer = Person::find($value['customer_id']);
-                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
+                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> strlen($document->clave_SRI) > 15 ? substr(substr($document->clave_SRI,-25),0,15) : $document->clave_SRI]);
             }
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -637,7 +637,7 @@ class DocumentPaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
                 $detalle->haber = $request->payment;
-                $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
+                $detalle->comment =  strlen($document->clave_SRI) > 15 ? substr(substr($document->clave_SRI,-25),0,15) : $document->clave_SRI;
 
                 if($detalle->save() == false){
                     $cabeceraC->delete();
@@ -785,7 +785,7 @@ class DocumentPaymentController extends Controller
                     $seat_general = $ultimo->seat_general + 1;
                 }
 
-                $comment = (($document->document_type_id == '03')?'Reverso cobro '.substr($document->series,0,1):'Reverso cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
+                $comment = (($document->document_type_id == '03')?' Reverso cobro '.substr($document->series,0,1):'Reverso cobro Factura F'). $document->establishment->code . substr($document->series,1). str_pad($document->number,'9','0',STR_PAD_LEFT).' '. $document->customer->name ;
 
                 $total_debe = 0;
                 $total_haber = 0;

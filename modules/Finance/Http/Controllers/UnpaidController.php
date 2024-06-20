@@ -692,7 +692,7 @@ class UnpaidController extends Controller
 
                 $documentIds .= 'CF'.$payment->id.';';
                 $customer = Person::find($value['customer_id']);
-                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).'/'.$document->reference_data]);
+                array_push($haber,['account'=>($customer->account)?$customer->account:$config->cta_clients,'amount' => $value['amount'],'secuential'=> strlen($document->clave_SRI) > 15 ? substr(substr($document->clave_SRI,-25),0,15) : $document->clave_SRI]);
             }
 
             $comment = ' | '.$documentsSequentials. ' | Multicobro '.$secu;

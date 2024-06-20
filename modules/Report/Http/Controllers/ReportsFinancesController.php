@@ -742,7 +742,7 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?, /)', [$d_start, $agrupado, $codproveedor, $tipoproveedor]);
+        $records = DB::connection('tenant')->select('CALL SP_toPay_statement(?, ?, ?, ?)', [$d_start, $agrupado, $codproveedor, $tipoproveedor]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();

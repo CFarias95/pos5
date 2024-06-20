@@ -1424,6 +1424,7 @@ class PurchaseController extends Controller
                     $detalle->haber = 0;
                     $detalle->debe = $payment->payment;
                     $detalle->seat_cost = ($accountMIDModel && $accountMIDModel->cost_center > 0) ? array_pop($document->establishment->cost_center) : null;
+                    $detalle->comment = $document->sequential_number;
                     if ($detalle->save() == false) {
                         $cabeceraC->delete();
                         return;
@@ -1658,13 +1659,13 @@ class PurchaseController extends Controller
 
                     $p_i = PurchaseItem::findOrFail($it->id);
                     $itemAct = Item::find($p_i->item_id);
-                    if(($itemAct->series_enabled == 0 && $itemAct->lots_enabled == 0) || ($itemAct->series_enabled == '0' && $itemAct->lots_enabled == '0')){
-                        if($itemAct->unit_type_id != 'ZZ'){
-                            $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
-                            $itemWarehouse->stock -= floatval($p_i->quantity);
-                            $itemWarehouse->save();
-                        }
-                    }
+                    // if(($itemAct->series_enabled == 0 && $itemAct->lots_enabled == 0) || ($itemAct->series_enabled == '0' && $itemAct->lots_enabled == '0')){
+                    //     // if($itemAct->unit_type_id != 'ZZ'){
+                    //     //     $itemWarehouse = ItemWarehouse::where('item_id',$p_i->item_id)->where('warehouse_id',$p_i->warehouse_id)->first();
+                    //     //     $itemWarehouse->stock -= floatval($p_i->quantity);
+                    //     //     $itemWarehouse->save();
+                    //     // }
+                    // }
                     $p_i->delete();
                 }
 

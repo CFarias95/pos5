@@ -140,7 +140,7 @@ class PurchasePaymentController extends Controller
                 $customer = Person::find($value['customer_id']);
                 //Log::info($customer);
                 Log::info($config);
-                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT)]);
+                array_push($haber,['account'=>(isset($customer->account) && $customer->account != null)?$customer->account:$config->cta_suppliers,'amount'=>$value['amount'],'secuential'=> $document->sequential_number]);
             }
             foreach ($request->extras as $value) {
                 $debeAdicional += floatVal($value['debe']);
@@ -517,7 +517,7 @@ class PurchasePaymentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->haber = 0;
                 $detalle->debe = $payment->payment;
-                $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
+                $detalle->comment = $document->sequential_number;
                 if($detalle->save() == false){
                     $cabeceraC->delete();
                     return;
@@ -551,7 +551,7 @@ class PurchasePaymentController extends Controller
                         $detalle2->seat_line = $seat;
                         $detalle2->haber = $haberInterno;
                         $detalle2->debe = 0;
-                        $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
+                        $detalle->comment = $document->sequential_number;
                         if($detalle2->save() == false){
                             $cabeceraC->delete();
                             break;
@@ -567,7 +567,7 @@ class PurchasePaymentController extends Controller
                     $detalle2->seat_line = 2;
                     $detalle2->haber = $payment->payment;
                     $detalle2->debe = 0;
-                    $detalle->comment = $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT);
+                    $detalle->comment = $document->sequential_number;
                     if($detalle2->save() == false){
                         $cabeceraC->delete();
                         return;
@@ -662,7 +662,6 @@ class PurchasePaymentController extends Controller
         $sequential = PurchasePayment::orderBy('sequential', 'desc')->first();
 
         if(isset($payment) && $payment->multipay == 'NO'){
-            Log::info('Sin MULTIPAGO');
             $newPayment = new PurchasePayment();
             $newPayment->purchase_id = $payment->purchase_id;
             $newPayment->date_of_payment = $request->date_of_payment;

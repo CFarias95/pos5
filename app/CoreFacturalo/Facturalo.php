@@ -179,7 +179,6 @@ class Facturalo
                     $document->documents()->create($row);
                 }
                 $this->document = Voided::find($document->id);
-                //Log::error('voided: '.json_encode($this->document));
                 break;
             case 'retention':
                 $document = Retention::create($inputs);
@@ -222,7 +221,7 @@ class Facturalo
                     $this->document = $document;
 
                 }else{
-                    
+
                     $document = Dispatch::create($inputs);
                     foreach ($inputs['items'] as $row) {
                         Log::info('row to CREATE: '.json_encode($row));
@@ -1605,7 +1604,7 @@ class Facturalo
                         }
                     }else{
 
-                        $this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
+                        //$this->restoreStockInWarehpuse($it->item_id, $warehouse->id, $it->quantity);
                     }
                     $it->delete();
 

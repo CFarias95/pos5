@@ -619,7 +619,6 @@ class DocumentController extends Controller
             $res = $this->storeWithData($request->all());
             if($res['success'] == true){
                 $document_id = $res['data']['id'];
-
                 $this->associateDispatchesToDocument($request, $document_id);
                 $this->associateSaleNoteToDocument($request, $document_id);
 
@@ -627,11 +626,9 @@ class DocumentController extends Controller
                     $this->createAccountingEntry($document_id);
                     $this->createAccountingEntryPayments($document_id);
                 }
-
                 if($request['document_type_id'] == '07'){
                     $this->createCreditNotePayment($document_id);
                 }
-
                 $this->verifyPayment($request);
                 return $res;
             }
@@ -924,17 +921,17 @@ class DocumentController extends Controller
                         }
                     }
 
-                    if($impuesto->account){
-                        if(array_key_exists($impuesto->account,$arrayEntrys)){
+                    if($impuesto->account_sale){
+                        if(array_key_exists($impuesto->account_sale,$arrayEntrys)){
 
-                            $arrayEntrys[$impuesto->account]['haber'] += floatval($value->total_taxes);
+                            $arrayEntrys[$impuesto->account_sale]['haber'] += floatval($value->total_taxes);
 
                         }
-                        if(!array_key_exists($impuesto->account,$arrayEntrys)){
+                        if(!array_key_exists($impuesto->account_sale,$arrayEntrys)){
 
                             $n += 1;
-                            $arrayEntrys[$impuesto->account] = [
-                                'account_movement_id' => $impuesto->account,
+                            $arrayEntrys[$impuesto->account_sale] = [
+                                'account_movement_id' => $impuesto->account_sale,
                                 'seat_line' => $n,
                                 'haber' => floatval($value->total_taxes),
                                 'debe' => 0,
@@ -944,7 +941,7 @@ class DocumentController extends Controller
                         }
                     }
 
-                    if(!($impuesto->account) && $configuration->cta_taxes){
+                    if(!($impuesto->account_sale) && $configuration->cta_taxes){
 
                         if(array_key_exists($configuration->cta_taxes,$arrayEntrys)){
 
@@ -1055,6 +1052,8 @@ class DocumentController extends Controller
                 $detalle->seat_line = 1;
                 $detalle->debe = 0;
                 $detalle->haber = $document->total;
+                $detalle->comment =  strlen($document->clave_SRI) > 15 ? substr(substr($document->clave_SRI,-25),0,15) : $document->clave_SRI;
+
                 if($detalle->save() == false){
                     $cabeceraC->delete();
                     return;
@@ -1209,18 +1208,18 @@ class DocumentController extends Controller
                         }
                     }
 
-                    if($impuesto->account){
-                        if(array_key_exists($impuesto->account,$arrayEntrys)){
+                    if($impuesto->account_sale){
+                        if(array_key_exists($impuesto->account_sale,$arrayEntrys)){
 
-                            $arrayEntrys[$impuesto->account]['debe'] += floatval($value->total_taxes);
+                            $arrayEntrys[$impuesto->account_sale]['debe'] += floatval($value->total_taxes);
 
                         }
-                        if(!array_key_exists($impuesto->account,$arrayEntrys)){
+                        if(!array_key_exists($impuesto->account_sale,$arrayEntrys)){
 
                             $n += 1;
 
-                            $arrayEntrys[$impuesto->account] = [
-                                'account_movement_id' => $impuesto->account,
+                            $arrayEntrys[$impuesto->account_sale] = [
+                                'account_movement_id' => $impuesto->account_sale,
                                 'seat_line' => $n,
                                 'haber' => 0,
                                 'debe' => floatval($value->total_taxes),
@@ -1230,7 +1229,7 @@ class DocumentController extends Controller
                         }
                     }
 
-                    if(!($impuesto->account) && $configuration->cta_taxes){
+                    if(!($impuesto->account_sale) && $configuration->cta_taxes){
 
                         if(array_key_exists($configuration->cta_taxes,$arrayEntrys)){
 
@@ -1352,6 +1351,8 @@ class DocumentController extends Controller
                     $detalle->seat_line = 1;
                     $detalle->debe = 0;
                     $detalle->haber = $payment->payment;
+                    $detalle->comment =  strlen($document->clave_SRI) > 15 ? substr(substr($document->clave_SRI,-25),0,15) : $document->clave_SRI;
+
                     if($detalle->save() == false){
                         $cabeceraC->delete();
                         break;

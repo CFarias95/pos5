@@ -210,7 +210,7 @@ class DocumentCollection extends ResourceCollection
                 'email_send_it' => $email_send_it,
                 'email_send_it_array' => $email_send_it_array,
                 'external_id' => $row->external_id,
-                'notes' => (in_array($row->document_type_id, ['01', '03'])) ? $row->affected_documents->transform(function($row) {
+                'notes' => (in_array($row->document_type_id, ['01', '03']) && $row->affected_documents != null) ? $row->affected_documents->transform(function($row) {
                     return [
                         'id' => $row->id,
                         'document_id' => $row->document_id,

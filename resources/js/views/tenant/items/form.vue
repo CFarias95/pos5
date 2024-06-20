@@ -1943,9 +1943,9 @@ export default {
 
       this.loadConfiguration();
       this.form.sale_affectation_igv_type_id =
-        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
       this.form.purchase_affectation_igv_type_id =
-        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
       this.inventory_configuration = data.inventory_configuration;
     });
 
@@ -2068,9 +2068,9 @@ export default {
         this.brands = response.data.brands;
 
         this.form.sale_affectation_igv_type_id =
-          this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+          this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
         this.form.purchase_affectation_igv_type_id =
-          this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+          this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
       });
     },
     changeLotsEnabled() {
@@ -2261,9 +2261,9 @@ export default {
     resetForm() {
       this.initForm();
       this.form.sale_affectation_igv_type_id =
-        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
       this.form.purchase_affectation_igv_type_id =
-        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[0].id : null;
+        this.affectation_igv_types.length > 0 ? this.affectation_igv_types[3].id : null;
       this.setDefaultConfiguration();
     },
     async create() {
