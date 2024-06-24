@@ -121,7 +121,7 @@ class AccountingEntriesController extends Controller
         if ($date_start && $date_end) {
             $records = $records->whereBetween('seat_date', [$date_start, $date_end]);
         }
-        return $records;
+        return $records->orderBy('seat_date','desc');
     }
 
     public function searchCustomers(Request $request)

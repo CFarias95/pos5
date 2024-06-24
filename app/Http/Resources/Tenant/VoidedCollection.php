@@ -37,7 +37,7 @@ class VoidedCollection extends ResourceCollection
             return [
                 'type' => $row->type,
                 'id' => $row->id,
-                'ticket' => $row->ticket.' / '.$documentVoided->series.'-'.$documentVoided->number,
+                'ticket' => $row->ticket.$documentVoided ? ' / '. $documentVoided->series.'-'.$documentVoided->number : '',
                 'identifier' => $row->identifier,
                 'date_of_issue' => $row->date_of_issue,
                 'date_of_reference' => $row->date_of_reference,
