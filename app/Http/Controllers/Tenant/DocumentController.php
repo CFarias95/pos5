@@ -1776,13 +1776,13 @@ class DocumentController extends Controller
 
     public function email(DocumentEmailRequest $request)
     {
-
         $company = Company::active();
         $document = Document::find($request->input('id'));
 
         $email = trim($request->input('customer_email'));
         $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
         $mails = [];
+
         if (!empty($mail) && count($mail) > 0) {
             foreach ($mail as $email) {
                 $email = trim($email);
@@ -1797,6 +1797,7 @@ class DocumentController extends Controller
         Configuration::setConfigSmtpMail();
 
         // Backup your default mailer
+
         $backup = Mail::getSwiftMailer();
         $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
         $transport->setUsername(Config::get('mail.username'));

@@ -159,7 +159,7 @@
     @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
         <detalle>
             <codigoPrincipal>{{ $row->item_id }}</codigoPrincipal>
-            <descripcion>{{trim($row->item->name.'/'.$row->item->description.'/'.$row->item->model.'/'.$row->m_item->factory_code.'/ Lote: '.$itemLotGroup->getLote($row->item->IdLoteSelected).'/ Serie: '.$series)}}</descripcion>
+            <descripcion>{{trim($row->item->name.' '.$row->item->description.' '.$row->item->model.' '.$row->m_item->factory_code.' Lote: '.$itemLotGroup->getLote($row->item->IdLoteSelected).' Serie: '.$series)}}</descripcion>
             <cantidad>{{ $row->quantity }}00</cantidad>
             <precioUnitario>{{ $row->unit_value }}</precioUnitario>
             <descuento>{{ $row->total_discount }}</descuento>

@@ -215,7 +215,7 @@ class DocumentCollection extends ResourceCollection
                         'id' => $row->id,
                         'document_id' => $row->document_id,
                         'note_type_description' => ($row->note_type == 'credit') ? 'NC':'ND',
-                        'description' => $row->document->number_full,
+                        'description' => $row->document->number_full ?? '',
                     ];
                 }) : null,
                 'sales_note' => $nvs,

@@ -1960,6 +1960,7 @@ class PurchaseController extends Controller
 
     public function anular($id)
     {
+        $idauth = auth()->user()->id;
         $obj = Purchase::find($id);
         $validated = self::verifyHasSaleItems($obj->items);
         if (!$validated['success']) {
@@ -1968,15 +1969,73 @@ class PurchaseController extends Controller
                 'message' => $validated['message']
             ];
         }
+        $accountrieEntryActual = AccountingEntries::where('document_id','C'.$id)->first();
+        if($accountrieEntryActual){
+            $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+            $ultimo = AccountingEntries::latest('id')->first();
+            if (empty($lista)) {
+                $seat = 1;
+            } else {
+
+                $seat = $lista->seat + 1;
+            }
+            if (empty($ultimo)) {
+                $seat_general = 1;
+            } else {
+                $seat_general = $ultimo->seat_general + 1;
+            }
+            $comment = 'Reverso '.$accountrieEntryActual->comment;
+
+                $cabeceraC = new AccountingEntries();
+                $cabeceraC->fill($accountrieEntryActual->toArray());
+                $cabeceraC->id = null;
+                $cabeceraC->user_id = $idauth;
+                $cabeceraC->seat = $seat;
+                $cabeceraC->serie = 'REVERSO COMPRA';
+                $cabeceraC->seat_general = $seat_general;
+                $cabeceraC->seat_date = date('Y/M/d');
+                $cabeceraC->comment = $comment;
+                $cabeceraC->number = $seat;
+                $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
+                $cabeceraC->total_haber = $accountrieEntryActual->total_debe;
+                $cabeceraC->revised1 = 0;
+                $cabeceraC->user_revised1 = 0;
+                $cabeceraC->revised2 = 0;
+                $cabeceraC->user_revised2 = 0;
+                $cabeceraC->external_id = Str::uuid()->toString();
+                $cabeceraC->document_id = $accountrieEntryActual->document_id;
+                $cabeceraC->save();
+                $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                $cabeceraC->save();
+
+                $detalleS = AccountingEntryItems::where('accounting_entrie_id',$accountrieEntryActual->id)->get();
+                foreach ($detalleS as $itemActual) {
+                    $itemNuevo = new AccountingEntryItems();
+                    $itemNuevo->fill($itemActual->toArray());
+                    $itemNuevo->id = null;
+                    $itemNuevo->accounting_entrie_id = $cabeceraC->id;
+                    $itemNuevo->debe = $itemActual->haber;
+                    $itemNuevo->haber = $itemActual->debe;
+                    $itemNuevo->save();
+                }
+        }
+
+        $paymnetsMSI = PurchasePayment::where('purchase_id',$id)->where('multipay','NO')->get();
+        $paymnetsMNO = PurchasePayment::where('purchase_id',$id)->where('multipay','SI')->get();
+
+        if($paymnetsMSI){
+            foreach($paymnetsMSI as $pay){
+
+            }
+        }
+
 
         DB::connection('tenant')->transaction(function () use ($obj) {
             foreach ($obj->items as $it) {
                 $it->lots()->delete();
             }
-
             $obj->state_type_id = 11;
             $obj->save();
-
             foreach ($obj->items as $item) {
                 $item_warehouse_id = $item->warehouse_id ?? $obj->establishment->getCurrentWarehouseId();
                 $item->purchase->inventory_kardex()->create([
@@ -1990,7 +2049,6 @@ class PurchaseController extends Controller
                     $wr = ItemWarehouse::where([['item_id', $item->item_id], ['warehouse_id', $item_warehouse_id]])->first();
                     $wr->stock = $wr->stock - $item->quantity;
                     $wr->save();
-
                     self::voidedItemLotsGroup($item);
                 }
 

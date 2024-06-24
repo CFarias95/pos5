@@ -52,9 +52,9 @@ trait KardexTrait
         $item_warehouse->quantity = $item_warehouse->quantity + $quantity;
         $item_warehouse->save();
 
-        $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
-        $item_warehouse->stock = $item_warehouse->stock + $quantity;
-        $item_warehouse->save();
+        // $item_warehouse = ItemWarehouse::firstOrNew(['item_id' => $item_id, 'warehouse_id' => $warehouse_id]);
+        // $item_warehouse->stock = $item_warehouse->stock + $quantity;
+        // $item_warehouse->save();
 
     }
 
