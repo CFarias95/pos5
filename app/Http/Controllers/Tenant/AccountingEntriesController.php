@@ -29,6 +29,7 @@ use App\CoreFacturalo\Template;
 use App\Http\Resources\Tenant\AccountingEntriesResource;
 use App\Models\Tenant\Catalogs\CurrencyType;
 use Illuminate\Support\Facades\Log;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 use Mpdf\Config\ConfigVariables;
 use Mpdf\Config\FontVariables;
 
@@ -37,6 +38,7 @@ class AccountingEntriesController extends Controller
     use FinanceTrait;
     use OfflineTrait;
     use StorageDocument;
+    use SystemActivityTrait;
 
     protected $quotation;
     protected $account_entry;
@@ -245,10 +247,13 @@ class AccountingEntriesController extends Controller
                 $this->account_entry->items()->create($row);
             }
 
+
             $this->setFilename();
             $this->createPdf($this->account_entry, "a4", $this->account_entry->filename);
 
         });
+
+        $this->saveGeneralSystemActivity(auth()->user(), 'accounting_entry_create', 'AccountingEntries/'.$this->account_entry->id);
 
         return [
             'success' => true,
@@ -297,8 +302,10 @@ class AccountingEntriesController extends Controller
             foreach ($request['items'] as $row) {
                 $this->account_entry->items()->create($row);
             }
+
         });
 
+        $this->saveGeneralSystemActivity(auth()->user(), 'accounting_entry_update', 'AccountingEntries/'.$request->id);
         return [
             'success' => true,
             'data' => [
@@ -466,7 +473,7 @@ class AccountingEntriesController extends Controller
             $person_type_type = 'Asiento Contable';
             $person_type->items()->delete();
             $person_type->delete();
-
+            $this->saveGeneralSystemActivity(auth()->user(), 'accounting_entry_delete', 'AccountingEntries/'.$id);
             return [
                 'success' => true,
                 'message' => $person_type_type . ' eliminado con éxito'

@@ -72,6 +72,7 @@ use Illuminate\Support\Facades\Log;
 use Modules\Sale\Models\SaleOpportunity;
 use App\Traits\KardexTrait;
 use Modules\Purchase\Http\Controllers\PurchasePaymentController;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class PurchaseController extends Controller
 {
@@ -80,6 +81,7 @@ class PurchaseController extends Controller
     use StorageDocument;
     use OfflineTrait;
     use KardexTrait;
+    use SystemActivityTrait;
 
     private $id;
     private $purchase;
@@ -1790,6 +1792,7 @@ class PurchaseController extends Controller
 
                 return $doc;
             });
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_update', 'purchase/'.$request['id']);
             return [
                 'success' => true,
                 'data' => [
@@ -2077,6 +2080,7 @@ class PurchaseController extends Controller
             }
         });
 
+        $this->saveGeneralSystemActivity(auth()->user(), 'purchase_cancel', 'purchase/'.$id);
         return [
             'success' => true,
             'message' => 'Compra anulada con éxito'

@@ -87,12 +87,14 @@ use Illuminate\Support\Facades\Config;
 use Illuminate\Support\Facades\Log;
 use Swift_Mailer;
 use Modules\Inventory\Models\InventoryTransfer;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class DocumentController extends Controller
 {
     use FinanceTrait;
     use OfflineTrait;
     use StorageDocument;
+    use SystemActivityTrait;
 
     private $max_count_payment = 0;
 
@@ -1702,6 +1704,8 @@ class DocumentController extends Controller
 
         $document = $fact->getDocument();
         $response = $fact->getResponse();
+
+        $this->saveGeneralSystemActivity(auth()->user(), 'documents_update', 'document/'.$id);
 
         return [
             'success' => true,
