@@ -11,8 +11,10 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use App\Http\Requests\Tenant\VoidedRequest;
 use Carbon\Carbon;
+use Illuminate\Support\Str;
 use App\Models\Tenant\{
     AccountingEntries,
+    AccountingEntryItems,
     Document,
     Configuration,
     DocumentPayment,
@@ -43,9 +45,8 @@ class VoidedController extends Controller
 
     public function records(Request $request)
     {
-        $voided = DB::connection('tenant')
-                    ->table('voided')
-                    ->where($request->column, 'like', "%{$request->value}%")
+
+        $voided = Voided::where($request->column, 'like', "%{$request->value}%")
                     ->select(DB::raw("id, external_id, date_of_reference, date_of_issue, ticket, identifier, state_type_id, 'voided' AS 'type'"));
 
         $summaries = DB::connection('tenant')
@@ -69,6 +70,92 @@ class VoidedController extends Controller
             return $facturalo;
         });
         $document = $fact->getDocument();
+        $idauth = auth()->user()->id;
+        foreach($document->documents as $doc){
+            $accountrieEntryActual = AccountingEntries::where('document_id','P'.$doc->document_id)->first();
+            if($accountrieEntryActual){
+                $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                $ultimo = AccountingEntries::latest('id')->first();
+                if (empty($lista)) {
+                    $seat = 1;
+                } else {
+
+                    $seat = $lista->seat + 1;
+                }
+                if (empty($ultimo)) {
+                    $seat_general = 1;
+                } else {
+                    $seat_general = $ultimo->seat_general + 1;
+                }
+                $comment = 'Anular '.$accountrieEntryActual->comment;
+
+                    $cabeceraC = new AccountingEntries();
+                    $cabeceraC->fill($accountrieEntryActual->toArray());
+                    $cabeceraC->id = null;
+                    $cabeceraC->user_id = $idauth;
+                    $cabeceraC->seat = $seat;
+                    $cabeceraC->serie = 'ANULAR VENTA';
+                    $cabeceraC->seat_general = $seat_general;
+                    $cabeceraC->seat_date = date('Y-m-d');
+                    $cabeceraC->comment = $comment;
+                    $cabeceraC->number = $seat;
+                    $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
+                    $cabeceraC->total_haber = $accountrieEntryActual->total_debe;
+                    $cabeceraC->revised1 = 0;
+                    $cabeceraC->user_revised1 = 0;
+                    $cabeceraC->revised2 = 0;
+                    $cabeceraC->user_revised2 = 0;
+                    $cabeceraC->external_id = Str::uuid()->toString();
+                    $cabeceraC->document_id = $accountrieEntryActual->document_id;
+                    $cabeceraC->save();
+                    $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                    $cabeceraC->save();
+
+                    $detalleS = AccountingEntryItems::where('accounting_entrie_id',$accountrieEntryActual->id)->get();
+                    foreach ($detalleS as $itemActual) {
+                        $itemNuevo = new AccountingEntryItems();
+                        $itemNuevo->fill($itemActual->toArray());
+                        $itemNuevo->id = null;
+                        $itemNuevo->accounting_entrie_id = $cabeceraC->id;
+                        $itemNuevo->debe = $itemActual->haber;
+                        $itemNuevo->haber = $itemActual->debe;
+                        $itemNuevo->save();
+                    }
+            }
+
+            $paymnetsMSI = DocumentPayment::where('document_id',$doc->id)->where('multipay','NO')->get();
+            $paymnetsMNO = DocumentPayment::where('document_id',$doc->id)->where('multipay','SI')->orderBy('sequential', 'desc')->get();
+
+            if($paymnetsMSI){
+
+                foreach($paymnetsMSI as $pay){
+
+                    $paymentController = new DocumentPaymentController();
+                    $request = new Request();
+                    $request['id'] = $pay->id;
+                    $request['reference'] = 'Anulado';
+                    $request['date_of_payment'] = date('Y-m-d');
+                    $paymentController->generateReverse($request);
+                }
+            }
+
+            if($paymnetsMNO){
+                $secu = '';
+                foreach($paymnetsMNO as $pay){
+                    if($secu != $pay->sequential){
+                        $paymentController = new DocumentPaymentController();
+                        $request = new Request();
+                        $request['id'] = $pay->id;
+                        $request['reference'] = 'Anulado';
+                        $request['date_of_payment'] = date('Y-m-d');
+                        $paymentController->generateReverse($request);
+                        $secu = $pay->sequential;
+                    }
+                }
+            }
+        }
+
+
         return [
             'success' => true,
             'message' => "La anulación {$document->identifier} fue creado correctamente",

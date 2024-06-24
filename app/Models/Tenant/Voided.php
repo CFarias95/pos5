@@ -31,15 +31,15 @@ class Voided extends ModelTenant
         'has_ticket',
         'has_cdr',
         'soap_shipping_response',
-        
+
         'send_to_pse',
         'response_signature_pse',
         'response_send_cdr_pse',
     ];
 
     protected $casts = [
-        'date_of_issue' => 'date',
-        'date_of_reference' => 'date',
+        //'date_of_issue' => 'date',
+        //'date_of_reference' => 'date',
         'send_to_pse' => 'bool',
     ];
 
@@ -128,7 +128,7 @@ class Voided extends ModelTenant
      *
      * Usado en:
      * App\CoreFacturalo\Services\Helpers\SendDocumentPse
-     * 
+     *
      * @return string
      */
     public function getDocumentTypeForPse()
@@ -156,9 +156,9 @@ class Voided extends ModelTenant
         $this->attributes['response_signature_pse'] = (is_null($value)) ? null : json_encode($value);
     }
 
-    
+
     /**
-     * 
+     *
      * Validar si la RA se firma y envia a pse
      *
      * @param  SendDocumentPse $sendDocumentPse
