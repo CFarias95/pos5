@@ -71,6 +71,7 @@ use App\Models\Tenant\Warehouse as TenantWarehouse;
 use Illuminate\Support\Facades\Log;
 use Modules\Sale\Models\SaleOpportunity;
 use App\Traits\KardexTrait;
+use Modules\Purchase\Http\Controllers\PurchasePaymentController;
 
 class PurchaseController extends Controller
 {
@@ -1984,16 +1985,16 @@ class PurchaseController extends Controller
             } else {
                 $seat_general = $ultimo->seat_general + 1;
             }
-            $comment = 'Reverso '.$accountrieEntryActual->comment;
+            $comment = 'Anular '.$accountrieEntryActual->comment;
 
                 $cabeceraC = new AccountingEntries();
                 $cabeceraC->fill($accountrieEntryActual->toArray());
                 $cabeceraC->id = null;
                 $cabeceraC->user_id = $idauth;
                 $cabeceraC->seat = $seat;
-                $cabeceraC->serie = 'REVERSO COMPRA';
+                $cabeceraC->serie = 'ANULAR COMPRA';
                 $cabeceraC->seat_general = $seat_general;
-                $cabeceraC->seat_date = date('Y/M/d');
+                $cabeceraC->seat_date = date('Y-m-d');
                 $cabeceraC->comment = $comment;
                 $cabeceraC->number = $seat;
                 $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
@@ -2020,15 +2021,88 @@ class PurchaseController extends Controller
                 }
         }
 
+        Log::info('Seat Reverse CReated');
         $paymnetsMSI = PurchasePayment::where('purchase_id',$id)->where('multipay','NO')->get();
-        $paymnetsMNO = PurchasePayment::where('purchase_id',$id)->where('multipay','SI')->get();
+        $paymnetsMNO = PurchasePayment::where('purchase_id',$id)->where('multipay','SI')->orderBy('sequential', 'desc')->get();
 
         if($paymnetsMSI){
-            foreach($paymnetsMSI as $pay){
 
+            foreach($paymnetsMSI as $pay){
+                // $accountrieEntryActual = AccountingEntries::where('document_id','PC'.$pay->id)->first();
+                // if($accountrieEntryActual){
+                //     $lista = AccountingEntries::where('user_id', '=', $idauth)->latest('id')->first();
+                //     $ultimo = AccountingEntries::latest('id')->first();
+                //     if (empty($lista)) {
+                //         $seat = 1;
+                //     } else {
+
+                //         $seat = $lista->seat + 1;
+                //     }
+                //     if (empty($ultimo)) {
+                //         $seat_general = 1;
+                //     } else {
+                //         $seat_general = $ultimo->seat_general + 1;
+                //     }
+                //     $comment = 'Reverso '.$accountrieEntryActual->comment;
+
+                //         $cabeceraC = new AccountingEntries();
+                //         $cabeceraC->fill($accountrieEntryActual->toArray());
+                //         $cabeceraC->id = null;
+                //         $cabeceraC->user_id = $idauth;
+                //         $cabeceraC->seat = $seat;
+                //         $cabeceraC->serie = 'REVERSO COMPRA';
+                //         $cabeceraC->seat_general = $seat_general;
+                //         $cabeceraC->seat_date = date('Y/M/d');
+                //         $cabeceraC->comment = $comment;
+                //         $cabeceraC->number = $seat;
+                //         $cabeceraC->total_debe = $accountrieEntryActual->total_haber;
+                //         $cabeceraC->total_haber = $accountrieEntryActual->total_debe;
+                //         $cabeceraC->revised1 = 0;
+                //         $cabeceraC->user_revised1 = 0;
+                //         $cabeceraC->revised2 = 0;
+                //         $cabeceraC->user_revised2 = 0;
+                //         $cabeceraC->external_id = Str::uuid()->toString();
+                //         $cabeceraC->document_id = $accountrieEntryActual->document_id;
+                //         $cabeceraC->save();
+                //         $cabeceraC->filename = 'ASC-'.$cabeceraC->id.'-'. date('Ymd');
+                //         $cabeceraC->save();
+
+                //         $detalleS = AccountingEntryItems::where('accounting_entrie_id',$accountrieEntryActual->id)->get();
+                //         foreach ($detalleS as $itemActual) {
+                //             $itemNuevo = new AccountingEntryItems();
+                //             $itemNuevo->fill($itemActual->toArray());
+                //             $itemNuevo->id = null;
+                //             $itemNuevo->accounting_entrie_id = $cabeceraC->id;
+                //             $itemNuevo->debe = $itemActual->haber;
+                //             $itemNuevo->haber = $itemActual->debe;
+                //             $itemNuevo->save();
+                //         }
+                // }
+                $paymentController = new PurchasePaymentController();
+                $request = new Request();
+                $request['id'] = $pay->id;
+                $request['reference'] = 'Anulado';
+                $request['date_of_payment'] = date('Y-m-d');
+                $paymentController->generateReverse($request);
+                Log::info('Seat Reverse CReated payment simple' );
             }
         }
 
+        if($paymnetsMNO){
+            $secu = '';
+            foreach($paymnetsMNO as $pay){
+                if($secu != $pay->sequential){
+                    $paymentController = new PurchasePaymentController();
+                    $request = new Request();
+                    $request['id'] = $pay->id;
+                    $request['reference'] = 'Anulado';
+                    $request['date_of_payment'] = date('Y-m-d');
+                    $paymentController->generateReverse($request);
+
+                    $secu = $pay->sequential;
+                }
+            }
+        }
 
         DB::connection('tenant')->transaction(function () use ($obj) {
             foreach ($obj->items as $it) {
