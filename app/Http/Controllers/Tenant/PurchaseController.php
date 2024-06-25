@@ -437,7 +437,7 @@ class PurchaseController extends Controller
             ];
         }
         try {
-            $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo, $docIntern) {
+            $purchase = DB::connection('tenant')->transaction(function () use ($data, $signo, $docIntern, $alteraStock) {
                 $numero = Purchase::where('establishment_id', $data['establishment_id'])->where('series', $data['series'])->count();
                 $data['number'] = $numero + 1;
                 $doc = Purchase::create($data);
@@ -574,7 +574,7 @@ class PurchaseController extends Controller
                         }
                     }
 
-                    if (array_key_exists('item', $row)) {
+                    if (array_key_exists('item', $row) && $alteraStock) {
 
                         if (isset($row['item']['lots_enabled']) && ($row['item']['lots_enabled'] == true || $row['item']['lots_enabled'] == 'true')) {
 
@@ -1598,7 +1598,7 @@ class PurchaseController extends Controller
         try {
             $docIntern = PurchaseDocumentTypes2::where('idType', $request->document_type_intern)->get();
             $signo = ($docIntern && $docIntern[0]->sign == 0) ? -1 : 1;
-            $purchase = DB::connection('tenant')->transaction(function () use ($request, $signo) {
+            $purchase = DB::connection('tenant')->transaction(function () use ($request, $signo, $docIntern) {
 
                 $doc = Purchase::firstOrNew(['id' => $request['id']]);
                 $doc->fill($request->all());
@@ -1706,7 +1706,7 @@ class PurchaseController extends Controller
                             ->update(['purchase_unit_price' => round(floatval($row['unit_value']), 2), 'purchase_has_igv' => false]);
                         // actualizacion de precios
                     }
-                    if (array_key_exists('item', $row)) {
+                    if (array_key_exists('item', $row) && $docIntern[0]->stock) {
                         if (isset($row['item']['lots_enabled']) && $row['item']['lots_enabled'] == true) {
                             $this->processUpdateItemLotsGroup($row, $p_item);
                         }else if (array_key_exists('lots', $row)) {
