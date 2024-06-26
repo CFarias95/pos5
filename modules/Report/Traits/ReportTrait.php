@@ -57,6 +57,8 @@ trait ReportTrait
         $web_platform = FunctionController::InArray($request, 'web_platform_id',0);
 
         $time_of_issue = FunctionController::InArray($request, 'time_of_issue');
+        $item_id = FunctionController::InArray($request, 'item_id');
+        $number = FunctionController::InArray($request, 'number');
 
 
 
@@ -100,7 +102,9 @@ trait ReportTrait
             $state_type_id,
             $purchase_order,
             $guides,
-            $web_platform);
+            $web_platform,
+            $item_id,
+            $number);
            return $records;
 
     }
@@ -134,10 +138,14 @@ trait ReportTrait
         $state_type_id,
         $purchase_order,
         $guides = null,
-        $web_platform = null
+        $web_platform = null,
+        $item_id = null,
+        $number = null
     ) {
         $web_platform = (int)$web_platform;
         $document_type_id = ($document_type_id == 'null')?null:$document_type_id;
+        $item_id = (int)$item_id;
+        $number = (int)$number;
         // En unas vistas esta consultando "01" en vez 01
         $document_type_id = str_replace('"','',$document_type_id);
         if($model !== PurchaseItem::class) {
@@ -252,6 +260,30 @@ trait ReportTrait
                 });
             });
         }
+        if ($number != 0) {
+            $data = $data->where('number',$number);
+        }
+
+        if ($item_id != 0) {
+            // , $brand_id, $category_id
+            // / ** @var SaleNote $data */
+            $data = $data->wherehas('items', function ($a) use ($item_id) {
+                $a->whereHas('relation_item', function ($q) use ($item_id) {
+                    if ($item_id != 0) {
+                        $q->where('item_id', $item_id);
+                    }
+                    /*
+                    if ($brand_id) {
+                        $q->where('brand_id', $brand_id);
+                    }
+                    if ($category_id) {
+                        $q->where('category_id', $category_id);
+                    }
+                    */
+                });
+            });
+        }
+
         return $data;
 
     }
@@ -391,14 +423,16 @@ trait ReportTrait
 
         $items = Item::where('description', 'like', "%{$request->input}%")
             ->orWhere('internal_id', 'like', "%{$request->input}%")
-            ->orderBy('description')
+            ->orWhere('name', 'like', "%{$request->input}%")
+            ->orWhere('factory_code', 'like', "%{$request->input}%")
+            ->orderBy('name')
             ->get()
             ->transform(function ($row) {
                 /** @var Item $row */
                 return [
                     'id' => $row->id,
-                'description' => ($row->internal_id) ? "{$row->internal_id} - {$row->description}" :$row->description,
-                'extra'=>$row->getExtraDataFields(),
+                    'description' => $row->name .'/'. $row->description .'/'.$row->internal_id.'/'.$row->model.'/'.$row->factory_code,
+                    'extra'=>$row->getExtraDataFields(),
             ];
         });
 

@@ -164,7 +164,7 @@ class DocumentCollection extends ResourceCollection
                 'soap_type_description' => $row->soap_type->description,
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'date_of_due' => (in_array($row->document_type_id, ['01', '03']) && $row->invoice) ? $row->invoice->date_of_due->format('Y-m-d') : null,
-                'number' => $row->number_full,
+                'number' => $row->number_full ?? '',
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'customer_telephone' => $row->customer->telephone,
@@ -257,13 +257,13 @@ class DocumentCollection extends ResourceCollection
 
             $dispatches = $row->reference_guides->transform(function($row) {
                 return [
-                    'description' => $row->number_full,
+                    'description' => $row->number_full ?? '',
                 ];
             });
 
             if($row->dispatch){
                 $dispatches = $dispatches->push([
-                    'description' => $row->dispatch->number_full,
+                    'description' => $row->dispatch->number_full ?? '',
                 ]);
             }
         }

@@ -8,6 +8,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Document;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\SaleNote;
+use App\Models\Tenant\StateType;
 use Barryvdh\DomPDF\Facade as PDF;
 use Carbon\Carbon;
 use Illuminate\Http\Request;
@@ -45,8 +46,9 @@ class ReportDocumentController extends Controller
             ];
         });
         $users = $this->getUsers();
+        $state_types = StateType::get();
 
-        return compact('document_types','establishments','persons', 'sellers', 'users');
+        return compact('state_types','document_types','establishments','persons', 'sellers', 'users');
     }
 
 
@@ -57,6 +59,7 @@ class ReportDocumentController extends Controller
     public function records(Request $request)
     {
         Log::info("Generando reporte ReportDocumentController");
+
         $documentTypeId = "01";
         if ($request->has('document_type_id')) {
             $documentTypeId = str_replace('"', '', $request->document_type_id);

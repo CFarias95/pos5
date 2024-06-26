@@ -36,7 +36,7 @@ class DocumentCollection extends ResourceCollection
                 'date_of_issue' => $row->date_of_issue->format('Y-m-d'),
                 'time_of_issue' => $row->time_of_issue,
                 'date_of_due' => ($row->invoice && $row->invoice->date_of_due) ? $row->invoice->date_of_due->format('Y-m-d') : null,
-                'number' => $row->number_full,
+                'number' => $row->number_full ?? '',
                 'customer_name' => $row->customer->name,
                 'customer_number' => $row->customer->number,
                 'currency_type_id' => $row->currency_type_id,
@@ -72,7 +72,7 @@ class DocumentCollection extends ResourceCollection
                         'id' => $row->id,
                         'document_id' => $row->document_id,
                         'note_type_description' => ($row->note_type == 'credit') ? 'NC':'ND',
-                        'description' => $row->document->number_full,
+                        'description' => $row->document->number_full ?? '',
                     ];
                 }) : null,
                 'quotation_number_full' => ($row->quotation) ? $row->quotation->number_full : '',

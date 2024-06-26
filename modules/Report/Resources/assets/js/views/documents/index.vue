@@ -43,18 +43,18 @@
                             <th>Total Gratuito</th>
                             <!-- JOINSOFTWARE -->
                             <!-- Total Gravado -> Subtotal 12% -->
-                            <th>Subtotal 12%</th>
+                            <th>Subtotal 15%</th>
                             <!-- JOINSOFTWARE -->
                             <!-- Total IGV -> Total IVA -->
                             <th class="">Total IVA</th>
                             <th class="" v-if="columns.total_isc.visible">Total ISC</th>
                             <th class="">Total</th>
-                            
+
                             <template v-if="configuration.enabled_sales_agents">
                                 <th>Agente</th>
                                 <th>Datos de referencia</th>
                             </template>
-                            
+
                         </tr>
                         <tr slot-scope="{ index, row }">
                             <td>{{ index }}</td>

@@ -234,13 +234,17 @@
             ></el-input>
           </div>
           <div class="col-lg-3 col-md-3" v-if="resource !== 'reports/state-account'">
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label class="control-label">Numero de Guía</label>
               <el-input v-model="form.guides" clearable></el-input>
+            </div> -->
+            <div class="form-group">
+              <label class="control-label">Número documento</label>
+              <el-input v-model="form.number" clearable></el-input>
             </div>
           </div>
           <div class="col-lg-3 col-md-3" v-if="resource !== 'reports/state-account'">
-            <div class="form-group">
+            <!-- <div class="form-group">
               <label class="control-label">Plataforma</label>
               <el-select v-model="form.web_platform_id" clearable>
                 <el-option
@@ -250,7 +254,7 @@
                   :value="option.id"
                 ></el-option>
               </el-select>
-            </div>
+            </div> -->
           </div>
 
           <div
@@ -283,7 +287,7 @@
                 <el-option
                   v-for="option in state_types"
                   :key="option.id"
-                  :label="option.name"
+                  :label="option.description"
                   :value="option.id"
                 ></el-option>
               </el-select>
@@ -699,6 +703,7 @@ export default {
         user_id: [],
         item_id: null,
         apply_conversion_to_pen: this.applyConversionToPen,
+        number : null
       };
     },
     initTotals() {
