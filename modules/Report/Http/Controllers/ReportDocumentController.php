@@ -155,7 +155,7 @@ class ReportDocumentController extends Controller
 
         $classType = $documentType->getCurrentRelatiomClass();
         $records = $this->getRecords($request->all(), $classType);
-        $records= $records->get();
+        //$records= $records->get();
         $filters = $request->all();
 
         //get categories

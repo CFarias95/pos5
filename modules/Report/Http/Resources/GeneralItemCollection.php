@@ -202,7 +202,7 @@ class GeneralItemCollection extends ResourceCollection
         if ($row->document) {
             /** @var \App\Models\Tenant\Document $document */
             $document = $row->document;
-            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['date_of_issue'] = $document->date_of_issue->format('d-m-Y');
             $data['customer_name'] = $document->customer->name;
             $data['customer_number'] = $document->customer->number;
             $data['series'] = $document->series;
@@ -216,7 +216,7 @@ class GeneralItemCollection extends ResourceCollection
         } else if ($row->purchase) {
             /** @var \App\Models\Tenant\Purchase $document */
             $document = $row->purchase;
-            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['date_of_issue'] = $document->date_of_issue->format('d-m-Y');
             $data['customer_name'] = $document->supplier->name;
             $data['customer_number'] = $document->supplier->number;
             $data['series'] = $document->series;
@@ -228,7 +228,7 @@ class GeneralItemCollection extends ResourceCollection
         } else if ($row->sale_note) {
             /** @var \App\Models\Tenant\SaleNote $document */
             $document = $row->sale_note;
-            $data['date_of_issue'] = $document->date_of_issue->format('Y-m-d');
+            $data['date_of_issue'] = $document->date_of_issue->format('d-m-Y');
             $data['customer_name'] = $document->customer->name;
             $data['customer_number'] = $document->customer->number;
             $data['series'] = $document->series;

@@ -127,8 +127,6 @@
                     <th>Total Exonerado</th>
                     <th>Subtotal 0%</th>
                     <th>Total Gratuito</th>
-                    <!-- JOINSOFTWARE -->
-                    <!-- Total Gravado -> Subtotal 12% -->
                     <th>Subtotal 12%</th>
                     <th>Descuento total</th>
                     <!-- JOINSOFTWARE -->
@@ -362,7 +360,7 @@
 
                         @endphp
                         <td>{{$quality_item}}</td>
-                        
+
                         @if ($enabled_sales_agents)
                             <td>{{optional($value->agent)->search_description}}</td>
                             <td>{{$value->reference_data}}</td>

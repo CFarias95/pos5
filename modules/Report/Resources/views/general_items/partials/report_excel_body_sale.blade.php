@@ -122,7 +122,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
 ?>
 <tr>
     <td class="celda">{{ $loop->iteration }}</td>
-    <td class="celda">{{ $document->date_of_issue->format('Y-m-d') }}</td>
+    <td class="celda">{{ $document->date_of_issue->format('d-m-Y') }}</td>
     <td class="celda">{{-- {{ $user}} --}}
         @if($type==='sale')
             {{ $document->seller_id == null ? $document->user->name : $document->seller->name }}
@@ -188,7 +188,7 @@ $isSaleNote = ($document_type_id != '80' && $type == 'sale') ? true : false;
         {{ $document->reference_data }}
     </td>
     @endif
-    <td class="celda">{{ $pack_prefix }}{{ $item->description }}</td>
+    <td class="celda">{{ $pack_prefix }} {{ $item->name }} / {{ $item->description }}</td>
     <td class="celda">{{ $qty }}</td>
     <td>
         @foreach ($payments as $payment)
