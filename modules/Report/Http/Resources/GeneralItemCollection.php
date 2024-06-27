@@ -61,11 +61,12 @@ class GeneralItemCollection extends ResourceCollection
             if(get_class($row)== \App\Models\Tenant\Document::class){
                 $additional_information=$resource['additional_information']?$resource['additional_information'][0] : '';
             }
+
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
                 'internal_id' => $row->relation_item->internal_id,
-                'description' => $row->item->name ?? '' .'/'.$row->item->description,
+                'description' => ($row->item->name ?? '') .'/'. $row->item->description,
                 'currency_type_id' => $resource['currency_type_id'],
                 'lot_has_sale' => self::getLotsHasSale($row),
                 'date_of_issue' => $resource['date_of_issue'],

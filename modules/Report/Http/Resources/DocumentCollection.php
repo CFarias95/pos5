@@ -83,7 +83,7 @@ class DocumentCollection extends ResourceCollection
                     return [
                         'key' => $key + 1,
                         'id' => $row->id,
-                        'description' => $row->item->name ?? ''.'/'.$row->item->description,
+                        'description' => ($row->item->name ?? '').'/'.$row->item->description,
                         'quantity' => round($row->quantity,2)
                     ];
                 }),
