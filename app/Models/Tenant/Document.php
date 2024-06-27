@@ -270,6 +270,7 @@ class Document extends ModelTenant
         'force_send_by_summary',
         'dispatch_ticket_pdf',
         'aproved',
+        'clave_SRI',
     ];
 
     protected $casts = [

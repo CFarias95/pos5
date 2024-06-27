@@ -687,7 +687,7 @@ class UnpaidController extends Controller
                 $row['payment_destination_id'] = $request->payment_destination_id;
                 $this->createGlobalPayment($payment, $row);
 
-                $document = Document::find($value['document_id']);
+                $document = Document::find(intval($value['document_id']));
                 $documentsSequentials .= $document->series.str_pad($document->number,'9','0',STR_PAD_LEFT).' ';
 
                 $documentIds .= 'CF'.$payment->id.';';
