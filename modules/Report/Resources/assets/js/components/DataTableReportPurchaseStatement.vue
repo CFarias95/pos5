@@ -9,7 +9,8 @@
                     <div class="col-md-3" v-if="show_periodo">
                         <label class="control-label">Periodo</label>
                         <el-select v-model="form.period" @change="changePeriod">
-                            <el-option v-for=" row in dates_array" :key="row.key" :label="row.name" :value="row.value"/>
+                            <el-option v-for=" row in dates_array" :key="row.key" :label="row.name"
+                                :value="row.value" />
                         </el-select>
                     </div>
                     <template v-if="form.period === 'month' || form.period === 'between_months'">
@@ -29,8 +30,8 @@
                     </template>
                     <template v-if="form.period === 'date' || form.period === 'between_dates'">
                         <div class="col-md-3" v-if="show_periodo">
-                            <label  v-if="show_agrupado" class="control-label">Fecha Corte</label>
-                            <label  v-else class="control-label">Fecha del</label>
+                            <label v-if="show_agrupado" class="control-label">Fecha Corte</label>
+                            <label v-else class="control-label">Fecha del</label>
                             <el-date-picker v-model="form.date_start" :clearable="false" format="dd/MM/yyyy" type="date"
                                 value-format="yyyy-MM-dd" @change="changeDisabledDates"></el-date-picker>
                         </div>
@@ -38,52 +39,59 @@
                     <template v-if="form.period === 'between_dates'">
                         <div class="col-md-3" v-if="show_periodo">
                             <label class="control-label">Fecha al</label>
-                            <el-date-picker v-model="form.date_end" :clearable="false" :picker-options="pickerOptionsDates"
-                                format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                            <el-date-picker v-model="form.date_end" :clearable="false"
+                                :picker-options="pickerOptionsDates" format="dd/MM/yyyy" type="date"
+                                value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
                     </template>
 
                     <div class="col-md-3" v-if="show_suppliers">
                         <label class="control-label">Proveedor</label>
                         <el-select v-model="form.supplier" filterable clearable>
-                            <el-option v-for="supplier in suppliers" :key="supplier.id" :label="supplier.name" :value="supplier.id"></el-option>
+                            <el-option v-for="supplier in suppliers" :key="supplier.id" :label="supplier.name"
+                                :value="supplier.id"></el-option>
                         </el-select>
                     </div>
 
                     <div class="col-md-3" v-if="show_imports">
                         <label class="control-label">Importación</label>
                         <el-select v-model="form.import" filterable clearable>
-                            <el-option v-for="row in imports" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                            <el-option v-for="row in imports" :key="row.id" :label="row.name"
+                                :value="row.id"></el-option>
                         </el-select>
                     </div>
 
                     <div class="col-md-3" v-if="show_fini">
                         <label class="control-label">Fecha Inicio</label>
-                        <el-date-picker v-model="form.fini" format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                        <el-date-picker v-model="form.fini" format="dd/MM/yyyy" type="date"
+                            value-format="yyyy-MM-dd"></el-date-picker>
                     </div>
 
                     <div class="col-md-3" v-if="show_ffin">
                         <label class="control-label">Fecha Fin</label>
-                        <el-date-picker v-model="form.ffin" format="dd/MM/yyyy" type="date" value-format="yyyy-MM-dd"></el-date-picker>
+                        <el-date-picker v-model="form.ffin" format="dd/MM/yyyy" type="date"
+                            value-format="yyyy-MM-dd"></el-date-picker>
                     </div>
 
                     <div class="col-md-3" v-if="show_codvendedor">
                         <label class="control-label">Código Vendedor</label>
                         <el-select v-model="form.codvendedor" filterable clearable>
-                            <el-option v-for="row in vendedores" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                            <el-option v-for="row in vendedores" :key="row.id" :label="row.name"
+                                :value="row.id"></el-option>
                         </el-select>
                     </div>
 
                     <div class="col-md-3" v-if="show_codcliente">
                         <label class="control-label">Código Cliente</label>
                         <el-select v-model="form.codcliente" filterable clearable>
-                            <el-option v-for="row in clientes" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                            <el-option v-for="row in clientes" :key="row.id" :label="row.name"
+                                :value="row.id"></el-option>
                         </el-select>
                     </div>
 
                     <div class="col-md-3" v-if="show_paid">
                         <label class="control-label">Incluir pagados?</label>
-                        <el-switch v-model="form.paid" >
+                        <el-switch v-model="form.paid">
                         </el-switch>
                     </div>
                     <div class="col-md-3" v-if="show_toPay">
@@ -95,7 +103,8 @@
                     <div class="col-md-3" v-if="show_codproveedor">
                         <label class="control-label">Código Proveedor</label>
                         <el-select v-model="form.codproveedor" filterable clearable>
-                            <el-option v-for="row in suppliers" :key="row.id" :label="row.name" :value="row.id"></el-option>
+                            <el-option v-for="row in suppliers" :key="row.id" :label="row.name"
+                                :value="row.id"></el-option>
                         </el-select>
                     </div>
                     <div class="col-md-3" v-if="show_codproveedor">
@@ -125,12 +134,21 @@
                             @click.prevent="clickDownload('excel')">Descargar excel
                         </el-button>
                     </div>
+                    <div class="col-md-2 mt-5 text-right">
+                        <el-badge :value="getCurrentBalance" class="item">
+                            <span size="small">Saldo pendiente</span>
+                        </el-badge>
+                    </div>
+                    <div class="col-md-2 mt-5 text-right">
+                        <el-badge :value="getCurrentBalancePaid" class="item" type="warning">
+                            <span size="small">Saldo pagado</span>
+                        </el-badge>
+                    </div>
 
                 </div>
                 <div class="row mt-1 mb-4">
                 </div>
             </div>
-
             <div class="col-md-12">
                 <div class="table-responsive">
                     <table class="table" v-if="this.records.length > 0">
@@ -144,7 +162,8 @@
                         </tbody>
                     </table>
                     <div v-else>
-                        <el-alert title="No Data" description="No se encontraron registros para mostrar" type="error" effect="dark" :closable="false" show-icon center />
+                        <el-alert title="No Data" description="No se encontraron registros para mostrar" type="error"
+                            effect="dark" :closable="false" show-icon center />
                     </div>
                     <div>
                         <el-pagination :current-page.sync="pagination.current_page" :page-size="pagination.per_page"
@@ -210,7 +229,7 @@ export default {
                 codcliente: 0,
                 codproveedor: 0,
                 codvendedor: 0,
-                tipoproveedor : 'Todos',
+                tipoproveedor: 'Todos',
                 agrupado: 0,
                 ffin: null,
                 fini: null,
@@ -231,40 +250,40 @@ export default {
             items: [],
             all_keys: [],
             loading_search_items: false,
-            imports : [],
-            suppliers : [],
+            imports: [],
+            suppliers: [],
             vendedores: [],
             clientes: [],
             //proveedores: [],
-            show_suppliers : true,
-            show_imports : true,
+            show_suppliers: true,
+            show_imports: true,
             show_agrupado: true,
             show_fini: true,
             show_ffin: true,
             show_codvendedor: true,
             show_codcliente: true,
             show_codproveedor: true,
-            show_paid : false,
+            show_paid: false,
             show_toPay: false,
             show_periodo: true,
-            dates_array : [
+            dates_array: [
                 {
-                    'key':'between_months',
+                    'key': 'between_months',
                     'name': 'Entre meses',
                     'value': 'between_months'
                 },
                 {
-                    'key':'month',
+                    'key': 'month',
                     'name': 'Por mes',
                     'value': 'month'
                 },
                 {
-                    'key':'date',
+                    'key': 'date',
                     'name': 'Por fecha',
                     'value': 'date'
                 },
                 {
-                    'key':'between_dates',
+                    'key': 'between_dates',
                     'name': 'Entre fechas',
                     'value': 'between_dates'
                 },
@@ -275,7 +294,17 @@ export default {
         cantChoiseUserWithUserType() {
             if (this.form.user_type && this.form.user_type.length > 1) return false;
             return true;
-        }
+        },
+        getCurrentBalance() {
+            return _.sumBy(this.records, function (item) {
+                return parseFloat(item.pendiente);
+            }).toFixed(2);
+        },
+        getCurrentBalancePaid() {
+            return _.sumBy(this.records, function (item) {
+                return parseFloat(item.pagado);
+            }).toFixed(2);
+        },
     },
     created() {
         this.initForm()
@@ -286,7 +315,7 @@ export default {
     },
     async mounted() {
 
-        if(this.resource == 'reports/tocollect'){
+        if (this.resource == 'reports/tocollect') {
             this.show_imports = false
             this.show_suppliers = false
             this.show_agrupado = true
@@ -297,13 +326,13 @@ export default {
             this.show_codproveedor = false
             this.dates_array = [
                 {
-                    'key':'date',
+                    'key': 'date',
                     'name': 'Por fecha',
                     'value': 'date'
                 }
             ]
             this.form.period = 'date'
-        }else if(this.resource == 'reports/payable'){
+        } else if (this.resource == 'reports/payable') {
             this.show_imports = false
             this.show_suppliers = false
             this.show_agrupado = false
@@ -314,13 +343,13 @@ export default {
             this.show_codproveedor = true
             this.dates_array = [
                 {
-                    'key':'date',
+                    'key': 'date',
                     'name': 'Por fecha',
                     'value': 'date'
                 }
             ]
             this.form.period = 'date'
-        }else if( this.resource == 'reports/receivable' ){
+        } else if (this.resource == 'reports/receivable') {
             this.show_imports = false
             this.show_suppliers = false
             this.show_agrupado = false
@@ -330,22 +359,22 @@ export default {
             this.show_codcliente = true
             this.show_codproveedor = false
             this.show_paid = true,
-            this.show_toPay= true,
-            this.dates_array = [
-                {
-                    'key':'date',
-                    'name': 'Por Fecha Vencimiento',
-                    'value': 'date'
-                },
-                {
-                    'key':'between_dates',
-                    'name': 'Entre Fechas',
-                    'value': 'between_dates'
-                },
+                this.show_toPay = true,
+                this.dates_array = [
+                    {
+                        'key': 'date',
+                        'name': 'Por Fecha Vencimiento',
+                        'value': 'date'
+                    },
+                    {
+                        'key': 'between_dates',
+                        'name': 'Entre Fechas',
+                        'value': 'between_dates'
+                    },
 
-            ]
+                ]
             this.form.period = 'date'
-        }else if(this.resource == 'reports/topay'){
+        } else if (this.resource == 'reports/topay') {
             this.show_imports = false
             this.show_suppliers = false
             this.show_agrupado = true
@@ -356,13 +385,13 @@ export default {
             this.show_codproveedor = true
             this.dates_array = [
                 {
-                    'key':'date',
+                    'key': 'date',
                     'name': 'Por fecha',
                     'value': 'date'
                 }
             ]
             this.form.period = 'date'
-        }else if(this.resource == 'reports/retentions'){
+        } else if (this.resource == 'reports/retentions') {
             this.show_imports = true
             this.show_suppliers = true
             this.show_agrupado = false
@@ -410,8 +439,8 @@ export default {
                 date_end: moment().format('YYYY-MM-DD'),
                 month_start: moment().format('YYYY-MM'),
                 month_end: moment().format('YYYY-MM'),
-                import : 0,
-                supplier : 0,
+                import: 0,
+                supplier: 0,
                 ffin: '2050-01-01',
                 fini: '2000-01-01',
                 agrupado: 0,
@@ -419,7 +448,7 @@ export default {
                 codproveedor: 0,
                 tipoproveedor: 'Todos',
                 codcliente: 0,
-                to_pay : 0,
+                to_pay: 0,
                 paid: false,
             }
         },
@@ -434,7 +463,7 @@ export default {
             this.loading_submit = await false
 
         },
-        async getFilters(){
+        async getFilters() {
 
             await this.$http.get(`/${this.resource}/tables`).then((response) => {
                 this.suppliers = response.data.suppliers
@@ -452,7 +481,7 @@ export default {
                 delete dataR.data.data
                 this.pagination = dataR
                 this.pagination.per_page = parseInt(response.data.per_page)
-                if(this.records.length > 0){
+                if (this.records.length > 0) {
 
                     var keys = Object.keys(this.records[0]);
                     this.all_keys = keys
