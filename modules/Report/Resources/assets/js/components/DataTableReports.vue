@@ -647,10 +647,10 @@ export default {
             this.totals.acum_total_usd += parseFloat(-row.total);
             this.totals.acum_total_taxed_usd += parseFloat(-row.total_taxed);
             this.totals.acum_total_igv_usd += parseFloat(-row.total_igv);
-          } else if (signal != "07" && state == "11") {
-            this.totals.acum_total_usd += 0;
-            this.totals.acum_total_taxed_usd += 0;
-            this.totals.acum_total_igv_usd += 0;
+        //   } else if (signal != "07" && state == "11") {
+        //     this.totals.acum_total_usd += 0;
+        //     this.totals.acum_total_taxed_usd += 0;
+        //     this.totals.acum_total_igv_usd += 0;
           } else {
             this.totals.acum_total_usd += parseFloat(row.total);
             this.totals.acum_total_taxed_usd += parseFloat(row.total_taxed);

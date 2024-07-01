@@ -6,6 +6,7 @@ use App\Models\Tenant\Item;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchaseItem;
 use Illuminate\Http\Resources\Json\ResourceCollection;
+use Modules\Item\Models\Category;
 
 class GeneralItemCollection extends ResourceCollection
 {
@@ -62,6 +63,8 @@ class GeneralItemCollection extends ResourceCollection
                 $additional_information=$resource['additional_information']?$resource['additional_information'][0] : '';
             }
 
+            $category = $row->relation_item->category_id_array ? Category::find($row->relation_item->category_id_array[0])->name : '';
+
             return [
                 'id' => $row->id,
                 'unit_type_id' => $row->item->unit_type_id,
@@ -74,6 +77,7 @@ class GeneralItemCollection extends ResourceCollection
                 'purchase_order' => $resource['purchase_order'],
                 'customer_number' => $resource['customer_number'],
                 'brand' => $row->relation_item->brand->name,
+                'category' => $category,
                 'series' => $resource['series'],
                 'alone_number' => $resource['alone_number'],
                 'quantity' => number_format($row->quantity, 2),
@@ -107,7 +111,7 @@ class GeneralItemCollection extends ResourceCollection
             $resource = self::getDocument($record);
         }
         //$purchase_unit_price = self::getIndividualPurchaseUnitPrice($record,$resource,$purchase_item) * $record->quantity;
-        $purchase_unit_price = (Item::find($record->item_id))->getPurchaseUnitPrice() * $record->quantity;
+        $purchase_unit_price = (Item::find($record->item_id))->purchase_mean_cost * $record->quantity;
         if ($record->relation_item->is_set) {
             $purchase_unit_price = 0;
             foreach ($record->relation_item->sets as $item_set) {

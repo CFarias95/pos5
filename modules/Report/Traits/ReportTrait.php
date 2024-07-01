@@ -629,7 +629,13 @@ trait ReportTrait
      */
     public function getCategories()
     {
-        return Category::orderBy('name')
+        return Category::whereNull('parent_id')->orderBy('name')
+            ->get();
+    }
+
+    public function getFamilies()
+    {
+        return Category::whereNotNull('parent_id')->whereNull('parent_3_id')->whereNull('parent_2_id')->orderBy('parent_id')
             ->get();
     }
 

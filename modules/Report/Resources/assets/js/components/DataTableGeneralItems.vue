@@ -148,7 +148,8 @@
                             <div class="form-group">
                                 <label class="control-label">Categoría</label>
                                 <el-select v-model="form.category_id" filterable  popper-class="el-select-customers"  clearable
-                                    placeholder="Nombre de la categoría">
+                                    @change="changeCategorie"
+                                placeholder="Nombre de la categoría">
                                     <el-option v-for="option in categories" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
                             </div>
@@ -156,9 +157,9 @@
 
                         <div class="col-md-2">
                             <div class="form-group">
-                                <label class="control-label">Plataforma</label>
-                                <el-select v-model="form.web_platform_id" clearable>
-                                    <el-option v-for="option in web_platforms" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                                <label class="control-label">Família</label>
+                                <el-select v-model="form.family_id" clearable>
+                                    <el-option v-for="option in families" :key="option.id" :value="option.id" :label="option.name"></el-option>
                                 </el-select>
                             </div>
                         </div>
@@ -255,6 +256,8 @@
                 loading_search_items:false,
                 brands: [],
                 categories: [],
+                all_families : [],
+                families : [],
                 users: [],
                 total: 0
             }
@@ -282,6 +285,7 @@
                     this.web_platforms = response.data.web_platforms
                     this.brands = response.data.brands
                     this.categories = response.data.categories
+                    this.all_families = response.data.families
                     this.users = response.data.users;
                 });
 
@@ -387,6 +391,7 @@
                     category_id: '',
                     user_type: '',
                     user_id: '',
+                    family_id : null,
                     apply_conversion_to_pen: this.applyConversionToPen
                 }
 
@@ -460,6 +465,11 @@
                 }
                 // this.loadAll();
             },
+            changeCategorie(){
+                console.log('familie id',this.form.category_id)
+                console.log('families',this.all_families)
+                this.families = this.all_families.filter(x=> (x.parent_id == this.form.category_id))
+            }
         }
     }
 </script>

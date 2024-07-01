@@ -100,39 +100,39 @@
 
                             <td v-if="columns.total_charge.visible">
                                 {{
-                                    (row.document_type_id == '07') ? ((row.total_charge == 0) ? '0.00' : '-' + row.total_charge) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_charge)
+                                    (row.document_type_id == '07') ? ((row.total_charge == 0) ? '0.00' : '-' + row.total_charge) : ((row.document_type_id != '07' && ( row.state_type_id == '09')) ? '0.00' : row.total_charge)
                                 }}
                             </td>
 
 
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total_exonerated == 0) ? '0.00' : '-' + row.total_exonerated) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_exonerated)
+                                    (row.document_type_id == '07') ? ((row.total_exonerated == 0) ? '0.00' : '-' + row.total_exonerated) : ((row.document_type_id != '07' && ( row.state_type_id == '09')) ? '0.00' : row.total_exonerated)
                                 }}
                             </td>
 
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total_unaffected == 0) ? '0.00' : '-' + row.total_unaffected) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_unaffected)
+                                    (row.document_type_id == '07') ? ((row.total_unaffected == 0) ? '0.00' : '-' + row.total_unaffected) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total_unaffected)
                                 }}
                             </td>
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total_free == 0) ? '0.00' : '-' + row.total_free) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_free)
+                                    (row.document_type_id == '07') ? ((row.total_free == 0) ? '0.00' : '-' + row.total_free) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total_free)
                                 }}
                             </td>
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total_taxed == 0) ? '0.00' : '-' + row.total_taxed) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_taxed)
+                                    (row.document_type_id == '07') ? ((row.total_taxed == 0) ? '0.00' : '-' + row.total_taxed) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total_taxed)
                                 }}
                             </td>
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total_igv == 0) ? '0.00' : '-' + row.total_igv) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_igv)
+                                    (row.document_type_id == '07') ? ((row.total_igv == 0) ? '0.00' : '-' + row.total_igv) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total_igv)
                                 }}
                             </td>
                             <td v-if="columns.total_isc.visible">
                                 {{
-                                    (row.document_type_id == '07') ? ((row.total_isc == 0) ? '0.00' : '-' + row.total_isc) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total_isc)
+                                    (row.document_type_id == '07') ? ((row.total_isc == 0) ? '0.00' : '-' + row.total_isc) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total_isc)
                                 }}
                             </td>
                             <td>{{
-                                    (row.document_type_id == '07') ? ((row.total == 0) ? '0.00' : '-' + row.total) : ((row.document_type_id != '07' && (row.state_type_id == '11' || row.state_type_id == '09')) ? '0.00' : row.total)
+                                    (row.document_type_id == '07') ? ((row.total == 0) ? '0.00' : '-' + row.total) : ((row.document_type_id != '07' && (row.state_type_id == '09')) ? '0.00' : row.total)
                                 }}
                             </td>
 

@@ -35,9 +35,10 @@ class ReportGeneralItemController extends Controller
         $web_platforms = $this->getWebPlatforms();
         $document_types = DocumentType::whereIn('id', ['01', '03', '07', '80'])->get();
         $categories = $this->getCategories();
+        $families = $this->getFamilies();
         $users = $this->getUsers();
 
-        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms', 'brands', 'categories', 'users');
+        return compact('document_types', 'suppliers', 'customers', 'items','web_platforms', 'brands', 'categories', 'families', 'users');
     }
 
 
@@ -72,12 +73,13 @@ class ReportGeneralItemController extends Controller
         $item_id = $request['item_id'];
         $brand_id = $request['brand_id'];
         $category_id = $request['category_id'];
+        $family_id = $request['family_id'] ?? null;
 
         $user_id = $request['user_id'];
         $user_type = $request['user_type'] != null ? $request['user_type'] : 'VENDEDOR';
         $web_platform_id = $request['web_platform_id'];
 
-        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type);
+        $records = $this->dataItems($d_start, $d_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $family_id, $user_id, $user_type);
 
         return $records;
 
@@ -100,7 +102,7 @@ class ReportGeneralItemController extends Controller
      *
      * @return \App\Models\Tenant\SaleNoteItem|\Illuminate\Database\Eloquent\Builder|\Illuminate\Database\Query\Builder
      */
-    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $user_id, $user_type)
+    private function dataItems($date_start, $date_end, $document_type_id, $data_type, $person_id, $type_person, $item_id, $web_platform_id, $brand_id, $category_id, $family_id, $user_id, $user_type)
     {
         /* columna state_type_id */
         $documents_excluded = [
@@ -165,7 +167,7 @@ class ReportGeneralItemController extends Controller
         }
 
         if($web_platform_id || $brand_id || $category_id){
-            $data = $data->whereHas('relation_item', function($q) use($web_platform_id, $brand_id, $category_id){
+            $data = $data->whereHas('relation_item', function($q) use($web_platform_id, $brand_id, $category_id, $family_id){
 				if ($web_platform_id) {
 					$q->where('web_platform_id', $web_platform_id);
                 }
@@ -173,7 +175,12 @@ class ReportGeneralItemController extends Controller
 					$q->where('brand_id', $brand_id);
 				}
                 if ($category_id) {
-					$q->where('category_id', $category_id);
+                    if($family_id){
+                        $q->where('category_id','category_id_array','%['.$category_id.','.$family_id.'%');
+                    }else{
+                        $q->where('category_id','category_id_array','%['.$category_id.'%');
+                    }
+
 				}
             });
         }

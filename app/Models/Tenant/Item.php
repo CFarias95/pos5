@@ -226,6 +226,7 @@ class Item extends ModelTenant
         'sale_cost_cta' => 'integer',
         'purchase_cta' => 'integer',
         'item_for' => 'integer',
+        'purchase_mean_cost' => 'float',
 
     ];
 
