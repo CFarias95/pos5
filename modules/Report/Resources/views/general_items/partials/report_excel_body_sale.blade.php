@@ -4,6 +4,7 @@
     use App\Models\Tenant\ItemSet;
     use App\CoreFacturalo\Helpers\Template\TemplateHelper;
     use App\Models\Tenant\SaleNote;
+    use Modules\Item\Models\Category;
 
     $data = \Modules\Report\Http\Resources\GeneralItemCollection::getDocument($value);
     if ($document_type_id == '80') {
@@ -93,7 +94,7 @@ if (!isset($qty)) {
     if ($item_web_platform) {
         $web_platform = $item_web_platform->name;
     }
-    $category = $item->category_id_array ? Category::find($item->category_id_array[0])->name : '';
+    $category = $item->category_id_array ? \App\Models\Tenant\Category::find($item->category_id_array[0])->name : '';
     $brand = $item->brand->name;
 }
 // Se debe pasar al modelo

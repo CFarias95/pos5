@@ -14,6 +14,7 @@ use App\Models\Tenant\DocumentItem;
 use App\Models\Tenant\SaleNoteItem;
 use App\Models\Tenant\Company;
 use Carbon\Carbon;
+use Modules\Item\Models\Category;
 use Modules\Report\Http\Resources\GeneralItemCollection;
 use Modules\Report\Traits\ReportTrait;
 
