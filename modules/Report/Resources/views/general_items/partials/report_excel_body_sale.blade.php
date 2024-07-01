@@ -54,7 +54,7 @@ if (!isset($qty)) {
     $total_isc = $value->total_isc;
     $system_isc_type_id = $value->system_isc_type_id;
     $total_plastic_bag_taxes = $value->total_plastic_bag_taxes;
-    $category = $relation_item->category->name;
+    $category = $relation_item->category_id_array ? Category::find($relation_item->category_id_array[0])->name : '';
     $brand = $relation_item->brand->name;
 
 
@@ -93,7 +93,7 @@ if (!isset($qty)) {
     if ($item_web_platform) {
         $web_platform = $item_web_platform->name;
     }
-    $category = $item->category->name;
+    $category = $item->category_id_array ? Category::find($item->category_id_array[0])->name : '';
     $brand = $item->brand->name;
 }
 // Se debe pasar al modelo

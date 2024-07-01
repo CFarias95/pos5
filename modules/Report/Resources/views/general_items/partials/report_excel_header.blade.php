@@ -60,7 +60,7 @@
 <th> IMPUESTO BOLSAS</th>
 <th> TOTAL</th>
 @if($type == 'sale')
-    <th> TOTAL COMPRA</th>
+    <th> COSTO</th>
     <th> GANANCIA</th>
     <th> MARCA</th>
     <th> CATEGORÍA</th>

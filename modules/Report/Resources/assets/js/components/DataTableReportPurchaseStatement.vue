@@ -81,6 +81,17 @@
                         </el-select>
                     </div>
 
+                    <div class="col-md-3" v-if="show_paid">
+                        <label class="control-label">Incluir pagados?</label>
+                        <el-switch v-model="form.paid" >
+                        </el-switch>
+                    </div>
+                    <div class="col-md-3" v-if="show_toPay">
+                        <label class="control-label">Valor pendiente</label>
+                        <el-input type="number" v-model="form.to_pay"></el-input>
+                        </el-switch>
+                    </div>
+
                     <div class="col-md-3" v-if="show_codproveedor">
                         <label class="control-label">Código Proveedor</label>
                         <el-select v-model="form.codproveedor" filterable clearable>
@@ -113,7 +124,6 @@
                         <el-button v-if="this.records.length > 0" icon="el-icon-excel" type="success"
                             @click.prevent="clickDownload('excel')">Descargar excel
                         </el-button>
-
                     </div>
 
                 </div>
@@ -234,6 +244,8 @@ export default {
             show_codvendedor: true,
             show_codcliente: true,
             show_codproveedor: true,
+            show_paid : false,
+            show_toPay: false,
             show_periodo: true,
             dates_array : [
                 {
@@ -317,6 +329,8 @@ export default {
             this.show_codvendedor = true
             this.show_codcliente = true
             this.show_codproveedor = false
+            this.show_paid = true,
+            this.show_toPay= true,
             this.dates_array = [
                 {
                     'key':'date',
@@ -405,6 +419,8 @@ export default {
                 codproveedor: 0,
                 tipoproveedor: 'Todos',
                 codcliente: 0,
+                to_pay : 0,
+                paid: false,
             }
         },
         customIndex(index) {

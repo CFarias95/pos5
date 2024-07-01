@@ -164,8 +164,18 @@ class ReportsFinancesController extends Controller
                 $d_end = $date_end;
                 break;
         }
+        $to_pay = FunctionController::InArray($request, 'to_pay');
+        $to_pay = floatVal($to_pay);
 
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?)', [$d_start, $d_end ,$codcliente, $codvendedor]);
+        $paid = FunctionController::InArray($request, 'paid');
+        if($paid === 'true' || $paid === true){
+            $paid = 1;
+        }else{
+            $paid = 0;
+        }
+        Log::info('pagados: '.$paid);
+
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?, ? ,?)', [$d_start, $d_end ,$codcliente, $codvendedor,$paid, $to_pay]);
         //Log::info('recie'.json_encode($records));
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
@@ -660,11 +670,14 @@ class ReportsFinancesController extends Controller
         $codcliente = FunctionController::InArray($request, 'codcliente');
         //$codproveedor = FunctionController::InArray($request, 'codproveedor');
         $codvendedor = FunctionController::InArray($request, 'codvendedor');
+        $to_pay = FunctionController::InArray($request, 'to_pay');
+        $to_pay = floatVal($to_pay);
         //Log::info('codcliente'.$codcliente);
         //Log::info('codvendedor'.$codvendedor);
 
         $d_start = null;
         $d_end = null;
+
 
         switch ($period) {
             case 'month':
@@ -684,8 +697,14 @@ class ReportsFinancesController extends Controller
                 $d_end = $date_end;
                 break;
         }
-
-        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?)', [$d_start, $d_end, $codcliente, $codvendedor]);
+        $paid = FunctionController::InArray($request, 'paid');
+        if($paid === 'true'){
+            $paid = 1;
+        }else{
+            $paid = 0;
+        }
+        Log::info('pagados: '.$paid);
+        $records = DB::connection('tenant')->select('CALL SP_receivable_statement(?, ?, ?, ?, ?, ?)', [$d_start, $d_end, $codcliente, $codvendedor,$paid,$to_pay]);
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
         $filters = $request->all();

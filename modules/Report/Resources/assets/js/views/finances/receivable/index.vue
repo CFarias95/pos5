@@ -2,7 +2,7 @@
     <div class="card mb-0 pt-2 pt-md-0">
         <div class="card-header bg-info">
             <h3 class="my-0">Extracto Cuentas por Cobrar
-                <el-tooltip class="item" effect="dark" content="Reporte extracto retenciones" placement="top-end">
+                <el-tooltip class="item" effect="dark" content="Reporte extracto de cuentas por cobrar" placement="top-end">
                     <i class="fa fa-info-circle"></i>
                 </el-tooltip>
             </h3>
