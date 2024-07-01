@@ -3,6 +3,7 @@
 namespace Modules\Report\Http\Controllers;
 
 use App\Http\Controllers\Controller;
+use App\Models\System\PaymentMethodType;
 use Illuminate\Http\Request;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Person;
@@ -31,8 +32,11 @@ class ReporteCobrosDefectuososController extends Controller
             $multipay = 0;
         }
 
+        $paid =  $request->paid ?? 0;
+        $sequential = $request->sequential ?? 0;
+
         Log::info('MULTIPAY: '.$multipay);
-        $sp = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null, $multipay]);
+        $sp = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null, $multipay,$sequential, $paid,$request->payment_method]);
 
         $total = 0;
         $sp1 = array();
@@ -73,11 +77,12 @@ class ReporteCobrosDefectuososController extends Controller
                 'name' => $row->name
             ];
         });
+        $payment_methods = PaymentMethodType::get();
         /*Log::info('persons - '.json_encode($persons));
 
         array_push($persons, ['id'=>'0', 'name'=>'Todos Clientes']);*/
 
-        return compact('persons');
+        return compact('persons','payment_methods');
     }
 
     public function pdf(Request $request)
@@ -89,7 +94,9 @@ class ReporteCobrosDefectuososController extends Controller
         }else{
             $multipay = 0;
         }
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay]);
+        $paid =  $request->paid ?? 0;
+        $sequential = $request->sequential ?? 0;
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay,$sequential,$paid,$request->payment_method]);
 
         $sp1 = array();
         $sp2 = [];
@@ -122,7 +129,10 @@ class ReporteCobrosDefectuososController extends Controller
         }else{
             $multipay = 0;
         }
-        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay]);
+        $paid =  $request->paid ?? 0;
+        $sequential = $request->sequential ?? 0;
+
+        $records = DB::connection('tenant')->select("CALL SP_Cobros_Defectuosos(?,?,?,?,?,?,?,?);", [$request->client_id, $request->date_start, $request->date_end, $request->asiento ?? null,$multipay, $sequential,$paid,$request->payment_method]);
 
         $sp1 = array();
         $sp2 = [];

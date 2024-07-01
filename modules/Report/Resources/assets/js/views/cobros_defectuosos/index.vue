@@ -40,6 +40,25 @@
                             <el-input v-model="form.asiento" :clearable="true"></el-input>
                         </div >
                         <div class="col-md-3">
+                            <label class="control-label">Secuencial</label>
+                            <el-input type="number" v-model="form.sequential" :clearable="true"></el-input>
+                        </div >
+                        <div class="col-md-3">
+                            <label class="control-label">Valor pagado</label>
+                            <el-input type="number" v-model="form.paid" :clearable="true"></el-input>
+                        </div >
+                        <div class="col-md-3">
+                            <label class="control-label">Forma de pago</label>
+                            <el-select v-model="form.payment_method" filterable>
+                                <el-option value="Todos" label="Todos" />
+                                <el-option v-for="client in payment_methods"
+                                    :key="client.id"
+                                    :label="client.description"
+                                    :value="client.description">
+                                </el-option>
+                            </el-select>
+                        </div >
+                        <div class="col-md-3">
                             <label class="control-label">Agrupar por Multicobro?</label>
                             <el-switch v-model="form.multipay" :clearable="true"></el-switch>
                         </div >
@@ -121,9 +140,13 @@ export default {
                 date_end: null,
                 asiento: null,
                 multipay:false,
+                paid: null,
+                sequential: null,
+                payment_method: 'Todos',
             },
             loading_submit: false,
             clients: [],
+            payment_methods: [],
             records: [],
             pagination: {},
             search: {},
@@ -173,6 +196,7 @@ export default {
                 date_start: moment().format('YYYY-MM-DD'),
                 date_end: moment().format('YYYY-MM-DD'),
                 multipay: false,
+                payment_method: 'Todos',
             }
             this.total_pagado = 0
 
@@ -217,6 +241,7 @@ export default {
             return this.$http.get(`/${this.resource}/tables`)
                 .then((response) => {
                     this.clients = response.data.persons
+                    this.payment_methods = response.data.payment_methods
                 });
         },
         getQueryParameters() {

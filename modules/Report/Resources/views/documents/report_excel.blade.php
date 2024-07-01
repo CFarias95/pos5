@@ -127,7 +127,7 @@
                     <th>Total Exonerado</th>
                     <th>Subtotal 0%</th>
                     <th>Total Gratuito</th>
-                    <th>Subtotal 12%</th>
+                    <th>Subtotal 15%</th>
                     <th>Descuento total</th>
                     <!-- JOINSOFTWARE -->
                     <!-- Total IGV -> Total IVA -->

@@ -152,10 +152,9 @@ class ReportDocumentController extends Controller
         if (null === $documentType) {
             $documentType = new DocumentType();
         }
-
         $classType = $documentType->getCurrentRelatiomClass();
         $records = $this->getRecords($request->all(), $classType);
-        //$records= $records->get();
+        $records= $records->get();
         $filters = $request->all();
 
         //get categories
@@ -166,6 +165,8 @@ class ReportDocumentController extends Controller
             $categories = $this->getCategories($records, false);
             $categories_services = $this->getCategories($records, true);
         }
+
+        Log::info('Record recuoerados : '.$records->count());
 
         $documentExport = new DocumentExport();
         $documentExport
