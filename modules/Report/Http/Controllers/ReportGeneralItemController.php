@@ -176,9 +176,9 @@ class ReportGeneralItemController extends Controller
 				}
                 if ($category_id) {
                     if($family_id){
-                        $q->whereLike('category_id_array','%['.$category_id.','.$family_id.'%');
+                        $q->where('category_id_array','like','%['.$category_id.','.$family_id.'%');
                     }else{
-                        $q->whereLike('category_id_array','%['.$category_id.'%');
+                        $q->where('category_id_array','like','%['.$category_id.'%');
                     }
 
 				}
