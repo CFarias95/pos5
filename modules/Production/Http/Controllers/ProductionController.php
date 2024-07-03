@@ -786,9 +786,6 @@ class ProductionController extends Controller
 
     public function tranferSamples($samples, $destination_warehouse_id, $warehouse_id, $production)
     {
-        //Log::info('Entra a transfersamples');
-        //Log::info('$samples - '.$samples);
-        //Log::info('$destination_warehouse_id - '.$destination_warehouse_id);
         try {
             if (isset($samples) && $samples > 0 && isset($destination_warehouse_id) && $destination_warehouse_id != null) {
                 //Log::info('Entra al if transfersamples');
@@ -803,8 +800,7 @@ class ProductionController extends Controller
                 $transferRequest = new TransferRequest();
 
                 $items = [];
-                Log::info('Production item before loop: ' . json_encode($production->item));
-                Log::info('$production - ' . $production);
+                Log::info('$tranferSamples: ' . $production);
 
                 if (isset($production->item)) {
                     if (is_array($production->item)) {
@@ -855,11 +851,6 @@ class ProductionController extends Controller
                 } else {
                     Log::error('Production item is not set');
                 }
-
-                //Log::info('fin transfersSamples');
-
-
-                //$request = new Request();
                 $transferRequest['description'] = $description;
                 $transferRequest['warehouse_id'] = $warehouse_id;
                 $transferRequest['warehouse_destination_id'] = $warehouse_destination_id;
@@ -900,6 +891,15 @@ class ProductionController extends Controller
                 $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
                 $inventory_it->precio_perso = $item->purchase_mean_cost;
                 $inventory_it->save();
+
+                $itemLots = ItemLotsGroup::where('item_id',$production->item_id)->where('warehouse_id',$production->warehouse_id)->where('code',$production->lot_code)->first();
+                $itemLots->quantity -= (float) $production->imperfect;
+                $itemLots->save();
+
+                $itemWarehouse = ItemWarehouse::where('item_id',$production->item_id)->where('warehouse_id',$production->warehouse_id)->first();
+                $itemWarehouse->stock -= (float) $production->imperfect;
+                $itemWarehouse->save();
+
 
             } catch (Exception $ex) {
 
