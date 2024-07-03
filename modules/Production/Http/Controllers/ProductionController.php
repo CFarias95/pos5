@@ -900,6 +900,7 @@ class ProductionController extends Controller
                 $inventory_it->lot_code = ($production->lot_code) ? $production->lot_code : null;
                 $inventory_it->precio_perso = $item->purchase_mean_cost;
                 $inventory_it->save();
+
             } catch (Exception $ex) {
 
                 throw $ex;
@@ -1404,7 +1405,7 @@ class ProductionController extends Controller
     {
         //Log::info('warehouse - item : '.$warehouseId.'-'.$itemId);
         $item = Item::find($itemId);
-        if($item['unit_type_id'] !== 'ZZ')
+        if($item->unit_type_id != 'ZZ')
         {
             $warehouseItem = ItemWarehouse::where('warehouse_id', $warehouseId)
                 ->where('item_id', $itemId)

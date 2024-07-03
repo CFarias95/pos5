@@ -116,10 +116,8 @@
                     <th class="">Moneda</th>
                     <th>Plataforma</th>
                     <th>Orden de compra</th>
-
                     <th>Nota de venta</th>
                     <th>Fecha N. Venta</th>
-
                     <th class="">Forma de pago</th>
                     <th> MÉTODO DE PAGO </th>
                     <th>TC</th>

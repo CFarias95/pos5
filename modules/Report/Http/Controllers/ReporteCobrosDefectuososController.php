@@ -77,7 +77,7 @@ class ReporteCobrosDefectuososController extends Controller
                 'name' => $row->name
             ];
         });
-        $payment_methods = PaymentMethodType::get();
+        $payment_methods = DB::connection('tenant')->table('payment_method_types')->get();//PaymentMethodType::get();
         /*Log::info('persons - '.json_encode($persons));
 
         array_push($persons, ['id'=>'0', 'name'=>'Todos Clientes']);*/
