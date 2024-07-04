@@ -503,10 +503,10 @@
               <div class="col-6">
                 <div class="form-group">
                   <label class="control-label">Correos opcionales </label>
-                  <el-input v-model="temp_email" dusk="email" @change="checkEmail()">
+                  <el-input v-model="form.optional_email">
                   </el-input>
 
-                  <el-button
+                  <!-- <el-button
                     v-if="
                       temp_email != null && temp_email.length > 1 && checkEmail() == true
                     "
@@ -515,9 +515,9 @@
                     @click.prevent="clickAddMail()"
                   >
                     Agregar Correo
-                  </el-button>
+                  </el-button> -->
 
-                  <label
+                  <!-- <label
                     v-if="
                       temp_optional_email !== undefined && temp_optional_email.length > 0
                     "
@@ -537,7 +537,7 @@
                     v-if="errors.temp_email && errors.temp_email.length > 0"
                     class="form-control-feedback"
                     v-text="errors.temp_email"
-                  ></small>
+                  ></small> -->
 
                   <small
                     v-if="errors.email"
@@ -962,7 +962,7 @@ export default {
       errors: {},
       api_service_token: false,
       form: {
-        optional_email: [],
+        optional_email: '',
       },
       temp_optional_email: [],
       temp_email: null,
@@ -1062,7 +1062,7 @@ export default {
           full_name: null,
           phone: null,
         },
-        optional_email: [],
+        optional_email: '',
         has_discount: false,
         discount_type: "01",
         discount_amount: 0,

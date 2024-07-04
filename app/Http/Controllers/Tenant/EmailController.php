@@ -57,7 +57,7 @@
         public static function SendMail($email, $mailable, $id = 0, $type = null): bool
         {
             $sendit = new self();
-            $mail = explode(';', str_replace([',', ' '], [';', ''], $email));
+            $mail = explode(';', str_replace(',', ';', $email));
             $mails = [];
             $sendit
                 ->setType($type)
@@ -74,7 +74,6 @@
             }
             $sendit
                 ->setArrayEmail(explode(';',$email))
-                // ->setEmail(str_replace([';', '  '], [', ', ' '], $email))
                 ->SendAMail($mailable);
 
 

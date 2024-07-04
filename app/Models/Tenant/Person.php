@@ -519,18 +519,18 @@
             if ($this->person_type !== null) {
                 $person_discount = $this->person_type->discount;
             }
-            $optional_mail = $this->getOptionalEmailArray();
+            $optional_mail = $this->optional_email;
             $optional_mail_send = [];
-            if (!empty($this->email)) {
-                $optional_mail_send[] = $this->email;
-            }
-            $total_optional_mail = count($optional_mail);
-            for ($i = 0; $i < $total_optional_mail; $i++) {
-                $temp = trim($optional_mail[$i]['email']);
-                if (!empty($temp) && $temp != $this->email) {
-                    $optional_mail_send[] = $temp;
-                }
-            }
+            // if (!empty($this->email)) {
+            //     $optional_mail_send[] = $this->email;
+            // }
+            // $total_optional_mail = count($optional_mail);
+            // for ($i = 0; $i < $total_optional_mail; $i++) {
+            //     $temp = trim($optional_mail[$i]['email']);
+            //     if (!empty($temp) && $temp != $this->email) {
+            //         $optional_mail_send[] = $temp;
+            //     }
+            // }
             /** @var \App\Models\Tenant\Catalogs\Department  $department */
             $department = \App\Models\Tenant\Catalogs\Department::find($this->department_id);
             if(!empty($department)){
@@ -671,11 +671,7 @@
          */
         public function getOptionalEmailArray(): array
         {
-            $data = unserialize($this->optional_email);
-            if ($data === false) {
-                $data = [];
-            }
-
+            $data = $this->optional_email;
             return $data;
         }
 

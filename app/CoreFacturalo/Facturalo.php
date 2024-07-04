@@ -245,10 +245,15 @@ class Facturalo
             $company = $this->company;
             $document = $this->document;
             $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
+            $emails = ($this->document->customer) ? $this->document->customer->optional_email : $this->document->supplier->optional_email;
+
             $mailable =new DocumentEmail($company, $document);
             $id =  $document->id;
             $model = __FILE__.";;".__LINE__;
             $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+            if($emails){
+                EmailController::SendMail($emails, $mailable, $id, $model);
+            }
             /*
             Configuration::setConfigSmtpMail();
             $array_email = explode(',', $email);
@@ -269,14 +274,19 @@ class Facturalo
 
     public function sendEmail2()
     {
-
         $company = $this->company;
         $document = $this->document;
         $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
+        $emails = ($this->document->customer) ? $this->document->customer->optional_email : $this->document->supplier->optional_email;
+
         $mailable =new DocumentEmail($company, $document);
         $id =  $document->id;
         $model = __FILE__.";;".__LINE__;
         $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+        if($emails){
+            EmailController::SendMail($emails, $mailable, $id, $model);
+        }
+
         /*
         Configuration::setConfigSmtpMail();
         $array_email = explode(',', $email);

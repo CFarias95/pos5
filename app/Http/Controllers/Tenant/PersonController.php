@@ -123,7 +123,7 @@ class PersonController extends Controller
         $id = $request->input('id');
         $person = Person::firstOrNew(['id' => $id]);
         $data = $request->all();
-        unset($data['optional_email'], $data['id']);
+        //unset($data['optional_email'], $data['id']);
         $person->fill($data);
         $person->save();
 
@@ -133,10 +133,10 @@ class PersonController extends Controller
             $person->addresses()->updateOrCreate(['id' => $row['id']], $row);
         }
 
-        $optional_email = $request->optional_email;
-        if (!empty($optional_email)) {
-            $person->setOptionalEmailArray($optional_email)->push();
-        }
+        // $optional_email = $request->optional_email;
+        // if (!empty($optional_email)) {
+        //     $person->setOptionalEmailArray($optional_email)->push();
+        // }
 
         $msg = '';
         if ($request->type === 'suppliers') {
