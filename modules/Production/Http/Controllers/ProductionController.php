@@ -896,9 +896,9 @@ class ProductionController extends Controller
                 $itemLots->quantity -= (float) $production->imperfect;
                 $itemLots->save();
 
-                $itemWarehouse = ItemWarehouse::where('item_id',$production->item_id)->where('warehouse_id',$production->warehouse_id)->first();
-                $itemWarehouse->stock -= (float) $production->imperfect;
-                $itemWarehouse->save();
+                // $itemWarehouse = ItemWarehouse::where('item_id',$production->item_id)->where('warehouse_id',$production->warehouse_id)->first();
+                // $itemWarehouse->stock -= (float) $production->imperfect;
+                // $itemWarehouse->save();
 
 
             } catch (Exception $ex) {
