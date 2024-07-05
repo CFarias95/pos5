@@ -132,16 +132,14 @@ class RetentionsControllers extends Controller
                         'codSustento' => $purchaseL->codSustento,
                         'codDocSustento' => $purchaseL->document_type_id,
                         'numDocSustento' => $purchaseL->sequential_number,
-                        'fechaEmisionDocSustento' => $retencionL[0]->created_at->format('d/m/Y'),
+                        'fechaEmisionDocSustento' => $purchaseL->date_of_issue->format('d/m/Y'),
                         'numAutDocSustento' => $purchaseL->auth_number,
                         'pagoLocExt' => '01',
                         'totalSinImpuestos' => $purchaseL->total_value,
                         'importeTotal' => $purchaseL->total,
-
                         'baseImponible0' => ($purchaseL->total_unaffected) ? $purchaseL->total_unaffected :0,
                         'baseImponible12' => ($purchaseL->total_taxed)? $purchaseL->total_taxed:0,
                         'valorIva12' => ($purchaseL->total_igv) ? $purchaseL->total_igv:0,
-
                         'retenciones' => $retencioneDetallesL->transform(function($row, $key) {
                             $retentionDescrip = RetentionType::where('code',$row->codRetencion)->get();
                             return [
@@ -238,7 +236,7 @@ class RetentionsControllers extends Controller
                     $this->actions['format_pdf'] = 'blank';
 
                     $this->createPdf($retencion, $tipodoc, 'a4');
-
+                    //$this->sendEmail($id);
                     $this->sendEmail2($id);
 
                 }elseif($estado == 'NO AUTORIZADO'){

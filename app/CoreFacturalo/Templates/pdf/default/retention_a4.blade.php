@@ -112,7 +112,7 @@
                         <div>
                             <strong>Razón Social: </strong>{{ $supplier->name }}<br></br>
                             <strong>Dirección: </strong> {{ $supplier->address }}<br></br>
-                            <strong>Fecha Emisión: </strong> {{$purchase->date_of_issue}}
+                            <strong>Fecha Emisión: </strong> {{$document->created_at->format('d/m/Y')}}
                         </div>
                     </td>
                     <td style="text-transform: uppercase;" width="50%">

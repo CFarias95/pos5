@@ -43,7 +43,7 @@ use App\CoreFacturalo\WS\Services\AuthSri;
 use App\Models\Tenant\Advance;
 use App\Models\Tenant\DispatchItem;
 use App\Models\Tenant\Item;
-
+use App\Models\Tenant\Person;
 
 class Facturalo
 {
@@ -276,8 +276,10 @@ class Facturalo
     {
         $company = $this->company;
         $document = $this->document;
+        $person = Person::find($this->document->customer_id ?? $this->document->supplier_id);
         $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
-        $emails = ($this->document->customer) ? $this->document->customer->optional_email : $this->document->supplier->optional_email;
+
+        $emails = ($person) ? $person->optional_email : null;
 
         $mailable =new DocumentEmail($company, $document);
         $id =  $document->id;
