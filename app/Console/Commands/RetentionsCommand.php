@@ -48,19 +48,15 @@ class RetentionsCommand extends Command
 
             foreach ($documents as $document) {
                 try {
-
                     $response = new RetentionsControllers();
                     $result = $response->createXML($document->id);
                     $this->info($result);
                 }
                 catch (\Exception $e) {
-
                     $this->info('error : '.$e->getMessage());
-
                 }
             }
-        }
-        else {
+        }else{
             $this->info('The crontab is disabled');
         }
 

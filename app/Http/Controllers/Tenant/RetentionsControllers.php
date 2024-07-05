@@ -101,7 +101,7 @@ class RetentionsControllers extends Controller
                 $retencioneDetallesL = RetentionsDetailEC::where('idRetencion',$retencionL[0]->idRetencion)->get();
                 $formasPago = PurchasePayment::where('purchase_id',$id)->get();
 
-                $clave = "" . date('dmY', strtotime($retencionL[0]->created_at)) . "07" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".substr($retencionL[0]->idRetencion,1)."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
+                $clave = "" . date('dmY', strtotime($purchaseL->date_of_issue)) . "07" . $this->company->number."".substr($this->company->soap_type_id,1,1)."".substr($retencionL[0]->idRetencion,1)."" . str_pad('12345678', '8', '0', STR_PAD_LEFT) . "" . 1 . "";
                 $digito_verificador_clave = $this->validar_clave($clave);
                 $this->clave_acceso = $clave . "" . $digito_verificador_clave . "";
                 $retencion = null;
@@ -120,7 +120,7 @@ class RetentionsControllers extends Controller
                         'ptoEmision'=> substr($retencionL[0]->ptoEmision,1),
                         'secuencial'=>substr($retencionL[0]->idRetencion,7),
                         'dirMatriz' => $establecimiento->address,
-                        'fechaEmision' => $retencionL[0]->created_at->format('d/m/Y'),
+                        'fechaEmision' => $purchaseL->date_of_issue->format('d/m/Y'),
                         'disEstablecimiento' => $establecimiento->address,
                         'contribuyenteEspecial' => $this->company->contribuyente_especial_num,
                         'obligadoContabilidad' => ($this->company->obligado_contabilidad > 0 ) ? 'SI':'NO',

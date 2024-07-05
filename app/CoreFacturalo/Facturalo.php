@@ -288,21 +288,6 @@ class Facturalo
         if($emails){
             EmailController::SendMail($emails, $mailable, $id, $model);
         }
-
-        /*
-        Configuration::setConfigSmtpMail();
-        $array_email = explode(',', $email);
-        if (count($array_email) > 1) {
-            foreach ($array_email as $email_to) {
-                $email_to = trim($email_to);
-            if(!empty($email_to)) {
-                    Mail::to($email_to)->send(new DocumentEmail($company, $document));
-                }
-            }
-        } else {
-            Mail::to($email)->send(new DocumentEmail($company, $document));
-        }
-        */
     }
 
     public function createXmlUnsigned()
