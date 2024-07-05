@@ -128,7 +128,7 @@ class RetentionsControllers extends Controller
                         'parteRel' => 'NO',
                         'razonSocialSujetoRetenido' => $purchaseL->supplier->name,
                         'identificacionSujetoRetenido' => $purchaseL->supplier->number,
-                        'periodoFiscal'=> $retencionL[0]->created_at->format('m/Y'),
+                        'periodoFiscal'=> $purchaseL->date_of_issue->format('m/Y'),
                         'codSustento' => $purchaseL->codSustento,
                         'codDocSustento' => $purchaseL->document_type_id,
                         'numDocSustento' => $purchaseL->sequential_number,

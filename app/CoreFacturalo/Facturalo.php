@@ -279,15 +279,13 @@ class Facturalo
         $person = Person::find($this->document->customer_id ?? $this->document->supplier_id);
         $email = ($this->document->customer) ? $this->document->customer->email : $this->document->supplier->email;
 
-        $emails = ($person) ? $person->optional_email : null;
+        $emails = ($person) ? ';'.$person->optional_email : '';
 
+        $email = $email.$emails;
         $mailable =new DocumentEmail($company, $document);
         $id =  $document->id;
         $model = __FILE__.";;".__LINE__;
         $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
-        if($emails){
-            EmailController::SendMail($emails, $mailable, $id, $model);
-        }
     }
 
     public function createXmlUnsigned()
