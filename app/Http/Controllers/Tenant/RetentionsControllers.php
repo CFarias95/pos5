@@ -238,7 +238,7 @@ class RetentionsControllers extends Controller
 
                     $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
-                    Storage::disk('tenant')->put($nombre, $documento);
+                    Storage::disk('tenant')->put($nombre, $documento->asXML());
 
                     $tipodoc = 'retention';
                     $this->doc_type = '03';
