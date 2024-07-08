@@ -908,7 +908,7 @@ class RetentionsControllers extends Controller
 
         $company = $this->company;
         $document = RetentionsEC::find($id);
-        $email = $this->email;
+        $email = trim($this->email);
         $mailable =new DocumentEmail($company, $document);
 
         Log::error('Correo a enviar retencion: '.$email);
