@@ -915,6 +915,8 @@ class RetentionsControllers extends Controller
         Log::error('Correo remmitente: '.Config::get('mail.username'));
 
         Configuration::setConfigSmtpMail();
+        // Backup your default mailer
+        $backup = Mail::getSwiftMailer();
         $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
         $transport->setUsername(Config::get('mail.username'));
         $transport->setPassword(Config::get('mail.password'));
