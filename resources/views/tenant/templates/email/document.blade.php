@@ -144,7 +144,7 @@
             <div class="fdiv">
                 <h6 id="value">Por el valor de:</h6>
                 @if($document->idRetencion)
-                <h2>{{ $document->purchase->currency_type->symbol }}{{ $document->total_retention }}</h2>
+                <h2>{{ $document->currency_type->symbol }}{{ $document->total_retention }}</h2>
                 @else
                 <h2>{{ $document->currency_type->symbol }}{{ $document->total }}</h2>
                 @endif
