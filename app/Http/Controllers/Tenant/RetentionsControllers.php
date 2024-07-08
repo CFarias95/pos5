@@ -911,7 +911,9 @@ class RetentionsControllers extends Controller
         $mailable =new DocumentEmail($company, $document);
 
         Log::error('Correo a enviar retencion: '.$email);
+        Log::error('Correo remmitente: '.Config::get('mail.username'));
 
+        Configuration::setConfigSmtpMail();
         $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
         $transport->setUsername(Config::get('mail.username'));
         $transport->setPassword(Config::get('mail.password'));
