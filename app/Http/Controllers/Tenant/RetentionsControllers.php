@@ -229,7 +229,13 @@ class RetentionsControllers extends Controller
                     $estateId = self::AUTORIZADA;
                     $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
                     //$documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                    $documento = Response::xml($authSRI);
+                    $documento = new \SimpleXMLElement('<root/>');
+
+                    // Función para convertir el array a XML recursivamente
+                    $this->arrayToXmlHelper($authSRI, $documento);
+
+                    //$documento =($authSRI);
+
                     $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
                     Storage::disk('tenant')->put($nombre, $documento);
@@ -312,6 +318,19 @@ class RetentionsControllers extends Controller
 
     }
 
+    private function arrayToXmlHelper($data, &$xml)
+    {
+        foreach ($data as $key => $value) {
+            if (is_array($value)) {
+                // Si es un array, llamar recursivamente la función
+                $subnode = $xml->addChild($key);
+                $this->arrayToXmlHelper($value, $subnode);
+            } else {
+                // Si es un valor simple, agregar como nodo de texto
+                $xml->addChild($key, htmlspecialchars($value));
+            }
+        }
+    }
     private function getQr($clave)
     {
 
