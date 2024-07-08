@@ -14,7 +14,7 @@
         $document_number = $establishment->code.''.substr($document->series,1,3).''.str_pad($document->number, 9, '0', STR_PAD_LEFT);
     }
 
-    Log::info('Documento procesar retention: '. json_encode($document))
+    //Log::info('Documento procesar retention: '. json_encode($document))
 
     @endphp
 

@@ -327,7 +327,8 @@ class RetentionsControllers extends Controller
                 $this->arrayToXmlHelper($value, $subnode);
             } else {
                 // Si es un valor simple, agregar como nodo de texto
-                $xml->addChild($key, htmlspecialchars($value));
+                //$xml->addChild($key, htmlspecialchars($value));
+                $xml->addChild($key, $value);
             }
         }
     }
