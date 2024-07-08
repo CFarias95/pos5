@@ -228,7 +228,7 @@ class RetentionsControllers extends Controller
                     $estateId = self::AUTORIZADA;
                     $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
                     //$documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                    $documento = $authSRI;
+                    $documento = $authSRI['RespuestaAutorizacionComprobante'];
                     $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
                     Storage::disk('tenant')->put($nombre, $documento);
