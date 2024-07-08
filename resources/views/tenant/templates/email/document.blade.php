@@ -1,9 +1,12 @@
 @php
     $establishment = $document->establishment;
     $logo = "storage/uploads/logos/{$company->logo}";
-    if($establishment->logo) {
+    $url =  asset("storage/uploads/logos/".$company->logo);
+
+    if(isset($establishment->logo)) {
         $logo = "{$establishment->logo}";
     }
+
     $document_number = '';
     if($document->idRetencion){
         $document_number = $document->idRetencion;
@@ -11,7 +14,7 @@
         $document_number = $establishment->code.''.substr($document->series,1,3).''.str_pad($document->number, 9, '0', STR_PAD_LEFT);
     }
 
-    $url =  asset("storage/uploads/logos/".$company->logo);
+
     @endphp
 
 <!doctype html>
