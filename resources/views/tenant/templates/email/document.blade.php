@@ -15,6 +15,7 @@
     }
 
     Log::info('Documento procesar retention: '. json_encode($document))
+
     @endphp
 
 <!doctype html>

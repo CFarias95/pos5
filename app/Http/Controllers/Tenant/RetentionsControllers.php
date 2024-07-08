@@ -927,6 +927,14 @@ class RetentionsControllers extends Controller
 
         $company = $this->company;
         $document = RetentionsEC::find($id);
+        $purchase = Purchase::find($document->idDocumento);
+        $detalles = RetentionsDetailEC::where('idRetencion',$document->idRetencion)->get();
+        $establecimiento = Establishment::find($purchase->establishment_id);
+
+        $document->establishment = $establecimiento;
+        $document->purchase = $purchase;
+        $document->total_retention = $detalles->sum('valorRet');
+
         $email = trim($this->email);
         $mailable =new DocumentEmail($company, $document);
 
