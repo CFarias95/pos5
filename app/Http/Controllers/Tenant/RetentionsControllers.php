@@ -37,6 +37,7 @@ use Mpdf\HTMLParserMode;
 use Mpdf\Mpdf;
 use Swift_Mailer;
 use Swift_SmtpTransport;
+use Illuminate\Support\Facades\Response;
 
 class RetentionsControllers extends Controller
 {
@@ -228,7 +229,7 @@ class RetentionsControllers extends Controller
                     $estateId = self::AUTORIZADA;
                     $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
                     //$documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
-                    $documento = json_encode($authSRI);
+                    $documento = Response::xml($authSRI);
                     $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
                     Storage::disk('tenant')->put($nombre, $documento);
