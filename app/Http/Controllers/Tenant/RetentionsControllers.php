@@ -930,8 +930,9 @@ class RetentionsControllers extends Controller
         $email = trim($this->email);
         $mailable =new DocumentEmail($company, $document);
 
-        Log::error('Correo a enviar retencion: '.$email);
-        Log::error('Correo remmitente: '.Config::get('mail.username'));
+        Log::error('Compani retencion: '.$company);
+        //Log::error('Correo a enviar retencion: '.$email);
+        //Log::error('Correo remmitente: '.Config::get('mail.username'));
 
         Configuration::setConfigSmtpMail();
         // Backup your default mailer
