@@ -14,7 +14,7 @@
         $document_number = $establishment->code.''.substr($document->series,1,3).''.str_pad($document->number, 9, '0', STR_PAD_LEFT);
     }
 
-
+    Log::info('Documento procesar retention: '. json_encode($document))
     @endphp
 
 <!doctype html>
@@ -112,10 +112,10 @@
             <div class="fdiv">
                 @if($document->customer)
                 <h3 id="title">{{ $document->customer->name }}</h3>
-                @elseif($document->supplier)
-                <h3 id="title">{{ $document->supplier->name }}</h3>
+                @elseif($document->purchase->supplier)
+                <h3 id="title">{{ $document->purchase->supplier->name }}</h3>
                 @else
-                <h3 id="title">{{ 'N/A' }}</h3>
+                <h3 id="title">{{ $document->supplier->name }}</h3>
                 @endif
                 <h3 id="title">Has recibido un Documento Electrónico de</h3>
                 @if($company->logo)
@@ -144,7 +144,7 @@
             <div class="fdiv">
                 <h6 id="value">Por el valor de:</h6>
                 @if($document->idRetencion)
-                <h2>{{ $document->currency_type->symbol }}{{ $document->total_retention }}</h2>
+                <h2>{{ $document->purchase->currency_type->symbol }}{{ $document->total_retention }}</h2>
                 @else
                 <h2>{{ $document->currency_type->symbol }}{{ $document->total }}</h2>
                 @endif
