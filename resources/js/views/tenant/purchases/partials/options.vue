@@ -61,6 +61,9 @@
             }
         },
         created() {
+            //this.initForm()
+        },
+        mounted() {
             this.initForm()
         },
         methods: {
@@ -73,10 +76,10 @@
             initForm() {
                 this.errors = {}
                 this.form = {
+                    customer_email: null,
                     id: null,
                     external_id: null,
                     number: null,
-                    customer_email: null,
                     download_pdf: null
                 }
             },
@@ -88,7 +91,7 @@
                         let typei = this.type == 'edit' ? 'editada' : 'registrada'
                         this.titleDialog = `Compra ${typei}: ` +this.form.number
                         if(this.retentionId){
-                            this.form.customer_email = this.email
+                            //this.form.customer_email = this.email
                         }
                     })
 

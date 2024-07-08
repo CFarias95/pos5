@@ -412,7 +412,6 @@ class PurchaseController extends Controller
     {
 
         $record = new PurchaseResource(Purchase::findOrFail($id));
-
         return $record;
     }
 

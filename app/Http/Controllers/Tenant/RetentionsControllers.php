@@ -19,6 +19,7 @@ use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\PaymentMethodType;
+use App\Models\Tenant\Person;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\PurchasePayment;
 use App\Models\Tenant\RetentionsDetailEC;
@@ -226,7 +227,8 @@ class RetentionsControllers extends Controller
 
                     $estateId = self::AUTORIZADA;
                     $mensajeAuth = 'DOCUMENTO AUTORIZADO POR EL SRI';
-                    $documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
+                    //$documento = $authSRI['RespuestaAutorizacionComprobante']['autorizaciones']['autorizacion']['comprobante'];
+                    $documento = $authSRI;
                     $nombre= 'autorizado/'.$retencion->claveAcceso.'.xml';
 
                     Storage::disk('tenant')->put($nombre, $documento);
@@ -384,7 +386,8 @@ class RetentionsControllers extends Controller
         $documentoEnviar->detalles = $detalles;
         $documentoEnviar->establecimiento = $establecimiento;
 
-        $this->email = $purchase->supplier->email;
+        $supplier = Person::find($purchase->supplier_id);
+        $this->email = $supplier->optional_email ? $supplier->email.';'.$supplier->optional_email : $supplier->email;
 
         $html = $template->pdf($base_pdf_template, $this->type, $this->company, $documentoEnviar, $format_pdf);
 
@@ -894,9 +897,6 @@ class RetentionsControllers extends Controller
         Mail::setSwiftMailer($mailer);
         Mail::to($email)->send($mailable);
 
-        //$model = __FILE__.";;".__LINE__;
-        //$sendIt = EmailController::SendMail($email, $mailable, $id, $model);
-
         return [
             'success' => true
         ];
@@ -909,9 +909,13 @@ class RetentionsControllers extends Controller
         $document = RetentionsEC::find($id);
         $email = $this->email;
         $mailable =new DocumentEmail($company, $document);
-        $id =  $id;
-        $model = __FILE__.";;".__LINE__;
-        $sendIt = EmailController::SendMail($email, $mailable, $id, $model);
+
+        $transport =  new Swift_SmtpTransport(Config::get('mail.host'), Config::get('mail.port'), Config::get('mail.encryption'));
+        $transport->setUsername(Config::get('mail.username'));
+        $transport->setPassword(Config::get('mail.password'));
+        $mailer = new Swift_Mailer($transport);
+        Mail::setSwiftMailer($mailer);
+        Mail::to($email)->send($mailable);
 
     }
 

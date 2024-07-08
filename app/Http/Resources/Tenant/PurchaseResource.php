@@ -2,6 +2,7 @@
 
 namespace App\Http\Resources\Tenant;
 
+use App\Models\Tenant\Person;
 use App\Models\Tenant\Purchase;
 use App\Models\Tenant\RetentionsDetailEC;
 use App\Models\Tenant\RetentionsEC;
@@ -39,12 +40,15 @@ class PurchaseResource extends JsonResource
             $purchase->observation = '';
         }
 
+        $supplier = Person::find($purchase->supplier_id);
+
         return [
             'id' => $this->id,
             'external_id' => $this->external_id,
             'group_id' => $this->group_id,
             'number' => $this->number_full,
             'date_of_issue' => $this->date_of_issue->format('Y-m-d'),
+            'customer_email' => $supplier->optional_email ? $supplier->email.';'.$supplier->optional_email : $supplier->email,
             'purchase' => $purchase
         ];
     }
