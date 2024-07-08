@@ -112,10 +112,10 @@
             <div class="fdiv">
                 @if($document->customer)
                 <h3 id="title">{{ $document->customer->name }}</h3>
-                @elseif($document->purchase)
-                <h3 id="title">{{ $document->purchase->supplier->name }}</h3>
-                @else
+                @elseif($document->supplier)
                 <h3 id="title">{{ $document->supplier->name }}</h3>
+                @else
+                <h3 id="title">{{ 'N/A' }}</h3>
                 @endif
                 <h3 id="title">Has recibido un Documento Electrónico de</h3>
                 @if($company->logo)
