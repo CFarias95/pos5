@@ -176,10 +176,12 @@ export default {
             let convert = require("xml-js");
             this.formXmlJson = convert.xml2js(source, { compact: true, spaces: 4 });
             this.has_file = false;
+            console.log('source',source);
             await this.setdataForm();
             this.loading_submit = false;
         },
         async setdataForm() {
+            console.log('import purchase',this.formXmlJson)
             let convert = require("xml-js");
             let Invoice = null
 

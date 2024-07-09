@@ -184,7 +184,9 @@
         @if($document->purchase_order != null && $document->purchase_order != '')
         <campoAdicional nombre="Orden de compra">{{ trim($document->purchase_order) }}</campoAdicional>
         @endif
+        @if($customer->province->description)
         <campoAdicional nombre="Ciudad">{{ trim($customer->province->description ?? '') }}</campoAdicional>
+        @endif
     </infoAdicional>
 
 </factura>
