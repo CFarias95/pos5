@@ -385,9 +385,9 @@ class ReportsFinancesController extends Controller
     public function getRecordsRetentions(Request $request)
     {
 
-        $period = FunctionController::InArray($request, 'period');
-        $date_start = FunctionController::InArray($request, 'date_start');
-        $date_end = FunctionController::InArray($request, 'date_end');
+        $period = 'between_dates';
+        $date_start = FunctionController::InArray($request, 'fini');
+        $date_end = FunctionController::InArray($request, 'ffin');
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');
@@ -551,9 +551,9 @@ class ReportsFinancesController extends Controller
     public function excelRetentions(Request $request)
     {
 
-        $period = FunctionController::InArray($request, 'period');
-        $date_start = FunctionController::InArray($request, 'date_start');
-        $date_end = FunctionController::InArray($request, 'date_end');
+        $period = 'between_dates';
+        $date_start = FunctionController::InArray($request, 'fini');
+        $date_end = FunctionController::InArray($request, 'ffin');
         $month_start = FunctionController::InArray($request, 'month_start');
         $month_end = FunctionController::InArray($request, 'month_end');
         $page = FunctionController::InArray($request, 'page');

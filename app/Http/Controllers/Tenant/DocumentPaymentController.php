@@ -156,6 +156,7 @@ class DocumentPaymentController extends Controller
                 $debeAdicional += floatVal($value['debe']);
                 $haberAdicional += floatVal($value['haber']);
             }
+
             $comment = ' | '.$documentsSequentials. ' | Multicobro '.$secu;
             $cabeceraC = AccountingEntries::find($request->id);
             $cabeceraC->seat_date = $request->date_of_payment;
@@ -212,6 +213,8 @@ class DocumentPaymentController extends Controller
             $cabeceraC->total_debe = $totalDebe;
             $cabeceraC->total_haber = $totalHaber;
             $cabeceraC->save();
+
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_edit', 'Multicobro '.$secu);
 
             return[
                 'success'=>true,
@@ -548,6 +551,12 @@ class DocumentPaymentController extends Controller
         }
 
         $this->verifyPayment($request);
+        if($id){
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_update', 'document_payment/'.$id);
+        }else{
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_create', 'document_payment/'.$data->id);
+        }
+
 
         return [
             'success' => true,
@@ -1013,6 +1022,8 @@ class DocumentPaymentController extends Controller
             }
 
         }
+        $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_delete', 'document_payment/'.$id);
+
         return [
             'success' => true,
             'message' => 'Pago eliminado con éxito'
@@ -1044,6 +1055,7 @@ class DocumentPaymentController extends Controller
                 }
             }
 
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_update', 'document_payment/'.$request->id);
             return[
                 'success'=>true,
                 'message'=>'Se actualizó el registro'
@@ -1206,10 +1218,11 @@ class DocumentPaymentController extends Controller
             $newGlobalPayment->destination_type = $globalPayment->destination_type;
             $newGlobalPayment->payment_id = $newPayment->id;
             $newGlobalPayment->payment_type = $globalPayment->payment_type;
-            $newGlobalPayment->user_id = $globalPayment->user_id;
+            $newGlobalPayment->user_id = auth()->user()->id;
             $newGlobalPayment->save();
 
             $this->createAccountingEntryReverse($newPayment,$newPayment);
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_cancel', 'reverse/ '.$id);
 
             return [
                 'success'=>true,
@@ -1256,18 +1269,18 @@ class DocumentPaymentController extends Controller
             $unp = new UnpaidController();
             $unp->generateMultiPayReverse('CF'.$payment->id,$paymentsIds);
 
+            $this->saveGeneralSystemActivity(auth()->user(), 'document_payment_cancel', 'reverse/ '.$payment->id);
+
             return [
                 'success'=>true,
                 'message' => 'Reverso generado de forma exitosa!'
             ];
 
         }else{
-            Log::error('No s eencontro un pago con el ID: '.$id);
+            Log::error('No se encontro un pago con el ID: '.$id);
         }
 
 
     }
-
-
 
 }
