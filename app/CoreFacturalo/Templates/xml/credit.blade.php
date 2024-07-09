@@ -102,6 +102,9 @@
         @if($customer->identity_document_type_id == 0)
         <tipoIdentificacionComprador>07</tipoIdentificacionComprador>
         @endif
+        @if($customer->identity_document_type_id == 4)
+        <tipoIdentificacionComprador>08</tipoIdentificacionComprador>
+        @endif
         <razonSocialComprador>{{ $customer->name }}</razonSocialComprador>
         <identificacionComprador>{{ $customer->number }}</identificacionComprador>
         <obligadoContabilidad>SI</obligadoContabilidad>
