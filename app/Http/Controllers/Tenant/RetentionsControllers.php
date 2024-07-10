@@ -324,7 +324,13 @@ class RetentionsControllers extends Controller
                 $this->arrayToXmlHelper($value, $subnode);
             } else {
                 // Si es un valor simple, agregar como nodo de texto
-                $xml->addChild($key, htmlspecialchars($value,ENT_XML1));
+                if ($key === 'comprobante') {
+                    // Agregar el fragmento XML dentro de CDATA
+                    $child = $xml->addChild($key);
+                    $child->addCData($value); // Añadir el contenido como CDATA
+                } else{
+                    $xml->addChild($key, htmlspecialchars($value,ENT_XML1));
+                }
             }
         }
     }
