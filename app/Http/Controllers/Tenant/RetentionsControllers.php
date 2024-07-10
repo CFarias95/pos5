@@ -325,11 +325,12 @@ class RetentionsControllers extends Controller
             } else {
                 // Si es un valor simple, agregar como nodo de texto
                 if ($key === 'comprobante') {
-                    // Agregar el fragmento XML dentro de CDATA
+                    // Crear un nodo para el elemento 'comprobante'
                     $child = $xml->addChild($key);
-                    $node = dom_import_simplexml($child); // Obtener el nodo DOM del SimpleXMLElement
-                    $no = $node->ownerDocument;
-                    $child->appendChild($no->createCDATASection($value)); // Crear CDATA y agregarlo como contenido del nodo
+
+                    // Convertir el valor a CDATA y agregarlo como texto del elemento
+                    $dom = dom_import_simplexml($child);
+                    $dom->appendChild($dom->ownerDocument->createCDATASection($value));
                 } else{
                     $xml->addChild($key, htmlspecialchars($value,ENT_XML1));
                 }
