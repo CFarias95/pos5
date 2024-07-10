@@ -327,7 +327,9 @@ class RetentionsControllers extends Controller
                 if ($key === 'comprobante') {
                     // Agregar el fragmento XML dentro de CDATA
                     $child = $xml->addChild($key);
-                    $child->addCData($value); // Añadir el contenido como CDATA
+                    $node = dom_import_simplexml($child); // Obtener el nodo DOM del SimpleXMLElement
+                    $no = $node->ownerDocument;
+                    $child->appendChild($no->createCDATASection($value)); // Crear CDATA y agregarlo como contenido del nodo
                 } else{
                     $xml->addChild($key, htmlspecialchars($value,ENT_XML1));
                 }
