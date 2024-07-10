@@ -27,10 +27,11 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Modules\Finance\Http\Controllers\ToPayController;
 use Modules\Finance\Models\GlobalPayment;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 
 class PurchasePaymentController extends Controller
 {
-    use FinanceTrait, FilePaymentTrait;
+    use FinanceTrait, FilePaymentTrait, SystemActivityTrait;
 
     public function records($purchase_id, $fee_id)
     {
@@ -202,6 +203,8 @@ class PurchasePaymentController extends Controller
             $cabeceraC->total_debe = $totalDebe;
             $cabeceraC->total_haber = $totalHaber;
             $cabeceraC->save();
+
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_update', 'purchase_payment/'.$documentIds);
 
             return[
                 'success'=>true,
@@ -430,6 +433,11 @@ class PurchasePaymentController extends Controller
             $this->createAccountingEntryPayment($data->purchase_id, $data);
         }
         $this->verifyPayment($request);
+        if($id){
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_update', 'purchase_payment/'.$id);
+        }else{
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_create', 'purchase_payment/'.$data->id);
+        }
 
         return [
             'success' => true,
@@ -644,6 +652,7 @@ class PurchasePaymentController extends Controller
             }
         }
 
+        $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_delete', 'purchase_payment/'.$id);
         return [
             'success' => true,
             'message' => 'Pago eliminado con éxito'
@@ -683,11 +692,11 @@ class PurchasePaymentController extends Controller
             $newGlobalPayment->destination_type = $globalPayment->destination_type;
             $newGlobalPayment->payment_id = $newPayment->id;
             $newGlobalPayment->payment_type = $globalPayment->payment_type;
-            $newGlobalPayment->user_id = $globalPayment->user_id;
+            $newGlobalPayment->user_id = auth()->user()->id;
             $newGlobalPayment->save();
 
             $this->createAccountingEntryReverse('PC'.$newPayment->id,$id,$request->date_of_payment);
-
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_cancel', 'purchase_payment/'.$id.'/'.$newPayment->id);
             return [
                 'success'=>true,
                 'message' => 'Reverso generado de forma exitosa!'
@@ -729,12 +738,12 @@ class PurchasePaymentController extends Controller
                 $newGlobalPayment->destination_type = $globalPayment->destination_type;
                 $newGlobalPayment->payment_id = $newPayment->id;
                 $newGlobalPayment->payment_type = $globalPayment->payment_type;
-                $newGlobalPayment->user_id = $globalPayment->user_id;
+                $newGlobalPayment->user_id = auth()->user()->id;
                 $newGlobalPayment->save();
             }
 
-            //$unp = new ToPayController();
             $this->createAccountingEntryReverse($paymentsIds,$id,$request->date_of_payment);
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_cancel', 'purchase_payment/'.$id.'/'.$paymentsIds);
 
             return [
                 'success'=>true,
@@ -744,8 +753,6 @@ class PurchasePaymentController extends Controller
         }else{
             Log::error('No se encontro un pago con el ID: '.$id);
         }
-
-
     }
 
      /* Crear los asientos contables del REVERSO */
@@ -883,6 +890,8 @@ class PurchasePaymentController extends Controller
                     $item->save();
                 }
             }
+
+            $this->saveGeneralSystemActivity(auth()->user(), 'purchase_payment_update', 'purchase_payment/'.$request->id);
 
             return[
                 'success'=>true,

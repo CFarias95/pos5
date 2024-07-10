@@ -35,11 +35,12 @@ use Modules\Finance\Http\Controllers\AdvanceController;
 use Modules\Finance\Http\Controllers\UnpaidController;
 use Modules\Finance\Http\Requests\AdvanceRequest;
 use Modules\Finance\Models\GlobalPayment;
+use Modules\LevelAccess\Traits\SystemActivityTrait;
 use TenantGlobalPaymentsTable;
 
 class DocumentPaymentController extends Controller
 {
-    use FinanceTrait, FilePaymentTrait;
+    use FinanceTrait, FilePaymentTrait, SystemActivityTrait;
 
     public function records($document_id,$fee_id = 'null')
     {
