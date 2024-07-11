@@ -742,7 +742,9 @@ trait InventoryTrait
                     throw new Exception("El lote {$purchase_item->lot_code} no existe!");
                 }
 
-                $lot_group->delete();
+                $lot_group->quantity -= $purchase_item->quantity;
+                $lot_group->save();
+                //$lot_group->delete();
             }
         }
     }

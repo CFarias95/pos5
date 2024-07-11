@@ -2174,7 +2174,7 @@ class PurchaseController extends Controller
         if (!is_null($purchase_item->item_lot_group_id)) {
             $lot_group = ItemLotsGroup::find($purchase_item->item_lot_group_id);
         } else {
-            $lot_group = ItemLotsGroup::where('code', $purchase_item->lot_code)->first();
+            $lot_group = ItemLotsGroup::where('warehouse_id', $purchase_item->warehouse_id)->where('code', $purchase_item->lot_code)->where('item_id',$purchase_item->item_id)->first();
         }
 
         return $lot_group;
