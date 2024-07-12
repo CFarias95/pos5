@@ -51,7 +51,8 @@
             </div>
             <template>
                 <el-table :data="tableData" style="width: 100%">
-                    <el-table-column label="Serie" prop="serie.number"></el-table-column>
+                    <el-table-column label="Serie" prop="serie"></el-table-column>
+                    <el-table-column label="Descripción" prop="description"></el-table-column>
                     <el-table-column label="Número incial" prop="start"></el-table-column>
                     <el-table-column label="Número final" prop="end"></el-table-column>
                     <el-table-column label="Faltantes" prop="diff"></el-table-column>

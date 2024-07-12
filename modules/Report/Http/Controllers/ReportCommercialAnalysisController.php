@@ -19,12 +19,12 @@ use Modules\Report\Http\Resources\CommercialAnalysisCollection;
 
 class ReportCommercialAnalysisController extends Controller
 {
-   
+
     public function columns()
     {
         $categories = Category::all()->pluck('name')->toArray();
         return compact('categories');
-            
+
     }
     public function filter() {
 
@@ -38,16 +38,16 @@ class ReportCommercialAnalysisController extends Controller
         });
 
         $categories = Category::all();
-        
+
         return compact('document_types','establishments', 'categories');
     }
-      
+
 
     public function index() {
-       
+
         return view('report::commercial_analysis.index');
     }
-   
+
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), Person::class);
@@ -55,10 +55,10 @@ class ReportCommercialAnalysisController extends Controller
         return new CommercialAnalysisCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     public function getRecords($request, $model){
- 
- 
+
+
         $records = $this->data($request, $model);
 
         return $records;
@@ -73,33 +73,33 @@ class ReportCommercialAnalysisController extends Controller
         $category_id = $request['category_id'];
         // dd($request);
 
+        $data = $model::whereType('customers');
+
+        if($number){
+            $data->where('number', 'like', '%' . $number . '%');
+        }
+
+        if($person_type_id){
+            $data->where('person_type_id', 'like', '%' . $person_type_id . '%');
+        }
+
         if($category_id){
 
-            $data = $model::whereType('customers')        
-                        ->where('person_type_id', 'like', '%' . $person_type_id . '%')
-                        ->where('number', 'like', '%' . $number . '%')
-                        ->whereHas('documents.items.m_item.category',function($q) use($category_id){
+            $data->whereHas('documents.items.m_item.category',function($q) use($category_id){
                             $q->where('id', $category_id);
-                        })
-                        ->latest();
-        }else{
-
-            $data = $model::whereType('customers')        
-                        ->where('person_type_id', 'like', '%' . $person_type_id . '%')
-                        ->where('number', 'like', '%' . $number . '%') 
-                        ->latest();
+                        });
         }
-       
-        return $data;
-        
+
+        return $data->latest();
+
     }
-  
+
 
     public function excel(Request $request) {
-    
+
         $company = Company::first();
-        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment; 
-        
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
         $records = $this->getRecords($request->all(), Person::class)->get();
 
         // dd($records);
@@ -114,10 +114,10 @@ class ReportCommercialAnalysisController extends Controller
 
     public function data_table()
     {
-        
-        // $customers = $this->table('customers'); 
+
+        // $customers = $this->table('customers');
         $person_types = PersonType::get();
-        $categories = Category::get(); 
+        $categories = Category::get();
 
         return compact( 'person_types', 'categories');
 

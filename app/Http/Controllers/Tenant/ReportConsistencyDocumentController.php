@@ -52,7 +52,7 @@ class ReportConsistencyDocumentController extends Controller
         }
 
         return Series::query()
-            ->select('number')
+            //->select('number')
             ->with(['documents' => function ($queryDocuments) use ($dates) {
                 $queryDocuments->whereBetween('created_at', [
                         $dates['start_date'],
@@ -75,7 +75,8 @@ class ReportConsistencyDocumentController extends Controller
                 $byVoiding = (count($serie->documents) > 0) ? $serie->documents()->where('state_type_id', '13')->pluck('number')->toArray() : [];
 
                 return [
-                    'serie' => $serie,
+                    'serie' => $serie->number,
+                    'description' => $serie->document_type->description,
                     'start' => $start,
                     'end' => $end,
                     'diff' => join(', ', array_diff(range($start, $end), $numbers)),
