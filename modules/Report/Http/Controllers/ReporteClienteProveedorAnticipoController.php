@@ -2,11 +2,14 @@
 
 namespace Modules\Report\Http\Controllers;
 
+use App\Exports\AdvancesExport;
+use App\Exports\BalanceGeneralExport;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 //use App\Models\Tenant\Establishment;
 //use App\Models\Tenant\Document;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Person;
 use Carbon\Carbon;
 use Barryvdh\DomPDF\Facade as PDF;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -22,9 +25,37 @@ class ReporteClienteProveedorAnticipoController extends Controller
         return view('report::anticipos.index');
     }
 
+    public function tables(){
+
+        $persons = Person::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->name,
+                'document' => $row->number,
+                'type' => $row->type,
+            ];
+
+        });
+
+        return compact('persons');
+
+    }
     public function datosSP(Request $request)
     {
-        $sp = DB::connection('tenant')->select("CALL SP_Reporte_Anticipo_ClienteProveedor(?,?);", [$request->date_start, $request->date_end]);
+        $person = $request->person_id;
+        $status_id = $request->state_type;
+        $type_id = $request->type_id;
+
+        if($type_id == 'todos'){
+            $type_id = 2;
+        }
+        if($type_id == 'suppliers'){
+            $type_id = 1;
+        }
+        if($type_id == 'customers'){
+            $type_id = 0;
+        }
+        $sp = DB::connection('tenant')->select("CALL SP_Reporte_Anticipo_ClienteProveedor(?,?, ?, ?, ?);", [$request->date_start, $request->date_end,$person,$type_id,$status_id]);
         //Log::info($sp);
         $sp1 = array();
         $sp2 = [];
@@ -51,7 +82,7 @@ class ReporteClienteProveedorAnticipoController extends Controller
     {
         $company = Company::first();
         $records = DB::connection('tenant')->select("CALL SP_Reporte_Anticipo_ClienteProveedor(?,?);", [$request->date_start, $request->date_end]);
-        
+
         $sp1 = array();
         $sp2 = [];
         foreach($records as $row)
@@ -63,7 +94,7 @@ class ReporteClienteProveedorAnticipoController extends Controller
             }
             break;
         }
-        
+
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
 
@@ -76,50 +107,30 @@ class ReporteClienteProveedorAnticipoController extends Controller
 
     public function excel(Request $request)
     {
-        $detalle = null;
-        if($request->d == 'true')
-        {
-            $detalle = 1;
-        };
-        if($request->d == 'false'){
-            $detalle = 0;
-        }
-        $pormeses = null;
-        if($request->pormeses == 'false')
-        {
-            $pormeses = 0;
-        }
-        if($request->pormeses == 'true')
-        {
-            $pormeses = 1;
-        }
 
+        $person = $request->person_id;
+        $status_id = $request->state_type;
+        $type_id = $request->type_id;
+
+        if($type_id == 'todos'){
+            $type_id = 2;
+        }
+        if($type_id == 'suppliers'){
+            $type_id = 1;
+        }
+        if($type_id == 'customers'){
+            $type_id = 0;
+        }
+        $records = DB::connection('tenant')->select("CALL SP_Reporte_Anticipo_ClienteProveedor(?,?, ?, ?, ?);", [$request->date_start, $request->date_end,$person,$type_id,$status_id]);
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Balancegeneral(?,?,?,?);", [$detalle, $request->date_start, $request->date_end, $pormeses]);
-        
-        $sp1 = array();
-        $sp2 = [];
-        foreach($records as $row)
-        {
-            foreach($row as $key => $data)
-            {
-                array_push($sp1, $data);
-                array_push($sp2, $key);
-            }
-            break;
-        }
-
         $usuario_log = Auth::user();
-        $fechaActual = date('d/m/Y');
 
-        $documentExport = new BalanceGeneralExport();
+        $documentExport = new AdvancesExport();
         $documentExport
             ->records($records)
             ->company($company)
-            ->usuario_log($usuario_log)
-            ->fechaActual($fechaActual)
-            ->sp2($sp2);
+            ->usuario_log($usuario_log);
 
-        return $documentExport->download('Reporte_balance_general' . Carbon::now() . '.xlsx');
+        return $documentExport->download('Reporte_Anticipos_' . Carbon::now() . '.xlsx');
     }
 }

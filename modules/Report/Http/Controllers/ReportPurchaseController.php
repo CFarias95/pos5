@@ -5,6 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FunctionController;
+use App\Models\Tenant\Catalogs\RetentionType;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\PurchaseExport;
 use Illuminate\Http\Request;
@@ -250,7 +251,20 @@ class ReportPurchaseController extends Controller
         ];
         $imports = array_merge($importsT,$importsB->toArray());
 
-        return compact("suppliers","imports");
+        $iva_rets = RetentionType::where('active',1)->where('type_id','02')->get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' => $row->code . ' - '. $row->description .' - '. $row->percentage .'%'
+            ];
+        });
+        $renta_rets = RetentionType::where('active',1)->where('type_id','02')->get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' => $row->code . ' - '. $row->description .' - '. $row->percentage .'%'
+            ];
+        });
+
+        return compact("suppliers","imports", 'iva_rets', 'renta_rets');
 
     }
     public function excelStatement(Request $request)

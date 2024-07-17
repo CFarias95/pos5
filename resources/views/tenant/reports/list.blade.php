@@ -100,11 +100,11 @@
                                 Stock por fecha por Lote/Serie
                             </a>
                         </li>
-                        <li>
+                        {{-- <li>
                             <a href="{{route('tenant.recetas_kits.index')}}">
                                 Reporte Recetas - Kits
                             </a>
-                        </li>
+                        </li> --}}
                     </ul>
                 </div>
             </div>
@@ -344,6 +344,9 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.report_purchase_payments.index')}}">Reporte Pagos</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.reports.report_tocollect_2.index')}}">Cuentas por cobrar Conta</a>
                         </li>
                     </ul>
                 </div>

@@ -35,6 +35,29 @@
                 value-format="yyyy-MM-dd"
               ></el-date-picker>
             </div>
+            <div class="col-md-3">
+              <label class="control-label">Estado</label>
+              <el-select v-model="form.state_type">
+                <el-option :key="0" :value="2" label="Todos"></el-option>
+                <el-option :key="1" :value="1" label="Usados"></el-option>
+                <el-option :key="2" :value="0" label="No usados"></el-option>
+              </el-select>
+            </div>
+            <div class="col-md-3">
+              <label class="control-label">Tipo</label>
+              <el-select v-model="form.type_id" @change = "changeType">
+                <el-option :key="0" value="todos" label="Todos"></el-option>
+                <el-option :key="1" value="suppliers" label="Proveedores"></el-option>
+                <el-option :key="2" value="customers" label="Clientes"></el-option>
+              </el-select>
+            </div>
+            <div class="col-md-3">
+              <label class="control-label">Cliente/Proveedor</label>
+              <el-select v-model="form.person_id" filterable>
+                <el-option :key="0" :value="0" label="Todos"></el-option>
+                <el-option v-for="option in persons" :key="option.id" :value="option.id" :label="option.name"></el-option>
+              </el-select>
+            </div>
             <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top: 29px">
               <el-button
                 class="submit"
@@ -44,10 +67,10 @@
                 >Buscar
               </el-button>
 
-              <!-- <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"
+              <el-button class="submit" type="success" @click.prevent="clickDownloadExcel"
                 ><i class="fa fa-file-excel"></i>
                 Exportar Excel
-              </el-button> -->
+              </el-button>
 
               <el-button class="submit" type="success" @click.prevent="clickDownloadPDF"
                 ><i class="fa fa-file-pdf"></i>
@@ -130,6 +153,8 @@ export default {
       records: [],
       pagination: {},
       search: {},
+      persons_all: [],
+      persons: [],
       pickerOptionsDates: {
         disabledDate: (time) => {
           time = moment(time).format("YYYY-MM-DD");
@@ -140,9 +165,12 @@ export default {
   },
   created() {
     this.initForm();
-    /*this.$eventHub.$on('reloadData', () => {
-                this.getRecords()
-            })*/
+    this.$http.get(`/${this.resource}/tables`).then((response) => {
+            if(response.data){
+                this.persons_all = response.data.persons
+                this.persons = response.data.persons
+            }
+        });
   },
 
   async mounted() {
@@ -164,11 +192,13 @@ export default {
 
       window.open(`/${this.resource}/excel/?${query}`, "_blank");
     },
-
     initForm() {
       this.form = {
         date_start: moment().format("YYYY-MM-DD"),
         date_end: moment().format("YYYY-MM-DD"),
+        state_type : 2,
+        type_id : 'todos',
+        person_id : 0,
       };
     },
     customIndex(index) {
@@ -200,6 +230,11 @@ export default {
         ...this.form,
       });
     },
+    changeType(){
+        if(this.form.type_id != 'todos'){
+            this.persons = this.persons_all.filter((i) => i.type == this.form.type_id)
+        }
+    }
   },
 };
 </script>

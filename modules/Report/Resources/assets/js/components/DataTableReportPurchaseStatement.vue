@@ -53,7 +53,7 @@
                         </el-select>
                     </div>
 
-                    <div class="col-md-3" v-if="show_imports">
+                    <div class="col-md-3" v-if="show_imports == true">
                         <label class="control-label">Importación</label>
                         <el-select v-model="form.import" filterable clearable>
                             <el-option v-for="row in imports" :key="row.id" :label="row.name"
@@ -94,10 +94,11 @@
                         <el-switch v-model="form.paid">
                         </el-switch>
                     </div>
+
                     <div class="col-md-3" v-if="show_toPay">
                         <label class="control-label">Valor pendiente</label>
                         <el-input type="number" v-model="form.to_pay"></el-input>
-                        </el-switch>
+
                     </div>
 
                     <div class="col-md-3" v-if="show_codproveedor">
@@ -120,13 +121,27 @@
                         <el-input v-model="form.importe"></el-input>
                     </div>
 
+                    <div class="col-md-3" v-if="show_suppliers">
+                        <label class="control-label">Retencion Renta</label>
+                        <el-select v-model="form.iva_ret">
+                            <el-option :key="0" label="Todos" :value="0"></el-option>
+                            <el-option v-for="option in iva_rets" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                        </el-select>
+                    </div>
+
+                    <div class="col-md-3" v-if="show_suppliers">
+                        <label class="control-label">Retencion Iva</label>
+                        <el-select v-model="form.renta_ret">
+                            <el-option :key="0" label="Todos" :value="0"></el-option>
+                            <el-option v-for="option in renta_rets" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                        </el-select>
+                    </div>
                     <div class="col-md-3" v-if="show_agrupado">
                         <label class="control-label">Agrupado</label>
                         <br>
                         <el-switch v-model="form.agrupado"></el-switch>
                     </div>
-
-                    <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
+                    <div class="col-lg-12 col-md-12 col-md-12 col-sm-12" style="margin-top:29px">
                         <el-button :loading="loading_submit" class="submit" icon="el-icon-search" type="primary"
                             @click.prevent="getRecordsByFilter">Buscar
                         </el-button>
@@ -134,17 +149,26 @@
                             @click.prevent="clickDownload('excel')">Descargar excel
                         </el-button>
                     </div>
-                    <div class="col-md-2 mt-5 text-right">
+                    <div class="col-md-2 mt-5 text-right" v-if="show_purchase_statement">
+                        <el-badge :value="getCurrentBalancePurchases" class="item">
+                            <span size="small">Total</span>
+                        </el-badge>
+                    </div>
+                    <div class="col-md-2 mt-5" v-if="show_purchase_statement">
                         <el-badge :value="getCurrentBalance" class="item">
                             <span size="small">Saldo pendiente</span>
                         </el-badge>
                     </div>
-                    <div class="col-md-2 mt-5 text-right">
+                    <div class="col-md-2 mt-5" v-if="show_purchase_statement">
                         <el-badge :value="getCurrentBalancePaid" class="item" type="warning">
                             <span size="small">Saldo pagado</span>
                         </el-badge>
                     </div>
-
+                    <div class="col-md-2 mt-5" v-if="show_retention_statement" text-right >
+                        <el-badge :value="getCurrentBalanceRET" class="item">
+                            <span size="small">Total Retenido</span>
+                        </el-badge>
+                    </div>
                 </div>
                 <div class="row mt-1 mb-4">
                 </div>
@@ -233,6 +257,8 @@ export default {
                 agrupado: 0,
                 ffin: null,
                 fini: null,
+                iva_ret : 0,
+                renta_ret : 0,
             },
             pickerOptionsDates: {
                 disabledDate: (time) => {
@@ -287,7 +313,11 @@ export default {
                     'name': 'Entre fechas',
                     'value': 'between_dates'
                 },
-            ]
+            ],
+            iva_rets:[],
+            renta_rets:[],
+            show_purchase_statement : false,
+            show_retention_statement : false,
         }
     },
     computed: {
@@ -305,13 +335,24 @@ export default {
                 return parseFloat(item.pagado);
             }).toFixed(2);
         },
+        getCurrentBalancePurchases(){
+            return _.sumBy(this.records, function (item) {
+                return parseFloat(item.TOTAL);
+            }).toFixed(2);
+        },
+        getCurrentBalanceRET(){
+            return _.sumBy(this.records, function (item) {
+                return parseFloat(item.Importe_retenido);
+            }).toFixed(2);
+        },
+
     },
     created() {
         this.initForm()
         this.$eventHub.$on('reloadData', () => {
             this.getRecords()
         })
-        //console.log(this.resource)
+        console.log('resource: ',this.resource)
     },
     async mounted() {
 
@@ -392,15 +433,35 @@ export default {
             ]
             this.form.period = 'date'
         } else if (this.resource == 'reports/retentions') {
-            this.show_imports = true
-            this.show_suppliers = true
+            this.show_imports = false;
+            this.show_suppliers = true;
+            this.show_agrupado = false;
+            this.show_ffin = true;
+            this.show_fini = true;
+            this.show_codvendedor = false;
+            this.show_codcliente = false;
+            this.show_codproveedor = false;
+            this.show_periodo = false;
+            this.show_retention_statement = true;
+        }else if (this.resource == 'reports/purchases/statement'){
+            this.show_purchase_statement = true;
+        }else if (this.resource == 'reports/tocollect2'){
+            this.show_imports = false
+            this.show_suppliers = false
             this.show_agrupado = false
-            this.show_ffin = true
-            this.show_fini = true
+            this.show_ffin = false
+            this.show_fini = false
             this.show_codvendedor = false
             this.show_codcliente = false
             this.show_codproveedor = false
-            this.show_periodo = false
+            this.dates_array = [
+                {
+                    'key': 'date',
+                    'name': 'Fecha Corte',
+                    'value': 'date'
+                }
+            ]
+            this.form.period = 'date'
         }
 
         await this.getFilters()
@@ -450,6 +511,8 @@ export default {
                 codcliente: 0,
                 to_pay: 0,
                 paid: false,
+                iva_ret:0,
+                renta_ret:0,
             }
         },
         customIndex(index) {
@@ -471,6 +534,8 @@ export default {
                 this.vendedores = response.data.vendedores
                 this.clientes = response.data.clientes
                 this.proveedores = response.data.proveedores
+                this.iva_rets = response.data.iva_rets
+                this.renta_rets = response.data.renta_rets
             });
         },
         getRecords() {

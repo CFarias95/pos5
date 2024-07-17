@@ -10,6 +10,8 @@ use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Quotation;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Person;
+use App\Models\Tenant\PurchaseDocumentTypes2;
 use App\Models\Tenant\Rate;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
@@ -30,9 +32,28 @@ class ReportBaseImpuestosController extends Controller
         return view('report::base_impuestos.index');
     }
 
+    public function tables(){
+        $doc_types = PurchaseDocumentTypes2::get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' => $row->description,
+            ];
+        });
+
+        $suppliers = Person::where('type','suppliers')->get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'name' => $row->number .' - '. $row->name,
+            ];
+        });
+
+        return compact('doc_types','suppliers');
+
+    }
+
     public function datosSP(Request $request)
     {
-        $sp = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?);", [$request->date_start, $request->date_end]);
+        $sp = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?,?,?);", [$request->date_start, $request->date_end,$request->supplier_id,$request->doc_type_id]);
         //Log::info("SP".json_encode($sp));
         $collection = collect($sp);
         $per_page = (config('tenant.items_per_page'));
@@ -49,7 +70,8 @@ class ReportBaseImpuestosController extends Controller
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?);",[$request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?,?,?);", [$request->date_start, $request->date_end,$request->supplier_id,$request->doc_type_id]);
+
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');
@@ -67,7 +89,7 @@ class ReportBaseImpuestosController extends Controller
     public function excel(Request $request) {
 
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?);",[$request->date_start, $request->date_end]);
+        $records = DB::connection('tenant')->select("CALL SP_ComprasBaseImpuestos(?,?,?,?);", [$request->date_start, $request->date_end,$request->supplier_id,$request->doc_type_id]);
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');

@@ -45,6 +45,11 @@ if ($current_hostname) {
                 Route::get('tocollect/excel','ReportsFinancesController@excelToCollect');
                 Route::get('tocollect/tables','ReportsFinancesController@tablesStatement');
 
+                Route::get('tocollect2','ReportsFinancesController@reportToCollect2Index')->name('tenant.reports.report_tocollect_2.index');
+                Route::get('tocollect2/records', 'ReportsFinancesController@reportToCollect2Records');
+                Route::get('tocollect2/excel','ReportsFinancesController@excelToCollect2');
+
+
                 //SP Recetas - Kits
                 Route::prefix('recetas_kits')->group(function () {
                     Route::get('', 'RecetasKitsController@index')
@@ -71,17 +76,8 @@ if ($current_hostname) {
                         ->name('tenant.anticipos_reporte.index');
                     Route::get('/pdf', 'ReporteClienteProveedorAnticipoController@pdf');
                     Route::get('/datosSP', 'ReporteClienteProveedorAnticipoController@datosSP');
-                    /*Route::get('/excel', 'PlanCuentasController@excel')
-                        ->name('tenant.plan_cuentas.excel');
-                    Route::get('/records', 'PlanCuentasController@records')
-                        ->name('tenant.plan_cuentas.records');
-                    Route::get('/filter', 'PlanCuentasController@filter')
-                        ->name('tenant.plan_cuentas.filter');
-                    Route::get('/item/tables', 'PlanCuentasController@item_tables')
-                        ->name('tenant.plan_cuentas.item_tables');
-                    Route::get('/tables', 'PlanCuentasController@tables')
-                        ->name('tenant.plan_cuentas.tables');
-                    Route::get('/columns', 'PlanCuentasController@columns');*/
+                    Route::get('/excel', 'ReporteClienteProveedorAnticipoController@excel');
+                    Route::get('/tables', 'ReporteClienteProveedorAnticipoController@tables');
 
                 });
                 //SP Reporte Cobros Defectuosos
@@ -165,6 +161,7 @@ if ($current_hostname) {
                         Route::get('excel', 'ReportBaseImpuestosController@excel');
                         Route::get('pdf', 'ReportBaseImpuestosController@pdf');
                         Route::get('datosSP', 'ReportBaseImpuestosController@datosSP');
+                        Route::get('tables', 'ReportBaseImpuestosController@tables');
                     });
                 });
                 /**
@@ -287,7 +284,7 @@ if ($current_hostname) {
                     ->name('tenant.reports.document_hotels.records');
 
 
-                
+
                 Route::prefix('stock')->group(function () {
                     Route::get('/', 'ReportStockAlmacenController@index')
                         ->name('tenant.reports.stock.index');
@@ -304,6 +301,8 @@ if ($current_hostname) {
                     Route::get('excel', 'ReportStockFechaController@excel');
                     Route::get('pdf', 'ReportStockFechaController@pdf');
                     Route::get('datosSP', 'ReportStockFechaController@datosSP');
+                    Route::get('tables', 'ReportStockFechaController@tables');
+
                 });
 
                 /**

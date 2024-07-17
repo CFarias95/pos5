@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Modules\Report\Traits\ReportTrait;
 use App\Models\Tenant\Establishment;
 use App\Models\Tenant\Company;
+use App\Models\Tenant\Item;
 use Carbon\Carbon;
 use Illuminate\Pagination\LengthAwarePaginator;
 use Illuminate\Support\Facades\Auth;
@@ -29,7 +30,7 @@ class ReportStockFechaController extends Controller
 
     public function datosSP()
     {
-        $sp = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?);",[request()->query('date')]);
+        $sp = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?,?);",[request()->query('date'),request()->query('item_id')]);
         $sp1 = array();
         $sp2 = [];
         foreach($sp as $row)
@@ -50,12 +51,24 @@ class ReportStockFechaController extends Controller
         return new ReportStockFechaCollection($paginatedCollection);
     }
 
+    public function tables(){
+
+        $items = Item::get()->transform(function($row){
+            return [
+                'id' => $row->id,
+                'description' => $row->name.'/'.$row->description.'/'.$row->internal_id.'/'.$row->model.'/'.$row->factory_code,
+            ];
+        });
+
+        return compact('items');
+    }
+
 
     public function pdf(Request $request) {
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
-        $records = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?);",[request()->query('date')]);
+        $records = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?,?);",[request()->query('date'),request()->query('item_id')]);
         $sp1 = array();
         $sp2 = [];
         foreach($records as $row)
@@ -80,7 +93,7 @@ class ReportStockFechaController extends Controller
     public function excel(Request $request) {
 
         $company = Company::first();
-        $records = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?);",[request()->query('date')]);
+        $records = DB::connection('tenant')->select("CALL SP_Stock_Fecha_LoteSerie(?,?);",[request()->query('date'),request()->query('item_id')]);
         $filters = $request->all();
         $usuario_log = Auth::user();
         $fechaActual = date('d/m/Y');

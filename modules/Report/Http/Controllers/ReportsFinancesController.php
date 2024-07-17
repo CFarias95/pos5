@@ -5,6 +5,7 @@ namespace Modules\Report\Http\Controllers;
 use App\Models\Tenant\Catalogs\DocumentType;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\FunctionController;
+use App\Models\Tenant\Catalogs\RetentionType;
 use Barryvdh\DomPDF\Facade as PDF;
 use Modules\Report\Exports\PurchaseExport;
 use Illuminate\Http\Request;
@@ -60,6 +61,12 @@ class ReportsFinancesController extends Controller
     public function reportToCollectIndex(Request $request)
     {
         return view('report::finances.toCollect.index');
+    }
+
+    //index para reporte de cuentas por cobrar 2
+    public function reportToCollect2Index(Request $request)
+    {
+        return view('report::finances.to_collect_2.index');
     }
 
     //RECORDS DE RETENCIONES
@@ -329,6 +336,18 @@ class ReportsFinancesController extends Controller
         return $paginator;
     }
 
+    //RECORDS DE CUENTAS POR Cobrar 2
+    public function reportToCollect2Records(Request $request)
+    {
+
+        $page = FunctionController::InArray($request, 'page');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $records = DB::connection('tenant')->select('CALL SP_Cuentasporcobrarconta(?)', [$date_start]);
+        $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
+        $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
+        return $paginator;
+    }
+
     public function records(Request $request)
     {
         $records = $this->getRecords($request->all(), Purchase::class);
@@ -416,7 +435,10 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_retention_statement(?, ?, ?, ?)', [$d_start, $d_end, $supplier, $import]);
+        $iva = FunctionController::InArray($request, 'iva_ret');
+        $renta = FunctionController::InArray($request, 'renta_ret');
+
+        $records = DB::connection('tenant')->select('CALL SP_retention_statement(?, ?, ?, ?, ?, ?)', [$d_start, $d_end, $supplier, $import, $iva, $renta]);
         $recordsPaginated = $this->paginarArray($records, $page, config('tenant.items_per_page'));
         $paginator = new LengthAwarePaginator($recordsPaginated, count($records), config('tenant.items_per_page'));
         return $paginator;
@@ -543,9 +565,21 @@ class ReportsFinancesController extends Controller
         $clientesA = Person::where('type', 'customers')->get();
         $clientes = array_merge($clientesT, $clientesA->toArray());
 
+        $iva_rets = RetentionType::where('active',1)->where('type_id','02')->get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' => $row->code . ' - '. $row->description .' - '. $row->percentage .'%'
+            ];
+        });
+        $renta_rets = RetentionType::where('active',1)->where('type_id','02')->get()->transform(function($row){
+            return[
+                'id' => $row->id,
+                'name' => $row->code . ' - '. $row->description .' - '. $row->percentage .'%'
+            ];
+        });
         //$proveedores = Person::where('type', 'supplier')->get();
 
-        return compact("suppliers", "imports", "vendedores", "clientes");
+        return compact("suppliers", "imports", "vendedores", "clientes", 'iva_rets', 'renta_rets');
     }
 
     public function excelRetentions(Request $request)
@@ -582,7 +616,10 @@ class ReportsFinancesController extends Controller
                 break;
         }
 
-        $records = DB::connection('tenant')->select('CALL SP_retention_statement(?, ?, ? ,?)', [$d_start, $d_end, $supplier, $import]);
+        $iva = FunctionController::InArray($request, 'iva_ret');
+        $renta = FunctionController::InArray($request, 'renta_ret');
+
+        $records = DB::connection('tenant')->select('CALL SP_retention_statement(?, ?, ? ,?, ?, ?)', [$d_start, $d_end, $supplier, $import, $iva, $renta]);
 
         $company = Company::first();
         $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
@@ -832,5 +869,24 @@ class ReportsFinancesController extends Controller
             ->filters($filters)
             ->title('Cuentas por Cobrar')
             ->download('Cuentas_por_Cobrar_' . Carbon::now() . '.xlsx');
+    }
+
+    public function excelToCollect2(Request $request){
+
+        $page = FunctionController::InArray($request, 'page');
+        $date_start = FunctionController::InArray($request, 'date_start');
+        $records = DB::connection('tenant')->select('CALL SP_Cuentasporcobrarconta(?)', [$date_start]);
+
+        $company = Company::first();
+        $establishment = ($request->establishment_id) ? Establishment::findOrFail($request->establishment_id) : auth()->user()->establishment;
+
+
+        return (new PurchaseStatementExport)
+            ->records($records)
+            ->company($company)
+            ->establishment($establishment)
+            ->filters([])
+            ->title('Cuentas por Cobrar')
+            ->download('Cuentas_por_Cobrar_Conta_' . Carbon::now() . '.xlsx');
     }
 }

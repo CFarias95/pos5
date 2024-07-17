@@ -44,6 +44,7 @@
                         <th>Usuario asociado</th>
                         <th>Tipo Documento</th>
                         <th class="text-center">Documento</th>
+                        <th class="text-center">Estado</th>
                         <th class="text-center">Fecha y hora registro</th>
                         <th class="text-center">Fecha y hora actualización</th>
                     </tr>
@@ -65,6 +66,9 @@
                         </td>
                         <td>
                             {{ $value->number_full }}
+                        </td>
+                        <td>
+                            {{ $value->state_type }}
                         </td>
                         <td>
                             {{ $value->created_at }}

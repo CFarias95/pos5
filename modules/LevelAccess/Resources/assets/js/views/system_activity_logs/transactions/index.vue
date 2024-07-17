@@ -20,6 +20,7 @@
                         <th>Usuario asociado</th>
                         <th>Tipo Documento</th>
                         <th class="text-center">Documento</th>
+                        <th class="text-center">Estado</th>
                         <th class="text-center">Fecha y hora registro</th>
                         <th class="text-center">Fecha y hora actualización</th>
                     <tr>
@@ -29,6 +30,7 @@
                         <td>{{ row.user_name }}</td>
                         <td>{{ row.document_type_description }}</td>
                         <td class="text-center">{{ row.number_full }}</td>
+                        <td>{{ row.state_type }}</td>
                         <td class="text-center">{{ row.created_at }}</td>
                         <td class="text-center">{{ row.updated_at }}</td>
                     </tr>

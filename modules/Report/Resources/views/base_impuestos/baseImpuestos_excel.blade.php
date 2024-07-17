@@ -13,38 +13,38 @@
                 font-family: sans-serif;
                 font-size: 12px;
             }
-            
+
             table {
                 width: 100%;
                 border-spacing: 0;
                 border: 1px solid black;
             }
-            
+
             .celda {
                 text-align: left;
                 padding: 5px;
                 border: 0.1px solid black;
             }
-            
+
             th {
                 padding: 5px;
                 text-align: center;
                 border-color: #0088cc;
                 border: 0.1px solid black;
             }
-            
+
             .title {
                 font-weight: bold;
                 padding: 5px;
                 font-size: 20px !important;
                 text-decoration: underline;
             }
-            
+
             p>strong {
                 margin-left: 5px;
                 font-size: 13px;
             }
-            
+
             thead {
                 font-weight: bold;
                 background: #0088cc;
@@ -81,7 +81,7 @@
             <h2 align="center" class="title"><strong>Compras Base e Impuestos</strong></h2>
         </div>
         <div style="margin-top:20px; margin-bottom:20px;">
-            
+
         </div>
         @if(!empty($records))
             <div class="">
@@ -91,6 +91,7 @@
                             <tr>
                                 <th class="">Tipo Doc. Interno</th>
                                 <th class="">Tipo Documento</th>
+                                <th class="">Estado</th>
                                 <th class="">Código Tipo Doc. SRI</th>
                                 <th class="">Tipo Doc. SRI</th>
                                 <th class="">Serie Interna</th>
@@ -113,6 +114,7 @@
                                 <tr>
                                     <td class="celda">{{ $row->Tipodocinterno }}</td>
                                     <td class="celda">{{ $row->Tipodocumento }}</td>
+                                    <td class="celda">{{ $row->Estado }}</td>
                                     <td class="celda">{{ $row->Codtipodocsri }}</td>
                                     <td class="celda">{{ $row->Tipodocsri }}</td>
                                     <td class="celda">{{ $row->Serieinterna }}</td>

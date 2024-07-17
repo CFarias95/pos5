@@ -8,12 +8,12 @@ use Illuminate\Database\Eloquent\Builder;
 
 
 trait ElectronicDocumentTrait
-{ 
+{
 
     /**
-     * 
+     *
      * Filtro para obtener el registro de actividades de los documentos electronicos individuales
-     * 
+     *
      * Usado para:
      * Document
      * Dispatch
@@ -31,34 +31,46 @@ trait ElectronicDocumentTrait
                     ->table($table)
                     ->join('users', 'users.id', '=', "{$table}.user_id")
                     ->join('cat_document_types', 'cat_document_types.id', '=', "{$table}.document_type_id")
-                    ->select(DB::raw(
-                        "{$table}.id as id, ".
-                        "users.id as user_id, ".
-                        "users.name as user_name, ".
-                        "{$table}.date_of_issue as date_of_issue, ".
-                        "{$table}.time_of_issue as time_of_issue,".
-                        "cat_document_types.id AS 'document_type_id',". 
-                        "cat_document_types.description AS 'document_type_description',". 
-                        "{$table}.series as series,".
-                        "{$table}.number as number,".
-                        "CONCAT({$table}.series, '-', {$table}.number) as number_full,".
-                        "{$table}.created_at as created_at, ".
-                        "{$table}.updated_at as updated_at "
-                    ));
+                    ->join('state_types','state_types.id','=',"{$table}.state_type_id");
+
 
         if($request->value)
         {
             $query->where($request->column, 'like', "%{$request->value}%");
         }
+        if($request->user)
+        {
+            $query->where('users.id', $request->user);
+        }
+        if($request->document_type)
+        {
+            $query->where('cat_document_types.id', $request->document_type);
+        }
+
+        $query->select(DB::raw(
+            "{$table}.id as id, ".
+            "users.id as user_id, ".
+            "users.name as user_name, ".
+            "{$table}.date_of_issue as date_of_issue, ".
+            "{$table}.time_of_issue as time_of_issue,".
+            "cat_document_types.id AS 'document_type_id',".
+            "cat_document_types.description AS 'document_type_description',".
+            "{$table}.series as series,".
+            "{$table}.number as number,".
+            "CONCAT({$table}.series, '-', {$table}.number) as number_full,".
+            "state_types.description as state_type,".
+            "{$table}.created_at as created_at, ".
+            "{$table}.updated_at as updated_at "
+        ));
 
         return $query;
     }
 
-        
+
     /**
-     * 
+     *
      * Filtro para obtener el registro de actividades de resumenes y anulaciones
-     * 
+     *
      * Usado para:
      * Summary
      * Voided
@@ -91,9 +103,9 @@ trait ElectronicDocumentTrait
         return $this->getBaseQuerySummaryVoided($table, $document_type_id, $request, 'ANULACIÓN');
     }
 
-    
+
     /**
-     * 
+     *
      * Consulta base para resumenes y anulaciones
      *
      * @param  string $table
@@ -113,8 +125,8 @@ trait ElectronicDocumentTrait
                         "users.name as user_name, ".
                         "{$table}.date_of_issue as date_of_issue, ".
                         "null as time_of_issue,".
-                        "'{$document_type_id}' AS 'document_type_id',". 
-                        "'{$document_type_description}' AS 'document_type_description',". 
+                        "'{$document_type_id}' AS 'document_type_id',".
+                        "'{$document_type_description}' AS 'document_type_description',".
                         "null as series,".
                         "null as number,".
                         "{$table}.identifier as number_full,".
@@ -132,9 +144,9 @@ trait ElectronicDocumentTrait
 
 
     /**
-     * 
+     *
      * Filtro para obtener el registro de actividades de los documentos electronicos
-     * 
+     *
      * Usado para:
      * Document
      * Dispatch
@@ -144,7 +156,7 @@ trait ElectronicDocumentTrait
      *
      * @param Builder $query
      * @return Builder
-     */  
+     */
     // public function scopeFiltersSystemActivityLogTransactions($query)
     // {
     //     return $query->whereFilterWithOutRelations()
@@ -168,5 +180,5 @@ trait ElectronicDocumentTrait
     //                     },
     //                 ]);
     // }
-    
+
 }

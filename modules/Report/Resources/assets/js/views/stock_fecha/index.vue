@@ -30,19 +30,27 @@
                         </div>
                     </div>
                 </div>
+                <div class="row mt-2">
+                    <el-label>Producto:</el-label>
+                    <el-select v-model="form.item_id" clearable filterable>
+                        <el-opton :value="0" :label="Todos" :key="0"></el-opton>
+                        <el-option v-for="option in items" :key="option.id" :label="option.description" :value="option.id" >
+                        </el-option>
+                    </el-select>
+                </div>
                 <br />
                 <div class="row mt-2 d-flex justify-content-left">
-                    <div class="">
+                    <div class="col-md-2">
                         <el-button :loading="loading_submit" class="submit" type="primary" @click.prevent="getRecordsByFilter">
                             <i class="el-icon-search"></i> Buscar
                         </el-button>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <el-button class="submit" type="success" @click.prevent="clickDownloadExcel">
                             <i class="fa fa-file-excel"></i> Exportar Excel
                         </el-button>
                     </div>
-                    <div class="col-md-1">
+                    <div class="col-md-2">
                         <el-button class="submit" type="danger" @click.prevent="clickDownloadPDF">
                             <i class="fa fa-file-pdf"></i> Exportar PDF
                         </el-button>
@@ -113,7 +121,8 @@ export default {
         return {
             resource: "reports/stock_fecha",
             form: {
-                date: null
+                date: null,
+                item_id : 0
             },
             loading_submit: false,
             records: [],
@@ -126,6 +135,7 @@ export default {
         };
     },
     created() {
+
         this.initForm();
         this.$eventHub.$on("reloadData", () => {
             this.getRecordsByFilter();
@@ -149,8 +159,12 @@ export default {
                 "_blank"
             );
         },
-
         initForm() {
+            this.$http.get(`/${this.resource}/tables`)
+            .then(response => {
+                this.items = response.data.items;
+            });
+
             this.form = {
                 date: moment().format("YYYY-MM-DD")
             };

@@ -18,8 +18,10 @@ use App\Models\Tenant\{
     Retention,
     Voided,
     Summary,
+    User,
 };
 use App\Http\Controllers\Controller;
+use App\Models\Tenant\Catalogs\DocumentType;
 use Modules\LevelAccess\Exports\GeneralFormatExport;
 
 
@@ -27,7 +29,7 @@ class SystemActivityLogTransactionController extends Controller
 {
 
     use ElectronicDocumentTrait;
-    
+
 
     public function index()
     {
@@ -37,17 +39,27 @@ class SystemActivityLogTransactionController extends Controller
 
     public function columns()
     {
-        return [
+        $columns =  [
             'date_of_issue' => 'Fecha emisión',
             'time_of_issue' => 'Hora emisión',
         ];
+        $document_types = DocumentType::where('active',1)->get();
+        $users = User::get()->transform(function($row){
+            return [
+
+                'id' =>$row->id,
+                'name' => $row->name
+            ];
+        });
+
+        return compact('columns','document_types','users');
     }
 
-    
+
     /**
-     * 
+     *
      * Actividades del sistema - transacciones
-     * 
+     *
      *
      * @param  Request $request
      * @return SystemActivityTransactionCollection
@@ -55,13 +67,13 @@ class SystemActivityLogTransactionController extends Controller
     public function records(Request $request)
     {
         $records = $this->getRecords($request);
-        
+
         return new SystemActivityTransactionCollection($records->paginate(config('tenant.items_per_page')));
     }
 
-    
+
     /**
-     * 
+     *
      * @param  Request $request
      * @return Builder
      */
@@ -71,23 +83,23 @@ class SystemActivityLogTransactionController extends Controller
         $dispatches = $this->getQuerySystemActivityLogTransaction('dispatches', $request);
         $perceptions = $this->getQuerySystemActivityLogTransaction('perceptions', $request);
         $purchase_settlements = $this->getQuerySystemActivityLogTransaction('purchase_settlements', $request);
-        $retentions = $this->getQuerySystemActivityLogTransaction('retentions', $request);
+        //$retentions = $this->getQuerySystemActivityLogTransaction('retentions', $request);
 
         $summaries = $this->getQuerySystemActivityLogTransactionGroup('summaries', 'RC', $request);
-        $summary_voided = $this->getQuerySystemActivityLogTransactionGroup('summaries', 'RC', $request, true);
-        $voided = $this->getQuerySystemActivityLogTransactionGroup('voided', 'RA', $request);
+        //$summary_voided = $this->getQuerySystemActivityLogTransactionGroup('summaries', 'RC', $request, true);
+        //$voided = $this->getQuerySystemActivityLogTransactionGroup('voided', 'RA', $request);
 
 
         $records = $documents->union($dispatches)
-                            ->union($perceptions)->union($purchase_settlements)
-                            ->union($retentions)->union($summaries)
-                            ->union($summary_voided)->union($voided);
+                            ->union($perceptions)->union($purchase_settlements);
+                            //->union($retentions)->union($summaries)
+                            //->union($summary_voided)->union($voided);
 
 
         return $records->orderBy('date_of_issue', 'desc')->orderBy('time_of_issue', 'desc');
     }
 
-    
+
     /**
      *
      * @param  string $type
@@ -106,7 +118,7 @@ class SystemActivityLogTransactionController extends Controller
                 'company' => $header_data['company'],
                 'records' => $records,
             ];
-            
+
             $general_format_export = new GeneralFormatExport();
             $general_format_export->view_name("levelaccess::system_activity_logs.reports.transactions_{$type}")->data($data);
 

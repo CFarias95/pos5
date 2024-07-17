@@ -65,12 +65,7 @@ class ReportCustomerController extends Controller
 
         $d_start = null;
         $d_end = null;
-        /** @todo: Eliminar periodo, fechas y cambiar por
 
-        $date_start = $request['date_start'];
-        $date_end = $request['date_end'];
-        \App\CoreFacturalo\Helpers\Functions\FunctionsHelper\FunctionsHelper::setDateInPeriod($request, $date_start, $date_end);
-         */
         switch ($period) {
             case 'month':
                 $d_start = Carbon::parse($month_start.'-01')->format('Y-m-d');
@@ -104,7 +99,7 @@ class ReportCustomerController extends Controller
 
         $data = $model::whereBetween('date_of_issue', [$date_start, $date_end])
                         ->where('customer_id', $person_id)
-                        ->whereIn('document_type_id', ['01','03'])
+                        //->whereIn('document_type_id', ['01','03'])
                         ->whereIn('state_type_id', ['01','03','05','07','13'])
                         ->latest()
                         ->whereTypeUser();

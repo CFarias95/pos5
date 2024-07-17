@@ -64,7 +64,7 @@ class SaleConsolidatedCollection extends ResourceCollection
                 'brand' => $brand,
                 // 'category' => $category,
                 'category_name' => optional($row->relation_item->category)->name,
-                'item_description' => $row->item->description,
+                'item_description' => $row->item->name.'/'.$row->item->description.'/'.$row->item->model.'/'.$row->item->internal_id.'/'.$row->item->factory_code,
                 'item_quantity' => $row->quantity,
                 'total_sale' => $unit_price * $row->quantity,
                 'series' => $row->series ?? 'NV',

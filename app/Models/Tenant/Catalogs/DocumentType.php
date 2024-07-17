@@ -69,6 +69,7 @@
         public $incrementing = false;
         protected $table = "cat_document_types";
         protected $fillable = [
+            'id',
             'active',
             'short',
             'description'
@@ -297,7 +298,7 @@
 
         }
 
-        
+
         /**
          * @return Builder
          */
@@ -308,12 +309,12 @@
 
 
         /**
-         * 
+         *
          * Filtro para la descripción
          *
          * @param Builder $query
          * @return Builder
-         */  
+         */
         public function scopeFilterOnlyDescription($query)
         {
             return $query->select('id', 'description');

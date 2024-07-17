@@ -53,6 +53,19 @@
                             </el-input>
                         </template>
                     </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2" >
+                        <el-label>Tipo de Documento</el-label>
+                        <el-select v-model="search.document_type" @change="getRecords" clearable >
+                            <el-option v-for="option in document_types" :key="option.id" :value="option.id" :label="option.description" ></el-option>
+                        </el-select>
+                    </div>
+                    <div class="col-lg-4 col-md-4 col-sm-12 pb-2" >
+                        <el-label>Usuario</el-label>
+                        <el-select v-model="search.user" @change="getRecords" clearable >
+                            <el-option v-for="option in users" :key="option.id" :value="option.id" :label="option.name" ></el-option>
+                        </el-select>
+                    </div>
+
                     <div class="col-lg-4 col-md-4 col-sm-12 pb-2" v-if="records.length > 0">
                         <el-button class="submit" type="success" @click.prevent="clickDownload('excel')"><i class="fa fa-file-excel" ></i>  Exportal Excel</el-button>
                     </div>
@@ -111,12 +124,16 @@ export default {
         return {
             search: {
                 column: null,
-                value: null
+                value: null,
+                document_type: null,
+                user:null
             },
             columns: [],
             records: [],
             pagination: {},
             loading_submit: false,
+            document_types:[],
+            users:[],
         };
     },
     created() {
@@ -129,13 +146,23 @@ export default {
         await this.$http
             .get(`/${this.resource}/columns`)
             .then(response => {
-                this.columns = response.data;
-                this.search.column = _.head(Object.keys(this.columns));
+                if(response.data.columns){
+
+                    this.columns = response.data.columns;
+                    this.search.column = _.head(Object.keys(this.columns));
+                    this.document_types = response.data.document_types;
+                    this.users = response.data.users;
+                }else{
+
+                    this.columns = response.data;
+                    this.search.column = _.head(Object.keys(this.columns));
+                }
+
             });
         await this.getRecords();
     },
     methods: {
-        clickDownload(type) 
+        clickDownload(type)
         {
             const query = queryString.stringify({
                 ...this.search

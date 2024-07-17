@@ -24,6 +24,20 @@
                             <el-date-picker v-model="form.date_end" :clearable="false" format="dd/MM/yyyy" type="date"
                                 value-format="yyyy-MM-dd"></el-date-picker>
                         </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Proveedor</label>
+                            <el-select v-model="form.supplier_id" filterable>
+                                <el-option :key="0" :value="0" label="Todos" ></el-option>
+                                <el-option v-for="option in suppliers" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                        </div>
+                        <div class="col-md-3">
+                            <label class="control-label">Tipo Documento</label>
+                            <el-select v-model="form.doc_type_id" filterable>
+                                <el-option :key="0" :value="0" label="Todos"></el-option>
+                                <el-option v-for="option in docs" :key="option.id" :value="option.id" :label="option.name"></el-option>
+                            </el-select>
+                        </div>
                         <div class="col-lg-7 col-md-7 col-md-7 col-sm-12" style="margin-top:29px">
                             <el-button class="submit" icon="el-icon-search" type="primary"
                                 @click.prevent="getRecordsByFilter">Buscar
@@ -87,12 +101,16 @@ export default {
             form: {
                 date_start: null,
                 date_end: null,
+                doc_type_id: 0,
+                supplier_id: 0,
             },
             loading_submit: false,
             records: [],
             pagination: {},
             search: {},
             all_keys: [],
+            suppliers : [],
+            docs : [],
             pickerOptionsDates: {
                 disabledDate: (time) => {
                     time = moment(time).format('YYYY-MM-DD')
@@ -106,6 +124,12 @@ export default {
         this.$eventHub.$on('reloadData', () => {
             this.getRecords()
         })
+        this.$http.get(`/${this.resource}/tables`).then((response) => {
+            if(response.data){
+                this.docs = response.data.doc_types
+                this.suppliers = response.data.suppliers
+            }
+        });
     },
 
     async mounted() {
@@ -133,6 +157,8 @@ export default {
             this.form = {
                 date_start: moment().format('YYYY-MM-DD'),
                 date_end: moment().format('YYYY-MM-DD'),
+                doc_type_id: 0,
+                supplier_id: 0,
             }
 
         },

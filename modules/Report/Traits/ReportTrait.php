@@ -350,7 +350,7 @@ trait ReportTrait
      */
     public function getPersons($type){
 
-        $persons = Person::whereType($type)->orderBy('name')->take(20)->get()->transform(function($row) {
+        $persons = Person::whereType($type)->orderBy('name')->get()->transform(function($row) {
             return [
                 'id' => $row->id,
                 'description' => $row->number.' - '.$row->name,
