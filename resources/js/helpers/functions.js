@@ -174,7 +174,7 @@ function calculateRowItem(row_old, currency_type_id_new, exchange_rate_sale, pig
     let discount_base = 0
     let discount_no_base = 0
 
-    console.log('DISCOUNTS :' + row_old.discounts.length)
+    //console.log('DISCOUNTS :' + row_old.discounts.length)
 
     if (row_old.discounts && row_old.discounts.length > 0) {
         console.log('tiene descuento')
