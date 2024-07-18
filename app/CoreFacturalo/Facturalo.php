@@ -298,7 +298,7 @@ class Facturalo
     {
         $serie = null;
 
-        if($this->doc_type == 01 || $this->doc_type == 04 ){
+        if($this->doc_type == 01 || $this->doc_type == 04 || $this->doc_type == '07' || $this->doc_type == 07){
 
             $serie = str_pad(substr($this->document->series,1,3), '3', '0', STR_PAD_LEFT);
             $estID = $this->document->user->establishment->code;
