@@ -113,7 +113,7 @@
         <codDocModificado>01</codDocModificado>
         <numDocModificado>{{ $DocAfectado }}</numDocModificado>
         <fechaEmisionDocSustento>{{ $DocumentDate }}</fechaEmisionDocSustento>
-        <totalSinImpuestos>{{ $document->total_value }}</totalSinImpuestos>
+        <totalSinImpuestos>{{ $document->total_taxed + $document->total_unaffected }}</totalSinImpuestos>
         <valorModificacion>{{ $document->total }}</valorModificacion>
         <moneda>DOLAR</moneda>
         <totalConImpuestos>
