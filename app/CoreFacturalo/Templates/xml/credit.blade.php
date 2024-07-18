@@ -71,6 +71,8 @@
         }
     }
 
+    Log::error('INOVICE: '. json_encode($document));
+
 @endphp
 {!!  '<'.'?xml version="1.0" encoding="UTF-8"?'.'>'  !!}
 <notaCredito id="comprobante" version="1.1.0">
@@ -160,9 +162,10 @@
     </infoNotaCredito>
     <detalles>
     @foreach($document->items as $row)
+    @inject('itemLotGroup', 'App\Services\ItemLotsGroupService')
         <detalle>
             <codigoInterno>{{ $row->item_id }}</codigoInterno>
-            <descripcion>{{ $row->item->name.'/'.$row->item->description }}</descripcion>
+            <descripcion>{{trim($row->item->name.' '.$row->item->description.' '.$row->item->model.' '.$row->m_item->factory_code.' Lote: '.$itemLotGroup->getLote($row->item->IdLoteSelected).' Serie: '.$series)}}</descripcion>
             <cantidad>{{ $row->quantity }}00</cantidad>
             <precioUnitario>{{ $row->unit_value }}</precioUnitario>
             <descuento>{{ $row->total_discount }}</descuento>

@@ -873,7 +873,7 @@ class ReportsFinancesController extends Controller
 
     public function excelToCollect2(Request $request){
 
-        $page = FunctionController::InArray($request, 'page');
+
         $date_start = FunctionController::InArray($request, 'date_start');
         $records = DB::connection('tenant')->select('CALL SP_Cuentasporcobrarconta(?)', [$date_start]);
 
