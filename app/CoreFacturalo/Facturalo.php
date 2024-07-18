@@ -113,6 +113,9 @@ class Facturalo
         if($type == 'invoice'){
             $this->doc_type = '01';
         }
+        if($type == 'credit'){
+            $this->doc_type = '04';
+        }
     }
 
     public function getResponse()
