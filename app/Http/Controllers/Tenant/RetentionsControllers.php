@@ -15,6 +15,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Mail\Tenant\DocumentEmail;
 use App\Models\Tenant\Catalogs\RetentionType;
+use App\Models\Tenant\CatIdentityDocumentTypes;
 use App\Models\Tenant\Company;
 use App\Models\Tenant\Configuration;
 use App\Models\Tenant\Establishment;
@@ -110,6 +111,8 @@ class RetentionsControllers extends Controller
 
                 if($purchaseL && $purchaseL->count() > 0 ){
 
+                    $document_type = CatIdentityDocumentTypes::find($purchaseL->supplier->identity_document_type_id);
+
                     $retencion = [
                         'ambiente'=>$this->ambienteLocal,
                         'emision' => 1,
@@ -126,7 +129,7 @@ class RetentionsControllers extends Controller
                         'disEstablecimiento' => $establecimiento->address,
                         'contribuyenteEspecial' => $this->company->contribuyente_especial_num,
                         'obligadoContabilidad' => ($this->company->obligado_contabilidad > 0 ) ? 'SI':'NO',
-                        'tipoIdentificacionSujetoRetenido' => str_pad($purchaseL->supplier->identity_document_type_id, '2', '0', STR_PAD_LEFT),
+                        'tipoIdentificacionSujetoRetenido' => $document_type->codeSri,
                         'parteRel' => 'NO',
                         'razonSocialSujetoRetenido' => $purchaseL->supplier->name,
                         'identificacionSujetoRetenido' => $purchaseL->supplier->number,
