@@ -31,9 +31,9 @@
                     </div>
                 </div>
                 <div class="row mt-2">
-                    <el-label>Producto:</el-label>
+                    <label>Producto:</label>
                     <el-select v-model="form.item_id" clearable filterable>
-                        <el-opton :value="0" :label="Todos" :key="0"></el-opton>
+                        <el-option :value="0" label="Todos" :key="0"></el-option>
                         <el-option v-for="option in items" :key="option.id" :label="option.description" :value="option.id" >
                         </el-option>
                     </el-select>
@@ -166,7 +166,8 @@ export default {
             });
 
             this.form = {
-                date: moment().format("YYYY-MM-DD")
+                date: moment().format("YYYY-MM-DD"),
+                item_id : 0,
             };
         },
         customIndex(index) {
@@ -188,8 +189,8 @@ export default {
                     this.records = response.data.data;
                     //console.log('data', this.records)
                     this.recordsList = this.records[this.records.length - 1];
-                    let len = this.records.length;
-                    this.records.splice(len - 1, 1);
+                    //let len = this.records.length;
+                    //this.records.splice(len - 1, 1);
                     this.pagination = response.data.meta;
                     this.pagination.per_page = parseInt(
                         response.data.meta.per_page

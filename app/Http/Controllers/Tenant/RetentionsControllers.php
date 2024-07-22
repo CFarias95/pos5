@@ -112,7 +112,6 @@ class RetentionsControllers extends Controller
                 if($purchaseL && $purchaseL->count() > 0 ){
 
                     $document_type = CatIdentityDocumentTypes::find($purchaseL->supplier->identity_document_type_id);
-
                     $retencion = [
                         'ambiente'=>$this->ambienteLocal,
                         'emision' => 1,
