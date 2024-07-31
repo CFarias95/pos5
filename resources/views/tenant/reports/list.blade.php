@@ -74,6 +74,11 @@
                             </a>
                         </li>
                         <li>
+                            <a href="{{route('tenant.reports.dinardap.index')}}">
+                                Reporte DINARDAP
+                            </a>
+                        </li>
+                        <li>
                             <a href="#" data-toggle="collapse" data-target="#system_activity_logs_id">
                                 Actividades del sistema
                             </a>
@@ -171,6 +176,7 @@
                                 Extracto Retenciones
                             </a>
                         </li>
+
                         {{-- <li>
                             <a href="{{route('tenant.reports.retentions.received.index')}}">
                                 Retenciones recibidas
@@ -244,6 +250,9 @@
                         </li>
                         <li>
                             <a href="{{route('tenant.reports.reporte_ventas_detalle.index')}}">Detalle de ventas</a>
+                        </li>
+                        <li>
+                            <a href="{{route('tenant.sale.retentions.index')}}">Extracto Retenciones</a>
                         </li>
                     </ul>
                 </div>

@@ -339,6 +339,7 @@ class RetentionsControllers extends Controller
             }
         }
     }
+    
     private function getQr($clave)
     {
 

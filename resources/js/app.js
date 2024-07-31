@@ -232,6 +232,12 @@ Vue.component('tenant-base_impuestos-index', require('../../modules/Report/Resou
 //Reporte Pagos Defectuosos
 Vue.component('tenant-cobros_defectuosos-index', require('../../modules/Report/Resources/assets/js/views/cobros_defectuosos/index.vue'));
 
+//Reporte Retenciones Ventas
+Vue.component('tenant-report-sale-retentions-index',require('../../modules/Report/Resources/assets/js/views/sale_retentions/index.vue'));
+
+//Reporte DINARDAP
+Vue.component('tenant-report-dinardap-index',require('../../modules/Report/Resources/assets/js/views/dinardap/index.vue'));
+
 /*PURCHASE QUOTATIONS REPORT */
 Vue.component('tenant-report-purchases-quotation', require('../../modules/Report/Resources/assets/js/views/purchases/quotation.vue'));
 

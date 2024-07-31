@@ -80,6 +80,15 @@ if ($current_hostname) {
                     Route::get('/tables', 'ReporteClienteProveedorAnticipoController@tables');
 
                 });
+
+                //Retenciones clientes
+                Route::prefix('sale/retentions')->group(function(){
+                    Route::get('','RetentionsSalesController@index')->name('tenant.sale.retentions.index');
+                    Route::post('records','RetentionsSalesController@records');
+                    Route::get('excel','RetentionsSalesController@excel');
+                    Route::get('tables','RetentionsSalesController@tables');
+                });
+
                 //SP Reporte Cobros Defectuosos
                 Route::prefix('cobros_efectuados')->group(function () {
                     Route::get('', 'ReporteCobrosDefectuososController@index')
@@ -461,12 +470,21 @@ if ($current_hostname) {
                 });
 
                  // REPORTE DE ATS
-                 Route::prefix('ats')->group(function () {
+                Route::prefix('ats')->group(function () {
                     Route::get('', 'ATSController@index')
                         ->name('tenant.reports.ats.index')
                         ->middleware('tenant.internal.mode');
                     Route::post('/generate', 'ATSController@generateReport');
                     Route::get('/print', 'ATSController@getFile');
+
+                });
+
+                // REPORTE DINARDAP
+                Route::prefix('dinardap')->group(function () {
+                    Route::get('', 'ReportDinardapController@index')
+                        ->name('tenant.reports.dinardap.index')
+                        ->middleware('tenant.internal.mode');
+                    Route::get('generate', 'ReportDinardapController@report');
 
                 });
 
