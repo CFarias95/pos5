@@ -766,8 +766,12 @@ class ReportsFinancesController extends Controller
         $supplier = FunctionController::InArray($request, 'supplier');
         $import = FunctionController::InArray($request, 'import');
         $agrupado = FunctionController::InArray($request, 'agrupado');
-        if($agrupado == true){
+        //Log::info('check'.$agrupado);
+        if($agrupado == 'true'){
             $agrupado = 1;
+        }
+        if($agrupado == 'false'){
+            $agrupado = 0;
         }
         //$ffin = FunctionController::InArray($request, 'ffin');
         //$fini = FunctionController::InArray($request, 'fini');
